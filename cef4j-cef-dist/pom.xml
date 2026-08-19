@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>150.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-cef-dist</artifactId>
+    <packaging>pom</packaging>
+    <name>cef4j-cef-dist</name>
+    <description>Single owner of CEF archive download, SHA-1 verification, and extraction</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>provision-cef</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <mkdir dir="${cef.dist.cache}"/>
+                                <macrodef name="provision-cef">
+                                    <attribute name="url"/>
+                                    <attribute name="archive"/>
+                                    <attribute name="distdir"/>
+                                    <sequential>
+                                        <get src="@{url}.sha1" dest="@{archive}.sha1"/>
+                                        <loadfile property="cef.expected.sha1" srcFile="@{archive}.sha1">
+                                            <filterchain>
+                                                <tokenfilter><deletecharacters chars="\r\n"/></tokenfilter>
+                                            </filterchain>
+                                        </loadfile>
+                                        <get src="@{url}" dest="@{archive}" skipexisting="true"/>
+                                        <checksum file="@{archive}" algorithm="SHA-1" property="cef.actual.sha1"/>
+                                        <condition property="cef.sha.ok">
+                                            <equals arg1="${cef.actual.sha1}" arg2="${cef.expected.sha1}"/>
+                                        </condition>
+                                        <get src="@{url}" dest="@{archive}" unless:set="cef.sha.ok"/>
+                                        <checksum file="@{archive}" algorithm="SHA-1" property="cef.actual.sha1.2"/>
+                                        <condition property="cef.sha.ok2">
+                                            <equals arg1="${cef.actual.sha1.2}" arg2="${cef.expected.sha1}"/>
+                                        </condition>
+                                        <delete file="@{archive}" unless:set="cef.sha.ok2"/>
+                                        <fail unless:set="cef.sha.ok2" message="CEF archive SHA-1 mismatch: @{archive}"/>
+                                        <condition property="cef.extracted">
+                                            <available file="@{distdir}/include/cef_version.h"/>
+                                        </condition>
+                                        <untar src="@{archive}" dest="${cef.dist.cache}" compression="bzip2" unless:set="cef.extracted"/>
+                                    </sequential>
+                                </macrodef>
+                                <provision-cef url="${cef.dist.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2"
+                                               distdir="${cef.dist.dir}"/>
+                                <provision-cef url="${cef.codegen.linux.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal.tar.bz2"
+                                               distdir="${cef.codegen.linux.dir}"/>
+                                <provision-cef url="${cef.codegen.macos.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal.tar.bz2"
+                                               distdir="${cef.codegen.macos.dir}"/>
+                                <provision-cef url="${cef.codegen.windows.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2"
+                                               distdir="${cef.codegen.windows.dir}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

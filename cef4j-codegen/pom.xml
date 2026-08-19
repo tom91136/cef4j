@@ -33,6 +33,11 @@
             <artifactId>cats-core_3</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-cef-dist</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>com.lihaoyi</groupId>
             <artifactId>ujson_3</artifactId>
         </dependency>
@@ -146,29 +151,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Download + extract CEF minimal dist for integration tests (shared cache with cef4j-platform/platform).
-                 unpackWhenChanged=true extracts only on first download or when the tarball changes. -->
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>download-cef-for-tests</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cef.dist.url}</url>
-                            <outputDirectory>${cef.dist.cache}</outputDirectory>
-                            <unpackWhenChanged>true</unpackWhenChanged>
-                            <skipCache>false</skipCache>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Integration tests (run against real CEF headers) -->
+            <!-- Integration tests (run against real CEF headers, provisioned by cef4j-cef-dist) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>

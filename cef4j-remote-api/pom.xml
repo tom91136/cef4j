@@ -27,6 +27,11 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-cef-dist</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-cdp</artifactId>
         </dependency>
         <dependency>
@@ -70,25 +75,8 @@
                     <propertiesEncoding>UTF-8</propertiesEncoding>
                 </configuration>
             </plugin>
-            <!-- IPC codegen needs the CEF headers; share the same dist cache as cef4j-platform. Runs at
+            <!-- IPC codegen needs the CEF headers; provisioned by cef4j-cef-dist. Runs at
                  `initialize` so the headers exist by the time exec-maven-plugin runs `Main` at `generate-sources`. -->
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>download-cef-for-ipc-codegen</id>
-                        <phase>initialize</phase>
-                        <goals><goal>wget</goal></goals>
-                        <configuration>
-                            <url>${cef.dist.url}</url>
-                            <outputDirectory>${cef.dist.cache}</outputDirectory>
-                            <unpackWhenChanged>true</unpackWhenChanged>
-                            <skipCache>false</skipCache>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>

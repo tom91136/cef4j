@@ -25,6 +25,15 @@
         <cef.api.version>150</cef.api.version>
         <cef.dist.cache>${maven.multiModuleProjectDirectory}/.cef-dist</cef.dist.cache>
         <cef.dist.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal</cef.dist.dir>
+        <cef.codegen.linux.platform>linux64</cef.codegen.linux.platform>
+        <cef.codegen.macos.platform>macosx64</cef.codegen.macos.platform>
+        <cef.codegen.windows.platform>windows64</cef.codegen.windows.platform>
+        <cef.codegen.linux.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal.tar.bz2</cef.codegen.linux.url>
+        <cef.codegen.macos.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal.tar.bz2</cef.codegen.macos.url>
+        <cef.codegen.windows.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2</cef.codegen.windows.url>
+        <cef.codegen.linux.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal</cef.codegen.linux.dir>
+        <cef.codegen.macos.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal</cef.codegen.macos.dir>
+        <cef.codegen.windows.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal</cef.codegen.windows.dir>
         <cef4j.packager.version>0.1.0-SNAPSHOT</cef4j.packager.version>
         <cef4j.reactor.runtime.root>${maven.multiModuleProjectDirectory}/cef4j-platform/target/reactor-runtime</cef4j.reactor.runtime.root>
         <cef4j.reactor.runtime.dir>${cef4j.reactor.runtime.root}/cef-runtime/${cef.platform}</cef4j.reactor.runtime.dir>
@@ -83,6 +92,7 @@
     </properties>
 
     <modules>
+        <module>cef4j-cef-dist</module>
         <module>cef4j-codegen</module>
         <module>cef4j-code-policy</module>
         <module>cef4j-platform</module>
@@ -259,6 +269,12 @@
                 <groupId>net.kurobako.cef4j</groupId>
                 <artifactId>cef4j-cdp</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-cef-dist</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>net.kurobako.cef4j</groupId>

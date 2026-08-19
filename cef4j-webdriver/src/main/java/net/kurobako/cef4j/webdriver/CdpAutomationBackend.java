@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -460,9 +459,14 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Override
     @Nonnull
     public CompletableFuture<Void> deleteCookie(String name) {
+        // deleteCookies gained partitionKey in newer protocol versions, use the raw command for a stable parameter set
         return currentUrl()
-                .thenCompose(url -> network.deleteCookies(
-                        name, Optional.of(url), Optional.empty(), Optional.empty(), Optional.empty()))
+                .thenCompose(url -> {
+                    Map<String, Object> params = new LinkedHashMap<>();
+                    params.put("name", CdpObject.json(name));
+                    params.put("url", CdpObject.json(url));
+                    return client.<Void>call("Network.deleteCookies", params, result -> null);
+                })
                 .thenApply(ignored -> null);
     }
 
@@ -481,24 +485,14 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<Void> dispatchMouse(String type, double x, double y) {
-        return input.dispatchMouseEvent(
-                        Input.DispatchMouseEventTypeValues.of(type),
-                        x,
-                        y,
-                        OptionalLong.empty(),
-                        Optional.empty(),
-                        Optional.of(Input.MouseButton.LEFT),
-                        OptionalLong.empty(),
-                        OptionalLong.of(1),
-                        OptionalDouble.empty(),
-                        OptionalDouble.empty(),
-                        OptionalDouble.empty(),
-                        OptionalDouble.empty(),
-                        OptionalLong.empty(),
-                        OptionalDouble.empty(),
-                        OptionalDouble.empty(),
-                        Optional.empty())
-                .<Void>thenApply(ignored -> null)
+        // dispatchMouseEvent's tiltX/tiltY types changed between protocol versions, use the raw command
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("type", CdpObject.json(type));
+        params.put("x", x);
+        params.put("y", y);
+        params.put("button", CdpObject.json(Input.MouseButton.LEFT));
+        params.put("clickCount", 1);
+        return client.<Void>call("Input.dispatchMouseEvent", params, result -> null)
                 .toCompletableFuture();
     }
 
@@ -692,42 +686,25 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     private CompletableFuture<Runtime.EvaluateResult> evaluate(
             String expression, boolean returnByValue, boolean awaitPromise) {
-        return runtime.evaluate(
-                        expression,
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.of(returnByValue),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.of(awaitPromise),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty())
+        // evaluate's trailing parameters changed between protocol versions, use the raw command
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("expression", CdpObject.json(expression));
+        params.put("returnByValue", returnByValue);
+        params.put("awaitPromise", awaitPromise);
+        return client.call("Runtime.evaluate", params, Runtime.EvaluateResult::fromMap)
                 .toCompletableFuture();
     }
 
     private CompletableFuture<Runtime.CallFunctionOnResult> callFunctionOn(
             String objectId, String function, List<Runtime.CallArgument> arguments, boolean returnByValue) {
-        return runtime.callFunctionOn(
-                        function,
-                        Optional.of(new Runtime.RemoteObjectId(objectId)),
-                        Optional.of(arguments),
-                        Optional.empty(),
-                        Optional.of(returnByValue),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.of(true),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty())
+        // callFunctionOn's trailing parameters changed between protocol versions, use the raw command
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("functionDeclaration", CdpObject.json(function));
+        params.put("objectId", CdpObject.json(objectId));
+        params.put("arguments", CdpObject.json(arguments));
+        params.put("returnByValue", returnByValue);
+        params.put("awaitPromise", true);
+        return client.call("Runtime.callFunctionOn", params, Runtime.CallFunctionOnResult::fromMap)
                 .toCompletableFuture();
     }
 
