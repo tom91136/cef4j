@@ -459,6 +459,438 @@ public final class ServiceWorker {
         }
     }
     /**
+     * Request parameters for ServiceWorker.deliverPushMessage.
+     */
+    public static final class DeliverPushMessageRequest extends CdpObject {
+        public DeliverPushMessageRequest() {}
+        /**
+         * Creates a new DeliverPushMessageRequest with all required parameters.
+         * @param origin protocol value
+         * @param registrationId protocol value
+         * @param data protocol value
+         */
+        public DeliverPushMessageRequest(String origin, ServiceWorker.RegistrationID registrationId, String data) {
+            set("origin", origin);
+            set("registrationId", registrationId);
+            set("data", data);
+        }
+        public static DeliverPushMessageRequest fromMap(Map<String, Object> values) {
+            DeliverPushMessageRequest instance_ = new DeliverPushMessageRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the origin field.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Returns the registrationId field.
+         * @return the protocol field value
+         */
+        public ServiceWorker.RegistrationID registrationId() {
+            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+        }
+        /**
+         * Returns the data field.
+         * @return the protocol field value
+         */
+        public String data() {
+            return (String) require("data");
+        }
+        /**
+         * Sets the origin field.
+         * @param origin field value
+         * @return this model
+         */
+        public DeliverPushMessageRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Sets the registrationId field.
+         * @param registrationId field value
+         * @return this model
+         */
+        public DeliverPushMessageRequest registrationId(ServiceWorker.RegistrationID registrationId) {
+            set("registrationId", registrationId);
+            return this;
+        }
+        /**
+         * Sets the data field.
+         * @param data field value
+         * @return this model
+         */
+        public DeliverPushMessageRequest data(String data) {
+            set("data", data);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.dispatchSyncEvent.
+     */
+    public static final class DispatchSyncEventRequest extends CdpObject {
+        public DispatchSyncEventRequest() {}
+        /**
+         * Creates a new DispatchSyncEventRequest with all required parameters.
+         * @param origin protocol value
+         * @param registrationId protocol value
+         * @param tag protocol value
+         * @param lastChance protocol value
+         */
+        public DispatchSyncEventRequest(String origin, ServiceWorker.RegistrationID registrationId, String tag, boolean lastChance) {
+            set("origin", origin);
+            set("registrationId", registrationId);
+            set("tag", tag);
+            set("lastChance", lastChance);
+        }
+        public static DispatchSyncEventRequest fromMap(Map<String, Object> values) {
+            DispatchSyncEventRequest instance_ = new DispatchSyncEventRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the origin field.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Returns the registrationId field.
+         * @return the protocol field value
+         */
+        public ServiceWorker.RegistrationID registrationId() {
+            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+        }
+        /**
+         * Returns the tag field.
+         * @return the protocol field value
+         */
+        public String tag() {
+            return (String) require("tag");
+        }
+        /**
+         * Returns the lastChance field.
+         * @return the protocol field value
+         */
+        public boolean lastChance() {
+            return (Boolean) require("lastChance");
+        }
+        /**
+         * Sets the origin field.
+         * @param origin field value
+         * @return this model
+         */
+        public DispatchSyncEventRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Sets the registrationId field.
+         * @param registrationId field value
+         * @return this model
+         */
+        public DispatchSyncEventRequest registrationId(ServiceWorker.RegistrationID registrationId) {
+            set("registrationId", registrationId);
+            return this;
+        }
+        /**
+         * Sets the tag field.
+         * @param tag field value
+         * @return this model
+         */
+        public DispatchSyncEventRequest tag(String tag) {
+            set("tag", tag);
+            return this;
+        }
+        /**
+         * Sets the lastChance field.
+         * @param lastChance field value
+         * @return this model
+         */
+        public DispatchSyncEventRequest lastChance(boolean lastChance) {
+            set("lastChance", lastChance);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.dispatchPeriodicSyncEvent.
+     */
+    public static final class DispatchPeriodicSyncEventRequest extends CdpObject {
+        public DispatchPeriodicSyncEventRequest() {}
+        /**
+         * Creates a new DispatchPeriodicSyncEventRequest with all required parameters.
+         * @param origin protocol value
+         * @param registrationId protocol value
+         * @param tag protocol value
+         */
+        public DispatchPeriodicSyncEventRequest(String origin, ServiceWorker.RegistrationID registrationId, String tag) {
+            set("origin", origin);
+            set("registrationId", registrationId);
+            set("tag", tag);
+        }
+        public static DispatchPeriodicSyncEventRequest fromMap(Map<String, Object> values) {
+            DispatchPeriodicSyncEventRequest instance_ = new DispatchPeriodicSyncEventRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the origin field.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Returns the registrationId field.
+         * @return the protocol field value
+         */
+        public ServiceWorker.RegistrationID registrationId() {
+            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+        }
+        /**
+         * Returns the tag field.
+         * @return the protocol field value
+         */
+        public String tag() {
+            return (String) require("tag");
+        }
+        /**
+         * Sets the origin field.
+         * @param origin field value
+         * @return this model
+         */
+        public DispatchPeriodicSyncEventRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Sets the registrationId field.
+         * @param registrationId field value
+         * @return this model
+         */
+        public DispatchPeriodicSyncEventRequest registrationId(ServiceWorker.RegistrationID registrationId) {
+            set("registrationId", registrationId);
+            return this;
+        }
+        /**
+         * Sets the tag field.
+         * @param tag field value
+         * @return this model
+         */
+        public DispatchPeriodicSyncEventRequest tag(String tag) {
+            set("tag", tag);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.setForceUpdateOnPageLoad.
+     */
+    public static final class SetForceUpdateOnPageLoadRequest extends CdpObject {
+        public SetForceUpdateOnPageLoadRequest() {}
+        /**
+         * Creates a new SetForceUpdateOnPageLoadRequest with all required parameters.
+         * @param forceUpdateOnPageLoad protocol value
+         */
+        public SetForceUpdateOnPageLoadRequest(boolean forceUpdateOnPageLoad) {
+            set("forceUpdateOnPageLoad", forceUpdateOnPageLoad);
+        }
+        public static SetForceUpdateOnPageLoadRequest fromMap(Map<String, Object> values) {
+            SetForceUpdateOnPageLoadRequest instance_ = new SetForceUpdateOnPageLoadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the forceUpdateOnPageLoad field.
+         * @return the protocol field value
+         */
+        public boolean forceUpdateOnPageLoad() {
+            return (Boolean) require("forceUpdateOnPageLoad");
+        }
+        /**
+         * Sets the forceUpdateOnPageLoad field.
+         * @param forceUpdateOnPageLoad field value
+         * @return this model
+         */
+        public SetForceUpdateOnPageLoadRequest forceUpdateOnPageLoad(boolean forceUpdateOnPageLoad) {
+            set("forceUpdateOnPageLoad", forceUpdateOnPageLoad);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.skipWaiting.
+     */
+    public static final class SkipWaitingRequest extends CdpObject {
+        public SkipWaitingRequest() {}
+        /**
+         * Creates a new SkipWaitingRequest with all required parameters.
+         * @param scopeURL protocol value
+         */
+        public SkipWaitingRequest(String scopeURL) {
+            set("scopeURL", scopeURL);
+        }
+        public static SkipWaitingRequest fromMap(Map<String, Object> values) {
+            SkipWaitingRequest instance_ = new SkipWaitingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the scopeURL field.
+         * @return the protocol field value
+         */
+        public String scopeURL() {
+            return (String) require("scopeURL");
+        }
+        /**
+         * Sets the scopeURL field.
+         * @param scopeURL field value
+         * @return this model
+         */
+        public SkipWaitingRequest scopeURL(String scopeURL) {
+            set("scopeURL", scopeURL);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.startWorker.
+     */
+    public static final class StartWorkerRequest extends CdpObject {
+        public StartWorkerRequest() {}
+        /**
+         * Creates a new StartWorkerRequest with all required parameters.
+         * @param scopeURL protocol value
+         */
+        public StartWorkerRequest(String scopeURL) {
+            set("scopeURL", scopeURL);
+        }
+        public static StartWorkerRequest fromMap(Map<String, Object> values) {
+            StartWorkerRequest instance_ = new StartWorkerRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the scopeURL field.
+         * @return the protocol field value
+         */
+        public String scopeURL() {
+            return (String) require("scopeURL");
+        }
+        /**
+         * Sets the scopeURL field.
+         * @param scopeURL field value
+         * @return this model
+         */
+        public StartWorkerRequest scopeURL(String scopeURL) {
+            set("scopeURL", scopeURL);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.stopWorker.
+     */
+    public static final class StopWorkerRequest extends CdpObject {
+        public StopWorkerRequest() {}
+        /**
+         * Creates a new StopWorkerRequest with all required parameters.
+         * @param versionId protocol value
+         */
+        public StopWorkerRequest(String versionId) {
+            set("versionId", versionId);
+        }
+        public static StopWorkerRequest fromMap(Map<String, Object> values) {
+            StopWorkerRequest instance_ = new StopWorkerRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the versionId field.
+         * @return the protocol field value
+         */
+        public String versionId() {
+            return (String) require("versionId");
+        }
+        /**
+         * Sets the versionId field.
+         * @param versionId field value
+         * @return this model
+         */
+        public StopWorkerRequest versionId(String versionId) {
+            set("versionId", versionId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.unregister.
+     */
+    public static final class UnregisterRequest extends CdpObject {
+        public UnregisterRequest() {}
+        /**
+         * Creates a new UnregisterRequest with all required parameters.
+         * @param scopeURL protocol value
+         */
+        public UnregisterRequest(String scopeURL) {
+            set("scopeURL", scopeURL);
+        }
+        public static UnregisterRequest fromMap(Map<String, Object> values) {
+            UnregisterRequest instance_ = new UnregisterRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the scopeURL field.
+         * @return the protocol field value
+         */
+        public String scopeURL() {
+            return (String) require("scopeURL");
+        }
+        /**
+         * Sets the scopeURL field.
+         * @param scopeURL field value
+         * @return this model
+         */
+        public UnregisterRequest scopeURL(String scopeURL) {
+            set("scopeURL", scopeURL);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for ServiceWorker.updateRegistration.
+     */
+    public static final class UpdateRegistrationRequest extends CdpObject {
+        public UpdateRegistrationRequest() {}
+        /**
+         * Creates a new UpdateRegistrationRequest with all required parameters.
+         * @param scopeURL protocol value
+         */
+        public UpdateRegistrationRequest(String scopeURL) {
+            set("scopeURL", scopeURL);
+        }
+        public static UpdateRegistrationRequest fromMap(Map<String, Object> values) {
+            UpdateRegistrationRequest instance_ = new UpdateRegistrationRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the scopeURL field.
+         * @return the protocol field value
+         */
+        public String scopeURL() {
+            return (String) require("scopeURL");
+        }
+        /**
+         * Sets the scopeURL field.
+         * @param scopeURL field value
+         * @return this model
+         */
+        public UpdateRegistrationRequest scopeURL(String scopeURL) {
+            set("scopeURL", scopeURL);
+            return this;
+        }
+    }
+    /**
      * Payload of the ServiceWorker.workerErrorReported event.
      */
     public static final class WorkerErrorReportedEvent extends CdpObject {
@@ -554,6 +986,14 @@ public final class ServiceWorker {
             return client.call("ServiceWorker.deliverPushMessage", params, result_ -> null);
         }
         /**
+         * Invokes ServiceWorker.deliverPushMessage with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deliverPushMessage(DeliverPushMessageRequest request) {
+            return client.call("ServiceWorker.deliverPushMessage", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes ServiceWorker.disable.
          * @return a stage completing when the command completes
          */
@@ -577,6 +1017,14 @@ public final class ServiceWorker {
             return client.call("ServiceWorker.dispatchSyncEvent", params, result_ -> null);
         }
         /**
+         * Invokes ServiceWorker.dispatchSyncEvent with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> dispatchSyncEvent(DispatchSyncEventRequest request) {
+            return client.call("ServiceWorker.dispatchSyncEvent", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes ServiceWorker.dispatchPeriodicSyncEvent.
          * @param origin protocol value
          * @param registrationId protocol value
@@ -589,6 +1037,14 @@ public final class ServiceWorker {
             params.put("registrationId", CdpObject.json(registrationId));
             params.put("tag", CdpObject.json(tag));
             return client.call("ServiceWorker.dispatchPeriodicSyncEvent", params, result_ -> null);
+        }
+        /**
+         * Invokes ServiceWorker.dispatchPeriodicSyncEvent with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> dispatchPeriodicSyncEvent(DispatchPeriodicSyncEventRequest request) {
+            return client.call("ServiceWorker.dispatchPeriodicSyncEvent", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes ServiceWorker.enable.
@@ -608,6 +1064,14 @@ public final class ServiceWorker {
             return client.call("ServiceWorker.setForceUpdateOnPageLoad", params, result_ -> null);
         }
         /**
+         * Invokes ServiceWorker.setForceUpdateOnPageLoad with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setForceUpdateOnPageLoad(SetForceUpdateOnPageLoadRequest request) {
+            return client.call("ServiceWorker.setForceUpdateOnPageLoad", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes ServiceWorker.skipWaiting.
          * @param scopeURL protocol value
          * @return a stage completing when the command completes
@@ -618,6 +1082,14 @@ public final class ServiceWorker {
             return client.call("ServiceWorker.skipWaiting", params, result_ -> null);
         }
         /**
+         * Invokes ServiceWorker.skipWaiting with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> skipWaiting(SkipWaitingRequest request) {
+            return client.call("ServiceWorker.skipWaiting", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes ServiceWorker.startWorker.
          * @param scopeURL protocol value
          * @return a stage completing when the command completes
@@ -626,6 +1098,14 @@ public final class ServiceWorker {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("scopeURL", CdpObject.json(scopeURL));
             return client.call("ServiceWorker.startWorker", params, result_ -> null);
+        }
+        /**
+         * Invokes ServiceWorker.startWorker with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startWorker(StartWorkerRequest request) {
+            return client.call("ServiceWorker.startWorker", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes ServiceWorker.stopAllWorkers.
@@ -645,6 +1125,14 @@ public final class ServiceWorker {
             return client.call("ServiceWorker.stopWorker", params, result_ -> null);
         }
         /**
+         * Invokes ServiceWorker.stopWorker with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> stopWorker(StopWorkerRequest request) {
+            return client.call("ServiceWorker.stopWorker", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes ServiceWorker.unregister.
          * @param scopeURL protocol value
          * @return a stage completing when the command completes
@@ -655,6 +1143,14 @@ public final class ServiceWorker {
             return client.call("ServiceWorker.unregister", params, result_ -> null);
         }
         /**
+         * Invokes ServiceWorker.unregister with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> unregister(UnregisterRequest request) {
+            return client.call("ServiceWorker.unregister", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes ServiceWorker.updateRegistration.
          * @param scopeURL protocol value
          * @return a stage completing when the command completes
@@ -663,6 +1159,14 @@ public final class ServiceWorker {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("scopeURL", CdpObject.json(scopeURL));
             return client.call("ServiceWorker.updateRegistration", params, result_ -> null);
+        }
+        /**
+         * Invokes ServiceWorker.updateRegistration with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> updateRegistration(UpdateRegistrationRequest request) {
+            return client.call("ServiceWorker.updateRegistration", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Subscribes to ServiceWorker.workerErrorReported.

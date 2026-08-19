@@ -23,7 +23,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import org.junit.jupiter.api.Test;
 
-class MmapFrameTransportTest {
+class SharedFileFrameTransportTest {
     @Test
     void replaysLatestPaintWhenConsumerIsInstalledAfterBinding() throws Exception {
         Path frame = Path.of(
@@ -101,7 +101,7 @@ class MmapFrameTransportTest {
             OsrPaintEvent event1 =
                     new OsrPaintEvent(new RemoteHandle(7), frame1.toString(), 2L, 2, 1, 8, 0, 0, 0, 2, 1);
             StoringSession session = new StoringSession();
-            try (FrameTransport transport = MmapFrameTransport.bindAll(session)) {
+            try (FrameTransport transport = SharedFileFrameTransport.bindAll(session)) {
                 AtomicInteger inFlight = new AtomicInteger();
                 AtomicBoolean overlapped = new AtomicBoolean();
                 CountDownLatch firstEntered = new CountDownLatch(1);

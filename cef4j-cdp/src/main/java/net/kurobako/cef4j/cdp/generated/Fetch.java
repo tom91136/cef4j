@@ -373,6 +373,690 @@ public final class Fetch {
         }
     }
     /**
+     * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If specified, only requests matching any of these patterns will produce fetchRequested event and will be paused until clients response. If not set, all requests will be affected.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<Fetch.RequestPattern>> patterns() {
+            return Optional.ofNullable(list(raw("patterns"), element0 -> java.util.Objects.requireNonNull(Fetch.RequestPattern.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * If true, authRequired events will be issued and requests will be paused expecting a call to continueWithAuth.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> handleAuthRequests() {
+            return Optional.ofNullable((Boolean) raw("handleAuthRequests"));
+        }
+        /**
+         * If specified, only requests matching any of these patterns will produce fetchRequested event and will be paused until clients response. If not set, all requests will be affected.
+         * @param patterns field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest patterns(Optional<java.util.List<Fetch.RequestPattern>> patterns) {
+            set("patterns", patterns.orElse(null));
+            return this;
+        }
+        /**
+         * If specified, only requests matching any of these patterns will produce fetchRequested event and will be paused until clients response. If not set, all requests will be affected.
+         * @param patterns field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest patterns(java.util.List<Fetch.RequestPattern> patterns) {
+            set("patterns", patterns);
+            return this;
+        }
+        /**
+         * If true, authRequired events will be issued and requests will be paused expecting a call to continueWithAuth.
+         * @param handleAuthRequests field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest handleAuthRequests(Optional<Boolean> handleAuthRequests) {
+            set("handleAuthRequests", handleAuthRequests.orElse(null));
+            return this;
+        }
+        /**
+         * If true, authRequired events will be issued and requests will be paused expecting a call to continueWithAuth.
+         * @param handleAuthRequests field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest handleAuthRequests(Boolean handleAuthRequests) {
+            set("handleAuthRequests", handleAuthRequests);
+            return this;
+        }
+    }
+    /**
+     * Causes the request to fail with specified reason.
+     */
+    public static final class FailRequestRequest extends CdpObject {
+        public FailRequestRequest() {}
+        /**
+         * Causes the request to fail with specified reason.
+         * @param requestId protocol value
+         * @param errorReason protocol value
+         */
+        public FailRequestRequest(Fetch.RequestId requestId, Network.ErrorReason errorReason) {
+            set("requestId", requestId);
+            set("errorReason", errorReason);
+        }
+        public static FailRequestRequest fromMap(Map<String, Object> values) {
+            FailRequestRequest instance_ = new FailRequestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * Causes the request to fail with the given reason.
+         * @return the protocol field value
+         */
+        public Network.ErrorReason errorReason() {
+            return Network.ErrorReason.of((String) require("errorReason"));
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @param requestId field value
+         * @return this model
+         */
+        public FailRequestRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Causes the request to fail with the given reason.
+         * @param errorReason field value
+         * @return this model
+         */
+        public FailRequestRequest errorReason(Network.ErrorReason errorReason) {
+            set("errorReason", errorReason);
+            return this;
+        }
+    }
+    /**
+     * Provides response to the request.
+     */
+    public static final class FulfillRequestRequest extends CdpObject {
+        public FulfillRequestRequest() {}
+        /**
+         * Provides response to the request.
+         * @param requestId protocol value
+         * @param responseCode protocol value
+         */
+        public FulfillRequestRequest(Fetch.RequestId requestId, long responseCode) {
+            set("requestId", requestId);
+            set("responseCode", responseCode);
+        }
+        public static FulfillRequestRequest fromMap(Map<String, Object> values) {
+            FulfillRequestRequest instance_ = new FulfillRequestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * An HTTP response code.
+         * @return the protocol field value
+         */
+        public long responseCode() {
+            return ((Number) require("responseCode")).longValue();
+        }
+        /**
+         * Response headers.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders() {
+            return Optional.ofNullable(list(raw("responseHeaders"), element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> binaryResponseHeaders() {
+            return Optional.ofNullable((String) raw("binaryResponseHeaders"));
+        }
+        /**
+         * A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> body() {
+            return Optional.ofNullable((String) raw("body"));
+        }
+        /**
+         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> responsePhrase() {
+            return Optional.ofNullable((String) raw("responsePhrase"));
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @param requestId field value
+         * @return this model
+         */
+        public FulfillRequestRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * An HTTP response code.
+         * @param responseCode field value
+         * @return this model
+         */
+        public FulfillRequestRequest responseCode(long responseCode) {
+            set("responseCode", responseCode);
+            return this;
+        }
+        /**
+         * Response headers.
+         * @param responseHeaders field value; empty omits the value
+         * @return this model
+         */
+        public FulfillRequestRequest responseHeaders(Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders) {
+            set("responseHeaders", responseHeaders.orElse(null));
+            return this;
+        }
+        /**
+         * Response headers.
+         * @param responseHeaders field value; null removes the value
+         * @return this model
+         */
+        public FulfillRequestRequest responseHeaders(java.util.List<Fetch.HeaderEntry> responseHeaders) {
+            set("responseHeaders", responseHeaders);
+            return this;
+        }
+        /**
+         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+         * @param binaryResponseHeaders field value; empty omits the value
+         * @return this model
+         */
+        public FulfillRequestRequest binaryResponseHeaders(Optional<String> binaryResponseHeaders) {
+            set("binaryResponseHeaders", binaryResponseHeaders.orElse(null));
+            return this;
+        }
+        /**
+         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+         * @param binaryResponseHeaders field value; null removes the value
+         * @return this model
+         */
+        public FulfillRequestRequest binaryResponseHeaders(String binaryResponseHeaders) {
+            set("binaryResponseHeaders", binaryResponseHeaders);
+            return this;
+        }
+        /**
+         * A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
+         * @param body field value; empty omits the value
+         * @return this model
+         */
+        public FulfillRequestRequest body(Optional<String> body) {
+            set("body", body.orElse(null));
+            return this;
+        }
+        /**
+         * A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
+         * @param body field value; null removes the value
+         * @return this model
+         */
+        public FulfillRequestRequest body(String body) {
+            set("body", body);
+            return this;
+        }
+        /**
+         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+         * @param responsePhrase field value; empty omits the value
+         * @return this model
+         */
+        public FulfillRequestRequest responsePhrase(Optional<String> responsePhrase) {
+            set("responsePhrase", responsePhrase.orElse(null));
+            return this;
+        }
+        /**
+         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+         * @param responsePhrase field value; null removes the value
+         * @return this model
+         */
+        public FulfillRequestRequest responsePhrase(String responsePhrase) {
+            set("responsePhrase", responsePhrase);
+            return this;
+        }
+    }
+    /**
+     * Continues the request, optionally modifying some of its parameters.
+     */
+    public static final class ContinueRequestRequest extends CdpObject {
+        public ContinueRequestRequest() {}
+        /**
+         * Continues the request, optionally modifying some of its parameters.
+         * @param requestId protocol value
+         */
+        public ContinueRequestRequest(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static ContinueRequestRequest fromMap(Map<String, Object> values) {
+            ContinueRequestRequest instance_ = new ContinueRequestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * If set, the request url will be modified in a way that&#x27;s not observable by page.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> url() {
+            return Optional.ofNullable((String) raw("url"));
+        }
+        /**
+         * If set, the request method is overridden.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> method() {
+            return Optional.ofNullable((String) raw("method"));
+        }
+        /**
+         * If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> postData() {
+            return Optional.ofNullable((String) raw("postData"));
+        }
+        /**
+         * If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<Fetch.HeaderEntry>> headers() {
+            return Optional.ofNullable(list(raw("headers"), element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * If set, overrides response interception behavior for this request.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> interceptResponse() {
+            return Optional.ofNullable((Boolean) raw("interceptResponse"));
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @param requestId field value
+         * @return this model
+         */
+        public ContinueRequestRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * If set, the request url will be modified in a way that&#x27;s not observable by page.
+         * @param url field value; empty omits the value
+         * @return this model
+         */
+        public ContinueRequestRequest url(Optional<String> url) {
+            set("url", url.orElse(null));
+            return this;
+        }
+        /**
+         * If set, the request url will be modified in a way that&#x27;s not observable by page.
+         * @param url field value; null removes the value
+         * @return this model
+         */
+        public ContinueRequestRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * If set, the request method is overridden.
+         * @param method field value; empty omits the value
+         * @return this model
+         */
+        public ContinueRequestRequest method(Optional<String> method) {
+            set("method", method.orElse(null));
+            return this;
+        }
+        /**
+         * If set, the request method is overridden.
+         * @param method field value; null removes the value
+         * @return this model
+         */
+        public ContinueRequestRequest method(String method) {
+            set("method", method);
+            return this;
+        }
+        /**
+         * If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
+         * @param postData field value; empty omits the value
+         * @return this model
+         */
+        public ContinueRequestRequest postData(Optional<String> postData) {
+            set("postData", postData.orElse(null));
+            return this;
+        }
+        /**
+         * If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
+         * @param postData field value; null removes the value
+         * @return this model
+         */
+        public ContinueRequestRequest postData(String postData) {
+            set("postData", postData);
+            return this;
+        }
+        /**
+         * If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
+         * @param headers field value; empty omits the value
+         * @return this model
+         */
+        public ContinueRequestRequest headers(Optional<java.util.List<Fetch.HeaderEntry>> headers) {
+            set("headers", headers.orElse(null));
+            return this;
+        }
+        /**
+         * If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
+         * @param headers field value; null removes the value
+         * @return this model
+         */
+        public ContinueRequestRequest headers(java.util.List<Fetch.HeaderEntry> headers) {
+            set("headers", headers);
+            return this;
+        }
+        /**
+         * If set, overrides response interception behavior for this request.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param interceptResponse field value; empty omits the value
+         * @return this model
+         */
+        public ContinueRequestRequest interceptResponse(Optional<Boolean> interceptResponse) {
+            set("interceptResponse", interceptResponse.orElse(null));
+            return this;
+        }
+        /**
+         * If set, overrides response interception behavior for this request.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param interceptResponse field value; null removes the value
+         * @return this model
+         */
+        public ContinueRequestRequest interceptResponse(Boolean interceptResponse) {
+            set("interceptResponse", interceptResponse);
+            return this;
+        }
+    }
+    /**
+     * Continues a request supplying authChallengeResponse following authRequired event.
+     */
+    public static final class ContinueWithAuthRequest extends CdpObject {
+        public ContinueWithAuthRequest() {}
+        /**
+         * Continues a request supplying authChallengeResponse following authRequired event.
+         * @param requestId protocol value
+         * @param authChallengeResponse protocol value
+         */
+        public ContinueWithAuthRequest(Fetch.RequestId requestId, Fetch.AuthChallengeResponse authChallengeResponse) {
+            set("requestId", requestId);
+            set("authChallengeResponse", authChallengeResponse);
+        }
+        public static ContinueWithAuthRequest fromMap(Map<String, Object> values) {
+            ContinueWithAuthRequest instance_ = new ContinueWithAuthRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An id the client received in authRequired event.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * Response to with an authChallenge.
+         * @return the protocol field value
+         */
+        public Fetch.AuthChallengeResponse authChallengeResponse() {
+            return java.util.Objects.requireNonNull(Fetch.AuthChallengeResponse.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("authChallengeResponse")))));
+        }
+        /**
+         * An id the client received in authRequired event.
+         * @param requestId field value
+         * @return this model
+         */
+        public ContinueWithAuthRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Response to with an authChallenge.
+         * @param authChallengeResponse field value
+         * @return this model
+         */
+        public ContinueWithAuthRequest authChallengeResponse(Fetch.AuthChallengeResponse authChallengeResponse) {
+            set("authChallengeResponse", authChallengeResponse);
+            return this;
+        }
+    }
+    /**
+     * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ContinueResponseRequest extends CdpObject {
+        public ContinueResponseRequest() {}
+        /**
+         * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param requestId protocol value
+         */
+        public ContinueResponseRequest(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static ContinueResponseRequest fromMap(Map<String, Object> values) {
+            ContinueResponseRequest instance_ = new ContinueResponseRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * An HTTP response code. If absent, original response code will be used.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong responseCode() {
+            Long value = CdpObject.numberAsLong(raw("responseCode"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> responsePhrase() {
+            return Optional.ofNullable((String) raw("responsePhrase"));
+        }
+        /**
+         * Response headers. If absent, original response headers will be used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders() {
+            return Optional.ofNullable(list(raw("responseHeaders"), element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> binaryResponseHeaders() {
+            return Optional.ofNullable((String) raw("binaryResponseHeaders"));
+        }
+        /**
+         * An id the client received in requestPaused event.
+         * @param requestId field value
+         * @return this model
+         */
+        public ContinueResponseRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * An HTTP response code. If absent, original response code will be used.
+         * @param responseCode field value; empty omits the value
+         * @return this model
+         */
+        public ContinueResponseRequest responseCode(OptionalLong responseCode) {
+            set("responseCode", responseCode.isPresent() ? responseCode.getAsLong() : null);
+            return this;
+        }
+        /**
+         * An HTTP response code. If absent, original response code will be used.
+         * @param responseCode field value; null removes the value
+         * @return this model
+         */
+        public ContinueResponseRequest responseCode(Long responseCode) {
+            set("responseCode", responseCode);
+            return this;
+        }
+        /**
+         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+         * @param responsePhrase field value; empty omits the value
+         * @return this model
+         */
+        public ContinueResponseRequest responsePhrase(Optional<String> responsePhrase) {
+            set("responsePhrase", responsePhrase.orElse(null));
+            return this;
+        }
+        /**
+         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+         * @param responsePhrase field value; null removes the value
+         * @return this model
+         */
+        public ContinueResponseRequest responsePhrase(String responsePhrase) {
+            set("responsePhrase", responsePhrase);
+            return this;
+        }
+        /**
+         * Response headers. If absent, original response headers will be used.
+         * @param responseHeaders field value; empty omits the value
+         * @return this model
+         */
+        public ContinueResponseRequest responseHeaders(Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders) {
+            set("responseHeaders", responseHeaders.orElse(null));
+            return this;
+        }
+        /**
+         * Response headers. If absent, original response headers will be used.
+         * @param responseHeaders field value; null removes the value
+         * @return this model
+         */
+        public ContinueResponseRequest responseHeaders(java.util.List<Fetch.HeaderEntry> responseHeaders) {
+            set("responseHeaders", responseHeaders);
+            return this;
+        }
+        /**
+         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+         * @param binaryResponseHeaders field value; empty omits the value
+         * @return this model
+         */
+        public ContinueResponseRequest binaryResponseHeaders(Optional<String> binaryResponseHeaders) {
+            set("binaryResponseHeaders", binaryResponseHeaders.orElse(null));
+            return this;
+        }
+        /**
+         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+         * @param binaryResponseHeaders field value; null removes the value
+         * @return this model
+         */
+        public ContinueResponseRequest binaryResponseHeaders(String binaryResponseHeaders) {
+            set("binaryResponseHeaders", binaryResponseHeaders);
+            return this;
+        }
+    }
+    /**
+     * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
+     */
+    public static final class GetResponseBodyRequest extends CdpObject {
+        public GetResponseBodyRequest() {}
+        /**
+         * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
+         * @param requestId protocol value
+         */
+        public GetResponseBodyRequest(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static GetResponseBodyRequest fromMap(Map<String, Object> values) {
+            GetResponseBodyRequest instance_ = new GetResponseBodyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier for the intercepted request to get body for.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * Identifier for the intercepted request to get body for.
+         * @param requestId field value
+         * @return this model
+         */
+        public GetResponseBodyRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
+     */
+    public static final class TakeResponseBodyAsStreamRequest extends CdpObject {
+        public TakeResponseBodyAsStreamRequest() {}
+        /**
+         * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
+         * @param requestId protocol value
+         */
+        public TakeResponseBodyAsStreamRequest(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static TakeResponseBodyAsStreamRequest fromMap(Map<String, Object> values) {
+            TakeResponseBodyAsStreamRequest instance_ = new TakeResponseBodyAsStreamRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public TakeResponseBodyAsStreamRequest requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
      * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
      */
     public static final class GetResponseBodyResult extends CdpObject {
@@ -762,6 +1446,14 @@ public final class Fetch {
             return enable(Optional.empty(), Optional.empty());
         }
         /**
+         * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("Fetch.enable", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Causes the request to fail with specified reason.
          * @param requestId protocol value
          * @param errorReason protocol value
@@ -772,6 +1464,14 @@ public final class Fetch {
             params.put("requestId", CdpObject.json(requestId));
             params.put("errorReason", CdpObject.json(errorReason));
             return client.call("Fetch.failRequest", params, result_ -> null);
+        }
+        /**
+         * Causes the request to fail with specified reason.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> failRequest(FailRequestRequest request) {
+            return client.call("Fetch.failRequest", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Provides response to the request.
@@ -803,6 +1503,14 @@ public final class Fetch {
             return fulfillRequest(requestId, responseCode, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Provides response to the request.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> fulfillRequest(FulfillRequestRequest request) {
+            return client.call("Fetch.fulfillRequest", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Continues the request, optionally modifying some of its parameters.
          * @param requestId protocol value
          * @param url protocol value
@@ -831,6 +1539,14 @@ public final class Fetch {
             return continueRequest(requestId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Continues the request, optionally modifying some of its parameters.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> continueRequest(ContinueRequestRequest request) {
+            return client.call("Fetch.continueRequest", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Continues a request supplying authChallengeResponse following authRequired event.
          * @param requestId protocol value
          * @param authChallengeResponse protocol value
@@ -841,6 +1557,14 @@ public final class Fetch {
             params.put("requestId", CdpObject.json(requestId));
             params.put("authChallengeResponse", CdpObject.json(authChallengeResponse));
             return client.call("Fetch.continueWithAuth", params, result_ -> null);
+        }
+        /**
+         * Continues a request supplying authChallengeResponse following authRequired event.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> continueWithAuth(ContinueWithAuthRequest request) {
+            return client.call("Fetch.continueWithAuth", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
@@ -871,6 +1595,15 @@ public final class Fetch {
             return continueResponse(requestId, OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> continueResponse(ContinueResponseRequest request) {
+            return client.call("Fetch.continueResponse", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
          * @param requestId protocol value
          * @return a stage completing with the command result
@@ -881,6 +1614,14 @@ public final class Fetch {
             return client.call("Fetch.getResponseBody", params, result_ -> new GetResponseBodyResult(result_));
         }
         /**
+         * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetResponseBodyResult> getResponseBody(GetResponseBodyRequest request) {
+            return client.call("Fetch.getResponseBody", request == null ? null : request.toMap(), result_ -> new GetResponseBodyResult(result_));
+        }
+        /**
          * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
          * @param requestId protocol value
          * @return a stage completing with the command result
@@ -889,6 +1630,14 @@ public final class Fetch {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("Fetch.takeResponseBodyAsStream", params, result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
+        }
+        /**
+         * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<IO.StreamHandle> takeResponseBodyAsStream(TakeResponseBodyAsStreamRequest request) {
+            return client.call("Fetch.takeResponseBodyAsStream", request == null ? null : request.toMap(), result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
         }
         /**
          * Issued when the domain is enabled and the request URL matches the specified filter. The request is paused until the client responds with one of continueRequest, failRequest or fulfillRequest. The stage of the request can be determined by presence of responseErrorReason and responseStatusCode -- the request is at the response stage if either of these fields is present and in the request stage otherwise. Redirect responses and subsequent requests are reported similarly to regular responses and requests. Redirect responses may be distinguished by the value of {@code responseStatusCode} (which is one of 301, 302, 303, 307, 308) along with presence of the {@code location} header. Requests resulting from a redirect will have {@code redirectedRequestId} field set.

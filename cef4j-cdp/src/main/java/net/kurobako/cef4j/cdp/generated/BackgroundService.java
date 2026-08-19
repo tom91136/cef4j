@@ -224,6 +224,160 @@ public final class BackgroundService {
         }
     }
     /**
+     * Enables event updates for the service.
+     */
+    public static final class StartObservingRequest extends CdpObject {
+        public StartObservingRequest() {}
+        /**
+         * Enables event updates for the service.
+         * @param service protocol value
+         */
+        public StartObservingRequest(BackgroundService.ServiceName service) {
+            set("service", service);
+        }
+        public static StartObservingRequest fromMap(Map<String, Object> values) {
+            StartObservingRequest instance_ = new StartObservingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the service field.
+         * @return the protocol field value
+         */
+        public BackgroundService.ServiceName service() {
+            return BackgroundService.ServiceName.of((String) require("service"));
+        }
+        /**
+         * Sets the service field.
+         * @param service field value
+         * @return this model
+         */
+        public StartObservingRequest service(BackgroundService.ServiceName service) {
+            set("service", service);
+            return this;
+        }
+    }
+    /**
+     * Disables event updates for the service.
+     */
+    public static final class StopObservingRequest extends CdpObject {
+        public StopObservingRequest() {}
+        /**
+         * Disables event updates for the service.
+         * @param service protocol value
+         */
+        public StopObservingRequest(BackgroundService.ServiceName service) {
+            set("service", service);
+        }
+        public static StopObservingRequest fromMap(Map<String, Object> values) {
+            StopObservingRequest instance_ = new StopObservingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the service field.
+         * @return the protocol field value
+         */
+        public BackgroundService.ServiceName service() {
+            return BackgroundService.ServiceName.of((String) require("service"));
+        }
+        /**
+         * Sets the service field.
+         * @param service field value
+         * @return this model
+         */
+        public StopObservingRequest service(BackgroundService.ServiceName service) {
+            set("service", service);
+            return this;
+        }
+    }
+    /**
+     * Set the recording state for the service.
+     */
+    public static final class SetRecordingRequest extends CdpObject {
+        public SetRecordingRequest() {}
+        /**
+         * Set the recording state for the service.
+         * @param shouldRecord protocol value
+         * @param service protocol value
+         */
+        public SetRecordingRequest(boolean shouldRecord, BackgroundService.ServiceName service) {
+            set("shouldRecord", shouldRecord);
+            set("service", service);
+        }
+        public static SetRecordingRequest fromMap(Map<String, Object> values) {
+            SetRecordingRequest instance_ = new SetRecordingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the shouldRecord field.
+         * @return the protocol field value
+         */
+        public boolean shouldRecord() {
+            return (Boolean) require("shouldRecord");
+        }
+        /**
+         * Returns the service field.
+         * @return the protocol field value
+         */
+        public BackgroundService.ServiceName service() {
+            return BackgroundService.ServiceName.of((String) require("service"));
+        }
+        /**
+         * Sets the shouldRecord field.
+         * @param shouldRecord field value
+         * @return this model
+         */
+        public SetRecordingRequest shouldRecord(boolean shouldRecord) {
+            set("shouldRecord", shouldRecord);
+            return this;
+        }
+        /**
+         * Sets the service field.
+         * @param service field value
+         * @return this model
+         */
+        public SetRecordingRequest service(BackgroundService.ServiceName service) {
+            set("service", service);
+            return this;
+        }
+    }
+    /**
+     * Clears all stored data for the service.
+     */
+    public static final class ClearEventsRequest extends CdpObject {
+        public ClearEventsRequest() {}
+        /**
+         * Clears all stored data for the service.
+         * @param service protocol value
+         */
+        public ClearEventsRequest(BackgroundService.ServiceName service) {
+            set("service", service);
+        }
+        public static ClearEventsRequest fromMap(Map<String, Object> values) {
+            ClearEventsRequest instance_ = new ClearEventsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the service field.
+         * @return the protocol field value
+         */
+        public BackgroundService.ServiceName service() {
+            return BackgroundService.ServiceName.of((String) require("service"));
+        }
+        /**
+         * Sets the service field.
+         * @param service field value
+         * @return this model
+         */
+        public ClearEventsRequest service(BackgroundService.ServiceName service) {
+            set("service", service);
+            return this;
+        }
+    }
+    /**
      * Called when the recording state for the service has been updated.
      */
     public static final class RecordingStateChangedEvent extends CdpObject {
@@ -305,6 +459,14 @@ public final class BackgroundService {
             return client.call("BackgroundService.startObserving", params, result_ -> null);
         }
         /**
+         * Enables event updates for the service.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startObserving(StartObservingRequest request) {
+            return client.call("BackgroundService.startObserving", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Disables event updates for the service.
          * @param service protocol value
          * @return a stage completing when the command completes
@@ -313,6 +475,14 @@ public final class BackgroundService {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
             return client.call("BackgroundService.stopObserving", params, result_ -> null);
+        }
+        /**
+         * Disables event updates for the service.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> stopObserving(StopObservingRequest request) {
+            return client.call("BackgroundService.stopObserving", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Set the recording state for the service.
@@ -327,6 +497,14 @@ public final class BackgroundService {
             return client.call("BackgroundService.setRecording", params, result_ -> null);
         }
         /**
+         * Set the recording state for the service.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setRecording(SetRecordingRequest request) {
+            return client.call("BackgroundService.setRecording", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Clears all stored data for the service.
          * @param service protocol value
          * @return a stage completing when the command completes
@@ -335,6 +513,14 @@ public final class BackgroundService {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
             return client.call("BackgroundService.clearEvents", params, result_ -> null);
+        }
+        /**
+         * Clears all stored data for the service.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearEvents(ClearEventsRequest request) {
+            return client.call("BackgroundService.clearEvents", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Called when the recording state for the service has been updated.

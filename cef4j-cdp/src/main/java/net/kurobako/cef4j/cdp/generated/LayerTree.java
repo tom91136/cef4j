@@ -616,6 +616,399 @@ public final class LayerTree {
     /**
      * Provides the reasons why the given layer was composited.
      */
+    public static final class CompositingReasonsRequest extends CdpObject {
+        public CompositingReasonsRequest() {}
+        /**
+         * Provides the reasons why the given layer was composited.
+         * @param layerId protocol value
+         */
+        public CompositingReasonsRequest(LayerTree.LayerId layerId) {
+            set("layerId", layerId);
+        }
+        public static CompositingReasonsRequest fromMap(Map<String, Object> values) {
+            CompositingReasonsRequest instance_ = new CompositingReasonsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The id of the layer for which we want to get the reasons it was composited.
+         * @return the protocol field value
+         */
+        public LayerTree.LayerId layerId() {
+            return new LayerTree.LayerId((String) require("layerId"));
+        }
+        /**
+         * The id of the layer for which we want to get the reasons it was composited.
+         * @param layerId field value
+         * @return this model
+         */
+        public CompositingReasonsRequest layerId(LayerTree.LayerId layerId) {
+            set("layerId", layerId);
+            return this;
+        }
+    }
+    /**
+     * Returns the snapshot identifier.
+     */
+    public static final class LoadSnapshotRequest extends CdpObject {
+        public LoadSnapshotRequest() {}
+        /**
+         * Returns the snapshot identifier.
+         * @param tiles protocol value
+         */
+        public LoadSnapshotRequest(java.util.List<LayerTree.PictureTile> tiles) {
+            set("tiles", tiles);
+        }
+        public static LoadSnapshotRequest fromMap(Map<String, Object> values) {
+            LoadSnapshotRequest instance_ = new LoadSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An array of tiles composing the snapshot.
+         * @return the protocol field value
+         */
+        public java.util.List<LayerTree.PictureTile> tiles() {
+            return CdpObject.requireList(require("tiles"), element0 -> java.util.Objects.requireNonNull(LayerTree.PictureTile.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * An array of tiles composing the snapshot.
+         * @param tiles field value
+         * @return this model
+         */
+        public LoadSnapshotRequest tiles(java.util.List<LayerTree.PictureTile> tiles) {
+            set("tiles", tiles);
+            return this;
+        }
+    }
+    /**
+     * Returns the layer snapshot identifier.
+     */
+    public static final class MakeSnapshotRequest extends CdpObject {
+        public MakeSnapshotRequest() {}
+        /**
+         * Returns the layer snapshot identifier.
+         * @param layerId protocol value
+         */
+        public MakeSnapshotRequest(LayerTree.LayerId layerId) {
+            set("layerId", layerId);
+        }
+        public static MakeSnapshotRequest fromMap(Map<String, Object> values) {
+            MakeSnapshotRequest instance_ = new MakeSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The id of the layer.
+         * @return the protocol field value
+         */
+        public LayerTree.LayerId layerId() {
+            return new LayerTree.LayerId((String) require("layerId"));
+        }
+        /**
+         * The id of the layer.
+         * @param layerId field value
+         * @return this model
+         */
+        public MakeSnapshotRequest layerId(LayerTree.LayerId layerId) {
+            set("layerId", layerId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for LayerTree.profileSnapshot.
+     */
+    public static final class ProfileSnapshotRequest extends CdpObject {
+        public ProfileSnapshotRequest() {}
+        /**
+         * Creates a new ProfileSnapshotRequest with all required parameters.
+         * @param snapshotId protocol value
+         */
+        public ProfileSnapshotRequest(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+        }
+        public static ProfileSnapshotRequest fromMap(Map<String, Object> values) {
+            ProfileSnapshotRequest instance_ = new ProfileSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The id of the layer snapshot.
+         * @return the protocol field value
+         */
+        public LayerTree.SnapshotId snapshotId() {
+            return new LayerTree.SnapshotId((String) require("snapshotId"));
+        }
+        /**
+         * The maximum number of times to replay the snapshot (1, if not specified).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong minRepeatCount() {
+            Long value = CdpObject.numberAsLong(raw("minRepeatCount"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * The minimum duration (in seconds) to replay the snapshot.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble minDuration() {
+            Double value = CdpObject.numberAsDouble(raw("minDuration"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * The clip rectangle to apply when replaying the snapshot.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.Rect> clipRect() {
+            return Optional.ofNullable(raw("clipRect") == null ? null : DOM.Rect.fromMap(java.util.Objects.requireNonNull(objectMap(raw("clipRect")))));
+        }
+        /**
+         * The id of the layer snapshot.
+         * @param snapshotId field value
+         * @return this model
+         */
+        public ProfileSnapshotRequest snapshotId(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+            return this;
+        }
+        /**
+         * The maximum number of times to replay the snapshot (1, if not specified).
+         * @param minRepeatCount field value; empty omits the value
+         * @return this model
+         */
+        public ProfileSnapshotRequest minRepeatCount(OptionalLong minRepeatCount) {
+            set("minRepeatCount", minRepeatCount.isPresent() ? minRepeatCount.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The maximum number of times to replay the snapshot (1, if not specified).
+         * @param minRepeatCount field value; null removes the value
+         * @return this model
+         */
+        public ProfileSnapshotRequest minRepeatCount(Long minRepeatCount) {
+            set("minRepeatCount", minRepeatCount);
+            return this;
+        }
+        /**
+         * The minimum duration (in seconds) to replay the snapshot.
+         * @param minDuration field value; empty omits the value
+         * @return this model
+         */
+        public ProfileSnapshotRequest minDuration(OptionalDouble minDuration) {
+            set("minDuration", minDuration.isPresent() ? minDuration.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The minimum duration (in seconds) to replay the snapshot.
+         * @param minDuration field value; null removes the value
+         * @return this model
+         */
+        public ProfileSnapshotRequest minDuration(Double minDuration) {
+            set("minDuration", minDuration);
+            return this;
+        }
+        /**
+         * The clip rectangle to apply when replaying the snapshot.
+         * @param clipRect field value; empty omits the value
+         * @return this model
+         */
+        public ProfileSnapshotRequest clipRect(Optional<DOM.Rect> clipRect) {
+            set("clipRect", clipRect.orElse(null));
+            return this;
+        }
+        /**
+         * The clip rectangle to apply when replaying the snapshot.
+         * @param clipRect field value; null removes the value
+         * @return this model
+         */
+        public ProfileSnapshotRequest clipRect(DOM.Rect clipRect) {
+            set("clipRect", clipRect);
+            return this;
+        }
+    }
+    /**
+     * Releases layer snapshot captured by the back-end.
+     */
+    public static final class ReleaseSnapshotRequest extends CdpObject {
+        public ReleaseSnapshotRequest() {}
+        /**
+         * Releases layer snapshot captured by the back-end.
+         * @param snapshotId protocol value
+         */
+        public ReleaseSnapshotRequest(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+        }
+        public static ReleaseSnapshotRequest fromMap(Map<String, Object> values) {
+            ReleaseSnapshotRequest instance_ = new ReleaseSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The id of the layer snapshot.
+         * @return the protocol field value
+         */
+        public LayerTree.SnapshotId snapshotId() {
+            return new LayerTree.SnapshotId((String) require("snapshotId"));
+        }
+        /**
+         * The id of the layer snapshot.
+         * @param snapshotId field value
+         * @return this model
+         */
+        public ReleaseSnapshotRequest snapshotId(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+            return this;
+        }
+    }
+    /**
+     * Replays the layer snapshot and returns the resulting bitmap.
+     */
+    public static final class ReplaySnapshotRequest extends CdpObject {
+        public ReplaySnapshotRequest() {}
+        /**
+         * Replays the layer snapshot and returns the resulting bitmap.
+         * @param snapshotId protocol value
+         */
+        public ReplaySnapshotRequest(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+        }
+        public static ReplaySnapshotRequest fromMap(Map<String, Object> values) {
+            ReplaySnapshotRequest instance_ = new ReplaySnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The id of the layer snapshot.
+         * @return the protocol field value
+         */
+        public LayerTree.SnapshotId snapshotId() {
+            return new LayerTree.SnapshotId((String) require("snapshotId"));
+        }
+        /**
+         * The first step to replay from (replay from the very start if not specified).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong fromStep() {
+            Long value = CdpObject.numberAsLong(raw("fromStep"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * The last step to replay to (replay till the end if not specified).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong toStep() {
+            Long value = CdpObject.numberAsLong(raw("toStep"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * The scale to apply while replaying (defaults to 1).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble scale() {
+            Double value = CdpObject.numberAsDouble(raw("scale"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * The id of the layer snapshot.
+         * @param snapshotId field value
+         * @return this model
+         */
+        public ReplaySnapshotRequest snapshotId(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+            return this;
+        }
+        /**
+         * The first step to replay from (replay from the very start if not specified).
+         * @param fromStep field value; empty omits the value
+         * @return this model
+         */
+        public ReplaySnapshotRequest fromStep(OptionalLong fromStep) {
+            set("fromStep", fromStep.isPresent() ? fromStep.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The first step to replay from (replay from the very start if not specified).
+         * @param fromStep field value; null removes the value
+         * @return this model
+         */
+        public ReplaySnapshotRequest fromStep(Long fromStep) {
+            set("fromStep", fromStep);
+            return this;
+        }
+        /**
+         * The last step to replay to (replay till the end if not specified).
+         * @param toStep field value; empty omits the value
+         * @return this model
+         */
+        public ReplaySnapshotRequest toStep(OptionalLong toStep) {
+            set("toStep", toStep.isPresent() ? toStep.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The last step to replay to (replay till the end if not specified).
+         * @param toStep field value; null removes the value
+         * @return this model
+         */
+        public ReplaySnapshotRequest toStep(Long toStep) {
+            set("toStep", toStep);
+            return this;
+        }
+        /**
+         * The scale to apply while replaying (defaults to 1).
+         * @param scale field value; empty omits the value
+         * @return this model
+         */
+        public ReplaySnapshotRequest scale(OptionalDouble scale) {
+            set("scale", scale.isPresent() ? scale.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The scale to apply while replaying (defaults to 1).
+         * @param scale field value; null removes the value
+         * @return this model
+         */
+        public ReplaySnapshotRequest scale(Double scale) {
+            set("scale", scale);
+            return this;
+        }
+    }
+    /**
+     * Replays the layer snapshot and returns canvas log.
+     */
+    public static final class SnapshotCommandLogRequest extends CdpObject {
+        public SnapshotCommandLogRequest() {}
+        /**
+         * Replays the layer snapshot and returns canvas log.
+         * @param snapshotId protocol value
+         */
+        public SnapshotCommandLogRequest(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+        }
+        public static SnapshotCommandLogRequest fromMap(Map<String, Object> values) {
+            SnapshotCommandLogRequest instance_ = new SnapshotCommandLogRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The id of the layer snapshot.
+         * @return the protocol field value
+         */
+        public LayerTree.SnapshotId snapshotId() {
+            return new LayerTree.SnapshotId((String) require("snapshotId"));
+        }
+        /**
+         * The id of the layer snapshot.
+         * @param snapshotId field value
+         * @return this model
+         */
+        public SnapshotCommandLogRequest snapshotId(LayerTree.SnapshotId snapshotId) {
+            set("snapshotId", snapshotId);
+            return this;
+        }
+    }
+    /**
+     * Provides the reasons why the given layer was composited.
+     */
     public static final class CompositingReasonsResult extends CdpObject {
         public CompositingReasonsResult() {}
         private CompositingReasonsResult(Map<String, Object> values) { super(values); }
@@ -746,6 +1139,14 @@ public final class LayerTree {
             return client.call("LayerTree.compositingReasons", params, result_ -> new CompositingReasonsResult(result_));
         }
         /**
+         * Provides the reasons why the given layer was composited.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CompositingReasonsResult> compositingReasons(CompositingReasonsRequest request) {
+            return client.call("LayerTree.compositingReasons", request == null ? null : request.toMap(), result_ -> new CompositingReasonsResult(result_));
+        }
+        /**
          * Disables compositing tree inspection.
          * @return a stage completing when the command completes
          */
@@ -770,6 +1171,14 @@ public final class LayerTree {
             return client.call("LayerTree.loadSnapshot", params, result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
         }
         /**
+         * Returns the snapshot identifier.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<LayerTree.SnapshotId> loadSnapshot(LoadSnapshotRequest request) {
+            return client.call("LayerTree.loadSnapshot", request == null ? null : request.toMap(), result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
+        }
+        /**
          * Returns the layer snapshot identifier.
          * @param layerId protocol value
          * @return a stage completing with the command result
@@ -778,6 +1187,14 @@ public final class LayerTree {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("layerId", CdpObject.json(layerId));
             return client.call("LayerTree.makeSnapshot", params, result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
+        }
+        /**
+         * Returns the layer snapshot identifier.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<LayerTree.SnapshotId> makeSnapshot(MakeSnapshotRequest request) {
+            return client.call("LayerTree.makeSnapshot", request == null ? null : request.toMap(), result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
         }
         /**
          * Invokes LayerTree.profileSnapshot.
@@ -804,6 +1221,14 @@ public final class LayerTree {
             return profileSnapshot(snapshotId, OptionalLong.empty(), OptionalDouble.empty(), Optional.empty());
         }
         /**
+         * Invokes LayerTree.profileSnapshot with a request object.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<java.util.List<Double>>> profileSnapshot(ProfileSnapshotRequest request) {
+            return client.call("LayerTree.profileSnapshot", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("timings")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+        }
+        /**
          * Releases layer snapshot captured by the back-end.
          * @param snapshotId protocol value
          * @return a stage completing when the command completes
@@ -812,6 +1237,14 @@ public final class LayerTree {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("snapshotId", CdpObject.json(snapshotId));
             return client.call("LayerTree.releaseSnapshot", params, result_ -> null);
+        }
+        /**
+         * Releases layer snapshot captured by the back-end.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> releaseSnapshot(ReleaseSnapshotRequest request) {
+            return client.call("LayerTree.releaseSnapshot", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Replays the layer snapshot and returns the resulting bitmap.
@@ -838,6 +1271,14 @@ public final class LayerTree {
             return replaySnapshot(snapshotId, OptionalLong.empty(), OptionalLong.empty(), OptionalDouble.empty());
         }
         /**
+         * Replays the layer snapshot and returns the resulting bitmap.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> replaySnapshot(ReplaySnapshotRequest request) {
+            return client.call("LayerTree.replaySnapshot", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("dataURL")));
+        }
+        /**
          * Replays the layer snapshot and returns canvas log.
          * @param snapshotId protocol value
          * @return a stage completing with the command result
@@ -846,6 +1287,14 @@ public final class LayerTree {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("snapshotId", CdpObject.json(snapshotId));
             return client.call("LayerTree.snapshotCommandLog", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("commandLog")), element0 -> java.util.Objects.requireNonNull(CdpObject.objectMap(element0))));
+        }
+        /**
+         * Replays the layer snapshot and returns canvas log.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<java.util.Map<String, Object>>> snapshotCommandLog(SnapshotCommandLogRequest request) {
+            return client.call("LayerTree.snapshotCommandLog", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("commandLog")), element0 -> java.util.Objects.requireNonNull(CdpObject.objectMap(element0))));
         }
         /**
          * Subscribes to LayerTree.layerPainted.

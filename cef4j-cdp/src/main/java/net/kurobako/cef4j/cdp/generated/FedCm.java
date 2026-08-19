@@ -280,6 +280,275 @@ public final class FedCm {
         }
     }
     /**
+     * Request parameters for FedCm.enable.
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Allows callers to disable the promise rejection delay that would normally happen, if this is unimportant to what&#x27;s being tested. (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> disableRejectionDelay() {
+            return Optional.ofNullable((Boolean) raw("disableRejectionDelay"));
+        }
+        /**
+         * Allows callers to disable the promise rejection delay that would normally happen, if this is unimportant to what&#x27;s being tested. (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
+         * @param disableRejectionDelay field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest disableRejectionDelay(Optional<Boolean> disableRejectionDelay) {
+            set("disableRejectionDelay", disableRejectionDelay.orElse(null));
+            return this;
+        }
+        /**
+         * Allows callers to disable the promise rejection delay that would normally happen, if this is unimportant to what&#x27;s being tested. (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
+         * @param disableRejectionDelay field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest disableRejectionDelay(Boolean disableRejectionDelay) {
+            set("disableRejectionDelay", disableRejectionDelay);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for FedCm.selectAccount.
+     */
+    public static final class SelectAccountRequest extends CdpObject {
+        public SelectAccountRequest() {}
+        /**
+         * Creates a new SelectAccountRequest with all required parameters.
+         * @param dialogId protocol value
+         * @param accountIndex protocol value
+         */
+        public SelectAccountRequest(String dialogId, long accountIndex) {
+            set("dialogId", dialogId);
+            set("accountIndex", accountIndex);
+        }
+        public static SelectAccountRequest fromMap(Map<String, Object> values) {
+            SelectAccountRequest instance_ = new SelectAccountRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the dialogId field.
+         * @return the protocol field value
+         */
+        public String dialogId() {
+            return (String) require("dialogId");
+        }
+        /**
+         * Returns the accountIndex field.
+         * @return the protocol field value
+         */
+        public long accountIndex() {
+            return ((Number) require("accountIndex")).longValue();
+        }
+        /**
+         * Sets the dialogId field.
+         * @param dialogId field value
+         * @return this model
+         */
+        public SelectAccountRequest dialogId(String dialogId) {
+            set("dialogId", dialogId);
+            return this;
+        }
+        /**
+         * Sets the accountIndex field.
+         * @param accountIndex field value
+         * @return this model
+         */
+        public SelectAccountRequest accountIndex(long accountIndex) {
+            set("accountIndex", accountIndex);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for FedCm.clickDialogButton.
+     */
+    public static final class ClickDialogButtonRequest extends CdpObject {
+        public ClickDialogButtonRequest() {}
+        /**
+         * Creates a new ClickDialogButtonRequest with all required parameters.
+         * @param dialogId protocol value
+         * @param dialogButton protocol value
+         */
+        public ClickDialogButtonRequest(String dialogId, FedCm.DialogButton dialogButton) {
+            set("dialogId", dialogId);
+            set("dialogButton", dialogButton);
+        }
+        public static ClickDialogButtonRequest fromMap(Map<String, Object> values) {
+            ClickDialogButtonRequest instance_ = new ClickDialogButtonRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the dialogId field.
+         * @return the protocol field value
+         */
+        public String dialogId() {
+            return (String) require("dialogId");
+        }
+        /**
+         * Returns the dialogButton field.
+         * @return the protocol field value
+         */
+        public FedCm.DialogButton dialogButton() {
+            return FedCm.DialogButton.of((String) require("dialogButton"));
+        }
+        /**
+         * Sets the dialogId field.
+         * @param dialogId field value
+         * @return this model
+         */
+        public ClickDialogButtonRequest dialogId(String dialogId) {
+            set("dialogId", dialogId);
+            return this;
+        }
+        /**
+         * Sets the dialogButton field.
+         * @param dialogButton field value
+         * @return this model
+         */
+        public ClickDialogButtonRequest dialogButton(FedCm.DialogButton dialogButton) {
+            set("dialogButton", dialogButton);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for FedCm.openUrl.
+     */
+    public static final class OpenUrlRequest extends CdpObject {
+        public OpenUrlRequest() {}
+        /**
+         * Creates a new OpenUrlRequest with all required parameters.
+         * @param dialogId protocol value
+         * @param accountIndex protocol value
+         * @param accountUrlType protocol value
+         */
+        public OpenUrlRequest(String dialogId, long accountIndex, FedCm.AccountUrlType accountUrlType) {
+            set("dialogId", dialogId);
+            set("accountIndex", accountIndex);
+            set("accountUrlType", accountUrlType);
+        }
+        public static OpenUrlRequest fromMap(Map<String, Object> values) {
+            OpenUrlRequest instance_ = new OpenUrlRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the dialogId field.
+         * @return the protocol field value
+         */
+        public String dialogId() {
+            return (String) require("dialogId");
+        }
+        /**
+         * Returns the accountIndex field.
+         * @return the protocol field value
+         */
+        public long accountIndex() {
+            return ((Number) require("accountIndex")).longValue();
+        }
+        /**
+         * Returns the accountUrlType field.
+         * @return the protocol field value
+         */
+        public FedCm.AccountUrlType accountUrlType() {
+            return FedCm.AccountUrlType.of((String) require("accountUrlType"));
+        }
+        /**
+         * Sets the dialogId field.
+         * @param dialogId field value
+         * @return this model
+         */
+        public OpenUrlRequest dialogId(String dialogId) {
+            set("dialogId", dialogId);
+            return this;
+        }
+        /**
+         * Sets the accountIndex field.
+         * @param accountIndex field value
+         * @return this model
+         */
+        public OpenUrlRequest accountIndex(long accountIndex) {
+            set("accountIndex", accountIndex);
+            return this;
+        }
+        /**
+         * Sets the accountUrlType field.
+         * @param accountUrlType field value
+         * @return this model
+         */
+        public OpenUrlRequest accountUrlType(FedCm.AccountUrlType accountUrlType) {
+            set("accountUrlType", accountUrlType);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for FedCm.dismissDialog.
+     */
+    public static final class DismissDialogRequest extends CdpObject {
+        public DismissDialogRequest() {}
+        /**
+         * Creates a new DismissDialogRequest with all required parameters.
+         * @param dialogId protocol value
+         */
+        public DismissDialogRequest(String dialogId) {
+            set("dialogId", dialogId);
+        }
+        public static DismissDialogRequest fromMap(Map<String, Object> values) {
+            DismissDialogRequest instance_ = new DismissDialogRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the dialogId field.
+         * @return the protocol field value
+         */
+        public String dialogId() {
+            return (String) require("dialogId");
+        }
+        /**
+         * Returns the triggerCooldown field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> triggerCooldown() {
+            return Optional.ofNullable((Boolean) raw("triggerCooldown"));
+        }
+        /**
+         * Sets the dialogId field.
+         * @param dialogId field value
+         * @return this model
+         */
+        public DismissDialogRequest dialogId(String dialogId) {
+            set("dialogId", dialogId);
+            return this;
+        }
+        /**
+         * Sets the triggerCooldown field.
+         * @param triggerCooldown field value; empty omits the value
+         * @return this model
+         */
+        public DismissDialogRequest triggerCooldown(Optional<Boolean> triggerCooldown) {
+            set("triggerCooldown", triggerCooldown.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the triggerCooldown field.
+         * @param triggerCooldown field value; null removes the value
+         * @return this model
+         */
+        public DismissDialogRequest triggerCooldown(Boolean triggerCooldown) {
+            set("triggerCooldown", triggerCooldown);
+            return this;
+        }
+    }
+    /**
      * Payload of the FedCm.dialogShown event.
      */
     public static final class DialogShownEvent extends CdpObject {
@@ -425,6 +694,14 @@ public final class FedCm {
             return enable(Optional.empty());
         }
         /**
+         * Invokes FedCm.enable with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("FedCm.enable", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes FedCm.disable.
          * @return a stage completing when the command completes
          */
@@ -444,6 +721,14 @@ public final class FedCm {
             return client.call("FedCm.selectAccount", params, result_ -> null);
         }
         /**
+         * Invokes FedCm.selectAccount with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> selectAccount(SelectAccountRequest request) {
+            return client.call("FedCm.selectAccount", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes FedCm.clickDialogButton.
          * @param dialogId protocol value
          * @param dialogButton protocol value
@@ -454,6 +739,14 @@ public final class FedCm {
             params.put("dialogId", CdpObject.json(dialogId));
             params.put("dialogButton", CdpObject.json(dialogButton));
             return client.call("FedCm.clickDialogButton", params, result_ -> null);
+        }
+        /**
+         * Invokes FedCm.clickDialogButton with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clickDialogButton(ClickDialogButtonRequest request) {
+            return client.call("FedCm.clickDialogButton", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes FedCm.openUrl.
@@ -468,6 +761,14 @@ public final class FedCm {
             params.put("accountIndex", CdpObject.json(accountIndex));
             params.put("accountUrlType", CdpObject.json(accountUrlType));
             return client.call("FedCm.openUrl", params, result_ -> null);
+        }
+        /**
+         * Invokes FedCm.openUrl with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> openUrl(OpenUrlRequest request) {
+            return client.call("FedCm.openUrl", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes FedCm.dismissDialog.
@@ -488,6 +789,14 @@ public final class FedCm {
          */
         public CompletionStage<Void> dismissDialog(String dialogId) {
             return dismissDialog(dialogId, Optional.empty());
+        }
+        /**
+         * Invokes FedCm.dismissDialog with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> dismissDialog(DismissDialogRequest request) {
+            return client.call("FedCm.dismissDialog", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Resets the cooldown time, if any, to allow the next FedCM call to show a dialog even if one was recently dismissed by the user.

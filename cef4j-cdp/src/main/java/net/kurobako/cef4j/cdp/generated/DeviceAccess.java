@@ -97,6 +97,92 @@ public final class DeviceAccess {
         }
     }
     /**
+     * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
+     */
+    public static final class SelectPromptRequest extends CdpObject {
+        public SelectPromptRequest() {}
+        /**
+         * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
+         * @param id protocol value
+         * @param deviceId protocol value
+         */
+        public SelectPromptRequest(DeviceAccess.RequestId id, DeviceAccess.DeviceId deviceId) {
+            set("id", id);
+            set("deviceId", deviceId);
+        }
+        public static SelectPromptRequest fromMap(Map<String, Object> values) {
+            SelectPromptRequest instance_ = new SelectPromptRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the id field.
+         * @return the protocol field value
+         */
+        public DeviceAccess.RequestId id() {
+            return new DeviceAccess.RequestId((String) require("id"));
+        }
+        /**
+         * Returns the deviceId field.
+         * @return the protocol field value
+         */
+        public DeviceAccess.DeviceId deviceId() {
+            return new DeviceAccess.DeviceId((String) require("deviceId"));
+        }
+        /**
+         * Sets the id field.
+         * @param id field value
+         * @return this model
+         */
+        public SelectPromptRequest id(DeviceAccess.RequestId id) {
+            set("id", id);
+            return this;
+        }
+        /**
+         * Sets the deviceId field.
+         * @param deviceId field value
+         * @return this model
+         */
+        public SelectPromptRequest deviceId(DeviceAccess.DeviceId deviceId) {
+            set("deviceId", deviceId);
+            return this;
+        }
+    }
+    /**
+     * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
+     */
+    public static final class CancelPromptRequest extends CdpObject {
+        public CancelPromptRequest() {}
+        /**
+         * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
+         * @param id protocol value
+         */
+        public CancelPromptRequest(DeviceAccess.RequestId id) {
+            set("id", id);
+        }
+        public static CancelPromptRequest fromMap(Map<String, Object> values) {
+            CancelPromptRequest instance_ = new CancelPromptRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the id field.
+         * @return the protocol field value
+         */
+        public DeviceAccess.RequestId id() {
+            return new DeviceAccess.RequestId((String) require("id"));
+        }
+        /**
+         * Sets the id field.
+         * @param id field value
+         * @return this model
+         */
+        public CancelPromptRequest id(DeviceAccess.RequestId id) {
+            set("id", id);
+            return this;
+        }
+    }
+    /**
      * A device request opened a user prompt to select a device. Respond with the selectPrompt or cancelPrompt command.
      */
     public static final class DeviceRequestPromptedEvent extends CdpObject {
@@ -168,6 +254,14 @@ public final class DeviceAccess {
             return client.call("DeviceAccess.selectPrompt", params, result_ -> null);
         }
         /**
+         * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> selectPrompt(SelectPromptRequest request) {
+            return client.call("DeviceAccess.selectPrompt", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
          * @param id protocol value
          * @return a stage completing when the command completes
@@ -176,6 +270,14 @@ public final class DeviceAccess {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             return client.call("DeviceAccess.cancelPrompt", params, result_ -> null);
+        }
+        /**
+         * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> cancelPrompt(CancelPromptRequest request) {
+            return client.call("DeviceAccess.cancelPrompt", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * A device request opened a user prompt to select a device. Respond with the selectPrompt or cancelPrompt command.

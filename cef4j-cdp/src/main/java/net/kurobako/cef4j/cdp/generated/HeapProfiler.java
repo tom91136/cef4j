@@ -214,6 +214,522 @@ public final class HeapProfiler {
         }
     }
     /**
+     * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+     */
+    public static final class AddInspectedHeapObjectRequest extends CdpObject {
+        public AddInspectedHeapObjectRequest() {}
+        /**
+         * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+         * @param heapObjectId protocol value
+         */
+        public AddInspectedHeapObjectRequest(HeapProfiler.HeapSnapshotObjectId heapObjectId) {
+            set("heapObjectId", heapObjectId);
+        }
+        public static AddInspectedHeapObjectRequest fromMap(Map<String, Object> values) {
+            AddInspectedHeapObjectRequest instance_ = new AddInspectedHeapObjectRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Heap snapshot object id to be accessible by means of $x command line API.
+         * @return the protocol field value
+         */
+        public HeapProfiler.HeapSnapshotObjectId heapObjectId() {
+            return new HeapProfiler.HeapSnapshotObjectId((String) require("heapObjectId"));
+        }
+        /**
+         * Heap snapshot object id to be accessible by means of $x command line API.
+         * @param heapObjectId field value
+         * @return this model
+         */
+        public AddInspectedHeapObjectRequest heapObjectId(HeapProfiler.HeapSnapshotObjectId heapObjectId) {
+            set("heapObjectId", heapObjectId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for HeapProfiler.getHeapObjectId.
+     */
+    public static final class GetHeapObjectIdRequest extends CdpObject {
+        public GetHeapObjectIdRequest() {}
+        /**
+         * Creates a new GetHeapObjectIdRequest with all required parameters.
+         * @param objectId protocol value
+         */
+        public GetHeapObjectIdRequest(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+        }
+        public static GetHeapObjectIdRequest fromMap(Map<String, Object> values) {
+            GetHeapObjectIdRequest instance_ = new GetHeapObjectIdRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the object to get heap object id for.
+         * @return the protocol field value
+         */
+        public Runtime.RemoteObjectId objectId() {
+            return new Runtime.RemoteObjectId((String) require("objectId"));
+        }
+        /**
+         * Identifier of the object to get heap object id for.
+         * @param objectId field value
+         * @return this model
+         */
+        public GetHeapObjectIdRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for HeapProfiler.getObjectByHeapObjectId.
+     */
+    public static final class GetObjectByHeapObjectIdRequest extends CdpObject {
+        public GetObjectByHeapObjectIdRequest() {}
+        /**
+         * Creates a new GetObjectByHeapObjectIdRequest with all required parameters.
+         * @param objectId protocol value
+         */
+        public GetObjectByHeapObjectIdRequest(HeapProfiler.HeapSnapshotObjectId objectId) {
+            set("objectId", objectId);
+        }
+        public static GetObjectByHeapObjectIdRequest fromMap(Map<String, Object> values) {
+            GetObjectByHeapObjectIdRequest instance_ = new GetObjectByHeapObjectIdRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the objectId field.
+         * @return the protocol field value
+         */
+        public HeapProfiler.HeapSnapshotObjectId objectId() {
+            return new HeapProfiler.HeapSnapshotObjectId((String) require("objectId"));
+        }
+        /**
+         * Symbolic group name that can be used to release multiple objects.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> objectGroup() {
+            return Optional.ofNullable((String) raw("objectGroup"));
+        }
+        /**
+         * Sets the objectId field.
+         * @param objectId field value
+         * @return this model
+         */
+        public GetObjectByHeapObjectIdRequest objectId(HeapProfiler.HeapSnapshotObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+        /**
+         * Symbolic group name that can be used to release multiple objects.
+         * @param objectGroup field value; empty omits the value
+         * @return this model
+         */
+        public GetObjectByHeapObjectIdRequest objectGroup(Optional<String> objectGroup) {
+            set("objectGroup", objectGroup.orElse(null));
+            return this;
+        }
+        /**
+         * Symbolic group name that can be used to release multiple objects.
+         * @param objectGroup field value; null removes the value
+         * @return this model
+         */
+        public GetObjectByHeapObjectIdRequest objectGroup(String objectGroup) {
+            set("objectGroup", objectGroup);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for HeapProfiler.startSampling.
+     */
+    public static final class StartSamplingRequest extends CdpObject {
+        public StartSamplingRequest() {}
+        public static StartSamplingRequest fromMap(Map<String, Object> values) {
+            StartSamplingRequest instance_ = new StartSamplingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble samplingInterval() {
+            Double value = CdpObject.numberAsDouble(raw("samplingInterval"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Maximum stack depth. The default value is 128.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble stackDepth() {
+            Double value = CdpObject.numberAsDouble(raw("stackDepth"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by major GC, which will show which functions cause large temporary memory usage or long GC pauses.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeObjectsCollectedByMajorGC() {
+            return Optional.ofNullable((Boolean) raw("includeObjectsCollectedByMajorGC"));
+        }
+        /**
+         * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by minor GC, which is useful when tuning a latency-sensitive application for minimal GC activity.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeObjectsCollectedByMinorGC() {
+            return Optional.ofNullable((Boolean) raw("includeObjectsCollectedByMinorGC"));
+        }
+        /**
+         * Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
+         * @param samplingInterval field value; empty omits the value
+         * @return this model
+         */
+        public StartSamplingRequest samplingInterval(OptionalDouble samplingInterval) {
+            set("samplingInterval", samplingInterval.isPresent() ? samplingInterval.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
+         * @param samplingInterval field value; null removes the value
+         * @return this model
+         */
+        public StartSamplingRequest samplingInterval(Double samplingInterval) {
+            set("samplingInterval", samplingInterval);
+            return this;
+        }
+        /**
+         * Maximum stack depth. The default value is 128.
+         * @param stackDepth field value; empty omits the value
+         * @return this model
+         */
+        public StartSamplingRequest stackDepth(OptionalDouble stackDepth) {
+            set("stackDepth", stackDepth.isPresent() ? stackDepth.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Maximum stack depth. The default value is 128.
+         * @param stackDepth field value; null removes the value
+         * @return this model
+         */
+        public StartSamplingRequest stackDepth(Double stackDepth) {
+            set("stackDepth", stackDepth);
+            return this;
+        }
+        /**
+         * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by major GC, which will show which functions cause large temporary memory usage or long GC pauses.
+         * @param includeObjectsCollectedByMajorGC field value; empty omits the value
+         * @return this model
+         */
+        public StartSamplingRequest includeObjectsCollectedByMajorGC(Optional<Boolean> includeObjectsCollectedByMajorGC) {
+            set("includeObjectsCollectedByMajorGC", includeObjectsCollectedByMajorGC.orElse(null));
+            return this;
+        }
+        /**
+         * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by major GC, which will show which functions cause large temporary memory usage or long GC pauses.
+         * @param includeObjectsCollectedByMajorGC field value; null removes the value
+         * @return this model
+         */
+        public StartSamplingRequest includeObjectsCollectedByMajorGC(Boolean includeObjectsCollectedByMajorGC) {
+            set("includeObjectsCollectedByMajorGC", includeObjectsCollectedByMajorGC);
+            return this;
+        }
+        /**
+         * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by minor GC, which is useful when tuning a latency-sensitive application for minimal GC activity.
+         * @param includeObjectsCollectedByMinorGC field value; empty omits the value
+         * @return this model
+         */
+        public StartSamplingRequest includeObjectsCollectedByMinorGC(Optional<Boolean> includeObjectsCollectedByMinorGC) {
+            set("includeObjectsCollectedByMinorGC", includeObjectsCollectedByMinorGC.orElse(null));
+            return this;
+        }
+        /**
+         * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by minor GC, which is useful when tuning a latency-sensitive application for minimal GC activity.
+         * @param includeObjectsCollectedByMinorGC field value; null removes the value
+         * @return this model
+         */
+        public StartSamplingRequest includeObjectsCollectedByMinorGC(Boolean includeObjectsCollectedByMinorGC) {
+            set("includeObjectsCollectedByMinorGC", includeObjectsCollectedByMinorGC);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for HeapProfiler.startTrackingHeapObjects.
+     */
+    public static final class StartTrackingHeapObjectsRequest extends CdpObject {
+        public StartTrackingHeapObjectsRequest() {}
+        public static StartTrackingHeapObjectsRequest fromMap(Map<String, Object> values) {
+            StartTrackingHeapObjectsRequest instance_ = new StartTrackingHeapObjectsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the trackAllocations field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> trackAllocations() {
+            return Optional.ofNullable((Boolean) raw("trackAllocations"));
+        }
+        /**
+         * Sets the trackAllocations field.
+         * @param trackAllocations field value; empty omits the value
+         * @return this model
+         */
+        public StartTrackingHeapObjectsRequest trackAllocations(Optional<Boolean> trackAllocations) {
+            set("trackAllocations", trackAllocations.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the trackAllocations field.
+         * @param trackAllocations field value; null removes the value
+         * @return this model
+         */
+        public StartTrackingHeapObjectsRequest trackAllocations(Boolean trackAllocations) {
+            set("trackAllocations", trackAllocations);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for HeapProfiler.stopTrackingHeapObjects.
+     */
+    public static final class StopTrackingHeapObjectsRequest extends CdpObject {
+        public StopTrackingHeapObjectsRequest() {}
+        public static StopTrackingHeapObjectsRequest fromMap(Map<String, Object> values) {
+            StopTrackingHeapObjectsRequest instance_ = new StopTrackingHeapObjectsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken when the tracking is stopped.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> reportProgress() {
+            return Optional.ofNullable((Boolean) raw("reportProgress"));
+        }
+        /**
+         * Deprecated in favor of {@code exposeInternals}.
+         * @return the protocol field value, empty when absent
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Optional<Boolean> treatGlobalObjectsAsRoots() {
+            return Optional.ofNullable((Boolean) raw("treatGlobalObjectsAsRoots"));
+        }
+        /**
+         * If true, numerical values are included in the snapshot
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> captureNumericValue() {
+            return Optional.ofNullable((Boolean) raw("captureNumericValue"));
+        }
+        /**
+         * If true, exposes internals of the snapshot.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> exposeInternals() {
+            return Optional.ofNullable((Boolean) raw("exposeInternals"));
+        }
+        /**
+         * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken when the tracking is stopped.
+         * @param reportProgress field value; empty omits the value
+         * @return this model
+         */
+        public StopTrackingHeapObjectsRequest reportProgress(Optional<Boolean> reportProgress) {
+            set("reportProgress", reportProgress.orElse(null));
+            return this;
+        }
+        /**
+         * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken when the tracking is stopped.
+         * @param reportProgress field value; null removes the value
+         * @return this model
+         */
+        public StopTrackingHeapObjectsRequest reportProgress(Boolean reportProgress) {
+            set("reportProgress", reportProgress);
+            return this;
+        }
+        /**
+         * Deprecated in favor of {@code exposeInternals}.
+         * @param treatGlobalObjectsAsRoots field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public StopTrackingHeapObjectsRequest treatGlobalObjectsAsRoots(Optional<Boolean> treatGlobalObjectsAsRoots) {
+            set("treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots.orElse(null));
+            return this;
+        }
+        /**
+         * Deprecated in favor of {@code exposeInternals}.
+         * @param treatGlobalObjectsAsRoots field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public StopTrackingHeapObjectsRequest treatGlobalObjectsAsRoots(Boolean treatGlobalObjectsAsRoots) {
+            set("treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+            return this;
+        }
+        /**
+         * If true, numerical values are included in the snapshot
+         * @param captureNumericValue field value; empty omits the value
+         * @return this model
+         */
+        public StopTrackingHeapObjectsRequest captureNumericValue(Optional<Boolean> captureNumericValue) {
+            set("captureNumericValue", captureNumericValue.orElse(null));
+            return this;
+        }
+        /**
+         * If true, numerical values are included in the snapshot
+         * @param captureNumericValue field value; null removes the value
+         * @return this model
+         */
+        public StopTrackingHeapObjectsRequest captureNumericValue(Boolean captureNumericValue) {
+            set("captureNumericValue", captureNumericValue);
+            return this;
+        }
+        /**
+         * If true, exposes internals of the snapshot.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param exposeInternals field value; empty omits the value
+         * @return this model
+         */
+        public StopTrackingHeapObjectsRequest exposeInternals(Optional<Boolean> exposeInternals) {
+            set("exposeInternals", exposeInternals.orElse(null));
+            return this;
+        }
+        /**
+         * If true, exposes internals of the snapshot.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param exposeInternals field value; null removes the value
+         * @return this model
+         */
+        public StopTrackingHeapObjectsRequest exposeInternals(Boolean exposeInternals) {
+            set("exposeInternals", exposeInternals);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for HeapProfiler.takeHeapSnapshot.
+     */
+    public static final class TakeHeapSnapshotRequest extends CdpObject {
+        public TakeHeapSnapshotRequest() {}
+        public static TakeHeapSnapshotRequest fromMap(Map<String, Object> values) {
+            TakeHeapSnapshotRequest instance_ = new TakeHeapSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> reportProgress() {
+            return Optional.ofNullable((Boolean) raw("reportProgress"));
+        }
+        /**
+         * If true, a raw snapshot without artificial roots will be generated. Deprecated in favor of {@code exposeInternals}.
+         * @return the protocol field value, empty when absent
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Optional<Boolean> treatGlobalObjectsAsRoots() {
+            return Optional.ofNullable((Boolean) raw("treatGlobalObjectsAsRoots"));
+        }
+        /**
+         * If true, numerical values are included in the snapshot
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> captureNumericValue() {
+            return Optional.ofNullable((Boolean) raw("captureNumericValue"));
+        }
+        /**
+         * If true, exposes internals of the snapshot.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> exposeInternals() {
+            return Optional.ofNullable((Boolean) raw("exposeInternals"));
+        }
+        /**
+         * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken.
+         * @param reportProgress field value; empty omits the value
+         * @return this model
+         */
+        public TakeHeapSnapshotRequest reportProgress(Optional<Boolean> reportProgress) {
+            set("reportProgress", reportProgress.orElse(null));
+            return this;
+        }
+        /**
+         * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken.
+         * @param reportProgress field value; null removes the value
+         * @return this model
+         */
+        public TakeHeapSnapshotRequest reportProgress(Boolean reportProgress) {
+            set("reportProgress", reportProgress);
+            return this;
+        }
+        /**
+         * If true, a raw snapshot without artificial roots will be generated. Deprecated in favor of {@code exposeInternals}.
+         * @param treatGlobalObjectsAsRoots field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public TakeHeapSnapshotRequest treatGlobalObjectsAsRoots(Optional<Boolean> treatGlobalObjectsAsRoots) {
+            set("treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots.orElse(null));
+            return this;
+        }
+        /**
+         * If true, a raw snapshot without artificial roots will be generated. Deprecated in favor of {@code exposeInternals}.
+         * @param treatGlobalObjectsAsRoots field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public TakeHeapSnapshotRequest treatGlobalObjectsAsRoots(Boolean treatGlobalObjectsAsRoots) {
+            set("treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+            return this;
+        }
+        /**
+         * If true, numerical values are included in the snapshot
+         * @param captureNumericValue field value; empty omits the value
+         * @return this model
+         */
+        public TakeHeapSnapshotRequest captureNumericValue(Optional<Boolean> captureNumericValue) {
+            set("captureNumericValue", captureNumericValue.orElse(null));
+            return this;
+        }
+        /**
+         * If true, numerical values are included in the snapshot
+         * @param captureNumericValue field value; null removes the value
+         * @return this model
+         */
+        public TakeHeapSnapshotRequest captureNumericValue(Boolean captureNumericValue) {
+            set("captureNumericValue", captureNumericValue);
+            return this;
+        }
+        /**
+         * If true, exposes internals of the snapshot.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param exposeInternals field value; empty omits the value
+         * @return this model
+         */
+        public TakeHeapSnapshotRequest exposeInternals(Optional<Boolean> exposeInternals) {
+            set("exposeInternals", exposeInternals.orElse(null));
+            return this;
+        }
+        /**
+         * If true, exposes internals of the snapshot.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param exposeInternals field value; null removes the value
+         * @return this model
+         */
+        public TakeHeapSnapshotRequest exposeInternals(Boolean exposeInternals) {
+            set("exposeInternals", exposeInternals);
+            return this;
+        }
+    }
+    /**
      * Payload of the HeapProfiler.addHeapSnapshotChunk event.
      */
     public static final class AddHeapSnapshotChunkEvent extends CdpObject {
@@ -398,6 +914,14 @@ public final class HeapProfiler {
             return client.call("HeapProfiler.addInspectedHeapObject", params, result_ -> null);
         }
         /**
+         * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> addInspectedHeapObject(AddInspectedHeapObjectRequest request) {
+            return client.call("HeapProfiler.addInspectedHeapObject", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes HeapProfiler.collectGarbage.
          * @return a stage completing when the command completes
          */
@@ -429,6 +953,14 @@ public final class HeapProfiler {
             return client.call("HeapProfiler.getHeapObjectId", params, result_ -> new HeapProfiler.HeapSnapshotObjectId((String) java.util.Objects.requireNonNull(result_.get("heapSnapshotObjectId"))));
         }
         /**
+         * Invokes HeapProfiler.getHeapObjectId with a request object.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<HeapProfiler.HeapSnapshotObjectId> getHeapObjectId(GetHeapObjectIdRequest request) {
+            return client.call("HeapProfiler.getHeapObjectId", request == null ? null : request.toMap(), result_ -> new HeapProfiler.HeapSnapshotObjectId((String) java.util.Objects.requireNonNull(result_.get("heapSnapshotObjectId"))));
+        }
+        /**
          * Invokes HeapProfiler.getObjectByHeapObjectId.
          * @param objectId protocol value
          * @param objectGroup protocol value
@@ -447,6 +979,14 @@ public final class HeapProfiler {
          */
         public CompletionStage<Runtime.RemoteObject> getObjectByHeapObjectId(HeapProfiler.HeapSnapshotObjectId objectId) {
             return getObjectByHeapObjectId(objectId, Optional.empty());
+        }
+        /**
+         * Invokes HeapProfiler.getObjectByHeapObjectId with a request object.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Runtime.RemoteObject> getObjectByHeapObjectId(GetObjectByHeapObjectIdRequest request) {
+            return client.call("HeapProfiler.getObjectByHeapObjectId", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("result")))))));
         }
         /**
          * Invokes HeapProfiler.getSamplingProfile.
@@ -479,6 +1019,14 @@ public final class HeapProfiler {
             return startSampling(OptionalDouble.empty(), OptionalDouble.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Invokes HeapProfiler.startSampling with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startSampling(StartSamplingRequest request) {
+            return client.call("HeapProfiler.startSampling", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes HeapProfiler.startTrackingHeapObjects.
          * @param trackAllocations protocol value
          * @return a stage completing when the command completes
@@ -494,6 +1042,14 @@ public final class HeapProfiler {
          */
         public CompletionStage<Void> startTrackingHeapObjects() {
             return startTrackingHeapObjects(Optional.empty());
+        }
+        /**
+         * Invokes HeapProfiler.startTrackingHeapObjects with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startTrackingHeapObjects(StartTrackingHeapObjectsRequest request) {
+            return client.call("HeapProfiler.startTrackingHeapObjects", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes HeapProfiler.stopSampling.
@@ -526,6 +1082,14 @@ public final class HeapProfiler {
             return stopTrackingHeapObjects(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Invokes HeapProfiler.stopTrackingHeapObjects with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> stopTrackingHeapObjects(StopTrackingHeapObjectsRequest request) {
+            return client.call("HeapProfiler.stopTrackingHeapObjects", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes HeapProfiler.takeHeapSnapshot.
          * @param reportProgress protocol value
          * @param treatGlobalObjectsAsRoots protocol value
@@ -547,6 +1111,14 @@ public final class HeapProfiler {
          */
         public CompletionStage<Void> takeHeapSnapshot() {
             return takeHeapSnapshot(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Invokes HeapProfiler.takeHeapSnapshot with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> takeHeapSnapshot(TakeHeapSnapshotRequest request) {
+            return client.call("HeapProfiler.takeHeapSnapshot", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Subscribes to HeapProfiler.addHeapSnapshotChunk.

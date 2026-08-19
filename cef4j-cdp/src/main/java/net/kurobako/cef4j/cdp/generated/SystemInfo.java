@@ -573,6 +573,40 @@ public final class SystemInfo {
         }
     }
     /**
+     * Returns information about the feature state.
+     */
+    public static final class GetFeatureStateRequest extends CdpObject {
+        public GetFeatureStateRequest() {}
+        /**
+         * Returns information about the feature state.
+         * @param featureState protocol value
+         */
+        public GetFeatureStateRequest(String featureState) {
+            set("featureState", featureState);
+        }
+        public static GetFeatureStateRequest fromMap(Map<String, Object> values) {
+            GetFeatureStateRequest instance_ = new GetFeatureStateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the featureState field.
+         * @return the protocol field value
+         */
+        public String featureState() {
+            return (String) require("featureState");
+        }
+        /**
+         * Sets the featureState field.
+         * @param featureState field value
+         * @return this model
+         */
+        public GetFeatureStateRequest featureState(String featureState) {
+            set("featureState", featureState);
+            return this;
+        }
+    }
+    /**
      * Returns information about the system.
      */
     public static final class GetInfoResult extends CdpObject {
@@ -665,6 +699,14 @@ public final class SystemInfo {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("featureState", CdpObject.json(featureState));
             return client.call("SystemInfo.getFeatureState", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("featureEnabled")));
+        }
+        /**
+         * Returns information about the feature state.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Boolean> getFeatureState(GetFeatureStateRequest request) {
+            return client.call("SystemInfo.getFeatureState", request == null ? null : request.toMap(), result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("featureEnabled")));
         }
         /**
          * Returns information about all running processes.

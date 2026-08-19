@@ -4249,6 +4249,3145 @@ public final class Page {
         }
     }
     /**
+     * Deprecated, please use addScriptToEvaluateOnNewDocument instead.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class AddScriptToEvaluateOnLoadRequest extends CdpObject {
+        public AddScriptToEvaluateOnLoadRequest() {}
+        /**
+         * Deprecated, please use addScriptToEvaluateOnNewDocument instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param scriptSource protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public AddScriptToEvaluateOnLoadRequest(String scriptSource) {
+            set("scriptSource", scriptSource);
+        }
+        public static AddScriptToEvaluateOnLoadRequest fromMap(Map<String, Object> values) {
+            AddScriptToEvaluateOnLoadRequest instance_ = new AddScriptToEvaluateOnLoadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the scriptSource field.
+         * @return the protocol field value
+         */
+        public String scriptSource() {
+            return (String) require("scriptSource");
+        }
+        /**
+         * Sets the scriptSource field.
+         * @param scriptSource field value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnLoadRequest scriptSource(String scriptSource) {
+            set("scriptSource", scriptSource);
+            return this;
+        }
+    }
+    /**
+     * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
+     */
+    public static final class AddScriptToEvaluateOnNewDocumentRequest extends CdpObject {
+        public AddScriptToEvaluateOnNewDocumentRequest() {}
+        /**
+         * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
+         * @param source protocol value
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest(String source) {
+            set("source", source);
+        }
+        public static AddScriptToEvaluateOnNewDocumentRequest fromMap(Map<String, Object> values) {
+            AddScriptToEvaluateOnNewDocumentRequest instance_ = new AddScriptToEvaluateOnNewDocumentRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the source field.
+         * @return the protocol field value
+         */
+        public String source() {
+            return (String) require("source");
+        }
+        /**
+         * If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> worldName() {
+            return Optional.ofNullable((String) raw("worldName"));
+        }
+        /**
+         * Specifies whether command line API should be available to the script, defaults to false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeCommandLineAPI() {
+            return Optional.ofNullable((Boolean) raw("includeCommandLineAPI"));
+        }
+        /**
+         * If true, runs the script immediately on existing execution contexts or worlds. Default: false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> runImmediately() {
+            return Optional.ofNullable((Boolean) raw("runImmediately"));
+        }
+        /**
+         * Sets the source field.
+         * @param source field value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest source(String source) {
+            set("source", source);
+            return this;
+        }
+        /**
+         * If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param worldName field value; empty omits the value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest worldName(Optional<String> worldName) {
+            set("worldName", worldName.orElse(null));
+            return this;
+        }
+        /**
+         * If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param worldName field value; null removes the value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest worldName(String worldName) {
+            set("worldName", worldName);
+            return this;
+        }
+        /**
+         * Specifies whether command line API should be available to the script, defaults to false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param includeCommandLineAPI field value; empty omits the value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest includeCommandLineAPI(Optional<Boolean> includeCommandLineAPI) {
+            set("includeCommandLineAPI", includeCommandLineAPI.orElse(null));
+            return this;
+        }
+        /**
+         * Specifies whether command line API should be available to the script, defaults to false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param includeCommandLineAPI field value; null removes the value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest includeCommandLineAPI(Boolean includeCommandLineAPI) {
+            set("includeCommandLineAPI", includeCommandLineAPI);
+            return this;
+        }
+        /**
+         * If true, runs the script immediately on existing execution contexts or worlds. Default: false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param runImmediately field value; empty omits the value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest runImmediately(Optional<Boolean> runImmediately) {
+            set("runImmediately", runImmediately.orElse(null));
+            return this;
+        }
+        /**
+         * If true, runs the script immediately on existing execution contexts or worlds. Default: false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param runImmediately field value; null removes the value
+         * @return this model
+         */
+        public AddScriptToEvaluateOnNewDocumentRequest runImmediately(Boolean runImmediately) {
+            set("runImmediately", runImmediately);
+            return this;
+        }
+    }
+    /**
+     * Capture page screenshot.
+     */
+    public static final class CaptureScreenshotRequest extends CdpObject {
+        public CaptureScreenshotRequest() {}
+        public static CaptureScreenshotRequest fromMap(Map<String, Object> values) {
+            CaptureScreenshotRequest instance_ = new CaptureScreenshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Image compression format (defaults to png).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<CaptureScreenshotFormatValues> format() {
+            return Optional.ofNullable(raw("format") == null ? null : CaptureScreenshotFormatValues.of((String) raw("format")));
+        }
+        /**
+         * Compression quality from range [0..100] (jpeg only).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong quality() {
+            Long value = CdpObject.numberAsLong(raw("quality"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Capture the screenshot of a given region only.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.Viewport> clip() {
+            return Optional.ofNullable(raw("clip") == null ? null : Page.Viewport.fromMap(java.util.Objects.requireNonNull(objectMap(raw("clip")))));
+        }
+        /**
+         * Capture the screenshot from the surface, rather than the view. Defaults to true.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> fromSurface() {
+            return Optional.ofNullable((Boolean) raw("fromSurface"));
+        }
+        /**
+         * Capture the screenshot beyond the viewport. Defaults to false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> captureBeyondViewport() {
+            return Optional.ofNullable((Boolean) raw("captureBeyondViewport"));
+        }
+        /**
+         * Optimize image encoding for speed, not for resulting size (defaults to false)
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> optimizeForSpeed() {
+            return Optional.ofNullable((Boolean) raw("optimizeForSpeed"));
+        }
+        /**
+         * Image compression format (defaults to png).
+         * @param format field value; empty omits the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest format(Optional<CaptureScreenshotFormatValues> format) {
+            set("format", format.orElse(null));
+            return this;
+        }
+        /**
+         * Image compression format (defaults to png).
+         * @param format field value; null removes the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest format(CaptureScreenshotFormatValues format) {
+            set("format", format);
+            return this;
+        }
+        /**
+         * Compression quality from range [0..100] (jpeg only).
+         * @param quality field value; empty omits the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest quality(OptionalLong quality) {
+            set("quality", quality.isPresent() ? quality.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Compression quality from range [0..100] (jpeg only).
+         * @param quality field value; null removes the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest quality(Long quality) {
+            set("quality", quality);
+            return this;
+        }
+        /**
+         * Capture the screenshot of a given region only.
+         * @param clip field value; empty omits the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest clip(Optional<Page.Viewport> clip) {
+            set("clip", clip.orElse(null));
+            return this;
+        }
+        /**
+         * Capture the screenshot of a given region only.
+         * @param clip field value; null removes the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest clip(Page.Viewport clip) {
+            set("clip", clip);
+            return this;
+        }
+        /**
+         * Capture the screenshot from the surface, rather than the view. Defaults to true.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param fromSurface field value; empty omits the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest fromSurface(Optional<Boolean> fromSurface) {
+            set("fromSurface", fromSurface.orElse(null));
+            return this;
+        }
+        /**
+         * Capture the screenshot from the surface, rather than the view. Defaults to true.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param fromSurface field value; null removes the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest fromSurface(Boolean fromSurface) {
+            set("fromSurface", fromSurface);
+            return this;
+        }
+        /**
+         * Capture the screenshot beyond the viewport. Defaults to false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param captureBeyondViewport field value; empty omits the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest captureBeyondViewport(Optional<Boolean> captureBeyondViewport) {
+            set("captureBeyondViewport", captureBeyondViewport.orElse(null));
+            return this;
+        }
+        /**
+         * Capture the screenshot beyond the viewport. Defaults to false.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param captureBeyondViewport field value; null removes the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest captureBeyondViewport(Boolean captureBeyondViewport) {
+            set("captureBeyondViewport", captureBeyondViewport);
+            return this;
+        }
+        /**
+         * Optimize image encoding for speed, not for resulting size (defaults to false)
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param optimizeForSpeed field value; empty omits the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest optimizeForSpeed(Optional<Boolean> optimizeForSpeed) {
+            set("optimizeForSpeed", optimizeForSpeed.orElse(null));
+            return this;
+        }
+        /**
+         * Optimize image encoding for speed, not for resulting size (defaults to false)
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param optimizeForSpeed field value; null removes the value
+         * @return this model
+         */
+        public CaptureScreenshotRequest optimizeForSpeed(Boolean optimizeForSpeed) {
+            set("optimizeForSpeed", optimizeForSpeed);
+            return this;
+        }
+    }
+    /**
+     * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class CaptureSnapshotRequest extends CdpObject {
+        public CaptureSnapshotRequest() {}
+        public static CaptureSnapshotRequest fromMap(Map<String, Object> values) {
+            CaptureSnapshotRequest instance_ = new CaptureSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Format (defaults to mhtml).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<CaptureSnapshotFormatValues> format() {
+            return Optional.ofNullable(raw("format") == null ? null : CaptureSnapshotFormatValues.of((String) raw("format")));
+        }
+        /**
+         * Format (defaults to mhtml).
+         * @param format field value; empty omits the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest format(Optional<CaptureSnapshotFormatValues> format) {
+            set("format", format.orElse(null));
+            return this;
+        }
+        /**
+         * Format (defaults to mhtml).
+         * @param format field value; null removes the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest format(CaptureSnapshotFormatValues format) {
+            set("format", format);
+            return this;
+        }
+    }
+    /**
+     * Creates an isolated world for the given frame.
+     */
+    public static final class CreateIsolatedWorldRequest extends CdpObject {
+        public CreateIsolatedWorldRequest() {}
+        /**
+         * Creates an isolated world for the given frame.
+         * @param frameId protocol value
+         */
+        public CreateIsolatedWorldRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static CreateIsolatedWorldRequest fromMap(Map<String, Object> values) {
+            CreateIsolatedWorldRequest instance_ = new CreateIsolatedWorldRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Id of the frame in which the isolated world should be created.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * An optional name which is reported in the Execution Context.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> worldName() {
+            return Optional.ofNullable((String) raw("worldName"));
+        }
+        /**
+         * Whether or not universal access should be granted to the isolated world. This is a powerful option, use with caution.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> grantUniveralAccess() {
+            return Optional.ofNullable((Boolean) raw("grantUniveralAccess"));
+        }
+        /**
+         * Id of the frame in which the isolated world should be created.
+         * @param frameId field value
+         * @return this model
+         */
+        public CreateIsolatedWorldRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * An optional name which is reported in the Execution Context.
+         * @param worldName field value; empty omits the value
+         * @return this model
+         */
+        public CreateIsolatedWorldRequest worldName(Optional<String> worldName) {
+            set("worldName", worldName.orElse(null));
+            return this;
+        }
+        /**
+         * An optional name which is reported in the Execution Context.
+         * @param worldName field value; null removes the value
+         * @return this model
+         */
+        public CreateIsolatedWorldRequest worldName(String worldName) {
+            set("worldName", worldName);
+            return this;
+        }
+        /**
+         * Whether or not universal access should be granted to the isolated world. This is a powerful option, use with caution.
+         * @param grantUniveralAccess field value; empty omits the value
+         * @return this model
+         */
+        public CreateIsolatedWorldRequest grantUniveralAccess(Optional<Boolean> grantUniveralAccess) {
+            set("grantUniveralAccess", grantUniveralAccess.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not universal access should be granted to the isolated world. This is a powerful option, use with caution.
+         * @param grantUniveralAccess field value; null removes the value
+         * @return this model
+         */
+        public CreateIsolatedWorldRequest grantUniveralAccess(Boolean grantUniveralAccess) {
+            set("grantUniveralAccess", grantUniveralAccess);
+            return this;
+        }
+    }
+    /**
+     * Deletes browser cookie with given name, domain and path.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class DeleteCookieRequest extends CdpObject {
+        public DeleteCookieRequest() {}
+        /**
+         * Deletes browser cookie with given name, domain and path.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param cookieName protocol value
+         * @param url protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public DeleteCookieRequest(String cookieName, String url) {
+            set("cookieName", cookieName);
+            set("url", url);
+        }
+        public static DeleteCookieRequest fromMap(Map<String, Object> values) {
+            DeleteCookieRequest instance_ = new DeleteCookieRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Name of the cookie to remove.
+         * @return the protocol field value
+         */
+        public String cookieName() {
+            return (String) require("cookieName");
+        }
+        /**
+         * URL to match cooke domain and path.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * Name of the cookie to remove.
+         * @param cookieName field value
+         * @return this model
+         */
+        public DeleteCookieRequest cookieName(String cookieName) {
+            set("cookieName", cookieName);
+            return this;
+        }
+        /**
+         * URL to match cooke domain and path.
+         * @param url field value
+         * @return this model
+         */
+        public DeleteCookieRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+    }
+    /**
+     * Enables page domain notifications.
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true, the {@code Page.fileChooserOpened} event will be emitted regardless of the state set by {@code Page.setInterceptFileChooserDialog} command (default: false).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> enableFileChooserOpenedEvent() {
+            return Optional.ofNullable((Boolean) raw("enableFileChooserOpenedEvent"));
+        }
+        /**
+         * If true, the {@code Page.fileChooserOpened} event will be emitted regardless of the state set by {@code Page.setInterceptFileChooserDialog} command (default: false).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enableFileChooserOpenedEvent field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest enableFileChooserOpenedEvent(Optional<Boolean> enableFileChooserOpenedEvent) {
+            set("enableFileChooserOpenedEvent", enableFileChooserOpenedEvent.orElse(null));
+            return this;
+        }
+        /**
+         * If true, the {@code Page.fileChooserOpened} event will be emitted regardless of the state set by {@code Page.setInterceptFileChooserDialog} command (default: false).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enableFileChooserOpenedEvent field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest enableFileChooserOpenedEvent(Boolean enableFileChooserOpenedEvent) {
+            set("enableFileChooserOpenedEvent", enableFileChooserOpenedEvent);
+            return this;
+        }
+    }
+    /**
+     * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
+     */
+    public static final class GetAppManifestRequest extends CdpObject {
+        public GetAppManifestRequest() {}
+        public static GetAppManifestRequest fromMap(Map<String, Object> values) {
+            GetAppManifestRequest instance_ = new GetAppManifestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the manifestId field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> manifestId() {
+            return Optional.ofNullable((String) raw("manifestId"));
+        }
+        /**
+         * Sets the manifestId field.
+         * @param manifestId field value; empty omits the value
+         * @return this model
+         */
+        public GetAppManifestRequest manifestId(Optional<String> manifestId) {
+            set("manifestId", manifestId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the manifestId field.
+         * @param manifestId field value; null removes the value
+         * @return this model
+         */
+        public GetAppManifestRequest manifestId(String manifestId) {
+            set("manifestId", manifestId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Page.getAdScriptAncestry.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetAdScriptAncestryRequest extends CdpObject {
+        public GetAdScriptAncestryRequest() {}
+        /**
+         * Creates a new GetAdScriptAncestryRequest with all required parameters.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param frameId protocol value
+         */
+        public GetAdScriptAncestryRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static GetAdScriptAncestryRequest fromMap(Map<String, Object> values) {
+            GetAdScriptAncestryRequest instance_ = new GetAdScriptAncestryRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the frameId field.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * Sets the frameId field.
+         * @param frameId field value
+         * @return this model
+         */
+        public GetAdScriptAncestryRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Returns content of the given resource.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetResourceContentRequest extends CdpObject {
+        public GetResourceContentRequest() {}
+        /**
+         * Returns content of the given resource.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param frameId protocol value
+         * @param url protocol value
+         */
+        public GetResourceContentRequest(Page.FrameId frameId, String url) {
+            set("frameId", frameId);
+            set("url", url);
+        }
+        public static GetResourceContentRequest fromMap(Map<String, Object> values) {
+            GetResourceContentRequest instance_ = new GetResourceContentRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Frame id to get resource for.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * URL of the resource to get content for.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * Frame id to get resource for.
+         * @param frameId field value
+         * @return this model
+         */
+        public GetResourceContentRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * URL of the resource to get content for.
+         * @param url field value
+         * @return this model
+         */
+        public GetResourceContentRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+    }
+    /**
+     * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
+     */
+    public static final class HandleJavaScriptDialogRequest extends CdpObject {
+        public HandleJavaScriptDialogRequest() {}
+        /**
+         * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
+         * @param accept protocol value
+         */
+        public HandleJavaScriptDialogRequest(boolean accept) {
+            set("accept", accept);
+        }
+        public static HandleJavaScriptDialogRequest fromMap(Map<String, Object> values) {
+            HandleJavaScriptDialogRequest instance_ = new HandleJavaScriptDialogRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to accept or dismiss the dialog.
+         * @return the protocol field value
+         */
+        public boolean accept() {
+            return (Boolean) require("accept");
+        }
+        /**
+         * The text to enter into the dialog prompt before accepting. Used only if this is a prompt dialog.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> promptText() {
+            return Optional.ofNullable((String) raw("promptText"));
+        }
+        /**
+         * Whether to accept or dismiss the dialog.
+         * @param accept field value
+         * @return this model
+         */
+        public HandleJavaScriptDialogRequest accept(boolean accept) {
+            set("accept", accept);
+            return this;
+        }
+        /**
+         * The text to enter into the dialog prompt before accepting. Used only if this is a prompt dialog.
+         * @param promptText field value; empty omits the value
+         * @return this model
+         */
+        public HandleJavaScriptDialogRequest promptText(Optional<String> promptText) {
+            set("promptText", promptText.orElse(null));
+            return this;
+        }
+        /**
+         * The text to enter into the dialog prompt before accepting. Used only if this is a prompt dialog.
+         * @param promptText field value; null removes the value
+         * @return this model
+         */
+        public HandleJavaScriptDialogRequest promptText(String promptText) {
+            set("promptText", promptText);
+            return this;
+        }
+    }
+    /**
+     * Navigates current page to the given URL.
+     */
+    public static final class NavigateRequest extends CdpObject {
+        public NavigateRequest() {}
+        /**
+         * Navigates current page to the given URL.
+         * @param url protocol value
+         */
+        public NavigateRequest(String url) {
+            set("url", url);
+        }
+        public static NavigateRequest fromMap(Map<String, Object> values) {
+            NavigateRequest instance_ = new NavigateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * URL to navigate the page to.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * Referrer URL.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> referrer() {
+            return Optional.ofNullable((String) raw("referrer"));
+        }
+        /**
+         * Intended transition type.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.TransitionType> transitionType() {
+            return Optional.ofNullable(raw("transitionType") == null ? null : Page.TransitionType.of((String) raw("transitionType")));
+        }
+        /**
+         * Frame id to navigate, if not specified navigates the top frame.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * Referrer-policy used for the navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.ReferrerPolicy> referrerPolicy() {
+            return Optional.ofNullable(raw("referrerPolicy") == null ? null : Page.ReferrerPolicy.of((String) raw("referrerPolicy")));
+        }
+        /**
+         * URL to navigate the page to.
+         * @param url field value
+         * @return this model
+         */
+        public NavigateRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Referrer URL.
+         * @param referrer field value; empty omits the value
+         * @return this model
+         */
+        public NavigateRequest referrer(Optional<String> referrer) {
+            set("referrer", referrer.orElse(null));
+            return this;
+        }
+        /**
+         * Referrer URL.
+         * @param referrer field value; null removes the value
+         * @return this model
+         */
+        public NavigateRequest referrer(String referrer) {
+            set("referrer", referrer);
+            return this;
+        }
+        /**
+         * Intended transition type.
+         * @param transitionType field value; empty omits the value
+         * @return this model
+         */
+        public NavigateRequest transitionType(Optional<Page.TransitionType> transitionType) {
+            set("transitionType", transitionType.orElse(null));
+            return this;
+        }
+        /**
+         * Intended transition type.
+         * @param transitionType field value; null removes the value
+         * @return this model
+         */
+        public NavigateRequest transitionType(Page.TransitionType transitionType) {
+            set("transitionType", transitionType);
+            return this;
+        }
+        /**
+         * Frame id to navigate, if not specified navigates the top frame.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public NavigateRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * Frame id to navigate, if not specified navigates the top frame.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public NavigateRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * Referrer-policy used for the navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param referrerPolicy field value; empty omits the value
+         * @return this model
+         */
+        public NavigateRequest referrerPolicy(Optional<Page.ReferrerPolicy> referrerPolicy) {
+            set("referrerPolicy", referrerPolicy.orElse(null));
+            return this;
+        }
+        /**
+         * Referrer-policy used for the navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param referrerPolicy field value; null removes the value
+         * @return this model
+         */
+        public NavigateRequest referrerPolicy(Page.ReferrerPolicy referrerPolicy) {
+            set("referrerPolicy", referrerPolicy);
+            return this;
+        }
+    }
+    /**
+     * Navigates current page to the given history entry.
+     */
+    public static final class NavigateToHistoryEntryRequest extends CdpObject {
+        public NavigateToHistoryEntryRequest() {}
+        /**
+         * Navigates current page to the given history entry.
+         * @param entryId protocol value
+         */
+        public NavigateToHistoryEntryRequest(long entryId) {
+            set("entryId", entryId);
+        }
+        public static NavigateToHistoryEntryRequest fromMap(Map<String, Object> values) {
+            NavigateToHistoryEntryRequest instance_ = new NavigateToHistoryEntryRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Unique id of the entry to navigate to.
+         * @return the protocol field value
+         */
+        public long entryId() {
+            return ((Number) require("entryId")).longValue();
+        }
+        /**
+         * Unique id of the entry to navigate to.
+         * @param entryId field value
+         * @return this model
+         */
+        public NavigateToHistoryEntryRequest entryId(long entryId) {
+            set("entryId", entryId);
+            return this;
+        }
+    }
+    /**
+     * Print page as PDF.
+     */
+    public static final class PrintToPDFRequest extends CdpObject {
+        public PrintToPDFRequest() {}
+        public static PrintToPDFRequest fromMap(Map<String, Object> values) {
+            PrintToPDFRequest instance_ = new PrintToPDFRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Paper orientation. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> landscape() {
+            return Optional.ofNullable((Boolean) raw("landscape"));
+        }
+        /**
+         * Display header and footer. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> displayHeaderFooter() {
+            return Optional.ofNullable((Boolean) raw("displayHeaderFooter"));
+        }
+        /**
+         * Print background graphics. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> printBackground() {
+            return Optional.ofNullable((Boolean) raw("printBackground"));
+        }
+        /**
+         * Scale of the webpage rendering. Defaults to 1.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble scale() {
+            Double value = CdpObject.numberAsDouble(raw("scale"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Paper width in inches. Defaults to 8.5 inches.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble paperWidth() {
+            Double value = CdpObject.numberAsDouble(raw("paperWidth"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Paper height in inches. Defaults to 11 inches.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble paperHeight() {
+            Double value = CdpObject.numberAsDouble(raw("paperHeight"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Top margin in inches. Defaults to 1cm (~0.4 inches).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble marginTop() {
+            Double value = CdpObject.numberAsDouble(raw("marginTop"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Bottom margin in inches. Defaults to 1cm (~0.4 inches).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble marginBottom() {
+            Double value = CdpObject.numberAsDouble(raw("marginBottom"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Left margin in inches. Defaults to 1cm (~0.4 inches).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble marginLeft() {
+            Double value = CdpObject.numberAsDouble(raw("marginLeft"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Right margin in inches. Defaults to 1cm (~0.4 inches).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble marginRight() {
+            Double value = CdpObject.numberAsDouble(raw("marginRight"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Paper ranges to print, one based, e.g., &#x27;1-5, 8, 11-13&#x27;. Pages are printed in the document order, not in the order specified, and no more than once. Defaults to empty string, which implies the entire document is printed. The page numbers are quietly capped to actual page count of the document, and ranges beyond the end of the document are ignored. If this results in no pages to print, an error is reported. It is an error to specify a range with start greater than end.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> pageRanges() {
+            return Optional.ofNullable((String) raw("pageRanges"));
+        }
+        /**
+         * HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - {@code date}: formatted print date - {@code title}: document title - {@code url}: document location - {@code pageNumber}: current page number - {@code totalPages}: total pages in the document
+         * <p>For example, {@code &lt;span class=title&gt;&lt;/span&gt;} would generate span containing the title.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> headerTemplate() {
+            return Optional.ofNullable((String) raw("headerTemplate"));
+        }
+        /**
+         * HTML template for the print footer. Should use the same format as the {@code headerTemplate}.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> footerTemplate() {
+            return Optional.ofNullable((String) raw("footerTemplate"));
+        }
+        /**
+         * Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> preferCSSPageSize() {
+            return Optional.ofNullable((Boolean) raw("preferCSSPageSize"));
+        }
+        /**
+         * return as stream
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<PrintToPDFTransferModeValues> transferMode() {
+            return Optional.ofNullable(raw("transferMode") == null ? null : PrintToPDFTransferModeValues.of((String) raw("transferMode")));
+        }
+        /**
+         * Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> generateTaggedPDF() {
+            return Optional.ofNullable((Boolean) raw("generateTaggedPDF"));
+        }
+        /**
+         * Whether or not to embed the document outline into the PDF.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> generateDocumentOutline() {
+            return Optional.ofNullable((Boolean) raw("generateDocumentOutline"));
+        }
+        /**
+         * Paper orientation. Defaults to false.
+         * @param landscape field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest landscape(Optional<Boolean> landscape) {
+            set("landscape", landscape.orElse(null));
+            return this;
+        }
+        /**
+         * Paper orientation. Defaults to false.
+         * @param landscape field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest landscape(Boolean landscape) {
+            set("landscape", landscape);
+            return this;
+        }
+        /**
+         * Display header and footer. Defaults to false.
+         * @param displayHeaderFooter field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest displayHeaderFooter(Optional<Boolean> displayHeaderFooter) {
+            set("displayHeaderFooter", displayHeaderFooter.orElse(null));
+            return this;
+        }
+        /**
+         * Display header and footer. Defaults to false.
+         * @param displayHeaderFooter field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest displayHeaderFooter(Boolean displayHeaderFooter) {
+            set("displayHeaderFooter", displayHeaderFooter);
+            return this;
+        }
+        /**
+         * Print background graphics. Defaults to false.
+         * @param printBackground field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest printBackground(Optional<Boolean> printBackground) {
+            set("printBackground", printBackground.orElse(null));
+            return this;
+        }
+        /**
+         * Print background graphics. Defaults to false.
+         * @param printBackground field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest printBackground(Boolean printBackground) {
+            set("printBackground", printBackground);
+            return this;
+        }
+        /**
+         * Scale of the webpage rendering. Defaults to 1.
+         * @param scale field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest scale(OptionalDouble scale) {
+            set("scale", scale.isPresent() ? scale.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Scale of the webpage rendering. Defaults to 1.
+         * @param scale field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest scale(Double scale) {
+            set("scale", scale);
+            return this;
+        }
+        /**
+         * Paper width in inches. Defaults to 8.5 inches.
+         * @param paperWidth field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest paperWidth(OptionalDouble paperWidth) {
+            set("paperWidth", paperWidth.isPresent() ? paperWidth.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Paper width in inches. Defaults to 8.5 inches.
+         * @param paperWidth field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest paperWidth(Double paperWidth) {
+            set("paperWidth", paperWidth);
+            return this;
+        }
+        /**
+         * Paper height in inches. Defaults to 11 inches.
+         * @param paperHeight field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest paperHeight(OptionalDouble paperHeight) {
+            set("paperHeight", paperHeight.isPresent() ? paperHeight.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Paper height in inches. Defaults to 11 inches.
+         * @param paperHeight field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest paperHeight(Double paperHeight) {
+            set("paperHeight", paperHeight);
+            return this;
+        }
+        /**
+         * Top margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginTop field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginTop(OptionalDouble marginTop) {
+            set("marginTop", marginTop.isPresent() ? marginTop.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Top margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginTop field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginTop(Double marginTop) {
+            set("marginTop", marginTop);
+            return this;
+        }
+        /**
+         * Bottom margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginBottom field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginBottom(OptionalDouble marginBottom) {
+            set("marginBottom", marginBottom.isPresent() ? marginBottom.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Bottom margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginBottom field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginBottom(Double marginBottom) {
+            set("marginBottom", marginBottom);
+            return this;
+        }
+        /**
+         * Left margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginLeft field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginLeft(OptionalDouble marginLeft) {
+            set("marginLeft", marginLeft.isPresent() ? marginLeft.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Left margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginLeft field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginLeft(Double marginLeft) {
+            set("marginLeft", marginLeft);
+            return this;
+        }
+        /**
+         * Right margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginRight field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginRight(OptionalDouble marginRight) {
+            set("marginRight", marginRight.isPresent() ? marginRight.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Right margin in inches. Defaults to 1cm (~0.4 inches).
+         * @param marginRight field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest marginRight(Double marginRight) {
+            set("marginRight", marginRight);
+            return this;
+        }
+        /**
+         * Paper ranges to print, one based, e.g., &#x27;1-5, 8, 11-13&#x27;. Pages are printed in the document order, not in the order specified, and no more than once. Defaults to empty string, which implies the entire document is printed. The page numbers are quietly capped to actual page count of the document, and ranges beyond the end of the document are ignored. If this results in no pages to print, an error is reported. It is an error to specify a range with start greater than end.
+         * @param pageRanges field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest pageRanges(Optional<String> pageRanges) {
+            set("pageRanges", pageRanges.orElse(null));
+            return this;
+        }
+        /**
+         * Paper ranges to print, one based, e.g., &#x27;1-5, 8, 11-13&#x27;. Pages are printed in the document order, not in the order specified, and no more than once. Defaults to empty string, which implies the entire document is printed. The page numbers are quietly capped to actual page count of the document, and ranges beyond the end of the document are ignored. If this results in no pages to print, an error is reported. It is an error to specify a range with start greater than end.
+         * @param pageRanges field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest pageRanges(String pageRanges) {
+            set("pageRanges", pageRanges);
+            return this;
+        }
+        /**
+         * HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - {@code date}: formatted print date - {@code title}: document title - {@code url}: document location - {@code pageNumber}: current page number - {@code totalPages}: total pages in the document
+         * <p>For example, {@code &lt;span class=title&gt;&lt;/span&gt;} would generate span containing the title.
+         * @param headerTemplate field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest headerTemplate(Optional<String> headerTemplate) {
+            set("headerTemplate", headerTemplate.orElse(null));
+            return this;
+        }
+        /**
+         * HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - {@code date}: formatted print date - {@code title}: document title - {@code url}: document location - {@code pageNumber}: current page number - {@code totalPages}: total pages in the document
+         * <p>For example, {@code &lt;span class=title&gt;&lt;/span&gt;} would generate span containing the title.
+         * @param headerTemplate field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest headerTemplate(String headerTemplate) {
+            set("headerTemplate", headerTemplate);
+            return this;
+        }
+        /**
+         * HTML template for the print footer. Should use the same format as the {@code headerTemplate}.
+         * @param footerTemplate field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest footerTemplate(Optional<String> footerTemplate) {
+            set("footerTemplate", footerTemplate.orElse(null));
+            return this;
+        }
+        /**
+         * HTML template for the print footer. Should use the same format as the {@code headerTemplate}.
+         * @param footerTemplate field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest footerTemplate(String footerTemplate) {
+            set("footerTemplate", footerTemplate);
+            return this;
+        }
+        /**
+         * Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
+         * @param preferCSSPageSize field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest preferCSSPageSize(Optional<Boolean> preferCSSPageSize) {
+            set("preferCSSPageSize", preferCSSPageSize.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
+         * @param preferCSSPageSize field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest preferCSSPageSize(Boolean preferCSSPageSize) {
+            set("preferCSSPageSize", preferCSSPageSize);
+            return this;
+        }
+        /**
+         * return as stream
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param transferMode field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest transferMode(Optional<PrintToPDFTransferModeValues> transferMode) {
+            set("transferMode", transferMode.orElse(null));
+            return this;
+        }
+        /**
+         * return as stream
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param transferMode field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest transferMode(PrintToPDFTransferModeValues transferMode) {
+            set("transferMode", transferMode);
+            return this;
+        }
+        /**
+         * Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param generateTaggedPDF field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest generateTaggedPDF(Optional<Boolean> generateTaggedPDF) {
+            set("generateTaggedPDF", generateTaggedPDF.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param generateTaggedPDF field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest generateTaggedPDF(Boolean generateTaggedPDF) {
+            set("generateTaggedPDF", generateTaggedPDF);
+            return this;
+        }
+        /**
+         * Whether or not to embed the document outline into the PDF.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param generateDocumentOutline field value; empty omits the value
+         * @return this model
+         */
+        public PrintToPDFRequest generateDocumentOutline(Optional<Boolean> generateDocumentOutline) {
+            set("generateDocumentOutline", generateDocumentOutline.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not to embed the document outline into the PDF.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param generateDocumentOutline field value; null removes the value
+         * @return this model
+         */
+        public PrintToPDFRequest generateDocumentOutline(Boolean generateDocumentOutline) {
+            set("generateDocumentOutline", generateDocumentOutline);
+            return this;
+        }
+    }
+    /**
+     * Reloads given page optionally ignoring the cache.
+     */
+    public static final class ReloadRequest extends CdpObject {
+        public ReloadRequest() {}
+        public static ReloadRequest fromMap(Map<String, Object> values) {
+            ReloadRequest instance_ = new ReloadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true, browser cache is ignored (as if the user pressed Shift+refresh).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> ignoreCache() {
+            return Optional.ofNullable((Boolean) raw("ignoreCache"));
+        }
+        /**
+         * If set, the script will be injected into all frames of the inspected page after reload. Argument will be ignored if reloading dataURL origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> scriptToEvaluateOnLoad() {
+            return Optional.ofNullable((String) raw("scriptToEvaluateOnLoad"));
+        }
+        /**
+         * If set, an error will be thrown if the target page&#x27;s main frame&#x27;s loader id does not match the provided id. This prevents accidentally reloading an unintended target in case there&#x27;s a racing navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.LoaderId> loaderId() {
+            return Optional.ofNullable(raw("loaderId") == null ? null : new Network.LoaderId((String) raw("loaderId")));
+        }
+        /**
+         * If true, browser cache is ignored (as if the user pressed Shift+refresh).
+         * @param ignoreCache field value; empty omits the value
+         * @return this model
+         */
+        public ReloadRequest ignoreCache(Optional<Boolean> ignoreCache) {
+            set("ignoreCache", ignoreCache.orElse(null));
+            return this;
+        }
+        /**
+         * If true, browser cache is ignored (as if the user pressed Shift+refresh).
+         * @param ignoreCache field value; null removes the value
+         * @return this model
+         */
+        public ReloadRequest ignoreCache(Boolean ignoreCache) {
+            set("ignoreCache", ignoreCache);
+            return this;
+        }
+        /**
+         * If set, the script will be injected into all frames of the inspected page after reload. Argument will be ignored if reloading dataURL origin.
+         * @param scriptToEvaluateOnLoad field value; empty omits the value
+         * @return this model
+         */
+        public ReloadRequest scriptToEvaluateOnLoad(Optional<String> scriptToEvaluateOnLoad) {
+            set("scriptToEvaluateOnLoad", scriptToEvaluateOnLoad.orElse(null));
+            return this;
+        }
+        /**
+         * If set, the script will be injected into all frames of the inspected page after reload. Argument will be ignored if reloading dataURL origin.
+         * @param scriptToEvaluateOnLoad field value; null removes the value
+         * @return this model
+         */
+        public ReloadRequest scriptToEvaluateOnLoad(String scriptToEvaluateOnLoad) {
+            set("scriptToEvaluateOnLoad", scriptToEvaluateOnLoad);
+            return this;
+        }
+        /**
+         * If set, an error will be thrown if the target page&#x27;s main frame&#x27;s loader id does not match the provided id. This prevents accidentally reloading an unintended target in case there&#x27;s a racing navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param loaderId field value; empty omits the value
+         * @return this model
+         */
+        public ReloadRequest loaderId(Optional<Network.LoaderId> loaderId) {
+            set("loaderId", loaderId.orElse(null));
+            return this;
+        }
+        /**
+         * If set, an error will be thrown if the target page&#x27;s main frame&#x27;s loader id does not match the provided id. This prevents accidentally reloading an unintended target in case there&#x27;s a racing navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param loaderId field value; null removes the value
+         * @return this model
+         */
+        public ReloadRequest loaderId(Network.LoaderId loaderId) {
+            set("loaderId", loaderId);
+            return this;
+        }
+    }
+    /**
+     * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class RemoveScriptToEvaluateOnLoadRequest extends CdpObject {
+        public RemoveScriptToEvaluateOnLoadRequest() {}
+        /**
+         * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param identifier protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public RemoveScriptToEvaluateOnLoadRequest(Page.ScriptIdentifier identifier) {
+            set("identifier", identifier);
+        }
+        public static RemoveScriptToEvaluateOnLoadRequest fromMap(Map<String, Object> values) {
+            RemoveScriptToEvaluateOnLoadRequest instance_ = new RemoveScriptToEvaluateOnLoadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the identifier field.
+         * @return the protocol field value
+         */
+        public Page.ScriptIdentifier identifier() {
+            return new Page.ScriptIdentifier((String) require("identifier"));
+        }
+        /**
+         * Sets the identifier field.
+         * @param identifier field value
+         * @return this model
+         */
+        public RemoveScriptToEvaluateOnLoadRequest identifier(Page.ScriptIdentifier identifier) {
+            set("identifier", identifier);
+            return this;
+        }
+    }
+    /**
+     * Removes given script from the list.
+     */
+    public static final class RemoveScriptToEvaluateOnNewDocumentRequest extends CdpObject {
+        public RemoveScriptToEvaluateOnNewDocumentRequest() {}
+        /**
+         * Removes given script from the list.
+         * @param identifier protocol value
+         */
+        public RemoveScriptToEvaluateOnNewDocumentRequest(Page.ScriptIdentifier identifier) {
+            set("identifier", identifier);
+        }
+        public static RemoveScriptToEvaluateOnNewDocumentRequest fromMap(Map<String, Object> values) {
+            RemoveScriptToEvaluateOnNewDocumentRequest instance_ = new RemoveScriptToEvaluateOnNewDocumentRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the identifier field.
+         * @return the protocol field value
+         */
+        public Page.ScriptIdentifier identifier() {
+            return new Page.ScriptIdentifier((String) require("identifier"));
+        }
+        /**
+         * Sets the identifier field.
+         * @param identifier field value
+         * @return this model
+         */
+        public RemoveScriptToEvaluateOnNewDocumentRequest identifier(Page.ScriptIdentifier identifier) {
+            set("identifier", identifier);
+            return this;
+        }
+    }
+    /**
+     * Acknowledges that a screencast frame has been received by the frontend.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ScreencastFrameAckRequest extends CdpObject {
+        public ScreencastFrameAckRequest() {}
+        /**
+         * Acknowledges that a screencast frame has been received by the frontend.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param sessionId protocol value
+         */
+        public ScreencastFrameAckRequest(long sessionId) {
+            set("sessionId", sessionId);
+        }
+        public static ScreencastFrameAckRequest fromMap(Map<String, Object> values) {
+            ScreencastFrameAckRequest instance_ = new ScreencastFrameAckRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Frame number.
+         * @return the protocol field value
+         */
+        public long sessionId() {
+            return ((Number) require("sessionId")).longValue();
+        }
+        /**
+         * Frame number.
+         * @param sessionId field value
+         * @return this model
+         */
+        public ScreencastFrameAckRequest sessionId(long sessionId) {
+            set("sessionId", sessionId);
+            return this;
+        }
+    }
+    /**
+     * Searches for given string in resource content.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SearchInResourceRequest extends CdpObject {
+        public SearchInResourceRequest() {}
+        /**
+         * Searches for given string in resource content.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param frameId protocol value
+         * @param url protocol value
+         * @param query protocol value
+         */
+        public SearchInResourceRequest(Page.FrameId frameId, String url, String query) {
+            set("frameId", frameId);
+            set("url", url);
+            set("query", query);
+        }
+        public static SearchInResourceRequest fromMap(Map<String, Object> values) {
+            SearchInResourceRequest instance_ = new SearchInResourceRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Frame id for resource to search in.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * URL of the resource to search in.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * String to search for.
+         * @return the protocol field value
+         */
+        public String query() {
+            return (String) require("query");
+        }
+        /**
+         * If true, search is case sensitive.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> caseSensitive() {
+            return Optional.ofNullable((Boolean) raw("caseSensitive"));
+        }
+        /**
+         * If true, treats string parameter as regex.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> isRegex() {
+            return Optional.ofNullable((Boolean) raw("isRegex"));
+        }
+        /**
+         * Frame id for resource to search in.
+         * @param frameId field value
+         * @return this model
+         */
+        public SearchInResourceRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * URL of the resource to search in.
+         * @param url field value
+         * @return this model
+         */
+        public SearchInResourceRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * String to search for.
+         * @param query field value
+         * @return this model
+         */
+        public SearchInResourceRequest query(String query) {
+            set("query", query);
+            return this;
+        }
+        /**
+         * If true, search is case sensitive.
+         * @param caseSensitive field value; empty omits the value
+         * @return this model
+         */
+        public SearchInResourceRequest caseSensitive(Optional<Boolean> caseSensitive) {
+            set("caseSensitive", caseSensitive.orElse(null));
+            return this;
+        }
+        /**
+         * If true, search is case sensitive.
+         * @param caseSensitive field value; null removes the value
+         * @return this model
+         */
+        public SearchInResourceRequest caseSensitive(Boolean caseSensitive) {
+            set("caseSensitive", caseSensitive);
+            return this;
+        }
+        /**
+         * If true, treats string parameter as regex.
+         * @param isRegex field value; empty omits the value
+         * @return this model
+         */
+        public SearchInResourceRequest isRegex(Optional<Boolean> isRegex) {
+            set("isRegex", isRegex.orElse(null));
+            return this;
+        }
+        /**
+         * If true, treats string parameter as regex.
+         * @param isRegex field value; null removes the value
+         * @return this model
+         */
+        public SearchInResourceRequest isRegex(Boolean isRegex) {
+            set("isRegex", isRegex);
+            return this;
+        }
+    }
+    /**
+     * Enable Chrome&#x27;s experimental ad filter on all sites.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetAdBlockingEnabledRequest extends CdpObject {
+        public SetAdBlockingEnabledRequest() {}
+        /**
+         * Enable Chrome&#x27;s experimental ad filter on all sites.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enabled protocol value
+         */
+        public SetAdBlockingEnabledRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetAdBlockingEnabledRequest fromMap(Map<String, Object> values) {
+            SetAdBlockingEnabledRequest instance_ = new SetAdBlockingEnabledRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to block ads.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * Whether to block ads.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetAdBlockingEnabledRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+    }
+    /**
+     * Enable page Content Security Policy by-passing.
+     */
+    public static final class SetBypassCSPRequest extends CdpObject {
+        public SetBypassCSPRequest() {}
+        /**
+         * Enable page Content Security Policy by-passing.
+         * @param enabled protocol value
+         */
+        public SetBypassCSPRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetBypassCSPRequest fromMap(Map<String, Object> values) {
+            SetBypassCSPRequest instance_ = new SetBypassCSPRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to bypass page CSP.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * Whether to bypass page CSP.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetBypassCSPRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+    }
+    /**
+     * Get Permissions Policy state on given frame.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetPermissionsPolicyStateRequest extends CdpObject {
+        public GetPermissionsPolicyStateRequest() {}
+        /**
+         * Get Permissions Policy state on given frame.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param frameId protocol value
+         */
+        public GetPermissionsPolicyStateRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static GetPermissionsPolicyStateRequest fromMap(Map<String, Object> values) {
+            GetPermissionsPolicyStateRequest instance_ = new GetPermissionsPolicyStateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the frameId field.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * Sets the frameId field.
+         * @param frameId field value
+         * @return this model
+         */
+        public GetPermissionsPolicyStateRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Get Origin Trials on given frame.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetOriginTrialsRequest extends CdpObject {
+        public GetOriginTrialsRequest() {}
+        /**
+         * Get Origin Trials on given frame.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param frameId protocol value
+         */
+        public GetOriginTrialsRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static GetOriginTrialsRequest fromMap(Map<String, Object> values) {
+            GetOriginTrialsRequest instance_ = new GetOriginTrialsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the frameId field.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * Sets the frameId field.
+         * @param frameId field value
+         * @return this model
+         */
+        public GetOriginTrialsRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetDeviceMetricsOverrideRequest extends CdpObject {
+        public SetDeviceMetricsOverrideRequest() {}
+        /**
+         * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param width protocol value
+         * @param height protocol value
+         * @param deviceScaleFactor protocol value
+         * @param mobile protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetDeviceMetricsOverrideRequest(long width, long height, double deviceScaleFactor, boolean mobile) {
+            set("width", width);
+            set("height", height);
+            set("deviceScaleFactor", deviceScaleFactor);
+            set("mobile", mobile);
+        }
+        public static SetDeviceMetricsOverrideRequest fromMap(Map<String, Object> values) {
+            SetDeviceMetricsOverrideRequest instance_ = new SetDeviceMetricsOverrideRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+         * @return the protocol field value
+         */
+        public long width() {
+            return ((Number) require("width")).longValue();
+        }
+        /**
+         * Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+         * @return the protocol field value
+         */
+        public long height() {
+            return ((Number) require("height")).longValue();
+        }
+        /**
+         * Overriding device scale factor value. 0 disables the override.
+         * @return the protocol field value
+         */
+        public double deviceScaleFactor() {
+            return ((Number) require("deviceScaleFactor")).doubleValue();
+        }
+        /**
+         * Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more.
+         * @return the protocol field value
+         */
+        public boolean mobile() {
+            return (Boolean) require("mobile");
+        }
+        /**
+         * Scale to apply to resulting view image.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble scale() {
+            Double value = CdpObject.numberAsDouble(raw("scale"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Overriding screen width value in pixels (minimum 0, maximum 10000000).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong screenWidth() {
+            Long value = CdpObject.numberAsLong(raw("screenWidth"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Overriding screen height value in pixels (minimum 0, maximum 10000000).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong screenHeight() {
+            Long value = CdpObject.numberAsLong(raw("screenHeight"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong positionX() {
+            Long value = CdpObject.numberAsLong(raw("positionX"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong positionY() {
+            Long value = CdpObject.numberAsLong(raw("positionY"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Do not set visible view size, rely upon explicit setVisibleSize call.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> dontSetVisibleSize() {
+            return Optional.ofNullable((Boolean) raw("dontSetVisibleSize"));
+        }
+        /**
+         * Screen orientation override.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Emulation.ScreenOrientation> screenOrientation() {
+            return Optional.ofNullable(raw("screenOrientation") == null ? null : Emulation.ScreenOrientation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("screenOrientation")))));
+        }
+        /**
+         * The viewport dimensions and scale. If not set, the override is cleared.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.Viewport> viewport() {
+            return Optional.ofNullable(raw("viewport") == null ? null : Page.Viewport.fromMap(java.util.Objects.requireNonNull(objectMap(raw("viewport")))));
+        }
+        /**
+         * Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+         * @param width field value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest width(long width) {
+            set("width", width);
+            return this;
+        }
+        /**
+         * Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+         * @param height field value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest height(long height) {
+            set("height", height);
+            return this;
+        }
+        /**
+         * Overriding device scale factor value. 0 disables the override.
+         * @param deviceScaleFactor field value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest deviceScaleFactor(double deviceScaleFactor) {
+            set("deviceScaleFactor", deviceScaleFactor);
+            return this;
+        }
+        /**
+         * Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more.
+         * @param mobile field value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest mobile(boolean mobile) {
+            set("mobile", mobile);
+            return this;
+        }
+        /**
+         * Scale to apply to resulting view image.
+         * @param scale field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest scale(OptionalDouble scale) {
+            set("scale", scale.isPresent() ? scale.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Scale to apply to resulting view image.
+         * @param scale field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest scale(Double scale) {
+            set("scale", scale);
+            return this;
+        }
+        /**
+         * Overriding screen width value in pixels (minimum 0, maximum 10000000).
+         * @param screenWidth field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest screenWidth(OptionalLong screenWidth) {
+            set("screenWidth", screenWidth.isPresent() ? screenWidth.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Overriding screen width value in pixels (minimum 0, maximum 10000000).
+         * @param screenWidth field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest screenWidth(Long screenWidth) {
+            set("screenWidth", screenWidth);
+            return this;
+        }
+        /**
+         * Overriding screen height value in pixels (minimum 0, maximum 10000000).
+         * @param screenHeight field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest screenHeight(OptionalLong screenHeight) {
+            set("screenHeight", screenHeight.isPresent() ? screenHeight.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Overriding screen height value in pixels (minimum 0, maximum 10000000).
+         * @param screenHeight field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest screenHeight(Long screenHeight) {
+            set("screenHeight", screenHeight);
+            return this;
+        }
+        /**
+         * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
+         * @param positionX field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest positionX(OptionalLong positionX) {
+            set("positionX", positionX.isPresent() ? positionX.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
+         * @param positionX field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest positionX(Long positionX) {
+            set("positionX", positionX);
+            return this;
+        }
+        /**
+         * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
+         * @param positionY field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest positionY(OptionalLong positionY) {
+            set("positionY", positionY.isPresent() ? positionY.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
+         * @param positionY field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest positionY(Long positionY) {
+            set("positionY", positionY);
+            return this;
+        }
+        /**
+         * Do not set visible view size, rely upon explicit setVisibleSize call.
+         * @param dontSetVisibleSize field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest dontSetVisibleSize(Optional<Boolean> dontSetVisibleSize) {
+            set("dontSetVisibleSize", dontSetVisibleSize.orElse(null));
+            return this;
+        }
+        /**
+         * Do not set visible view size, rely upon explicit setVisibleSize call.
+         * @param dontSetVisibleSize field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest dontSetVisibleSize(Boolean dontSetVisibleSize) {
+            set("dontSetVisibleSize", dontSetVisibleSize);
+            return this;
+        }
+        /**
+         * Screen orientation override.
+         * @param screenOrientation field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest screenOrientation(Optional<Emulation.ScreenOrientation> screenOrientation) {
+            set("screenOrientation", screenOrientation.orElse(null));
+            return this;
+        }
+        /**
+         * Screen orientation override.
+         * @param screenOrientation field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest screenOrientation(Emulation.ScreenOrientation screenOrientation) {
+            set("screenOrientation", screenOrientation);
+            return this;
+        }
+        /**
+         * The viewport dimensions and scale. If not set, the override is cleared.
+         * @param viewport field value; empty omits the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest viewport(Optional<Page.Viewport> viewport) {
+            set("viewport", viewport.orElse(null));
+            return this;
+        }
+        /**
+         * The viewport dimensions and scale. If not set, the override is cleared.
+         * @param viewport field value; null removes the value
+         * @return this model
+         */
+        public SetDeviceMetricsOverrideRequest viewport(Page.Viewport viewport) {
+            set("viewport", viewport);
+            return this;
+        }
+    }
+    /**
+     * Overrides the Device Orientation.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetDeviceOrientationOverrideRequest extends CdpObject {
+        public SetDeviceOrientationOverrideRequest() {}
+        /**
+         * Overrides the Device Orientation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param alpha protocol value
+         * @param beta protocol value
+         * @param gamma protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetDeviceOrientationOverrideRequest(double alpha, double beta, double gamma) {
+            set("alpha", alpha);
+            set("beta", beta);
+            set("gamma", gamma);
+        }
+        public static SetDeviceOrientationOverrideRequest fromMap(Map<String, Object> values) {
+            SetDeviceOrientationOverrideRequest instance_ = new SetDeviceOrientationOverrideRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Mock alpha
+         * @return the protocol field value
+         */
+        public double alpha() {
+            return ((Number) require("alpha")).doubleValue();
+        }
+        /**
+         * Mock beta
+         * @return the protocol field value
+         */
+        public double beta() {
+            return ((Number) require("beta")).doubleValue();
+        }
+        /**
+         * Mock gamma
+         * @return the protocol field value
+         */
+        public double gamma() {
+            return ((Number) require("gamma")).doubleValue();
+        }
+        /**
+         * Mock alpha
+         * @param alpha field value
+         * @return this model
+         */
+        public SetDeviceOrientationOverrideRequest alpha(double alpha) {
+            set("alpha", alpha);
+            return this;
+        }
+        /**
+         * Mock beta
+         * @param beta field value
+         * @return this model
+         */
+        public SetDeviceOrientationOverrideRequest beta(double beta) {
+            set("beta", beta);
+            return this;
+        }
+        /**
+         * Mock gamma
+         * @param gamma field value
+         * @return this model
+         */
+        public SetDeviceOrientationOverrideRequest gamma(double gamma) {
+            set("gamma", gamma);
+            return this;
+        }
+    }
+    /**
+     * Set generic font families.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetFontFamiliesRequest extends CdpObject {
+        public SetFontFamiliesRequest() {}
+        /**
+         * Set generic font families.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param fontFamilies protocol value
+         */
+        public SetFontFamiliesRequest(Page.FontFamilies fontFamilies) {
+            set("fontFamilies", fontFamilies);
+        }
+        public static SetFontFamiliesRequest fromMap(Map<String, Object> values) {
+            SetFontFamiliesRequest instance_ = new SetFontFamiliesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Specifies font families to set. If a font family is not specified, it won&#x27;t be changed.
+         * @return the protocol field value
+         */
+        public Page.FontFamilies fontFamilies() {
+            return java.util.Objects.requireNonNull(Page.FontFamilies.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("fontFamilies")))));
+        }
+        /**
+         * Specifies font families to set for individual scripts.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<Page.ScriptFontFamilies>> forScripts() {
+            return Optional.ofNullable(list(raw("forScripts"), element0 -> java.util.Objects.requireNonNull(Page.ScriptFontFamilies.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Specifies font families to set. If a font family is not specified, it won&#x27;t be changed.
+         * @param fontFamilies field value
+         * @return this model
+         */
+        public SetFontFamiliesRequest fontFamilies(Page.FontFamilies fontFamilies) {
+            set("fontFamilies", fontFamilies);
+            return this;
+        }
+        /**
+         * Specifies font families to set for individual scripts.
+         * @param forScripts field value; empty omits the value
+         * @return this model
+         */
+        public SetFontFamiliesRequest forScripts(Optional<java.util.List<Page.ScriptFontFamilies>> forScripts) {
+            set("forScripts", forScripts.orElse(null));
+            return this;
+        }
+        /**
+         * Specifies font families to set for individual scripts.
+         * @param forScripts field value; null removes the value
+         * @return this model
+         */
+        public SetFontFamiliesRequest forScripts(java.util.List<Page.ScriptFontFamilies> forScripts) {
+            set("forScripts", forScripts);
+            return this;
+        }
+    }
+    /**
+     * Set default font sizes.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetFontSizesRequest extends CdpObject {
+        public SetFontSizesRequest() {}
+        /**
+         * Set default font sizes.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param fontSizes protocol value
+         */
+        public SetFontSizesRequest(Page.FontSizes fontSizes) {
+            set("fontSizes", fontSizes);
+        }
+        public static SetFontSizesRequest fromMap(Map<String, Object> values) {
+            SetFontSizesRequest instance_ = new SetFontSizesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Specifies font sizes to set. If a font size is not specified, it won&#x27;t be changed.
+         * @return the protocol field value
+         */
+        public Page.FontSizes fontSizes() {
+            return java.util.Objects.requireNonNull(Page.FontSizes.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("fontSizes")))));
+        }
+        /**
+         * Specifies font sizes to set. If a font size is not specified, it won&#x27;t be changed.
+         * @param fontSizes field value
+         * @return this model
+         */
+        public SetFontSizesRequest fontSizes(Page.FontSizes fontSizes) {
+            set("fontSizes", fontSizes);
+            return this;
+        }
+    }
+    /**
+     * Sets given markup as the document&#x27;s HTML.
+     */
+    public static final class SetDocumentContentRequest extends CdpObject {
+        public SetDocumentContentRequest() {}
+        /**
+         * Sets given markup as the document&#x27;s HTML.
+         * @param frameId protocol value
+         * @param html protocol value
+         */
+        public SetDocumentContentRequest(Page.FrameId frameId, String html) {
+            set("frameId", frameId);
+            set("html", html);
+        }
+        public static SetDocumentContentRequest fromMap(Map<String, Object> values) {
+            SetDocumentContentRequest instance_ = new SetDocumentContentRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Frame id to set HTML for.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * HTML content to set.
+         * @return the protocol field value
+         */
+        public String html() {
+            return (String) require("html");
+        }
+        /**
+         * Frame id to set HTML for.
+         * @param frameId field value
+         * @return this model
+         */
+        public SetDocumentContentRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * HTML content to set.
+         * @param html field value
+         * @return this model
+         */
+        public SetDocumentContentRequest html(String html) {
+            set("html", html);
+            return this;
+        }
+    }
+    /**
+     * Set the behavior when downloading a file.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetDownloadBehaviorRequest extends CdpObject {
+        public SetDownloadBehaviorRequest() {}
+        /**
+         * Set the behavior when downloading a file.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param behavior protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetDownloadBehaviorRequest(SetDownloadBehaviorBehaviorValues behavior) {
+            set("behavior", behavior);
+        }
+        public static SetDownloadBehaviorRequest fromMap(Map<String, Object> values) {
+            SetDownloadBehaviorRequest instance_ = new SetDownloadBehaviorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
+         * @return the protocol field value
+         */
+        public SetDownloadBehaviorBehaviorValues behavior() {
+            return SetDownloadBehaviorBehaviorValues.of((String) require("behavior"));
+        }
+        /**
+         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27;
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> downloadPath() {
+            return Optional.ofNullable((String) raw("downloadPath"));
+        }
+        /**
+         * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
+         * @param behavior field value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest behavior(SetDownloadBehaviorBehaviorValues behavior) {
+            set("behavior", behavior);
+            return this;
+        }
+        /**
+         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27;
+         * @param downloadPath field value; empty omits the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest downloadPath(Optional<String> downloadPath) {
+            set("downloadPath", downloadPath.orElse(null));
+            return this;
+        }
+        /**
+         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27;
+         * @param downloadPath field value; null removes the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest downloadPath(String downloadPath) {
+            set("downloadPath", downloadPath);
+            return this;
+        }
+    }
+    /**
+     * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetGeolocationOverrideRequest extends CdpObject {
+        public SetGeolocationOverrideRequest() {}
+        public static SetGeolocationOverrideRequest fromMap(Map<String, Object> values) {
+            SetGeolocationOverrideRequest instance_ = new SetGeolocationOverrideRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Mock latitude
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble latitude() {
+            Double value = CdpObject.numberAsDouble(raw("latitude"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Mock longitude
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble longitude() {
+            Double value = CdpObject.numberAsDouble(raw("longitude"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Mock accuracy
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble accuracy() {
+            Double value = CdpObject.numberAsDouble(raw("accuracy"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Mock latitude
+         * @param latitude field value; empty omits the value
+         * @return this model
+         */
+        public SetGeolocationOverrideRequest latitude(OptionalDouble latitude) {
+            set("latitude", latitude.isPresent() ? latitude.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Mock latitude
+         * @param latitude field value; null removes the value
+         * @return this model
+         */
+        public SetGeolocationOverrideRequest latitude(Double latitude) {
+            set("latitude", latitude);
+            return this;
+        }
+        /**
+         * Mock longitude
+         * @param longitude field value; empty omits the value
+         * @return this model
+         */
+        public SetGeolocationOverrideRequest longitude(OptionalDouble longitude) {
+            set("longitude", longitude.isPresent() ? longitude.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Mock longitude
+         * @param longitude field value; null removes the value
+         * @return this model
+         */
+        public SetGeolocationOverrideRequest longitude(Double longitude) {
+            set("longitude", longitude);
+            return this;
+        }
+        /**
+         * Mock accuracy
+         * @param accuracy field value; empty omits the value
+         * @return this model
+         */
+        public SetGeolocationOverrideRequest accuracy(OptionalDouble accuracy) {
+            set("accuracy", accuracy.isPresent() ? accuracy.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Mock accuracy
+         * @param accuracy field value; null removes the value
+         * @return this model
+         */
+        public SetGeolocationOverrideRequest accuracy(Double accuracy) {
+            set("accuracy", accuracy);
+            return this;
+        }
+    }
+    /**
+     * Controls whether page will emit lifecycle events.
+     */
+    public static final class SetLifecycleEventsEnabledRequest extends CdpObject {
+        public SetLifecycleEventsEnabledRequest() {}
+        /**
+         * Controls whether page will emit lifecycle events.
+         * @param enabled protocol value
+         */
+        public SetLifecycleEventsEnabledRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetLifecycleEventsEnabledRequest fromMap(Map<String, Object> values) {
+            SetLifecycleEventsEnabledRequest instance_ = new SetLifecycleEventsEnabledRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true, starts emitting lifecycle events.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * If true, starts emitting lifecycle events.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetLifecycleEventsEnabledRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+    }
+    /**
+     * Toggles mouse event-based touch event emulation.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetTouchEmulationEnabledRequest extends CdpObject {
+        public SetTouchEmulationEnabledRequest() {}
+        /**
+         * Toggles mouse event-based touch event emulation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enabled protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetTouchEmulationEnabledRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetTouchEmulationEnabledRequest fromMap(Map<String, Object> values) {
+            SetTouchEmulationEnabledRequest instance_ = new SetTouchEmulationEnabledRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether the touch event emulation should be enabled.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * Touch/gesture events configuration. Default: current platform.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<SetTouchEmulationEnabledConfigurationValues> configuration() {
+            return Optional.ofNullable(raw("configuration") == null ? null : SetTouchEmulationEnabledConfigurationValues.of((String) raw("configuration")));
+        }
+        /**
+         * Whether the touch event emulation should be enabled.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetTouchEmulationEnabledRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+        /**
+         * Touch/gesture events configuration. Default: current platform.
+         * @param configuration field value; empty omits the value
+         * @return this model
+         */
+        public SetTouchEmulationEnabledRequest configuration(Optional<SetTouchEmulationEnabledConfigurationValues> configuration) {
+            set("configuration", configuration.orElse(null));
+            return this;
+        }
+        /**
+         * Touch/gesture events configuration. Default: current platform.
+         * @param configuration field value; null removes the value
+         * @return this model
+         */
+        public SetTouchEmulationEnabledRequest configuration(SetTouchEmulationEnabledConfigurationValues configuration) {
+            set("configuration", configuration);
+            return this;
+        }
+    }
+    /**
+     * Starts sending each frame using the {@code screencastFrame} event.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class StartScreencastRequest extends CdpObject {
+        public StartScreencastRequest() {}
+        public static StartScreencastRequest fromMap(Map<String, Object> values) {
+            StartScreencastRequest instance_ = new StartScreencastRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Image compression format.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<StartScreencastFormatValues> format() {
+            return Optional.ofNullable(raw("format") == null ? null : StartScreencastFormatValues.of((String) raw("format")));
+        }
+        /**
+         * Compression quality from range [0..100].
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong quality() {
+            Long value = CdpObject.numberAsLong(raw("quality"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Maximum screenshot width.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxWidth() {
+            Long value = CdpObject.numberAsLong(raw("maxWidth"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Maximum screenshot height.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxHeight() {
+            Long value = CdpObject.numberAsLong(raw("maxHeight"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Send every n-th frame.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong everyNthFrame() {
+            Long value = CdpObject.numberAsLong(raw("everyNthFrame"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Image compression format.
+         * @param format field value; empty omits the value
+         * @return this model
+         */
+        public StartScreencastRequest format(Optional<StartScreencastFormatValues> format) {
+            set("format", format.orElse(null));
+            return this;
+        }
+        /**
+         * Image compression format.
+         * @param format field value; null removes the value
+         * @return this model
+         */
+        public StartScreencastRequest format(StartScreencastFormatValues format) {
+            set("format", format);
+            return this;
+        }
+        /**
+         * Compression quality from range [0..100].
+         * @param quality field value; empty omits the value
+         * @return this model
+         */
+        public StartScreencastRequest quality(OptionalLong quality) {
+            set("quality", quality.isPresent() ? quality.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Compression quality from range [0..100].
+         * @param quality field value; null removes the value
+         * @return this model
+         */
+        public StartScreencastRequest quality(Long quality) {
+            set("quality", quality);
+            return this;
+        }
+        /**
+         * Maximum screenshot width.
+         * @param maxWidth field value; empty omits the value
+         * @return this model
+         */
+        public StartScreencastRequest maxWidth(OptionalLong maxWidth) {
+            set("maxWidth", maxWidth.isPresent() ? maxWidth.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Maximum screenshot width.
+         * @param maxWidth field value; null removes the value
+         * @return this model
+         */
+        public StartScreencastRequest maxWidth(Long maxWidth) {
+            set("maxWidth", maxWidth);
+            return this;
+        }
+        /**
+         * Maximum screenshot height.
+         * @param maxHeight field value; empty omits the value
+         * @return this model
+         */
+        public StartScreencastRequest maxHeight(OptionalLong maxHeight) {
+            set("maxHeight", maxHeight.isPresent() ? maxHeight.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Maximum screenshot height.
+         * @param maxHeight field value; null removes the value
+         * @return this model
+         */
+        public StartScreencastRequest maxHeight(Long maxHeight) {
+            set("maxHeight", maxHeight);
+            return this;
+        }
+        /**
+         * Send every n-th frame.
+         * @param everyNthFrame field value; empty omits the value
+         * @return this model
+         */
+        public StartScreencastRequest everyNthFrame(OptionalLong everyNthFrame) {
+            set("everyNthFrame", everyNthFrame.isPresent() ? everyNthFrame.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Send every n-th frame.
+         * @param everyNthFrame field value; null removes the value
+         * @return this model
+         */
+        public StartScreencastRequest everyNthFrame(Long everyNthFrame) {
+            set("everyNthFrame", everyNthFrame);
+            return this;
+        }
+    }
+    /**
+     * Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetWebLifecycleStateRequest extends CdpObject {
+        public SetWebLifecycleStateRequest() {}
+        /**
+         * Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param state protocol value
+         */
+        public SetWebLifecycleStateRequest(SetWebLifecycleStateStateValues state) {
+            set("state", state);
+        }
+        public static SetWebLifecycleStateRequest fromMap(Map<String, Object> values) {
+            SetWebLifecycleStateRequest instance_ = new SetWebLifecycleStateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Target lifecycle state
+         * @return the protocol field value
+         */
+        public SetWebLifecycleStateStateValues state() {
+            return SetWebLifecycleStateStateValues.of((String) require("state"));
+        }
+        /**
+         * Target lifecycle state
+         * @param state field value
+         * @return this model
+         */
+        public SetWebLifecycleStateRequest state(SetWebLifecycleStateStateValues state) {
+            set("state", state);
+            return this;
+        }
+    }
+    /**
+     * Requests backend to produce compilation cache for the specified scripts. {@code scripts} are appended to the list of scripts for which the cache would be produced. The list may be reset during page navigation. When script with a matching URL is encountered, the cache is optionally produced upon backend discretion, based on internal heuristics. See also: {@code Page.compilationCacheProduced}.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ProduceCompilationCacheRequest extends CdpObject {
+        public ProduceCompilationCacheRequest() {}
+        /**
+         * Requests backend to produce compilation cache for the specified scripts. {@code scripts} are appended to the list of scripts for which the cache would be produced. The list may be reset during page navigation. When script with a matching URL is encountered, the cache is optionally produced upon backend discretion, based on internal heuristics. See also: {@code Page.compilationCacheProduced}.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param scripts protocol value
+         */
+        public ProduceCompilationCacheRequest(java.util.List<Page.CompilationCacheParams> scripts) {
+            set("scripts", scripts);
+        }
+        public static ProduceCompilationCacheRequest fromMap(Map<String, Object> values) {
+            ProduceCompilationCacheRequest instance_ = new ProduceCompilationCacheRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the scripts field.
+         * @return the protocol field value
+         */
+        public java.util.List<Page.CompilationCacheParams> scripts() {
+            return CdpObject.requireList(require("scripts"), element0 -> java.util.Objects.requireNonNull(Page.CompilationCacheParams.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Sets the scripts field.
+         * @param scripts field value
+         * @return this model
+         */
+        public ProduceCompilationCacheRequest scripts(java.util.List<Page.CompilationCacheParams> scripts) {
+            set("scripts", scripts);
+            return this;
+        }
+    }
+    /**
+     * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class AddCompilationCacheRequest extends CdpObject {
+        public AddCompilationCacheRequest() {}
+        /**
+         * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param url protocol value
+         * @param data protocol value
+         */
+        public AddCompilationCacheRequest(String url, String data) {
+            set("url", url);
+            set("data", data);
+        }
+        public static AddCompilationCacheRequest fromMap(Map<String, Object> values) {
+            AddCompilationCacheRequest instance_ = new AddCompilationCacheRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the url field.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * Base64-encoded data (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value
+         */
+        public String data() {
+            return (String) require("data");
+        }
+        /**
+         * Sets the url field.
+         * @param url field value
+         * @return this model
+         */
+        public AddCompilationCacheRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Base64-encoded data (Encoded as a base64 string when passed over JSON)
+         * @param data field value
+         * @return this model
+         */
+        public AddCompilationCacheRequest data(String data) {
+            set("data", data);
+            return this;
+        }
+    }
+    /**
+     * Sets the Secure Payment Confirmation transaction mode. https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetSPCTransactionModeRequest extends CdpObject {
+        public SetSPCTransactionModeRequest() {}
+        /**
+         * Sets the Secure Payment Confirmation transaction mode. https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param mode protocol value
+         */
+        public SetSPCTransactionModeRequest(SetSPCTransactionModeModeValues mode) {
+            set("mode", mode);
+        }
+        public static SetSPCTransactionModeRequest fromMap(Map<String, Object> values) {
+            SetSPCTransactionModeRequest instance_ = new SetSPCTransactionModeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the mode field.
+         * @return the protocol field value
+         */
+        public SetSPCTransactionModeModeValues mode() {
+            return SetSPCTransactionModeModeValues.of((String) require("mode"));
+        }
+        /**
+         * Sets the mode field.
+         * @param mode field value
+         * @return this model
+         */
+        public SetSPCTransactionModeRequest mode(SetSPCTransactionModeModeValues mode) {
+            set("mode", mode);
+            return this;
+        }
+    }
+    /**
+     * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetRPHRegistrationModeRequest extends CdpObject {
+        public SetRPHRegistrationModeRequest() {}
+        /**
+         * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param mode protocol value
+         */
+        public SetRPHRegistrationModeRequest(SetRPHRegistrationModeModeValues mode) {
+            set("mode", mode);
+        }
+        public static SetRPHRegistrationModeRequest fromMap(Map<String, Object> values) {
+            SetRPHRegistrationModeRequest instance_ = new SetRPHRegistrationModeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the mode field.
+         * @return the protocol field value
+         */
+        public SetRPHRegistrationModeModeValues mode() {
+            return SetRPHRegistrationModeModeValues.of((String) require("mode"));
+        }
+        /**
+         * Sets the mode field.
+         * @param mode field value
+         * @return this model
+         */
+        public SetRPHRegistrationModeRequest mode(SetRPHRegistrationModeModeValues mode) {
+            set("mode", mode);
+            return this;
+        }
+    }
+    /**
+     * Generates a report for testing.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GenerateTestReportRequest extends CdpObject {
+        public GenerateTestReportRequest() {}
+        /**
+         * Generates a report for testing.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param message protocol value
+         */
+        public GenerateTestReportRequest(String message) {
+            set("message", message);
+        }
+        public static GenerateTestReportRequest fromMap(Map<String, Object> values) {
+            GenerateTestReportRequest instance_ = new GenerateTestReportRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Message to be displayed in the report.
+         * @return the protocol field value
+         */
+        public String message() {
+            return (String) require("message");
+        }
+        /**
+         * Specifies the endpoint group to deliver the report to.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> group() {
+            return Optional.ofNullable((String) raw("group"));
+        }
+        /**
+         * Message to be displayed in the report.
+         * @param message field value
+         * @return this model
+         */
+        public GenerateTestReportRequest message(String message) {
+            set("message", message);
+            return this;
+        }
+        /**
+         * Specifies the endpoint group to deliver the report to.
+         * @param group field value; empty omits the value
+         * @return this model
+         */
+        public GenerateTestReportRequest group(Optional<String> group) {
+            set("group", group.orElse(null));
+            return this;
+        }
+        /**
+         * Specifies the endpoint group to deliver the report to.
+         * @param group field value; null removes the value
+         * @return this model
+         */
+        public GenerateTestReportRequest group(String group) {
+            set("group", group);
+            return this;
+        }
+    }
+    /**
+     * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
+     */
+    public static final class SetInterceptFileChooserDialogRequest extends CdpObject {
+        public SetInterceptFileChooserDialogRequest() {}
+        /**
+         * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
+         * @param enabled protocol value
+         */
+        public SetInterceptFileChooserDialogRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetInterceptFileChooserDialogRequest fromMap(Map<String, Object> values) {
+            SetInterceptFileChooserDialogRequest instance_ = new SetInterceptFileChooserDialogRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the enabled field.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * If true, cancels the dialog by emitting relevant events (if any) in addition to not showing it if the interception is enabled (default: false).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> cancel() {
+            return Optional.ofNullable((Boolean) raw("cancel"));
+        }
+        /**
+         * Sets the enabled field.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetInterceptFileChooserDialogRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+        /**
+         * If true, cancels the dialog by emitting relevant events (if any) in addition to not showing it if the interception is enabled (default: false).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param cancel field value; empty omits the value
+         * @return this model
+         */
+        public SetInterceptFileChooserDialogRequest cancel(Optional<Boolean> cancel) {
+            set("cancel", cancel.orElse(null));
+            return this;
+        }
+        /**
+         * If true, cancels the dialog by emitting relevant events (if any) in addition to not showing it if the interception is enabled (default: false).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param cancel field value; null removes the value
+         * @return this model
+         */
+        public SetInterceptFileChooserDialogRequest cancel(Boolean cancel) {
+            set("cancel", cancel);
+            return this;
+        }
+    }
+    /**
+     * Enable/disable prerendering manually.
+     * <p>This command is a short-term solution for https://crbug.com/1440085. See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA for more details.
+     * <p>TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetPrerenderingAllowedRequest extends CdpObject {
+        public SetPrerenderingAllowedRequest() {}
+        /**
+         * Enable/disable prerendering manually.
+         * <p>This command is a short-term solution for https://crbug.com/1440085. See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA for more details.
+         * <p>TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param isAllowed protocol value
+         */
+        public SetPrerenderingAllowedRequest(boolean isAllowed) {
+            set("isAllowed", isAllowed);
+        }
+        public static SetPrerenderingAllowedRequest fromMap(Map<String, Object> values) {
+            SetPrerenderingAllowedRequest instance_ = new SetPrerenderingAllowedRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the isAllowed field.
+         * @return the protocol field value
+         */
+        public boolean isAllowed() {
+            return (Boolean) require("isAllowed");
+        }
+        /**
+         * Sets the isAllowed field.
+         * @param isAllowed field value
+         * @return this model
+         */
+        public SetPrerenderingAllowedRequest isAllowed(boolean isAllowed) {
+            set("isAllowed", isAllowed);
+            return this;
+        }
+    }
+    /**
+     * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetAnnotatedPageContentRequest extends CdpObject {
+        public GetAnnotatedPageContentRequest() {}
+        public static GetAnnotatedPageContentRequest fromMap(Map<String, Object> values) {
+            GetAnnotatedPageContentRequest instance_ = new GetAnnotatedPageContentRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to include actionable information. Defaults to true.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeActionableInformation() {
+            return Optional.ofNullable((Boolean) raw("includeActionableInformation"));
+        }
+        /**
+         * Whether to include actionable information. Defaults to true.
+         * @param includeActionableInformation field value; empty omits the value
+         * @return this model
+         */
+        public GetAnnotatedPageContentRequest includeActionableInformation(Optional<Boolean> includeActionableInformation) {
+            set("includeActionableInformation", includeActionableInformation.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include actionable information. Defaults to true.
+         * @param includeActionableInformation field value; null removes the value
+         * @return this model
+         */
+        public GetAnnotatedPageContentRequest includeActionableInformation(Boolean includeActionableInformation) {
+            set("includeActionableInformation", includeActionableInformation);
+            return this;
+        }
+    }
+    /**
      * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
      */
     public static final class GetAppManifestResult extends CdpObject {
@@ -6468,6 +9607,17 @@ public final class Page {
             return client.call("Page.addScriptToEvaluateOnLoad", params, result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
         }
         /**
+         * Deprecated, please use addScriptToEvaluateOnNewDocument instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnLoad(AddScriptToEvaluateOnLoadRequest request) {
+            return client.call("Page.addScriptToEvaluateOnLoad", request == null ? null : request.toMap(), result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
+        }
+        /**
          * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
          * @param source protocol value
          * @param worldName protocol value
@@ -6490,6 +9640,14 @@ public final class Page {
          */
         public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnNewDocument(String source) {
             return addScriptToEvaluateOnNewDocument(source, Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnNewDocument(AddScriptToEvaluateOnNewDocumentRequest request) {
+            return client.call("Page.addScriptToEvaluateOnNewDocument", request == null ? null : request.toMap(), result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
         }
         /**
          * Brings page to front (activates tab).
@@ -6526,6 +9684,14 @@ public final class Page {
             return captureScreenshot(Optional.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Capture page screenshot.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> captureScreenshot(CaptureScreenshotRequest request) {
+            return client.call("Page.captureScreenshot", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+        }
+        /**
          * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param format protocol value
@@ -6543,6 +9709,15 @@ public final class Page {
          */
         public CompletionStage<String> captureSnapshot() {
             return captureSnapshot(Optional.empty());
+        }
+        /**
+         * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> captureSnapshot(CaptureSnapshotRequest request) {
+            return client.call("Page.captureSnapshot", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
         }
         /**
          * Clears the overridden device metrics.
@@ -6596,6 +9771,14 @@ public final class Page {
             return createIsolatedWorld(frameId, Optional.empty(), Optional.empty());
         }
         /**
+         * Creates an isolated world for the given frame.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Runtime.ExecutionContextId> createIsolatedWorld(CreateIsolatedWorldRequest request) {
+            return client.call("Page.createIsolatedWorld", request == null ? null : request.toMap(), result_ -> new Runtime.ExecutionContextId(((Number) java.util.Objects.requireNonNull(result_.get("executionContextId"))).longValue()));
+        }
+        /**
          * Deletes browser cookie with given name, domain and path.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param cookieName protocol value
@@ -6609,6 +9792,17 @@ public final class Page {
             params.put("cookieName", CdpObject.json(cookieName));
             params.put("url", CdpObject.json(url));
             return client.call("Page.deleteCookie", params, result_ -> null);
+        }
+        /**
+         * Deletes browser cookie with given name, domain and path.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> deleteCookie(DeleteCookieRequest request) {
+            return client.call("Page.deleteCookie", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Disables page domain notifications.
@@ -6635,6 +9829,14 @@ public final class Page {
             return enable(Optional.empty());
         }
         /**
+         * Enables page domain notifications.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("Page.enable", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
          * @param manifestId protocol value
          * @return a stage completing with the command result
@@ -6650,6 +9852,14 @@ public final class Page {
          */
         public CompletionStage<GetAppManifestResult> getAppManifest() {
             return getAppManifest(Optional.empty());
+        }
+        /**
+         * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetAppManifestResult> getAppManifest(GetAppManifestRequest request) {
+            return client.call("Page.getAppManifest", request == null ? null : request.toMap(), result_ -> new GetAppManifestResult(result_));
         }
         /**
          * Invokes Page.getInstallabilityErrors.
@@ -6687,6 +9897,15 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("frameId", CdpObject.json(frameId));
             return client.call("Page.getAdScriptAncestry", params, result_ -> Optional.ofNullable(result_.get("adScriptAncestry") == null ? null : Network.AdAncestry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(result_.get("adScriptAncestry"))))));
+        }
+        /**
+         * Invokes Page.getAdScriptAncestry with a request object.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Optional<Network.AdAncestry>> getAdScriptAncestry(GetAdScriptAncestryRequest request) {
+            return client.call("Page.getAdScriptAncestry", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("adScriptAncestry") == null ? null : Network.AdAncestry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(result_.get("adScriptAncestry"))))));
         }
         /**
          * Returns present frame tree structure.
@@ -6730,6 +9949,15 @@ public final class Page {
             return client.call("Page.getResourceContent", params, result_ -> new GetResourceContentResult(result_));
         }
         /**
+         * Returns content of the given resource.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetResourceContentResult> getResourceContent(GetResourceContentRequest request) {
+            return client.call("Page.getResourceContent", request == null ? null : request.toMap(), result_ -> new GetResourceContentResult(result_));
+        }
+        /**
          * Returns present frame / resource tree structure.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
@@ -6758,6 +9986,14 @@ public final class Page {
             return handleJavaScriptDialog(accept, Optional.empty());
         }
         /**
+         * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> handleJavaScriptDialog(HandleJavaScriptDialogRequest request) {
+            return client.call("Page.handleJavaScriptDialog", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Navigates current page to the given URL.
          * @param url protocol value
          * @param referrer protocol value
@@ -6784,6 +10020,14 @@ public final class Page {
             return navigate(url, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Navigates current page to the given URL.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<NavigateResult> navigate(NavigateRequest request) {
+            return client.call("Page.navigate", request == null ? null : request.toMap(), result_ -> new NavigateResult(result_));
+        }
+        /**
          * Navigates current page to the given history entry.
          * @param entryId protocol value
          * @return a stage completing when the command completes
@@ -6792,6 +10036,14 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("entryId", CdpObject.json(entryId));
             return client.call("Page.navigateToHistoryEntry", params, result_ -> null);
+        }
+        /**
+         * Navigates current page to the given history entry.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> navigateToHistoryEntry(NavigateToHistoryEntryRequest request) {
+            return client.call("Page.navigateToHistoryEntry", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Print page as PDF.
@@ -6843,6 +10095,14 @@ public final class Page {
             return printToPDF(Optional.empty(), Optional.empty(), Optional.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Print page as PDF.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<PrintToPDFResult> printToPDF(PrintToPDFRequest request) {
+            return client.call("Page.printToPDF", request == null ? null : request.toMap(), result_ -> new PrintToPDFResult(result_));
+        }
+        /**
          * Reloads given page optionally ignoring the cache.
          * @param ignoreCache protocol value
          * @param scriptToEvaluateOnLoad protocol value
@@ -6864,6 +10124,14 @@ public final class Page {
             return reload(Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Reloads given page optionally ignoring the cache.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reload(ReloadRequest request) {
+            return client.call("Page.reload", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param identifier protocol value
@@ -6877,6 +10145,17 @@ public final class Page {
             return client.call("Page.removeScriptToEvaluateOnLoad", params, result_ -> null);
         }
         /**
+         * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> removeScriptToEvaluateOnLoad(RemoveScriptToEvaluateOnLoadRequest request) {
+            return client.call("Page.removeScriptToEvaluateOnLoad", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Removes given script from the list.
          * @param identifier protocol value
          * @return a stage completing when the command completes
@@ -6885,6 +10164,14 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("identifier", CdpObject.json(identifier));
             return client.call("Page.removeScriptToEvaluateOnNewDocument", params, result_ -> null);
+        }
+        /**
+         * Removes given script from the list.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> removeScriptToEvaluateOnNewDocument(RemoveScriptToEvaluateOnNewDocumentRequest request) {
+            return client.call("Page.removeScriptToEvaluateOnNewDocument", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Acknowledges that a screencast frame has been received by the frontend.
@@ -6896,6 +10183,15 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("sessionId", CdpObject.json(sessionId));
             return client.call("Page.screencastFrameAck", params, result_ -> null);
+        }
+        /**
+         * Acknowledges that a screencast frame has been received by the frontend.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> screencastFrameAck(ScreencastFrameAckRequest request) {
+            return client.call("Page.screencastFrameAck", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Searches for given string in resource content.
@@ -6928,6 +10224,15 @@ public final class Page {
             return searchInResource(frameId, url, query, Optional.empty(), Optional.empty());
         }
         /**
+         * Searches for given string in resource content.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResource(SearchInResourceRequest request) {
+            return client.call("Page.searchInResource", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Enable Chrome&#x27;s experimental ad filter on all sites.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param enabled protocol value
@@ -6939,6 +10244,15 @@ public final class Page {
             return client.call("Page.setAdBlockingEnabled", params, result_ -> null);
         }
         /**
+         * Enable Chrome&#x27;s experimental ad filter on all sites.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAdBlockingEnabled(SetAdBlockingEnabledRequest request) {
+            return client.call("Page.setAdBlockingEnabled", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enable page Content Security Policy by-passing.
          * @param enabled protocol value
          * @return a stage completing when the command completes
@@ -6947,6 +10261,14 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("Page.setBypassCSP", params, result_ -> null);
+        }
+        /**
+         * Enable page Content Security Policy by-passing.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setBypassCSP(SetBypassCSPRequest request) {
+            return client.call("Page.setBypassCSP", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Get Permissions Policy state on given frame.
@@ -6960,6 +10282,15 @@ public final class Page {
             return client.call("Page.getPermissionsPolicyState", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("states")), element0 -> java.util.Objects.requireNonNull(Page.PermissionsPolicyFeatureState.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
+         * Get Permissions Policy state on given frame.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Page.PermissionsPolicyFeatureState>> getPermissionsPolicyState(GetPermissionsPolicyStateRequest request) {
+            return client.call("Page.getPermissionsPolicyState", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("states")), element0 -> java.util.Objects.requireNonNull(Page.PermissionsPolicyFeatureState.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Get Origin Trials on given frame.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param frameId protocol value
@@ -6969,6 +10300,15 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("frameId", CdpObject.json(frameId));
             return client.call("Page.getOriginTrials", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("originTrials")), element0 -> java.util.Objects.requireNonNull(Page.OriginTrial.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Get Origin Trials on given frame.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Page.OriginTrial>> getOriginTrials(GetOriginTrialsRequest request) {
+            return client.call("Page.getOriginTrials", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("originTrials")), element0 -> java.util.Objects.requireNonNull(Page.OriginTrial.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
@@ -7020,6 +10360,17 @@ public final class Page {
             return setDeviceMetricsOverride(width, height, deviceScaleFactor, mobile, OptionalDouble.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setDeviceMetricsOverride(SetDeviceMetricsOverrideRequest request) {
+            return client.call("Page.setDeviceMetricsOverride", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Overrides the Device Orientation.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param alpha protocol value
@@ -7035,6 +10386,17 @@ public final class Page {
             params.put("beta", CdpObject.json(beta));
             params.put("gamma", CdpObject.json(gamma));
             return client.call("Page.setDeviceOrientationOverride", params, result_ -> null);
+        }
+        /**
+         * Overrides the Device Orientation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setDeviceOrientationOverride(SetDeviceOrientationOverrideRequest request) {
+            return client.call("Page.setDeviceOrientationOverride", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Set generic font families.
@@ -7059,6 +10421,15 @@ public final class Page {
             return setFontFamilies(fontFamilies, Optional.empty());
         }
         /**
+         * Set generic font families.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setFontFamilies(SetFontFamiliesRequest request) {
+            return client.call("Page.setFontFamilies", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Set default font sizes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param fontSizes protocol value
@@ -7068,6 +10439,15 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("fontSizes", CdpObject.json(fontSizes));
             return client.call("Page.setFontSizes", params, result_ -> null);
+        }
+        /**
+         * Set default font sizes.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setFontSizes(SetFontSizesRequest request) {
+            return client.call("Page.setFontSizes", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Sets given markup as the document&#x27;s HTML.
@@ -7080,6 +10460,14 @@ public final class Page {
             params.put("frameId", CdpObject.json(frameId));
             params.put("html", CdpObject.json(html));
             return client.call("Page.setDocumentContent", params, result_ -> null);
+        }
+        /**
+         * Sets given markup as the document&#x27;s HTML.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setDocumentContent(SetDocumentContentRequest request) {
+            return client.call("Page.setDocumentContent", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Set the behavior when downloading a file.
@@ -7108,6 +10496,17 @@ public final class Page {
             return setDownloadBehavior(behavior, Optional.empty());
         }
         /**
+         * Set the behavior when downloading a file.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorRequest request) {
+            return client.call("Page.setDownloadBehavior", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
          * @param latitude protocol value
          * @param longitude protocol value
@@ -7133,6 +10532,16 @@ public final class Page {
             return setGeolocationOverride(OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty());
         }
         /**
+         * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setGeolocationOverride(SetGeolocationOverrideRequest request) {
+            return client.call("Page.setGeolocationOverride", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Controls whether page will emit lifecycle events.
          * @param enabled protocol value
          * @return a stage completing when the command completes
@@ -7141,6 +10550,14 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("Page.setLifecycleEventsEnabled", params, result_ -> null);
+        }
+        /**
+         * Controls whether page will emit lifecycle events.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setLifecycleEventsEnabled(SetLifecycleEventsEnabledRequest request) {
+            return client.call("Page.setLifecycleEventsEnabled", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Toggles mouse event-based touch event emulation.
@@ -7169,6 +10586,17 @@ public final class Page {
             return setTouchEmulationEnabled(enabled, Optional.empty());
         }
         /**
+         * Toggles mouse event-based touch event emulation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setTouchEmulationEnabled(SetTouchEmulationEnabledRequest request) {
+            return client.call("Page.setTouchEmulationEnabled", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Starts sending each frame using the {@code screencastFrame} event.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param format protocol value
@@ -7194,6 +10622,15 @@ public final class Page {
          */
         public CompletionStage<Void> startScreencast() {
             return startScreencast(Optional.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty());
+        }
+        /**
+         * Starts sending each frame using the {@code screencastFrame} event.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startScreencast(StartScreencastRequest request) {
+            return client.call("Page.startScreencast", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Force the page stop all navigations and pending resource fetches.
@@ -7229,6 +10666,15 @@ public final class Page {
             return client.call("Page.setWebLifecycleState", params, result_ -> null);
         }
         /**
+         * Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setWebLifecycleState(SetWebLifecycleStateRequest request) {
+            return client.call("Page.setWebLifecycleState", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Stops sending each frame in the {@code screencastFrame}.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing when the command completes
@@ -7248,6 +10694,15 @@ public final class Page {
             return client.call("Page.produceCompilationCache", params, result_ -> null);
         }
         /**
+         * Requests backend to produce compilation cache for the specified scripts. {@code scripts} are appended to the list of scripts for which the cache would be produced. The list may be reset during page navigation. When script with a matching URL is encountered, the cache is optionally produced upon backend discretion, based on internal heuristics. See also: {@code Page.compilationCacheProduced}.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> produceCompilationCache(ProduceCompilationCacheRequest request) {
+            return client.call("Page.produceCompilationCache", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param url protocol value
@@ -7259,6 +10714,15 @@ public final class Page {
             params.put("url", CdpObject.json(url));
             params.put("data", CdpObject.json(data));
             return client.call("Page.addCompilationCache", params, result_ -> null);
+        }
+        /**
+         * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> addCompilationCache(AddCompilationCacheRequest request) {
+            return client.call("Page.addCompilationCache", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Clears seeded compilation cache.
@@ -7280,6 +10744,15 @@ public final class Page {
             return client.call("Page.setSPCTransactionMode", params, result_ -> null);
         }
         /**
+         * Sets the Secure Payment Confirmation transaction mode. https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setSPCTransactionMode(SetSPCTransactionModeRequest request) {
+            return client.call("Page.setSPCTransactionMode", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param mode protocol value
@@ -7289,6 +10762,15 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("mode", CdpObject.json(mode));
             return client.call("Page.setRPHRegistrationMode", params, result_ -> null);
+        }
+        /**
+         * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setRPHRegistrationMode(SetRPHRegistrationModeRequest request) {
+            return client.call("Page.setRPHRegistrationMode", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Generates a report for testing.
@@ -7311,6 +10793,15 @@ public final class Page {
          */
         public CompletionStage<Void> generateTestReport(String message) {
             return generateTestReport(message, Optional.empty());
+        }
+        /**
+         * Generates a report for testing.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> generateTestReport(GenerateTestReportRequest request) {
+            return client.call("Page.generateTestReport", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Pauses page execution. Can be resumed using generic Runtime.runIfWaitingForDebugger.
@@ -7341,6 +10832,14 @@ public final class Page {
             return setInterceptFileChooserDialog(enabled, Optional.empty());
         }
         /**
+         * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setInterceptFileChooserDialog(SetInterceptFileChooserDialogRequest request) {
+            return client.call("Page.setInterceptFileChooserDialog", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enable/disable prerendering manually.
          * <p>This command is a short-term solution for https://crbug.com/1440085. See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA for more details.
          * <p>TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
@@ -7352,6 +10851,17 @@ public final class Page {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("isAllowed", CdpObject.json(isAllowed));
             return client.call("Page.setPrerenderingAllowed", params, result_ -> null);
+        }
+        /**
+         * Enable/disable prerendering manually.
+         * <p>This command is a short-term solution for https://crbug.com/1440085. See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA for more details.
+         * <p>TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setPrerenderingAllowed(SetPrerenderingAllowedRequest request) {
+            return client.call("Page.setPrerenderingAllowed", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
@@ -7371,6 +10881,15 @@ public final class Page {
          */
         public CompletionStage<String> getAnnotatedPageContent() {
             return getAnnotatedPageContent(Optional.empty());
+        }
+        /**
+         * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> getAnnotatedPageContent(GetAnnotatedPageContentRequest request) {
+            return client.call("Page.getAnnotatedPageContent", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("content")));
         }
         /**
          * Subscribes to Page.domContentEventFired.

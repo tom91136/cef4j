@@ -66,6 +66,82 @@ public final class Performance {
         }
     }
     /**
+     * Enable collecting and reporting metrics.
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Time domain to use for collecting and reporting duration metrics.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<EnableTimeDomainValues> timeDomain() {
+            return Optional.ofNullable(raw("timeDomain") == null ? null : EnableTimeDomainValues.of((String) raw("timeDomain")));
+        }
+        /**
+         * Time domain to use for collecting and reporting duration metrics.
+         * @param timeDomain field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest timeDomain(Optional<EnableTimeDomainValues> timeDomain) {
+            set("timeDomain", timeDomain.orElse(null));
+            return this;
+        }
+        /**
+         * Time domain to use for collecting and reporting duration metrics.
+         * @param timeDomain field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest timeDomain(EnableTimeDomainValues timeDomain) {
+            set("timeDomain", timeDomain);
+            return this;
+        }
+    }
+    /**
+     * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection. Calling this method while metrics collection is enabled returns an error.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetTimeDomainRequest extends CdpObject {
+        public SetTimeDomainRequest() {}
+        /**
+         * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection. Calling this method while metrics collection is enabled returns an error.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param timeDomain protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetTimeDomainRequest(SetTimeDomainTimeDomainValues timeDomain) {
+            set("timeDomain", timeDomain);
+        }
+        public static SetTimeDomainRequest fromMap(Map<String, Object> values) {
+            SetTimeDomainRequest instance_ = new SetTimeDomainRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Time domain
+         * @return the protocol field value
+         */
+        public SetTimeDomainTimeDomainValues timeDomain() {
+            return SetTimeDomainTimeDomainValues.of((String) require("timeDomain"));
+        }
+        /**
+         * Time domain
+         * @param timeDomain field value
+         * @return this model
+         */
+        public SetTimeDomainRequest timeDomain(SetTimeDomainTimeDomainValues timeDomain) {
+            set("timeDomain", timeDomain);
+            return this;
+        }
+    }
+    /**
      * Current values of the metrics.
      */
     public static final class MetricsEvent extends CdpObject {
@@ -167,6 +243,14 @@ public final class Performance {
             return enable(Optional.empty());
         }
         /**
+         * Enable collecting and reporting metrics.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("Performance.enable", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection. Calling this method while metrics collection is enabled returns an error.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param timeDomain protocol value
@@ -178,6 +262,17 @@ public final class Performance {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("timeDomain", CdpObject.json(timeDomain));
             return client.call("Performance.setTimeDomain", params, result_ -> null);
+        }
+        /**
+         * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection. Calling this method while metrics collection is enabled returns an error.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setTimeDomain(SetTimeDomainRequest request) {
+            return client.call("Performance.setTimeDomain", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Retrieve current values of run-time metrics.

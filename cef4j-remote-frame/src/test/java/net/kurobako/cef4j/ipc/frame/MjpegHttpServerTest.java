@@ -54,7 +54,7 @@ class MjpegHttpServerTest {
                     new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             String line = reader.readLine();
             if (line == null) throw new IOException("no HTTP response");
-            String[] parts = line.split("\\s+");
+            String[] parts = line.split("\\s+", -1);
             return Integer.parseInt(parts[1]);
         }
     }

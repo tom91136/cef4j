@@ -30,23 +30,7 @@ final class GsonCdpCodecTest {
         CdpClient client = new CdpClient(transport, new GsonCdpCodec());
         Runtime.EvaluateResult result = client.domains()
                 .runtime()
-                .evaluate(
-                        "'hello'",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.of(true),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty())
+                .evaluate(new Runtime.EvaluateRequest("'hello'").returnByValue(true))
                 .toCompletableFuture()
                 .join();
 

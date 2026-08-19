@@ -77,25 +77,7 @@ class DevToolsSessionTest {
                     .isEqualTo(42);
 
             CdpClient typed = new CdpClient(devTools, new JacksonCdpCodec());
-            var typedCommand = typed.domains()
-                    .runtime()
-                    .evaluate(
-                            "document.title",
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.of(true),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty());
+            var typedCommand = typed.domains().runtime().evaluate("document.title");
             Frame typedSend = peer.receive();
             int typedId = commandId(typedSend);
             peer.respond(typedSend, new BrowserHostSendDevToolsMessageResponse(1));

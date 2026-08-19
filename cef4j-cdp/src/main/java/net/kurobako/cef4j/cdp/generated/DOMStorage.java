@@ -116,6 +116,196 @@ public final class DOMStorage {
         }
     }
     /**
+     * Request parameters for DOMStorage.clear.
+     */
+    public static final class ClearRequest extends CdpObject {
+        public ClearRequest() {}
+        /**
+         * Creates a new ClearRequest with all required parameters.
+         * @param storageId protocol value
+         */
+        public ClearRequest(DOMStorage.StorageId storageId) {
+            set("storageId", storageId);
+        }
+        public static ClearRequest fromMap(Map<String, Object> values) {
+            ClearRequest instance_ = new ClearRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the storageId field.
+         * @return the protocol field value
+         */
+        public DOMStorage.StorageId storageId() {
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+        }
+        /**
+         * Sets the storageId field.
+         * @param storageId field value
+         * @return this model
+         */
+        public ClearRequest storageId(DOMStorage.StorageId storageId) {
+            set("storageId", storageId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for DOMStorage.getDOMStorageItems.
+     */
+    public static final class GetDOMStorageItemsRequest extends CdpObject {
+        public GetDOMStorageItemsRequest() {}
+        /**
+         * Creates a new GetDOMStorageItemsRequest with all required parameters.
+         * @param storageId protocol value
+         */
+        public GetDOMStorageItemsRequest(DOMStorage.StorageId storageId) {
+            set("storageId", storageId);
+        }
+        public static GetDOMStorageItemsRequest fromMap(Map<String, Object> values) {
+            GetDOMStorageItemsRequest instance_ = new GetDOMStorageItemsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the storageId field.
+         * @return the protocol field value
+         */
+        public DOMStorage.StorageId storageId() {
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+        }
+        /**
+         * Sets the storageId field.
+         * @param storageId field value
+         * @return this model
+         */
+        public GetDOMStorageItemsRequest storageId(DOMStorage.StorageId storageId) {
+            set("storageId", storageId);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for DOMStorage.removeDOMStorageItem.
+     */
+    public static final class RemoveDOMStorageItemRequest extends CdpObject {
+        public RemoveDOMStorageItemRequest() {}
+        /**
+         * Creates a new RemoveDOMStorageItemRequest with all required parameters.
+         * @param storageId protocol value
+         * @param key protocol value
+         */
+        public RemoveDOMStorageItemRequest(DOMStorage.StorageId storageId, String key) {
+            set("storageId", storageId);
+            set("key", key);
+        }
+        public static RemoveDOMStorageItemRequest fromMap(Map<String, Object> values) {
+            RemoveDOMStorageItemRequest instance_ = new RemoveDOMStorageItemRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the storageId field.
+         * @return the protocol field value
+         */
+        public DOMStorage.StorageId storageId() {
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+        }
+        /**
+         * Returns the key field.
+         * @return the protocol field value
+         */
+        public String key() {
+            return (String) require("key");
+        }
+        /**
+         * Sets the storageId field.
+         * @param storageId field value
+         * @return this model
+         */
+        public RemoveDOMStorageItemRequest storageId(DOMStorage.StorageId storageId) {
+            set("storageId", storageId);
+            return this;
+        }
+        /**
+         * Sets the key field.
+         * @param key field value
+         * @return this model
+         */
+        public RemoveDOMStorageItemRequest key(String key) {
+            set("key", key);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for DOMStorage.setDOMStorageItem.
+     */
+    public static final class SetDOMStorageItemRequest extends CdpObject {
+        public SetDOMStorageItemRequest() {}
+        /**
+         * Creates a new SetDOMStorageItemRequest with all required parameters.
+         * @param storageId protocol value
+         * @param key protocol value
+         * @param value protocol value
+         */
+        public SetDOMStorageItemRequest(DOMStorage.StorageId storageId, String key, String value) {
+            set("storageId", storageId);
+            set("key", key);
+            set("value", value);
+        }
+        public static SetDOMStorageItemRequest fromMap(Map<String, Object> values) {
+            SetDOMStorageItemRequest instance_ = new SetDOMStorageItemRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the storageId field.
+         * @return the protocol field value
+         */
+        public DOMStorage.StorageId storageId() {
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+        }
+        /**
+         * Returns the key field.
+         * @return the protocol field value
+         */
+        public String key() {
+            return (String) require("key");
+        }
+        /**
+         * Returns the value field.
+         * @return the protocol field value
+         */
+        public String value() {
+            return (String) require("value");
+        }
+        /**
+         * Sets the storageId field.
+         * @param storageId field value
+         * @return this model
+         */
+        public SetDOMStorageItemRequest storageId(DOMStorage.StorageId storageId) {
+            set("storageId", storageId);
+            return this;
+        }
+        /**
+         * Sets the key field.
+         * @param key field value
+         * @return this model
+         */
+        public SetDOMStorageItemRequest key(String key) {
+            set("key", key);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public SetDOMStorageItemRequest value(String value) {
+            set("value", value);
+            return this;
+        }
+    }
+    /**
      * Payload of the DOMStorage.domStorageItemAdded event.
      */
     public static final class DomStorageItemAddedEvent extends CdpObject {
@@ -329,6 +519,14 @@ public final class DOMStorage {
             return client.call("DOMStorage.clear", params, result_ -> null);
         }
         /**
+         * Invokes DOMStorage.clear with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clear(ClearRequest request) {
+            return client.call("DOMStorage.clear", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Disables storage tracking, prevents storage events from being sent to the client.
          * @return a stage completing when the command completes
          */
@@ -353,6 +551,14 @@ public final class DOMStorage {
             return client.call("DOMStorage.getDOMStorageItems", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> CdpObject.requireList(element0, element1 -> (String) element1)));
         }
         /**
+         * Invokes DOMStorage.getDOMStorageItems with a request object.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<java.util.List<String>>> getDOMStorageItems(GetDOMStorageItemsRequest request) {
+            return client.call("DOMStorage.getDOMStorageItems", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> CdpObject.requireList(element0, element1 -> (String) element1)));
+        }
+        /**
          * Invokes DOMStorage.removeDOMStorageItem.
          * @param storageId protocol value
          * @param key protocol value
@@ -363,6 +569,14 @@ public final class DOMStorage {
             params.put("storageId", CdpObject.json(storageId));
             params.put("key", CdpObject.json(key));
             return client.call("DOMStorage.removeDOMStorageItem", params, result_ -> null);
+        }
+        /**
+         * Invokes DOMStorage.removeDOMStorageItem with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> removeDOMStorageItem(RemoveDOMStorageItemRequest request) {
+            return client.call("DOMStorage.removeDOMStorageItem", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes DOMStorage.setDOMStorageItem.
@@ -377,6 +591,14 @@ public final class DOMStorage {
             params.put("key", CdpObject.json(key));
             params.put("value", CdpObject.json(value));
             return client.call("DOMStorage.setDOMStorageItem", params, result_ -> null);
+        }
+        /**
+         * Invokes DOMStorage.setDOMStorageItem with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setDOMStorageItem(SetDOMStorageItemRequest request) {
+            return client.call("DOMStorage.setDOMStorageItem", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Subscribes to DOMStorage.domStorageItemAdded.

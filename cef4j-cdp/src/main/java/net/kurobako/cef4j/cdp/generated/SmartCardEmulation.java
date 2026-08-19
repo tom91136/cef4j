@@ -644,6 +644,604 @@ public final class SmartCardEmulation {
         }
     }
     /**
+     * Reports the successful result of a |SCardEstablishContext| call.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext
+     */
+    public static final class ReportEstablishContextResultRequest extends CdpObject {
+        public ReportEstablishContextResultRequest() {}
+        /**
+         * Reports the successful result of a |SCardEstablishContext| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext
+         * @param requestId protocol value
+         * @param contextId protocol value
+         */
+        public ReportEstablishContextResultRequest(String requestId, long contextId) {
+            set("requestId", requestId);
+            set("contextId", contextId);
+        }
+        public static ReportEstablishContextResultRequest fromMap(Map<String, Object> values) {
+            ReportEstablishContextResultRequest instance_ = new ReportEstablishContextResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the contextId field.
+         * @return the protocol field value
+         */
+        public long contextId() {
+            return ((Number) require("contextId")).longValue();
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportEstablishContextResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the contextId field.
+         * @param contextId field value
+         * @return this model
+         */
+        public ReportEstablishContextResultRequest contextId(long contextId) {
+            set("contextId", contextId);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a |SCardReleaseContext| call.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext
+     */
+    public static final class ReportReleaseContextResultRequest extends CdpObject {
+        public ReportReleaseContextResultRequest() {}
+        /**
+         * Reports the successful result of a |SCardReleaseContext| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext
+         * @param requestId protocol value
+         */
+        public ReportReleaseContextResultRequest(String requestId) {
+            set("requestId", requestId);
+        }
+        public static ReportReleaseContextResultRequest fromMap(Map<String, Object> values) {
+            ReportReleaseContextResultRequest instance_ = new ReportReleaseContextResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportReleaseContextResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a |SCardListReaders| call.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa
+     */
+    public static final class ReportListReadersResultRequest extends CdpObject {
+        public ReportListReadersResultRequest() {}
+        /**
+         * Reports the successful result of a |SCardListReaders| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa
+         * @param requestId protocol value
+         * @param readers protocol value
+         */
+        public ReportListReadersResultRequest(String requestId, java.util.List<String> readers) {
+            set("requestId", requestId);
+            set("readers", readers);
+        }
+        public static ReportListReadersResultRequest fromMap(Map<String, Object> values) {
+            ReportListReadersResultRequest instance_ = new ReportListReadersResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the readers field.
+         * @return the protocol field value
+         */
+        public java.util.List<String> readers() {
+            return CdpObject.requireList(require("readers"), element0 -> (String) element0);
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportListReadersResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the readers field.
+         * @param readers field value
+         * @return this model
+         */
+        public ReportListReadersResultRequest readers(java.util.List<String> readers) {
+            set("readers", readers);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a |SCardGetStatusChange| call.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea
+     */
+    public static final class ReportGetStatusChangeResultRequest extends CdpObject {
+        public ReportGetStatusChangeResultRequest() {}
+        /**
+         * Reports the successful result of a |SCardGetStatusChange| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea
+         * @param requestId protocol value
+         * @param readerStates protocol value
+         */
+        public ReportGetStatusChangeResultRequest(String requestId, java.util.List<SmartCardEmulation.ReaderStateOut> readerStates) {
+            set("requestId", requestId);
+            set("readerStates", readerStates);
+        }
+        public static ReportGetStatusChangeResultRequest fromMap(Map<String, Object> values) {
+            ReportGetStatusChangeResultRequest instance_ = new ReportGetStatusChangeResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the readerStates field.
+         * @return the protocol field value
+         */
+        public java.util.List<SmartCardEmulation.ReaderStateOut> readerStates() {
+            return CdpObject.requireList(require("readerStates"), element0 -> java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateOut.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportGetStatusChangeResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the readerStates field.
+         * @param readerStates field value
+         * @return this model
+         */
+        public ReportGetStatusChangeResultRequest readerStates(java.util.List<SmartCardEmulation.ReaderStateOut> readerStates) {
+            set("readerStates", readerStates);
+            return this;
+        }
+    }
+    /**
+     * Reports the result of a |SCardBeginTransaction| call. On success, this creates a new transaction object.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction
+     */
+    public static final class ReportBeginTransactionResultRequest extends CdpObject {
+        public ReportBeginTransactionResultRequest() {}
+        /**
+         * Reports the result of a |SCardBeginTransaction| call. On success, this creates a new transaction object.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction
+         * @param requestId protocol value
+         * @param handle protocol value
+         */
+        public ReportBeginTransactionResultRequest(String requestId, long handle) {
+            set("requestId", requestId);
+            set("handle", handle);
+        }
+        public static ReportBeginTransactionResultRequest fromMap(Map<String, Object> values) {
+            ReportBeginTransactionResultRequest instance_ = new ReportBeginTransactionResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the handle field.
+         * @return the protocol field value
+         */
+        public long handle() {
+            return ((Number) require("handle")).longValue();
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportBeginTransactionResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the handle field.
+         * @param handle field value
+         * @return this model
+         */
+        public ReportBeginTransactionResultRequest handle(long handle) {
+            set("handle", handle);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a call that returns only a result code. Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
+     * <p>This maps to: 1. SCardCancel PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel
+     * <p>2. SCardDisconnect PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect
+     * <p>3. SCardSetAttrib PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga060f0038a4ddfd5dd2b8fadf3c3a2e4f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardsetattrib
+     * <p>4. SCardEndTransaction PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction
+     */
+    public static final class ReportPlainResultRequest extends CdpObject {
+        public ReportPlainResultRequest() {}
+        /**
+         * Reports the successful result of a call that returns only a result code. Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
+         * <p>This maps to: 1. SCardCancel PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel
+         * <p>2. SCardDisconnect PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect
+         * <p>3. SCardSetAttrib PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga060f0038a4ddfd5dd2b8fadf3c3a2e4f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardsetattrib
+         * <p>4. SCardEndTransaction PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction
+         * @param requestId protocol value
+         */
+        public ReportPlainResultRequest(String requestId) {
+            set("requestId", requestId);
+        }
+        public static ReportPlainResultRequest fromMap(Map<String, Object> values) {
+            ReportPlainResultRequest instance_ = new ReportPlainResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportPlainResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a |SCardConnect| call.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta
+     */
+    public static final class ReportConnectResultRequest extends CdpObject {
+        public ReportConnectResultRequest() {}
+        /**
+         * Reports the successful result of a |SCardConnect| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta
+         * @param requestId protocol value
+         * @param handle protocol value
+         */
+        public ReportConnectResultRequest(String requestId, long handle) {
+            set("requestId", requestId);
+            set("handle", handle);
+        }
+        public static ReportConnectResultRequest fromMap(Map<String, Object> values) {
+            ReportConnectResultRequest instance_ = new ReportConnectResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the handle field.
+         * @return the protocol field value
+         */
+        public long handle() {
+            return ((Number) require("handle")).longValue();
+        }
+        /**
+         * Returns the activeProtocol field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<SmartCardEmulation.Protocol> activeProtocol() {
+            return Optional.ofNullable(raw("activeProtocol") == null ? null : SmartCardEmulation.Protocol.of((String) raw("activeProtocol")));
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportConnectResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the handle field.
+         * @param handle field value
+         * @return this model
+         */
+        public ReportConnectResultRequest handle(long handle) {
+            set("handle", handle);
+            return this;
+        }
+        /**
+         * Sets the activeProtocol field.
+         * @param activeProtocol field value; empty omits the value
+         * @return this model
+         */
+        public ReportConnectResultRequest activeProtocol(Optional<SmartCardEmulation.Protocol> activeProtocol) {
+            set("activeProtocol", activeProtocol.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the activeProtocol field.
+         * @param activeProtocol field value; null removes the value
+         * @return this model
+         */
+        public ReportConnectResultRequest activeProtocol(SmartCardEmulation.Protocol activeProtocol) {
+            set("activeProtocol", activeProtocol);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a call that sends back data on success. Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
+     * <p>This maps to: 1. SCardTransmit PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit
+     * <p>2. SCardControl PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol
+     * <p>3. SCardGetAttrib PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib
+     */
+    public static final class ReportDataResultRequest extends CdpObject {
+        public ReportDataResultRequest() {}
+        /**
+         * Reports the successful result of a call that sends back data on success. Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
+         * <p>This maps to: 1. SCardTransmit PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit
+         * <p>2. SCardControl PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol
+         * <p>3. SCardGetAttrib PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib
+         * @param requestId protocol value
+         * @param data protocol value
+         */
+        public ReportDataResultRequest(String requestId, String data) {
+            set("requestId", requestId);
+            set("data", data);
+        }
+        public static ReportDataResultRequest fromMap(Map<String, Object> values) {
+            ReportDataResultRequest instance_ = new ReportDataResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the data field.
+         * @return the protocol field value
+         */
+        public String data() {
+            return (String) require("data");
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportDataResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the data field.
+         * @param data field value
+         * @return this model
+         */
+        public ReportDataResultRequest data(String data) {
+            set("data", data);
+            return this;
+        }
+    }
+    /**
+     * Reports the successful result of a |SCardStatus| call.
+     * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa
+     */
+    public static final class ReportStatusResultRequest extends CdpObject {
+        public ReportStatusResultRequest() {}
+        /**
+         * Reports the successful result of a |SCardStatus| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa
+         * @param requestId protocol value
+         * @param readerName protocol value
+         * @param state protocol value
+         * @param atr protocol value
+         */
+        public ReportStatusResultRequest(String requestId, String readerName, SmartCardEmulation.ConnectionState state, String atr) {
+            set("requestId", requestId);
+            set("readerName", readerName);
+            set("state", state);
+            set("atr", atr);
+        }
+        public static ReportStatusResultRequest fromMap(Map<String, Object> values) {
+            ReportStatusResultRequest instance_ = new ReportStatusResultRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the readerName field.
+         * @return the protocol field value
+         */
+        public String readerName() {
+            return (String) require("readerName");
+        }
+        /**
+         * Returns the state field.
+         * @return the protocol field value
+         */
+        public SmartCardEmulation.ConnectionState state() {
+            return SmartCardEmulation.ConnectionState.of((String) require("state"));
+        }
+        /**
+         * Returns the atr field.
+         * @return the protocol field value
+         */
+        public String atr() {
+            return (String) require("atr");
+        }
+        /**
+         * Returns the protocol field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<SmartCardEmulation.Protocol> protocol() {
+            return Optional.ofNullable(raw("protocol") == null ? null : SmartCardEmulation.Protocol.of((String) raw("protocol")));
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportStatusResultRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the readerName field.
+         * @param readerName field value
+         * @return this model
+         */
+        public ReportStatusResultRequest readerName(String readerName) {
+            set("readerName", readerName);
+            return this;
+        }
+        /**
+         * Sets the state field.
+         * @param state field value
+         * @return this model
+         */
+        public ReportStatusResultRequest state(SmartCardEmulation.ConnectionState state) {
+            set("state", state);
+            return this;
+        }
+        /**
+         * Sets the atr field.
+         * @param atr field value
+         * @return this model
+         */
+        public ReportStatusResultRequest atr(String atr) {
+            set("atr", atr);
+            return this;
+        }
+        /**
+         * Sets the protocol field.
+         * @param protocol field value; empty omits the value
+         * @return this model
+         */
+        public ReportStatusResultRequest protocol(Optional<SmartCardEmulation.Protocol> protocol) {
+            set("protocol", protocol.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the protocol field.
+         * @param protocol field value; null removes the value
+         * @return this model
+         */
+        public ReportStatusResultRequest protocol(SmartCardEmulation.Protocol protocol) {
+            set("protocol", protocol);
+            return this;
+        }
+    }
+    /**
+     * Reports an error result for the given request.
+     */
+    public static final class ReportErrorRequest extends CdpObject {
+        public ReportErrorRequest() {}
+        /**
+         * Reports an error result for the given request.
+         * @param requestId protocol value
+         * @param resultCode protocol value
+         */
+        public ReportErrorRequest(String requestId, SmartCardEmulation.ResultCode resultCode) {
+            set("requestId", requestId);
+            set("resultCode", resultCode);
+        }
+        public static ReportErrorRequest fromMap(Map<String, Object> values) {
+            ReportErrorRequest instance_ = new ReportErrorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the requestId field.
+         * @return the protocol field value
+         */
+        public String requestId() {
+            return (String) require("requestId");
+        }
+        /**
+         * Returns the resultCode field.
+         * @return the protocol field value
+         */
+        public SmartCardEmulation.ResultCode resultCode() {
+            return SmartCardEmulation.ResultCode.of((String) require("resultCode"));
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReportErrorRequest requestId(String requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * Sets the resultCode field.
+         * @param resultCode field value
+         * @return this model
+         */
+        public ReportErrorRequest resultCode(SmartCardEmulation.ResultCode resultCode) {
+            set("resultCode", resultCode);
+            return this;
+        }
+    }
+    /**
      * Fired when |SCardEstablishContext| is called.
      * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext
      */
@@ -1503,6 +2101,15 @@ public final class SmartCardEmulation {
             return client.call("SmartCardEmulation.reportEstablishContextResult", params, result_ -> null);
         }
         /**
+         * Reports the successful result of a |SCardEstablishContext| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportEstablishContextResult(ReportEstablishContextResultRequest request) {
+            return client.call("SmartCardEmulation.reportEstablishContextResult", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Reports the successful result of a |SCardReleaseContext| call.
          * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext
          * @param requestId protocol value
@@ -1512,6 +2119,15 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("SmartCardEmulation.reportReleaseContextResult", params, result_ -> null);
+        }
+        /**
+         * Reports the successful result of a |SCardReleaseContext| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportReleaseContextResult(ReportReleaseContextResultRequest request) {
+            return client.call("SmartCardEmulation.reportReleaseContextResult", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Reports the successful result of a |SCardListReaders| call.
@@ -1527,6 +2143,15 @@ public final class SmartCardEmulation {
             return client.call("SmartCardEmulation.reportListReadersResult", params, result_ -> null);
         }
         /**
+         * Reports the successful result of a |SCardListReaders| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportListReadersResult(ReportListReadersResultRequest request) {
+            return client.call("SmartCardEmulation.reportListReadersResult", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Reports the successful result of a |SCardGetStatusChange| call.
          * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea
          * @param requestId protocol value
@@ -1538,6 +2163,15 @@ public final class SmartCardEmulation {
             params.put("requestId", CdpObject.json(requestId));
             params.put("readerStates", CdpObject.json(readerStates));
             return client.call("SmartCardEmulation.reportGetStatusChangeResult", params, result_ -> null);
+        }
+        /**
+         * Reports the successful result of a |SCardGetStatusChange| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportGetStatusChangeResult(ReportGetStatusChangeResultRequest request) {
+            return client.call("SmartCardEmulation.reportGetStatusChangeResult", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Reports the result of a |SCardBeginTransaction| call. On success, this creates a new transaction object.
@@ -1553,6 +2187,15 @@ public final class SmartCardEmulation {
             return client.call("SmartCardEmulation.reportBeginTransactionResult", params, result_ -> null);
         }
         /**
+         * Reports the result of a |SCardBeginTransaction| call. On success, this creates a new transaction object.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportBeginTransactionResult(ReportBeginTransactionResultRequest request) {
+            return client.call("SmartCardEmulation.reportBeginTransactionResult", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Reports the successful result of a call that returns only a result code. Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
          * <p>This maps to: 1. SCardCancel PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel
          * <p>2. SCardDisconnect PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect
@@ -1565,6 +2208,18 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("SmartCardEmulation.reportPlainResult", params, result_ -> null);
+        }
+        /**
+         * Reports the successful result of a call that returns only a result code. Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
+         * <p>This maps to: 1. SCardCancel PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel
+         * <p>2. SCardDisconnect PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect
+         * <p>3. SCardSetAttrib PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga060f0038a4ddfd5dd2b8fadf3c3a2e4f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardsetattrib
+         * <p>4. SCardEndTransaction PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportPlainResult(ReportPlainResultRequest request) {
+            return client.call("SmartCardEmulation.reportPlainResult", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Reports the successful result of a |SCardConnect| call.
@@ -1592,6 +2247,15 @@ public final class SmartCardEmulation {
             return reportConnectResult(requestId, handle, Optional.empty());
         }
         /**
+         * Reports the successful result of a |SCardConnect| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportConnectResult(ReportConnectResultRequest request) {
+            return client.call("SmartCardEmulation.reportConnectResult", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Reports the successful result of a call that sends back data on success. Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
          * <p>This maps to: 1. SCardTransmit PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit
          * <p>2. SCardControl PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol
@@ -1605,6 +2269,17 @@ public final class SmartCardEmulation {
             params.put("requestId", CdpObject.json(requestId));
             params.put("data", CdpObject.json(data));
             return client.call("SmartCardEmulation.reportDataResult", params, result_ -> null);
+        }
+        /**
+         * Reports the successful result of a call that sends back data on success. Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
+         * <p>This maps to: 1. SCardTransmit PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit
+         * <p>2. SCardControl PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol
+         * <p>3. SCardGetAttrib PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportDataResult(ReportDataResultRequest request) {
+            return client.call("SmartCardEmulation.reportDataResult", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Reports the successful result of a |SCardStatus| call.
@@ -1638,6 +2313,15 @@ public final class SmartCardEmulation {
             return reportStatusResult(requestId, readerName, state, atr, Optional.empty());
         }
         /**
+         * Reports the successful result of a |SCardStatus| call.
+         * <p>This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382 Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportStatusResult(ReportStatusResultRequest request) {
+            return client.call("SmartCardEmulation.reportStatusResult", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Reports an error result for the given request.
          * @param requestId protocol value
          * @param resultCode protocol value
@@ -1648,6 +2332,14 @@ public final class SmartCardEmulation {
             params.put("requestId", CdpObject.json(requestId));
             params.put("resultCode", CdpObject.json(resultCode));
             return client.call("SmartCardEmulation.reportError", params, result_ -> null);
+        }
+        /**
+         * Reports an error result for the given request.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> reportError(ReportErrorRequest request) {
+            return client.call("SmartCardEmulation.reportError", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Fired when |SCardEstablishContext| is called.

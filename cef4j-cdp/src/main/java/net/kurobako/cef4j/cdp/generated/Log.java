@@ -397,6 +397,40 @@ public final class Log {
         }
     }
     /**
+     * start violation reporting.
+     */
+    public static final class StartViolationsReportRequest extends CdpObject {
+        public StartViolationsReportRequest() {}
+        /**
+         * start violation reporting.
+         * @param config protocol value
+         */
+        public StartViolationsReportRequest(java.util.List<Log.ViolationSetting> config) {
+            set("config", config);
+        }
+        public static StartViolationsReportRequest fromMap(Map<String, Object> values) {
+            StartViolationsReportRequest instance_ = new StartViolationsReportRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Configuration for violations.
+         * @return the protocol field value
+         */
+        public java.util.List<Log.ViolationSetting> config() {
+            return CdpObject.requireList(require("config"), element0 -> java.util.Objects.requireNonNull(Log.ViolationSetting.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Configuration for violations.
+         * @param config field value
+         * @return this model
+         */
+        public StartViolationsReportRequest config(java.util.List<Log.ViolationSetting> config) {
+            set("config", config);
+            return this;
+        }
+    }
+    /**
      * Issued when new message was logged.
      */
     public static final class EntryAddedEvent extends CdpObject {
@@ -455,6 +489,14 @@ public final class Log {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("config", CdpObject.json(config));
             return client.call("Log.startViolationsReport", params, result_ -> null);
+        }
+        /**
+         * start violation reporting.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startViolationsReport(StartViolationsReportRequest request) {
+            return client.call("Log.startViolationsReport", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Stop violation reporting.

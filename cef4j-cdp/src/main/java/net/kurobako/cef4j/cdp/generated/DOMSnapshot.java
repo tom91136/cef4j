@@ -2170,6 +2170,259 @@ public final class DOMSnapshot {
      * @deprecated Deprecated by the Chromium DevTools Protocol.
      */
     @Deprecated
+    public static final class GetSnapshotRequest extends CdpObject {
+        public GetSnapshotRequest() {}
+        /**
+         * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
+         * @param computedStyleWhitelist protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GetSnapshotRequest(java.util.List<String> computedStyleWhitelist) {
+            set("computedStyleWhitelist", computedStyleWhitelist);
+        }
+        public static GetSnapshotRequest fromMap(Map<String, Object> values) {
+            GetSnapshotRequest instance_ = new GetSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whitelist of computed styles to return.
+         * @return the protocol field value
+         */
+        public java.util.List<String> computedStyleWhitelist() {
+            return CdpObject.requireList(require("computedStyleWhitelist"), element0 -> (String) element0);
+        }
+        /**
+         * Whether or not to retrieve details of DOM listeners (default false).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeEventListeners() {
+            return Optional.ofNullable((Boolean) raw("includeEventListeners"));
+        }
+        /**
+         * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includePaintOrder() {
+            return Optional.ofNullable((Boolean) raw("includePaintOrder"));
+        }
+        /**
+         * Whether to include UA shadow tree in the snapshot (default false).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeUserAgentShadowTree() {
+            return Optional.ofNullable((Boolean) raw("includeUserAgentShadowTree"));
+        }
+        /**
+         * Whitelist of computed styles to return.
+         * @param computedStyleWhitelist field value
+         * @return this model
+         */
+        public GetSnapshotRequest computedStyleWhitelist(java.util.List<String> computedStyleWhitelist) {
+            set("computedStyleWhitelist", computedStyleWhitelist);
+            return this;
+        }
+        /**
+         * Whether or not to retrieve details of DOM listeners (default false).
+         * @param includeEventListeners field value; empty omits the value
+         * @return this model
+         */
+        public GetSnapshotRequest includeEventListeners(Optional<Boolean> includeEventListeners) {
+            set("includeEventListeners", includeEventListeners.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not to retrieve details of DOM listeners (default false).
+         * @param includeEventListeners field value; null removes the value
+         * @return this model
+         */
+        public GetSnapshotRequest includeEventListeners(Boolean includeEventListeners) {
+            set("includeEventListeners", includeEventListeners);
+            return this;
+        }
+        /**
+         * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
+         * @param includePaintOrder field value; empty omits the value
+         * @return this model
+         */
+        public GetSnapshotRequest includePaintOrder(Optional<Boolean> includePaintOrder) {
+            set("includePaintOrder", includePaintOrder.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
+         * @param includePaintOrder field value; null removes the value
+         * @return this model
+         */
+        public GetSnapshotRequest includePaintOrder(Boolean includePaintOrder) {
+            set("includePaintOrder", includePaintOrder);
+            return this;
+        }
+        /**
+         * Whether to include UA shadow tree in the snapshot (default false).
+         * @param includeUserAgentShadowTree field value; empty omits the value
+         * @return this model
+         */
+        public GetSnapshotRequest includeUserAgentShadowTree(Optional<Boolean> includeUserAgentShadowTree) {
+            set("includeUserAgentShadowTree", includeUserAgentShadowTree.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include UA shadow tree in the snapshot (default false).
+         * @param includeUserAgentShadowTree field value; null removes the value
+         * @return this model
+         */
+        public GetSnapshotRequest includeUserAgentShadowTree(Boolean includeUserAgentShadowTree) {
+            set("includeUserAgentShadowTree", includeUserAgentShadowTree);
+            return this;
+        }
+    }
+    /**
+     * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
+     */
+    public static final class CaptureSnapshotRequest extends CdpObject {
+        public CaptureSnapshotRequest() {}
+        /**
+         * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
+         * @param computedStyles protocol value
+         */
+        public CaptureSnapshotRequest(java.util.List<String> computedStyles) {
+            set("computedStyles", computedStyles);
+        }
+        public static CaptureSnapshotRequest fromMap(Map<String, Object> values) {
+            CaptureSnapshotRequest instance_ = new CaptureSnapshotRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whitelist of computed styles to return.
+         * @return the protocol field value
+         */
+        public java.util.List<String> computedStyles() {
+            return CdpObject.requireList(require("computedStyles"), element0 -> (String) element0);
+        }
+        /**
+         * Whether to include layout object paint orders into the snapshot.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includePaintOrder() {
+            return Optional.ofNullable((Boolean) raw("includePaintOrder"));
+        }
+        /**
+         * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeDOMRects() {
+            return Optional.ofNullable((Boolean) raw("includeDOMRects"));
+        }
+        /**
+         * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeBlendedBackgroundColors() {
+            return Optional.ofNullable((Boolean) raw("includeBlendedBackgroundColors"));
+        }
+        /**
+         * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeTextColorOpacities() {
+            return Optional.ofNullable((Boolean) raw("includeTextColorOpacities"));
+        }
+        /**
+         * Whitelist of computed styles to return.
+         * @param computedStyles field value
+         * @return this model
+         */
+        public CaptureSnapshotRequest computedStyles(java.util.List<String> computedStyles) {
+            set("computedStyles", computedStyles);
+            return this;
+        }
+        /**
+         * Whether to include layout object paint orders into the snapshot.
+         * @param includePaintOrder field value; empty omits the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includePaintOrder(Optional<Boolean> includePaintOrder) {
+            set("includePaintOrder", includePaintOrder.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include layout object paint orders into the snapshot.
+         * @param includePaintOrder field value; null removes the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includePaintOrder(Boolean includePaintOrder) {
+            set("includePaintOrder", includePaintOrder);
+            return this;
+        }
+        /**
+         * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
+         * @param includeDOMRects field value; empty omits the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includeDOMRects(Optional<Boolean> includeDOMRects) {
+            set("includeDOMRects", includeDOMRects.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
+         * @param includeDOMRects field value; null removes the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includeDOMRects(Boolean includeDOMRects) {
+            set("includeDOMRects", includeDOMRects);
+            return this;
+        }
+        /**
+         * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param includeBlendedBackgroundColors field value; empty omits the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includeBlendedBackgroundColors(Optional<Boolean> includeBlendedBackgroundColors) {
+            set("includeBlendedBackgroundColors", includeBlendedBackgroundColors.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param includeBlendedBackgroundColors field value; null removes the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includeBlendedBackgroundColors(Boolean includeBlendedBackgroundColors) {
+            set("includeBlendedBackgroundColors", includeBlendedBackgroundColors);
+            return this;
+        }
+        /**
+         * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param includeTextColorOpacities field value; empty omits the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includeTextColorOpacities(Optional<Boolean> includeTextColorOpacities) {
+            set("includeTextColorOpacities", includeTextColorOpacities.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param includeTextColorOpacities field value; null removes the value
+         * @return this model
+         */
+        public CaptureSnapshotRequest includeTextColorOpacities(Boolean includeTextColorOpacities) {
+            set("includeTextColorOpacities", includeTextColorOpacities);
+            return this;
+        }
+    }
+    /**
+     * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
     public static final class GetSnapshotResult extends CdpObject {
         public GetSnapshotResult() {}
         private GetSnapshotResult(Map<String, Object> values) { super(values); }
@@ -2314,6 +2567,16 @@ public final class DOMSnapshot {
         }
         /**
          * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<GetSnapshotResult> getSnapshot(GetSnapshotRequest request) {
+            return client.call("DOMSnapshot.getSnapshot", request == null ? null : request.toMap(), result_ -> new GetSnapshotResult(result_));
+        }
+        /**
+         * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
          * @param computedStyles protocol value
          * @param includePaintOrder protocol value
          * @param includeDOMRects protocol value
@@ -2337,6 +2600,14 @@ public final class DOMSnapshot {
          */
         public CompletionStage<CaptureSnapshotResult> captureSnapshot(java.util.List<String> computedStyles) {
             return captureSnapshot(computedStyles, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CaptureSnapshotResult> captureSnapshot(CaptureSnapshotRequest request) {
+            return client.call("DOMSnapshot.captureSnapshot", request == null ? null : request.toMap(), result_ -> new CaptureSnapshotResult(result_));
         }
     }
 }

@@ -706,6 +706,649 @@ public final class WebAuthn {
         }
     }
     /**
+     * Enable the WebAuthn domain and start intercepting credential storage and retrieval with a virtual authenticator.
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to enable the WebAuthn user interface. Enabling the UI is recommended for debugging and demo purposes, as it is closer to the real experience. Disabling the UI is recommended for automated testing. Supported at the embedder&#x27;s discretion if UI is available. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> enableUI() {
+            return Optional.ofNullable((Boolean) raw("enableUI"));
+        }
+        /**
+         * Whether to enable the WebAuthn user interface. Enabling the UI is recommended for debugging and demo purposes, as it is closer to the real experience. Disabling the UI is recommended for automated testing. Supported at the embedder&#x27;s discretion if UI is available. Defaults to false.
+         * @param enableUI field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest enableUI(Optional<Boolean> enableUI) {
+            set("enableUI", enableUI.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to enable the WebAuthn user interface. Enabling the UI is recommended for debugging and demo purposes, as it is closer to the real experience. Disabling the UI is recommended for automated testing. Supported at the embedder&#x27;s discretion if UI is available. Defaults to false.
+         * @param enableUI field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest enableUI(Boolean enableUI) {
+            set("enableUI", enableUI);
+            return this;
+        }
+    }
+    /**
+     * Creates and adds a virtual authenticator.
+     */
+    public static final class AddVirtualAuthenticatorRequest extends CdpObject {
+        public AddVirtualAuthenticatorRequest() {}
+        /**
+         * Creates and adds a virtual authenticator.
+         * @param options protocol value
+         */
+        public AddVirtualAuthenticatorRequest(WebAuthn.VirtualAuthenticatorOptions options) {
+            set("options", options);
+        }
+        public static AddVirtualAuthenticatorRequest fromMap(Map<String, Object> values) {
+            AddVirtualAuthenticatorRequest instance_ = new AddVirtualAuthenticatorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the options field.
+         * @return the protocol field value
+         */
+        public WebAuthn.VirtualAuthenticatorOptions options() {
+            return java.util.Objects.requireNonNull(WebAuthn.VirtualAuthenticatorOptions.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("options")))));
+        }
+        /**
+         * Sets the options field.
+         * @param options field value
+         * @return this model
+         */
+        public AddVirtualAuthenticatorRequest options(WebAuthn.VirtualAuthenticatorOptions options) {
+            set("options", options);
+            return this;
+        }
+    }
+    /**
+     * Resets parameters isBogusSignature, isBadUV, isBadUP to false if they are not present.
+     */
+    public static final class SetResponseOverrideBitsRequest extends CdpObject {
+        public SetResponseOverrideBitsRequest() {}
+        /**
+         * Resets parameters isBogusSignature, isBadUV, isBadUP to false if they are not present.
+         * @param authenticatorId protocol value
+         */
+        public SetResponseOverrideBitsRequest(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+        }
+        public static SetResponseOverrideBitsRequest fromMap(Map<String, Object> values) {
+            SetResponseOverrideBitsRequest instance_ = new SetResponseOverrideBitsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * If isBogusSignature is set, overrides the signature in the authenticator response to be zero. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> isBogusSignature() {
+            return Optional.ofNullable((Boolean) raw("isBogusSignature"));
+        }
+        /**
+         * If isBadUV is set, overrides the UV bit in the flags in the authenticator response to be zero. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> isBadUV() {
+            return Optional.ofNullable((Boolean) raw("isBadUV"));
+        }
+        /**
+         * If isBadUP is set, overrides the UP bit in the flags in the authenticator response to be zero. Defaults to false.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> isBadUP() {
+            return Optional.ofNullable((Boolean) raw("isBadUP"));
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * If isBogusSignature is set, overrides the signature in the authenticator response to be zero. Defaults to false.
+         * @param isBogusSignature field value; empty omits the value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest isBogusSignature(Optional<Boolean> isBogusSignature) {
+            set("isBogusSignature", isBogusSignature.orElse(null));
+            return this;
+        }
+        /**
+         * If isBogusSignature is set, overrides the signature in the authenticator response to be zero. Defaults to false.
+         * @param isBogusSignature field value; null removes the value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest isBogusSignature(Boolean isBogusSignature) {
+            set("isBogusSignature", isBogusSignature);
+            return this;
+        }
+        /**
+         * If isBadUV is set, overrides the UV bit in the flags in the authenticator response to be zero. Defaults to false.
+         * @param isBadUV field value; empty omits the value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest isBadUV(Optional<Boolean> isBadUV) {
+            set("isBadUV", isBadUV.orElse(null));
+            return this;
+        }
+        /**
+         * If isBadUV is set, overrides the UV bit in the flags in the authenticator response to be zero. Defaults to false.
+         * @param isBadUV field value; null removes the value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest isBadUV(Boolean isBadUV) {
+            set("isBadUV", isBadUV);
+            return this;
+        }
+        /**
+         * If isBadUP is set, overrides the UP bit in the flags in the authenticator response to be zero. Defaults to false.
+         * @param isBadUP field value; empty omits the value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest isBadUP(Optional<Boolean> isBadUP) {
+            set("isBadUP", isBadUP.orElse(null));
+            return this;
+        }
+        /**
+         * If isBadUP is set, overrides the UP bit in the flags in the authenticator response to be zero. Defaults to false.
+         * @param isBadUP field value; null removes the value
+         * @return this model
+         */
+        public SetResponseOverrideBitsRequest isBadUP(Boolean isBadUP) {
+            set("isBadUP", isBadUP);
+            return this;
+        }
+    }
+    /**
+     * Removes the given authenticator.
+     */
+    public static final class RemoveVirtualAuthenticatorRequest extends CdpObject {
+        public RemoveVirtualAuthenticatorRequest() {}
+        /**
+         * Removes the given authenticator.
+         * @param authenticatorId protocol value
+         */
+        public RemoveVirtualAuthenticatorRequest(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+        }
+        public static RemoveVirtualAuthenticatorRequest fromMap(Map<String, Object> values) {
+            RemoveVirtualAuthenticatorRequest instance_ = new RemoveVirtualAuthenticatorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public RemoveVirtualAuthenticatorRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+    }
+    /**
+     * Adds the credential to the specified authenticator.
+     */
+    public static final class AddCredentialRequest extends CdpObject {
+        public AddCredentialRequest() {}
+        /**
+         * Adds the credential to the specified authenticator.
+         * @param authenticatorId protocol value
+         * @param credential protocol value
+         */
+        public AddCredentialRequest(WebAuthn.AuthenticatorId authenticatorId, WebAuthn.Credential credential) {
+            set("authenticatorId", authenticatorId);
+            set("credential", credential);
+        }
+        public static AddCredentialRequest fromMap(Map<String, Object> values) {
+            AddCredentialRequest instance_ = new AddCredentialRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Returns the credential field.
+         * @return the protocol field value
+         */
+        public WebAuthn.Credential credential() {
+            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("credential")))));
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public AddCredentialRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * Sets the credential field.
+         * @param credential field value
+         * @return this model
+         */
+        public AddCredentialRequest credential(WebAuthn.Credential credential) {
+            set("credential", credential);
+            return this;
+        }
+    }
+    /**
+     * Returns a single credential stored in the given virtual authenticator that matches the credential ID.
+     */
+    public static final class GetCredentialRequest extends CdpObject {
+        public GetCredentialRequest() {}
+        /**
+         * Returns a single credential stored in the given virtual authenticator that matches the credential ID.
+         * @param authenticatorId protocol value
+         * @param credentialId protocol value
+         */
+        public GetCredentialRequest(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
+            set("authenticatorId", authenticatorId);
+            set("credentialId", credentialId);
+        }
+        public static GetCredentialRequest fromMap(Map<String, Object> values) {
+            GetCredentialRequest instance_ = new GetCredentialRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Returns the credentialId field.
+         * @return the protocol field value
+         */
+        public String credentialId() {
+            return (String) require("credentialId");
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public GetCredentialRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * Sets the credentialId field.
+         * @param credentialId field value
+         * @return this model
+         */
+        public GetCredentialRequest credentialId(String credentialId) {
+            set("credentialId", credentialId);
+            return this;
+        }
+    }
+    /**
+     * Returns all the credentials stored in the given virtual authenticator.
+     */
+    public static final class GetCredentialsRequest extends CdpObject {
+        public GetCredentialsRequest() {}
+        /**
+         * Returns all the credentials stored in the given virtual authenticator.
+         * @param authenticatorId protocol value
+         */
+        public GetCredentialsRequest(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+        }
+        public static GetCredentialsRequest fromMap(Map<String, Object> values) {
+            GetCredentialsRequest instance_ = new GetCredentialsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public GetCredentialsRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+    }
+    /**
+     * Removes a credential from the authenticator.
+     */
+    public static final class RemoveCredentialRequest extends CdpObject {
+        public RemoveCredentialRequest() {}
+        /**
+         * Removes a credential from the authenticator.
+         * @param authenticatorId protocol value
+         * @param credentialId protocol value
+         */
+        public RemoveCredentialRequest(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
+            set("authenticatorId", authenticatorId);
+            set("credentialId", credentialId);
+        }
+        public static RemoveCredentialRequest fromMap(Map<String, Object> values) {
+            RemoveCredentialRequest instance_ = new RemoveCredentialRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Returns the credentialId field.
+         * @return the protocol field value
+         */
+        public String credentialId() {
+            return (String) require("credentialId");
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public RemoveCredentialRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * Sets the credentialId field.
+         * @param credentialId field value
+         * @return this model
+         */
+        public RemoveCredentialRequest credentialId(String credentialId) {
+            set("credentialId", credentialId);
+            return this;
+        }
+    }
+    /**
+     * Clears all the credentials from the specified device.
+     */
+    public static final class ClearCredentialsRequest extends CdpObject {
+        public ClearCredentialsRequest() {}
+        /**
+         * Clears all the credentials from the specified device.
+         * @param authenticatorId protocol value
+         */
+        public ClearCredentialsRequest(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+        }
+        public static ClearCredentialsRequest fromMap(Map<String, Object> values) {
+            ClearCredentialsRequest instance_ = new ClearCredentialsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public ClearCredentialsRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+    }
+    /**
+     * Sets whether User Verification succeeds or fails for an authenticator. The default is true.
+     */
+    public static final class SetUserVerifiedRequest extends CdpObject {
+        public SetUserVerifiedRequest() {}
+        /**
+         * Sets whether User Verification succeeds or fails for an authenticator. The default is true.
+         * @param authenticatorId protocol value
+         * @param isUserVerified protocol value
+         */
+        public SetUserVerifiedRequest(WebAuthn.AuthenticatorId authenticatorId, boolean isUserVerified) {
+            set("authenticatorId", authenticatorId);
+            set("isUserVerified", isUserVerified);
+        }
+        public static SetUserVerifiedRequest fromMap(Map<String, Object> values) {
+            SetUserVerifiedRequest instance_ = new SetUserVerifiedRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Returns the isUserVerified field.
+         * @return the protocol field value
+         */
+        public boolean isUserVerified() {
+            return (Boolean) require("isUserVerified");
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public SetUserVerifiedRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * Sets the isUserVerified field.
+         * @param isUserVerified field value
+         * @return this model
+         */
+        public SetUserVerifiedRequest isUserVerified(boolean isUserVerified) {
+            set("isUserVerified", isUserVerified);
+            return this;
+        }
+    }
+    /**
+     * Sets whether tests of user presence will succeed immediately (if true) or fail to resolve (if false) for an authenticator. The default is true.
+     */
+    public static final class SetAutomaticPresenceSimulationRequest extends CdpObject {
+        public SetAutomaticPresenceSimulationRequest() {}
+        /**
+         * Sets whether tests of user presence will succeed immediately (if true) or fail to resolve (if false) for an authenticator. The default is true.
+         * @param authenticatorId protocol value
+         * @param enabled protocol value
+         */
+        public SetAutomaticPresenceSimulationRequest(WebAuthn.AuthenticatorId authenticatorId, boolean enabled) {
+            set("authenticatorId", authenticatorId);
+            set("enabled", enabled);
+        }
+        public static SetAutomaticPresenceSimulationRequest fromMap(Map<String, Object> values) {
+            SetAutomaticPresenceSimulationRequest instance_ = new SetAutomaticPresenceSimulationRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Returns the enabled field.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public SetAutomaticPresenceSimulationRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * Sets the enabled field.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetAutomaticPresenceSimulationRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+    }
+    /**
+     * Allows setting credential properties. https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
+     */
+    public static final class SetCredentialPropertiesRequest extends CdpObject {
+        public SetCredentialPropertiesRequest() {}
+        /**
+         * Allows setting credential properties. https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
+         * @param authenticatorId protocol value
+         * @param credentialId protocol value
+         */
+        public SetCredentialPropertiesRequest(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
+            set("authenticatorId", authenticatorId);
+            set("credentialId", credentialId);
+        }
+        public static SetCredentialPropertiesRequest fromMap(Map<String, Object> values) {
+            SetCredentialPropertiesRequest instance_ = new SetCredentialPropertiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the authenticatorId field.
+         * @return the protocol field value
+         */
+        public WebAuthn.AuthenticatorId authenticatorId() {
+            return new WebAuthn.AuthenticatorId((String) require("authenticatorId"));
+        }
+        /**
+         * Returns the credentialId field.
+         * @return the protocol field value
+         */
+        public String credentialId() {
+            return (String) require("credentialId");
+        }
+        /**
+         * Returns the backupEligibility field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> backupEligibility() {
+            return Optional.ofNullable((Boolean) raw("backupEligibility"));
+        }
+        /**
+         * Returns the backupState field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> backupState() {
+            return Optional.ofNullable((Boolean) raw("backupState"));
+        }
+        /**
+         * Sets the authenticatorId field.
+         * @param authenticatorId field value
+         * @return this model
+         */
+        public SetCredentialPropertiesRequest authenticatorId(WebAuthn.AuthenticatorId authenticatorId) {
+            set("authenticatorId", authenticatorId);
+            return this;
+        }
+        /**
+         * Sets the credentialId field.
+         * @param credentialId field value
+         * @return this model
+         */
+        public SetCredentialPropertiesRequest credentialId(String credentialId) {
+            set("credentialId", credentialId);
+            return this;
+        }
+        /**
+         * Sets the backupEligibility field.
+         * @param backupEligibility field value; empty omits the value
+         * @return this model
+         */
+        public SetCredentialPropertiesRequest backupEligibility(Optional<Boolean> backupEligibility) {
+            set("backupEligibility", backupEligibility.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the backupEligibility field.
+         * @param backupEligibility field value; null removes the value
+         * @return this model
+         */
+        public SetCredentialPropertiesRequest backupEligibility(Boolean backupEligibility) {
+            set("backupEligibility", backupEligibility);
+            return this;
+        }
+        /**
+         * Sets the backupState field.
+         * @param backupState field value; empty omits the value
+         * @return this model
+         */
+        public SetCredentialPropertiesRequest backupState(Optional<Boolean> backupState) {
+            set("backupState", backupState.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the backupState field.
+         * @param backupState field value; null removes the value
+         * @return this model
+         */
+        public SetCredentialPropertiesRequest backupState(Boolean backupState) {
+            set("backupState", backupState);
+            return this;
+        }
+    }
+    /**
      * Triggered when a credential is added to an authenticator.
      */
     public static final class CredentialAddedEvent extends CdpObject {
@@ -894,6 +1537,14 @@ public final class WebAuthn {
             return enable(Optional.empty());
         }
         /**
+         * Enable the WebAuthn domain and start intercepting credential storage and retrieval with a virtual authenticator.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("WebAuthn.enable", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Disable the WebAuthn domain.
          * @return a stage completing when the command completes
          */
@@ -909,6 +1560,14 @@ public final class WebAuthn {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("options", CdpObject.json(options));
             return client.call("WebAuthn.addVirtualAuthenticator", params, result_ -> new WebAuthn.AuthenticatorId((String) java.util.Objects.requireNonNull(result_.get("authenticatorId"))));
+        }
+        /**
+         * Creates and adds a virtual authenticator.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<WebAuthn.AuthenticatorId> addVirtualAuthenticator(AddVirtualAuthenticatorRequest request) {
+            return client.call("WebAuthn.addVirtualAuthenticator", request == null ? null : request.toMap(), result_ -> new WebAuthn.AuthenticatorId((String) java.util.Objects.requireNonNull(result_.get("authenticatorId"))));
         }
         /**
          * Resets parameters isBogusSignature, isBadUV, isBadUP to false if they are not present.
@@ -935,6 +1594,14 @@ public final class WebAuthn {
             return setResponseOverrideBits(authenticatorId, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Resets parameters isBogusSignature, isBadUV, isBadUP to false if they are not present.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setResponseOverrideBits(SetResponseOverrideBitsRequest request) {
+            return client.call("WebAuthn.setResponseOverrideBits", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Removes the given authenticator.
          * @param authenticatorId protocol value
          * @return a stage completing when the command completes
@@ -943,6 +1610,14 @@ public final class WebAuthn {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             return client.call("WebAuthn.removeVirtualAuthenticator", params, result_ -> null);
+        }
+        /**
+         * Removes the given authenticator.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> removeVirtualAuthenticator(RemoveVirtualAuthenticatorRequest request) {
+            return client.call("WebAuthn.removeVirtualAuthenticator", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Adds the credential to the specified authenticator.
@@ -957,6 +1632,14 @@ public final class WebAuthn {
             return client.call("WebAuthn.addCredential", params, result_ -> null);
         }
         /**
+         * Adds the credential to the specified authenticator.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> addCredential(AddCredentialRequest request) {
+            return client.call("WebAuthn.addCredential", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Returns a single credential stored in the given virtual authenticator that matches the credential ID.
          * @param authenticatorId protocol value
          * @param credentialId protocol value
@@ -969,6 +1652,14 @@ public final class WebAuthn {
             return client.call("WebAuthn.getCredential", params, result_ -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("credential")))))));
         }
         /**
+         * Returns a single credential stored in the given virtual authenticator that matches the credential ID.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<WebAuthn.Credential> getCredential(GetCredentialRequest request) {
+            return client.call("WebAuthn.getCredential", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("credential")))))));
+        }
+        /**
          * Returns all the credentials stored in the given virtual authenticator.
          * @param authenticatorId protocol value
          * @return a stage completing with the command result
@@ -977,6 +1668,14 @@ public final class WebAuthn {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             return client.call("WebAuthn.getCredentials", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("credentials")), element0 -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Returns all the credentials stored in the given virtual authenticator.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<WebAuthn.Credential>> getCredentials(GetCredentialsRequest request) {
+            return client.call("WebAuthn.getCredentials", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("credentials")), element0 -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Removes a credential from the authenticator.
@@ -991,6 +1690,14 @@ public final class WebAuthn {
             return client.call("WebAuthn.removeCredential", params, result_ -> null);
         }
         /**
+         * Removes a credential from the authenticator.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> removeCredential(RemoveCredentialRequest request) {
+            return client.call("WebAuthn.removeCredential", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Clears all the credentials from the specified device.
          * @param authenticatorId protocol value
          * @return a stage completing when the command completes
@@ -999,6 +1706,14 @@ public final class WebAuthn {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             return client.call("WebAuthn.clearCredentials", params, result_ -> null);
+        }
+        /**
+         * Clears all the credentials from the specified device.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearCredentials(ClearCredentialsRequest request) {
+            return client.call("WebAuthn.clearCredentials", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Sets whether User Verification succeeds or fails for an authenticator. The default is true.
@@ -1013,6 +1728,14 @@ public final class WebAuthn {
             return client.call("WebAuthn.setUserVerified", params, result_ -> null);
         }
         /**
+         * Sets whether User Verification succeeds or fails for an authenticator. The default is true.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setUserVerified(SetUserVerifiedRequest request) {
+            return client.call("WebAuthn.setUserVerified", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Sets whether tests of user presence will succeed immediately (if true) or fail to resolve (if false) for an authenticator. The default is true.
          * @param authenticatorId protocol value
          * @param enabled protocol value
@@ -1023,6 +1746,14 @@ public final class WebAuthn {
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("enabled", CdpObject.json(enabled));
             return client.call("WebAuthn.setAutomaticPresenceSimulation", params, result_ -> null);
+        }
+        /**
+         * Sets whether tests of user presence will succeed immediately (if true) or fail to resolve (if false) for an authenticator. The default is true.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAutomaticPresenceSimulation(SetAutomaticPresenceSimulationRequest request) {
+            return client.call("WebAuthn.setAutomaticPresenceSimulation", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Allows setting credential properties. https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
@@ -1048,6 +1779,14 @@ public final class WebAuthn {
          */
         public CompletionStage<Void> setCredentialProperties(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
             return setCredentialProperties(authenticatorId, credentialId, Optional.empty(), Optional.empty());
+        }
+        /**
+         * Allows setting credential properties. https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setCredentialProperties(SetCredentialPropertiesRequest request) {
+            return client.call("WebAuthn.setCredentialProperties", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Triggered when a credential is added to an authenticator.

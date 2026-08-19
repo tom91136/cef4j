@@ -327,6 +327,110 @@ public final class WebMCP {
         }
     }
     /**
+     * Invokes a registered tool.
+     */
+    public static final class InvokeToolRequest extends CdpObject {
+        public InvokeToolRequest() {}
+        /**
+         * Invokes a registered tool.
+         * @param frameId protocol value
+         * @param toolName protocol value
+         * @param input protocol value
+         */
+        public InvokeToolRequest(Page.FrameId frameId, String toolName, java.util.Map<String, Object> input) {
+            set("frameId", frameId);
+            set("toolName", toolName);
+            set("input", input);
+        }
+        public static InvokeToolRequest fromMap(Map<String, Object> values) {
+            InvokeToolRequest instance_ = new InvokeToolRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Frame in which to invoke the tool.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * Name of the tool to invoke.
+         * @return the protocol field value
+         */
+        public String toolName() {
+            return (String) require("toolName");
+        }
+        /**
+         * Input parameters for the tool, matching the tool&#x27;s inputSchema.
+         * @return the protocol field value
+         */
+        public java.util.Map<String, Object> input() {
+            return java.util.Objects.requireNonNull(CdpObject.objectMap(require("input")));
+        }
+        /**
+         * Frame in which to invoke the tool.
+         * @param frameId field value
+         * @return this model
+         */
+        public InvokeToolRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * Name of the tool to invoke.
+         * @param toolName field value
+         * @return this model
+         */
+        public InvokeToolRequest toolName(String toolName) {
+            set("toolName", toolName);
+            return this;
+        }
+        /**
+         * Input parameters for the tool, matching the tool&#x27;s inputSchema.
+         * @param input field value
+         * @return this model
+         */
+        public InvokeToolRequest input(java.util.Map<String, Object> input) {
+            set("input", input);
+            return this;
+        }
+    }
+    /**
+     * Cancels a pending tool invocation.
+     */
+    public static final class CancelInvocationRequest extends CdpObject {
+        public CancelInvocationRequest() {}
+        /**
+         * Cancels a pending tool invocation.
+         * @param invocationId protocol value
+         */
+        public CancelInvocationRequest(String invocationId) {
+            set("invocationId", invocationId);
+        }
+        public static CancelInvocationRequest fromMap(Map<String, Object> values) {
+            CancelInvocationRequest instance_ = new CancelInvocationRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Invocation identifier to cancel.
+         * @return the protocol field value
+         */
+        public String invocationId() {
+            return (String) require("invocationId");
+        }
+        /**
+         * Invocation identifier to cancel.
+         * @param invocationId field value
+         * @return this model
+         */
+        public CancelInvocationRequest invocationId(String invocationId) {
+            set("invocationId", invocationId);
+            return this;
+        }
+    }
+    /**
      * Event fired when new tools are added.
      */
     public static final class ToolsAddedEvent extends CdpObject {
@@ -601,6 +705,14 @@ public final class WebMCP {
             return client.call("WebMCP.invokeTool", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("invocationId")));
         }
         /**
+         * Invokes a registered tool.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> invokeTool(InvokeToolRequest request) {
+            return client.call("WebMCP.invokeTool", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("invocationId")));
+        }
+        /**
          * Cancels a pending tool invocation.
          * @param invocationId protocol value
          * @return a stage completing when the command completes
@@ -609,6 +721,14 @@ public final class WebMCP {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("invocationId", CdpObject.json(invocationId));
             return client.call("WebMCP.cancelInvocation", params, result_ -> null);
+        }
+        /**
+         * Cancels a pending tool invocation.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> cancelInvocation(CancelInvocationRequest request) {
+            return client.call("WebMCP.cancelInvocation", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Event fired when new tools are added.

@@ -369,6 +369,371 @@ public final class Tracing {
         }
     }
     /**
+     * Record a clock sync marker in the trace.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class RecordClockSyncMarkerRequest extends CdpObject {
+        public RecordClockSyncMarkerRequest() {}
+        /**
+         * Record a clock sync marker in the trace.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param syncId protocol value
+         */
+        public RecordClockSyncMarkerRequest(String syncId) {
+            set("syncId", syncId);
+        }
+        public static RecordClockSyncMarkerRequest fromMap(Map<String, Object> values) {
+            RecordClockSyncMarkerRequest instance_ = new RecordClockSyncMarkerRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The ID of this clock sync marker
+         * @return the protocol field value
+         */
+        public String syncId() {
+            return (String) require("syncId");
+        }
+        /**
+         * The ID of this clock sync marker
+         * @param syncId field value
+         * @return this model
+         */
+        public RecordClockSyncMarkerRequest syncId(String syncId) {
+            set("syncId", syncId);
+            return this;
+        }
+    }
+    /**
+     * Request a global memory dump.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class RequestMemoryDumpRequest extends CdpObject {
+        public RequestMemoryDumpRequest() {}
+        public static RequestMemoryDumpRequest fromMap(Map<String, Object> values) {
+            RequestMemoryDumpRequest instance_ = new RequestMemoryDumpRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Enables more deterministic results by forcing garbage collection
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> deterministic() {
+            return Optional.ofNullable((Boolean) raw("deterministic"));
+        }
+        /**
+         * Specifies level of details in memory dump. Defaults to &quot;detailed&quot;.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Tracing.MemoryDumpLevelOfDetail> levelOfDetail() {
+            return Optional.ofNullable(raw("levelOfDetail") == null ? null : Tracing.MemoryDumpLevelOfDetail.of((String) raw("levelOfDetail")));
+        }
+        /**
+         * Enables more deterministic results by forcing garbage collection
+         * @param deterministic field value; empty omits the value
+         * @return this model
+         */
+        public RequestMemoryDumpRequest deterministic(Optional<Boolean> deterministic) {
+            set("deterministic", deterministic.orElse(null));
+            return this;
+        }
+        /**
+         * Enables more deterministic results by forcing garbage collection
+         * @param deterministic field value; null removes the value
+         * @return this model
+         */
+        public RequestMemoryDumpRequest deterministic(Boolean deterministic) {
+            set("deterministic", deterministic);
+            return this;
+        }
+        /**
+         * Specifies level of details in memory dump. Defaults to &quot;detailed&quot;.
+         * @param levelOfDetail field value; empty omits the value
+         * @return this model
+         */
+        public RequestMemoryDumpRequest levelOfDetail(Optional<Tracing.MemoryDumpLevelOfDetail> levelOfDetail) {
+            set("levelOfDetail", levelOfDetail.orElse(null));
+            return this;
+        }
+        /**
+         * Specifies level of details in memory dump. Defaults to &quot;detailed&quot;.
+         * @param levelOfDetail field value; null removes the value
+         * @return this model
+         */
+        public RequestMemoryDumpRequest levelOfDetail(Tracing.MemoryDumpLevelOfDetail levelOfDetail) {
+            set("levelOfDetail", levelOfDetail);
+            return this;
+        }
+    }
+    /**
+     * Start trace events collection.
+     */
+    public static final class StartRequest extends CdpObject {
+        public StartRequest() {}
+        public static StartRequest fromMap(Map<String, Object> values) {
+            StartRequest instance_ = new StartRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Category/tag filter
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Optional<String> categories() {
+            return Optional.ofNullable((String) raw("categories"));
+        }
+        /**
+         * Tracing options
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Optional<String> options() {
+            return Optional.ofNullable((String) raw("options"));
+        }
+        /**
+         * If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble bufferUsageReportingInterval() {
+            Double value = CdpObject.numberAsDouble(raw("bufferUsageReportingInterval"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to {@code ReportEvents}).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<StartTransferModeValues> transferMode() {
+            return Optional.ofNullable(raw("transferMode") == null ? null : StartTransferModeValues.of((String) raw("transferMode")));
+        }
+        /**
+         * Trace data format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code json}).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Tracing.StreamFormat> streamFormat() {
+            return Optional.ofNullable(raw("streamFormat") == null ? null : Tracing.StreamFormat.of((String) raw("streamFormat")));
+        }
+        /**
+         * Compression format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code none})
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Tracing.StreamCompression> streamCompression() {
+            return Optional.ofNullable(raw("streamCompression") == null ? null : Tracing.StreamCompression.of((String) raw("streamCompression")));
+        }
+        /**
+         * Returns the traceConfig field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Tracing.TraceConfig> traceConfig() {
+            return Optional.ofNullable(raw("traceConfig") == null ? null : Tracing.TraceConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("traceConfig")))));
+        }
+        /**
+         * Base64-encoded serialized perfetto.protos.TraceConfig protobuf message When specified, the parameters {@code categories}, {@code options}, {@code traceConfig} are ignored. (Encoded as a base64 string when passed over JSON)
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> perfettoConfig() {
+            return Optional.ofNullable((String) raw("perfettoConfig"));
+        }
+        /**
+         * Backend type (defaults to {@code auto})
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Tracing.TracingBackend> tracingBackend() {
+            return Optional.ofNullable(raw("tracingBackend") == null ? null : Tracing.TracingBackend.of((String) raw("tracingBackend")));
+        }
+        /**
+         * Category/tag filter
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param categories field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public StartRequest categories(Optional<String> categories) {
+            set("categories", categories.orElse(null));
+            return this;
+        }
+        /**
+         * Category/tag filter
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param categories field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public StartRequest categories(String categories) {
+            set("categories", categories);
+            return this;
+        }
+        /**
+         * Tracing options
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param options field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public StartRequest options(Optional<String> options) {
+            set("options", options.orElse(null));
+            return this;
+        }
+        /**
+         * Tracing options
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param options field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public StartRequest options(String options) {
+            set("options", options);
+            return this;
+        }
+        /**
+         * If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param bufferUsageReportingInterval field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest bufferUsageReportingInterval(OptionalDouble bufferUsageReportingInterval) {
+            set("bufferUsageReportingInterval", bufferUsageReportingInterval.isPresent() ? bufferUsageReportingInterval.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param bufferUsageReportingInterval field value; null removes the value
+         * @return this model
+         */
+        public StartRequest bufferUsageReportingInterval(Double bufferUsageReportingInterval) {
+            set("bufferUsageReportingInterval", bufferUsageReportingInterval);
+            return this;
+        }
+        /**
+         * Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to {@code ReportEvents}).
+         * @param transferMode field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest transferMode(Optional<StartTransferModeValues> transferMode) {
+            set("transferMode", transferMode.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to {@code ReportEvents}).
+         * @param transferMode field value; null removes the value
+         * @return this model
+         */
+        public StartRequest transferMode(StartTransferModeValues transferMode) {
+            set("transferMode", transferMode);
+            return this;
+        }
+        /**
+         * Trace data format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code json}).
+         * @param streamFormat field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest streamFormat(Optional<Tracing.StreamFormat> streamFormat) {
+            set("streamFormat", streamFormat.orElse(null));
+            return this;
+        }
+        /**
+         * Trace data format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code json}).
+         * @param streamFormat field value; null removes the value
+         * @return this model
+         */
+        public StartRequest streamFormat(Tracing.StreamFormat streamFormat) {
+            set("streamFormat", streamFormat);
+            return this;
+        }
+        /**
+         * Compression format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code none})
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param streamCompression field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest streamCompression(Optional<Tracing.StreamCompression> streamCompression) {
+            set("streamCompression", streamCompression.orElse(null));
+            return this;
+        }
+        /**
+         * Compression format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code none})
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param streamCompression field value; null removes the value
+         * @return this model
+         */
+        public StartRequest streamCompression(Tracing.StreamCompression streamCompression) {
+            set("streamCompression", streamCompression);
+            return this;
+        }
+        /**
+         * Sets the traceConfig field.
+         * @param traceConfig field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest traceConfig(Optional<Tracing.TraceConfig> traceConfig) {
+            set("traceConfig", traceConfig.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the traceConfig field.
+         * @param traceConfig field value; null removes the value
+         * @return this model
+         */
+        public StartRequest traceConfig(Tracing.TraceConfig traceConfig) {
+            set("traceConfig", traceConfig);
+            return this;
+        }
+        /**
+         * Base64-encoded serialized perfetto.protos.TraceConfig protobuf message When specified, the parameters {@code categories}, {@code options}, {@code traceConfig} are ignored. (Encoded as a base64 string when passed over JSON)
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param perfettoConfig field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest perfettoConfig(Optional<String> perfettoConfig) {
+            set("perfettoConfig", perfettoConfig.orElse(null));
+            return this;
+        }
+        /**
+         * Base64-encoded serialized perfetto.protos.TraceConfig protobuf message When specified, the parameters {@code categories}, {@code options}, {@code traceConfig} are ignored. (Encoded as a base64 string when passed over JSON)
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param perfettoConfig field value; null removes the value
+         * @return this model
+         */
+        public StartRequest perfettoConfig(String perfettoConfig) {
+            set("perfettoConfig", perfettoConfig);
+            return this;
+        }
+        /**
+         * Backend type (defaults to {@code auto})
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param tracingBackend field value; empty omits the value
+         * @return this model
+         */
+        public StartRequest tracingBackend(Optional<Tracing.TracingBackend> tracingBackend) {
+            set("tracingBackend", tracingBackend.orElse(null));
+            return this;
+        }
+        /**
+         * Backend type (defaults to {@code auto})
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param tracingBackend field value; null removes the value
+         * @return this model
+         */
+        public StartRequest tracingBackend(Tracing.TracingBackend tracingBackend) {
+            set("tracingBackend", tracingBackend);
+            return this;
+        }
+    }
+    /**
      * Request a global memory dump.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
@@ -682,6 +1047,15 @@ public final class Tracing {
             return client.call("Tracing.recordClockSyncMarker", params, result_ -> null);
         }
         /**
+         * Record a clock sync marker in the trace.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> recordClockSyncMarker(RecordClockSyncMarkerRequest request) {
+            return client.call("Tracing.recordClockSyncMarker", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Request a global memory dump.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param deterministic protocol value
@@ -701,6 +1075,15 @@ public final class Tracing {
          */
         public CompletionStage<RequestMemoryDumpResult> requestMemoryDump() {
             return requestMemoryDump(Optional.empty(), Optional.empty());
+        }
+        /**
+         * Request a global memory dump.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<RequestMemoryDumpResult> requestMemoryDump(RequestMemoryDumpRequest request) {
+            return client.call("Tracing.requestMemoryDump", request == null ? null : request.toMap(), result_ -> new RequestMemoryDumpResult(result_));
         }
         /**
          * Start trace events collection.
@@ -734,6 +1117,14 @@ public final class Tracing {
          */
         public CompletionStage<Void> start() {
             return start(Optional.empty(), Optional.empty(), OptionalDouble.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Start trace events collection.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> start(StartRequest request) {
+            return client.call("Tracing.start", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Subscribes to Tracing.bufferUsage.

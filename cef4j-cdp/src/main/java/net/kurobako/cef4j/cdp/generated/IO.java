@@ -39,6 +39,160 @@ public final class IO {
         @Override public String toString() { return "StreamHandle(" + value + ")"; }
     }
     /**
+     * Close the stream, discard any temporary backing storage.
+     */
+    public static final class CloseRequest extends CdpObject {
+        public CloseRequest() {}
+        /**
+         * Close the stream, discard any temporary backing storage.
+         * @param handle protocol value
+         */
+        public CloseRequest(IO.StreamHandle handle) {
+            set("handle", handle);
+        }
+        public static CloseRequest fromMap(Map<String, Object> values) {
+            CloseRequest instance_ = new CloseRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Handle of the stream to close.
+         * @return the protocol field value
+         */
+        public IO.StreamHandle handle() {
+            return new IO.StreamHandle((String) require("handle"));
+        }
+        /**
+         * Handle of the stream to close.
+         * @param handle field value
+         * @return this model
+         */
+        public CloseRequest handle(IO.StreamHandle handle) {
+            set("handle", handle);
+            return this;
+        }
+    }
+    /**
+     * Read a chunk of the stream
+     */
+    public static final class ReadRequest extends CdpObject {
+        public ReadRequest() {}
+        /**
+         * Read a chunk of the stream
+         * @param handle protocol value
+         */
+        public ReadRequest(IO.StreamHandle handle) {
+            set("handle", handle);
+        }
+        public static ReadRequest fromMap(Map<String, Object> values) {
+            ReadRequest instance_ = new ReadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Handle of the stream to read.
+         * @return the protocol field value
+         */
+        public IO.StreamHandle handle() {
+            return new IO.StreamHandle((String) require("handle"));
+        }
+        /**
+         * Seek to the specified offset before reading (if not specified, proceed with offset following the last read). Some types of streams may only support sequential reads.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong offset() {
+            Long value = CdpObject.numberAsLong(raw("offset"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Maximum number of bytes to read (left upon the agent discretion if not specified).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong size() {
+            Long value = CdpObject.numberAsLong(raw("size"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Handle of the stream to read.
+         * @param handle field value
+         * @return this model
+         */
+        public ReadRequest handle(IO.StreamHandle handle) {
+            set("handle", handle);
+            return this;
+        }
+        /**
+         * Seek to the specified offset before reading (if not specified, proceed with offset following the last read). Some types of streams may only support sequential reads.
+         * @param offset field value; empty omits the value
+         * @return this model
+         */
+        public ReadRequest offset(OptionalLong offset) {
+            set("offset", offset.isPresent() ? offset.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Seek to the specified offset before reading (if not specified, proceed with offset following the last read). Some types of streams may only support sequential reads.
+         * @param offset field value; null removes the value
+         * @return this model
+         */
+        public ReadRequest offset(Long offset) {
+            set("offset", offset);
+            return this;
+        }
+        /**
+         * Maximum number of bytes to read (left upon the agent discretion if not specified).
+         * @param size field value; empty omits the value
+         * @return this model
+         */
+        public ReadRequest size(OptionalLong size) {
+            set("size", size.isPresent() ? size.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Maximum number of bytes to read (left upon the agent discretion if not specified).
+         * @param size field value; null removes the value
+         * @return this model
+         */
+        public ReadRequest size(Long size) {
+            set("size", size);
+            return this;
+        }
+    }
+    /**
+     * Return UUID of Blob object specified by a remote object id.
+     */
+    public static final class ResolveBlobRequest extends CdpObject {
+        public ResolveBlobRequest() {}
+        /**
+         * Return UUID of Blob object specified by a remote object id.
+         * @param objectId protocol value
+         */
+        public ResolveBlobRequest(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+        }
+        public static ResolveBlobRequest fromMap(Map<String, Object> values) {
+            ResolveBlobRequest instance_ = new ResolveBlobRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Object id of a Blob object wrapper.
+         * @return the protocol field value
+         */
+        public Runtime.RemoteObjectId objectId() {
+            return new Runtime.RemoteObjectId((String) require("objectId"));
+        }
+        /**
+         * Object id of a Blob object wrapper.
+         * @param objectId field value
+         * @return this model
+         */
+        public ResolveBlobRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+    }
+    /**
      * Read a chunk of the stream
      */
     public static final class ReadResult extends CdpObject {
@@ -119,6 +273,14 @@ public final class IO {
             return client.call("IO.close", params, result_ -> null);
         }
         /**
+         * Close the stream, discard any temporary backing storage.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> close(CloseRequest request) {
+            return client.call("IO.close", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Read a chunk of the stream
          * @param handle protocol value
          * @param offset protocol value
@@ -141,6 +303,14 @@ public final class IO {
             return read(handle, OptionalLong.empty(), OptionalLong.empty());
         }
         /**
+         * Read a chunk of the stream
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ReadResult> read(ReadRequest request) {
+            return client.call("IO.read", request == null ? null : request.toMap(), result_ -> new ReadResult(result_));
+        }
+        /**
          * Return UUID of Blob object specified by a remote object id.
          * @param objectId protocol value
          * @return a stage completing with the command result
@@ -149,6 +319,14 @@ public final class IO {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("objectId", CdpObject.json(objectId));
             return client.call("IO.resolveBlob", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("uuid")));
+        }
+        /**
+         * Return UUID of Blob object specified by a remote object id.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> resolveBlob(ResolveBlobRequest request) {
+            return client.call("IO.resolveBlob", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("uuid")));
         }
     }
 }

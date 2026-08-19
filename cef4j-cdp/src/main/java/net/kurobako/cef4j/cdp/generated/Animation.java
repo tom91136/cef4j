@@ -674,6 +674,316 @@ public final class Animation {
         }
     }
     /**
+     * Returns the current time of the an animation.
+     */
+    public static final class GetCurrentTimeRequest extends CdpObject {
+        public GetCurrentTimeRequest() {}
+        /**
+         * Returns the current time of the an animation.
+         * @param id protocol value
+         */
+        public GetCurrentTimeRequest(String id) {
+            set("id", id);
+        }
+        public static GetCurrentTimeRequest fromMap(Map<String, Object> values) {
+            GetCurrentTimeRequest instance_ = new GetCurrentTimeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Id of animation.
+         * @return the protocol field value
+         */
+        public String id() {
+            return (String) require("id");
+        }
+        /**
+         * Id of animation.
+         * @param id field value
+         * @return this model
+         */
+        public GetCurrentTimeRequest id(String id) {
+            set("id", id);
+            return this;
+        }
+    }
+    /**
+     * Releases a set of animations to no longer be manipulated.
+     */
+    public static final class ReleaseAnimationsRequest extends CdpObject {
+        public ReleaseAnimationsRequest() {}
+        /**
+         * Releases a set of animations to no longer be manipulated.
+         * @param animations protocol value
+         */
+        public ReleaseAnimationsRequest(java.util.List<String> animations) {
+            set("animations", animations);
+        }
+        public static ReleaseAnimationsRequest fromMap(Map<String, Object> values) {
+            ReleaseAnimationsRequest instance_ = new ReleaseAnimationsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * List of animation ids to seek.
+         * @return the protocol field value
+         */
+        public java.util.List<String> animations() {
+            return CdpObject.requireList(require("animations"), element0 -> (String) element0);
+        }
+        /**
+         * List of animation ids to seek.
+         * @param animations field value
+         * @return this model
+         */
+        public ReleaseAnimationsRequest animations(java.util.List<String> animations) {
+            set("animations", animations);
+            return this;
+        }
+    }
+    /**
+     * Gets the remote object of the Animation.
+     */
+    public static final class ResolveAnimationRequest extends CdpObject {
+        public ResolveAnimationRequest() {}
+        /**
+         * Gets the remote object of the Animation.
+         * @param animationId protocol value
+         */
+        public ResolveAnimationRequest(String animationId) {
+            set("animationId", animationId);
+        }
+        public static ResolveAnimationRequest fromMap(Map<String, Object> values) {
+            ResolveAnimationRequest instance_ = new ResolveAnimationRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Animation id.
+         * @return the protocol field value
+         */
+        public String animationId() {
+            return (String) require("animationId");
+        }
+        /**
+         * Animation id.
+         * @param animationId field value
+         * @return this model
+         */
+        public ResolveAnimationRequest animationId(String animationId) {
+            set("animationId", animationId);
+            return this;
+        }
+    }
+    /**
+     * Seek a set of animations to a particular time within each animation.
+     */
+    public static final class SeekAnimationsRequest extends CdpObject {
+        public SeekAnimationsRequest() {}
+        /**
+         * Seek a set of animations to a particular time within each animation.
+         * @param animations protocol value
+         * @param currentTime protocol value
+         */
+        public SeekAnimationsRequest(java.util.List<String> animations, double currentTime) {
+            set("animations", animations);
+            set("currentTime", currentTime);
+        }
+        public static SeekAnimationsRequest fromMap(Map<String, Object> values) {
+            SeekAnimationsRequest instance_ = new SeekAnimationsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * List of animation ids to seek.
+         * @return the protocol field value
+         */
+        public java.util.List<String> animations() {
+            return CdpObject.requireList(require("animations"), element0 -> (String) element0);
+        }
+        /**
+         * Set the current time of each animation.
+         * @return the protocol field value
+         */
+        public double currentTime() {
+            return ((Number) require("currentTime")).doubleValue();
+        }
+        /**
+         * List of animation ids to seek.
+         * @param animations field value
+         * @return this model
+         */
+        public SeekAnimationsRequest animations(java.util.List<String> animations) {
+            set("animations", animations);
+            return this;
+        }
+        /**
+         * Set the current time of each animation.
+         * @param currentTime field value
+         * @return this model
+         */
+        public SeekAnimationsRequest currentTime(double currentTime) {
+            set("currentTime", currentTime);
+            return this;
+        }
+    }
+    /**
+     * Sets the paused state of a set of animations.
+     */
+    public static final class SetPausedRequest extends CdpObject {
+        public SetPausedRequest() {}
+        /**
+         * Sets the paused state of a set of animations.
+         * @param animations protocol value
+         * @param paused protocol value
+         */
+        public SetPausedRequest(java.util.List<String> animations, boolean paused) {
+            set("animations", animations);
+            set("paused", paused);
+        }
+        public static SetPausedRequest fromMap(Map<String, Object> values) {
+            SetPausedRequest instance_ = new SetPausedRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Animations to set the pause state of.
+         * @return the protocol field value
+         */
+        public java.util.List<String> animations() {
+            return CdpObject.requireList(require("animations"), element0 -> (String) element0);
+        }
+        /**
+         * Paused state to set to.
+         * @return the protocol field value
+         */
+        public boolean paused() {
+            return (Boolean) require("paused");
+        }
+        /**
+         * Animations to set the pause state of.
+         * @param animations field value
+         * @return this model
+         */
+        public SetPausedRequest animations(java.util.List<String> animations) {
+            set("animations", animations);
+            return this;
+        }
+        /**
+         * Paused state to set to.
+         * @param paused field value
+         * @return this model
+         */
+        public SetPausedRequest paused(boolean paused) {
+            set("paused", paused);
+            return this;
+        }
+    }
+    /**
+     * Sets the playback rate of the document timeline.
+     */
+    public static final class SetPlaybackRateRequest extends CdpObject {
+        public SetPlaybackRateRequest() {}
+        /**
+         * Sets the playback rate of the document timeline.
+         * @param playbackRate protocol value
+         */
+        public SetPlaybackRateRequest(double playbackRate) {
+            set("playbackRate", playbackRate);
+        }
+        public static SetPlaybackRateRequest fromMap(Map<String, Object> values) {
+            SetPlaybackRateRequest instance_ = new SetPlaybackRateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Playback rate for animations on page
+         * @return the protocol field value
+         */
+        public double playbackRate() {
+            return ((Number) require("playbackRate")).doubleValue();
+        }
+        /**
+         * Playback rate for animations on page
+         * @param playbackRate field value
+         * @return this model
+         */
+        public SetPlaybackRateRequest playbackRate(double playbackRate) {
+            set("playbackRate", playbackRate);
+            return this;
+        }
+    }
+    /**
+     * Sets the timing of an animation node.
+     */
+    public static final class SetTimingRequest extends CdpObject {
+        public SetTimingRequest() {}
+        /**
+         * Sets the timing of an animation node.
+         * @param animationId protocol value
+         * @param duration protocol value
+         * @param delay protocol value
+         */
+        public SetTimingRequest(String animationId, double duration, double delay) {
+            set("animationId", animationId);
+            set("duration", duration);
+            set("delay", delay);
+        }
+        public static SetTimingRequest fromMap(Map<String, Object> values) {
+            SetTimingRequest instance_ = new SetTimingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Animation id.
+         * @return the protocol field value
+         */
+        public String animationId() {
+            return (String) require("animationId");
+        }
+        /**
+         * Duration of the animation.
+         * @return the protocol field value
+         */
+        public double duration() {
+            return ((Number) require("duration")).doubleValue();
+        }
+        /**
+         * Delay of the animation.
+         * @return the protocol field value
+         */
+        public double delay() {
+            return ((Number) require("delay")).doubleValue();
+        }
+        /**
+         * Animation id.
+         * @param animationId field value
+         * @return this model
+         */
+        public SetTimingRequest animationId(String animationId) {
+            set("animationId", animationId);
+            return this;
+        }
+        /**
+         * Duration of the animation.
+         * @param duration field value
+         * @return this model
+         */
+        public SetTimingRequest duration(double duration) {
+            set("duration", duration);
+            return this;
+        }
+        /**
+         * Delay of the animation.
+         * @param delay field value
+         * @return this model
+         */
+        public SetTimingRequest delay(double delay) {
+            set("delay", delay);
+            return this;
+        }
+    }
+    /**
      * Event for when an animation has been cancelled.
      */
     public static final class AnimationCanceledEvent extends CdpObject {
@@ -805,6 +1115,14 @@ public final class Animation {
             return client.call("Animation.getCurrentTime", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("currentTime"))).doubleValue());
         }
         /**
+         * Returns the current time of the an animation.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Double> getCurrentTime(GetCurrentTimeRequest request) {
+            return client.call("Animation.getCurrentTime", request == null ? null : request.toMap(), result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("currentTime"))).doubleValue());
+        }
+        /**
          * Gets the playback rate of the document timeline.
          * @return a stage completing with the command result
          */
@@ -822,6 +1140,14 @@ public final class Animation {
             return client.call("Animation.releaseAnimations", params, result_ -> null);
         }
         /**
+         * Releases a set of animations to no longer be manipulated.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> releaseAnimations(ReleaseAnimationsRequest request) {
+            return client.call("Animation.releaseAnimations", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Gets the remote object of the Animation.
          * @param animationId protocol value
          * @return a stage completing with the command result
@@ -830,6 +1156,14 @@ public final class Animation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("animationId", CdpObject.json(animationId));
             return client.call("Animation.resolveAnimation", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("remoteObject")))))));
+        }
+        /**
+         * Gets the remote object of the Animation.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Runtime.RemoteObject> resolveAnimation(ResolveAnimationRequest request) {
+            return client.call("Animation.resolveAnimation", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("remoteObject")))))));
         }
         /**
          * Seek a set of animations to a particular time within each animation.
@@ -844,6 +1178,14 @@ public final class Animation {
             return client.call("Animation.seekAnimations", params, result_ -> null);
         }
         /**
+         * Seek a set of animations to a particular time within each animation.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> seekAnimations(SeekAnimationsRequest request) {
+            return client.call("Animation.seekAnimations", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Sets the paused state of a set of animations.
          * @param animations protocol value
          * @param paused protocol value
@@ -856,6 +1198,14 @@ public final class Animation {
             return client.call("Animation.setPaused", params, result_ -> null);
         }
         /**
+         * Sets the paused state of a set of animations.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setPaused(SetPausedRequest request) {
+            return client.call("Animation.setPaused", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Sets the playback rate of the document timeline.
          * @param playbackRate protocol value
          * @return a stage completing when the command completes
@@ -864,6 +1214,14 @@ public final class Animation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("playbackRate", CdpObject.json(playbackRate));
             return client.call("Animation.setPlaybackRate", params, result_ -> null);
+        }
+        /**
+         * Sets the playback rate of the document timeline.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setPlaybackRate(SetPlaybackRateRequest request) {
+            return client.call("Animation.setPlaybackRate", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Sets the timing of an animation node.
@@ -878,6 +1236,14 @@ public final class Animation {
             params.put("duration", CdpObject.json(duration));
             params.put("delay", CdpObject.json(delay));
             return client.call("Animation.setTiming", params, result_ -> null);
+        }
+        /**
+         * Sets the timing of an animation node.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setTiming(SetTimingRequest request) {
+            return client.call("Animation.setTiming", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Event for when an animation has been cancelled.

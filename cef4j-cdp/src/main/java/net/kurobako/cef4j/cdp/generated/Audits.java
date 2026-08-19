@@ -4317,6 +4317,109 @@ public final class Audits {
     /**
      * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
      */
+    public static final class GetEncodedResponseRequest extends CdpObject {
+        public GetEncodedResponseRequest() {}
+        /**
+         * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
+         * @param requestId protocol value
+         * @param encoding protocol value
+         */
+        public GetEncodedResponseRequest(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding) {
+            set("requestId", requestId);
+            set("encoding", encoding);
+        }
+        public static GetEncodedResponseRequest fromMap(Map<String, Object> values) {
+            GetEncodedResponseRequest instance_ = new GetEncodedResponseRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the network request to get content for.
+         * @return the protocol field value
+         */
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
+        }
+        /**
+         * The encoding to use.
+         * @return the protocol field value
+         */
+        public GetEncodedResponseEncodingValues encoding() {
+            return GetEncodedResponseEncodingValues.of((String) require("encoding"));
+        }
+        /**
+         * The quality of the encoding (0-1). (defaults to 1)
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble quality() {
+            Double value = CdpObject.numberAsDouble(raw("quality"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Whether to only return the size information (defaults to false).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> sizeOnly() {
+            return Optional.ofNullable((Boolean) raw("sizeOnly"));
+        }
+        /**
+         * Identifier of the network request to get content for.
+         * @param requestId field value
+         * @return this model
+         */
+        public GetEncodedResponseRequest requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * The encoding to use.
+         * @param encoding field value
+         * @return this model
+         */
+        public GetEncodedResponseRequest encoding(GetEncodedResponseEncodingValues encoding) {
+            set("encoding", encoding);
+            return this;
+        }
+        /**
+         * The quality of the encoding (0-1). (defaults to 1)
+         * @param quality field value; empty omits the value
+         * @return this model
+         */
+        public GetEncodedResponseRequest quality(OptionalDouble quality) {
+            set("quality", quality.isPresent() ? quality.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The quality of the encoding (0-1). (defaults to 1)
+         * @param quality field value; null removes the value
+         * @return this model
+         */
+        public GetEncodedResponseRequest quality(Double quality) {
+            set("quality", quality);
+            return this;
+        }
+        /**
+         * Whether to only return the size information (defaults to false).
+         * @param sizeOnly field value; empty omits the value
+         * @return this model
+         */
+        public GetEncodedResponseRequest sizeOnly(Optional<Boolean> sizeOnly) {
+            set("sizeOnly", sizeOnly.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to only return the size information (defaults to false).
+         * @param sizeOnly field value; null removes the value
+         * @return this model
+         */
+        public GetEncodedResponseRequest sizeOnly(Boolean sizeOnly) {
+            set("sizeOnly", sizeOnly);
+            return this;
+        }
+    }
+    /**
+     * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
+     */
     public static final class GetEncodedResponseResult extends CdpObject {
         public GetEncodedResponseResult() {}
         private GetEncodedResponseResult(Map<String, Object> values) { super(values); }
@@ -4451,6 +4554,14 @@ public final class Audits {
          */
         public CompletionStage<GetEncodedResponseResult> getEncodedResponse(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding) {
             return getEncodedResponse(requestId, encoding, OptionalDouble.empty(), Optional.empty());
+        }
+        /**
+         * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetEncodedResponseResult> getEncodedResponse(GetEncodedResponseRequest request) {
+            return client.call("Audits.getEncodedResponse", request == null ? null : request.toMap(), result_ -> new GetEncodedResponseResult(result_));
         }
         /**
          * Disables issues domain, prevents further issues from being reported to the client.

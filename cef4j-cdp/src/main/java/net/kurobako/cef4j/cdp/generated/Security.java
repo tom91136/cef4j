@@ -834,6 +834,134 @@ public final class Security {
         }
     }
     /**
+     * Enable/disable whether all certificate errors should be ignored.
+     */
+    public static final class SetIgnoreCertificateErrorsRequest extends CdpObject {
+        public SetIgnoreCertificateErrorsRequest() {}
+        /**
+         * Enable/disable whether all certificate errors should be ignored.
+         * @param ignore protocol value
+         */
+        public SetIgnoreCertificateErrorsRequest(boolean ignore) {
+            set("ignore", ignore);
+        }
+        public static SetIgnoreCertificateErrorsRequest fromMap(Map<String, Object> values) {
+            SetIgnoreCertificateErrorsRequest instance_ = new SetIgnoreCertificateErrorsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true, all certificate errors will be ignored.
+         * @return the protocol field value
+         */
+        public boolean ignore() {
+            return (Boolean) require("ignore");
+        }
+        /**
+         * If true, all certificate errors will be ignored.
+         * @param ignore field value
+         * @return this model
+         */
+        public SetIgnoreCertificateErrorsRequest ignore(boolean ignore) {
+            set("ignore", ignore);
+            return this;
+        }
+    }
+    /**
+     * Handles a certificate error that fired a certificateError event.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class HandleCertificateErrorRequest extends CdpObject {
+        public HandleCertificateErrorRequest() {}
+        /**
+         * Handles a certificate error that fired a certificateError event.
+         * @param eventId protocol value
+         * @param action protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public HandleCertificateErrorRequest(long eventId, Security.CertificateErrorAction action) {
+            set("eventId", eventId);
+            set("action", action);
+        }
+        public static HandleCertificateErrorRequest fromMap(Map<String, Object> values) {
+            HandleCertificateErrorRequest instance_ = new HandleCertificateErrorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The ID of the event.
+         * @return the protocol field value
+         */
+        public long eventId() {
+            return ((Number) require("eventId")).longValue();
+        }
+        /**
+         * The action to take on the certificate error.
+         * @return the protocol field value
+         */
+        public Security.CertificateErrorAction action() {
+            return Security.CertificateErrorAction.of((String) require("action"));
+        }
+        /**
+         * The ID of the event.
+         * @param eventId field value
+         * @return this model
+         */
+        public HandleCertificateErrorRequest eventId(long eventId) {
+            set("eventId", eventId);
+            return this;
+        }
+        /**
+         * The action to take on the certificate error.
+         * @param action field value
+         * @return this model
+         */
+        public HandleCertificateErrorRequest action(Security.CertificateErrorAction action) {
+            set("action", action);
+            return this;
+        }
+    }
+    /**
+     * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetOverrideCertificateErrorsRequest extends CdpObject {
+        public SetOverrideCertificateErrorsRequest() {}
+        /**
+         * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
+         * @param override protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetOverrideCertificateErrorsRequest(boolean override) {
+            set("override", override);
+        }
+        public static SetOverrideCertificateErrorsRequest fromMap(Map<String, Object> values) {
+            SetOverrideCertificateErrorsRequest instance_ = new SetOverrideCertificateErrorsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true, certificate errors will be overridden.
+         * @return the protocol field value
+         */
+        public boolean override() {
+            return (Boolean) require("override");
+        }
+        /**
+         * If true, certificate errors will be overridden.
+         * @param override field value
+         * @return this model
+         */
+        public SetOverrideCertificateErrorsRequest override(boolean override) {
+            set("override", override);
+            return this;
+        }
+    }
+    /**
      * There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the {@code handleCertificateError} command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
      * @deprecated Deprecated by the Chromium DevTools Protocol.
      */
@@ -1067,6 +1195,14 @@ public final class Security {
             return client.call("Security.setIgnoreCertificateErrors", params, result_ -> null);
         }
         /**
+         * Enable/disable whether all certificate errors should be ignored.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setIgnoreCertificateErrors(SetIgnoreCertificateErrorsRequest request) {
+            return client.call("Security.setIgnoreCertificateErrors", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Handles a certificate error that fired a certificateError event.
          * @param eventId protocol value
          * @param action protocol value
@@ -1081,6 +1217,16 @@ public final class Security {
             return client.call("Security.handleCertificateError", params, result_ -> null);
         }
         /**
+         * Handles a certificate error that fired a certificateError event.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> handleCertificateError(HandleCertificateErrorRequest request) {
+            return client.call("Security.handleCertificateError", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
          * @param override protocol value
          * @return a stage completing when the command completes
@@ -1091,6 +1237,16 @@ public final class Security {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("override", CdpObject.json(override));
             return client.call("Security.setOverrideCertificateErrors", params, result_ -> null);
+        }
+        /**
+         * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setOverrideCertificateErrors(SetOverrideCertificateErrorsRequest request) {
+            return client.call("Security.setOverrideCertificateErrors", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the {@code handleCertificateError} command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.

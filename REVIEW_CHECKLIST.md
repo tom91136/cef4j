@@ -3324,7 +3324,7 @@ Legend: unchecked = pending; checked = reviewed. Notes record only material find
 - [x] `cef4j-remote-frame/src/main/resources/META-INF/services/net.kurobako.cef4j.ipc.frame.FrameCodecProvider`
 - [x] `cef4j-remote-frame/src/test/java/net/kurobako/cef4j/ipc/frame/FrameCodecTest.java`
 - [x] `cef4j-remote-frame/src/test/java/net/kurobako/cef4j/ipc/frame/LatestOnlyDispatcherTest.java`
-- [x] `cef4j-remote-frame/src/test/java/net/kurobako/cef4j/ipc/frame/MmapFrameTransportTest.java`
+- [x] `cef4j-remote-frame/src/test/java/net/kurobako/cef4j/ipc/frame/SharedFileFrameTransportTest.java`
 - [x] `cef4j-remote-frame/src/test/java/net/kurobako/cef4j/ipc/frame/WebSocketFrameTransportTest.java`
 
 ## cef4j-remote-jfx

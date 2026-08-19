@@ -447,6 +447,40 @@ public final class PerformanceTimeline {
         }
     }
     /**
+     * Previously buffered events would be reported before method returns. See also: timelineEventAdded
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        /**
+         * Previously buffered events would be reported before method returns. See also: timelineEventAdded
+         * @param eventTypes protocol value
+         */
+        public EnableRequest(java.util.List<String> eventTypes) {
+            set("eventTypes", eventTypes);
+        }
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The types of event to report, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype The specified filter overrides any previous filters, passing empty filter disables recording. Note that not all types exposed to the web platform are currently supported.
+         * @return the protocol field value
+         */
+        public java.util.List<String> eventTypes() {
+            return CdpObject.requireList(require("eventTypes"), element0 -> (String) element0);
+        }
+        /**
+         * The types of event to report, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype The specified filter overrides any previous filters, passing empty filter disables recording. Note that not all types exposed to the web platform are currently supported.
+         * @param eventTypes field value
+         * @return this model
+         */
+        public EnableRequest eventTypes(java.util.List<String> eventTypes) {
+            set("eventTypes", eventTypes);
+            return this;
+        }
+    }
+    /**
      * Sent when a performance timeline event is added. See reportPerformanceTimeline method.
      */
     public static final class TimelineEventAddedEvent extends CdpObject {
@@ -484,6 +518,14 @@ public final class PerformanceTimeline {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventTypes", CdpObject.json(eventTypes));
             return client.call("PerformanceTimeline.enable", params, result_ -> null);
+        }
+        /**
+         * Previously buffered events would be reported before method returns. See also: timelineEventAdded
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("PerformanceTimeline.enable", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Sent when a performance timeline event is added. See reportPerformanceTimeline method.

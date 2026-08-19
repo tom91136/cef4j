@@ -215,6 +215,7 @@ public final class MmapFrameTransport implements FrameTransport {
                         try {
                             raf.close();
                         } catch (IOException ignored) {
+                            // Explicitly ignored during rollback when mapping fails.
                         }
                     }
                 }

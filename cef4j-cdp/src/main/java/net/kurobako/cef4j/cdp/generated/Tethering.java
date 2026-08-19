@@ -25,6 +25,74 @@ import net.kurobako.cef4j.cdp.CdpValue;
 public final class Tethering {
     private Tethering() {}
     /**
+     * Request browser port binding.
+     */
+    public static final class BindRequest extends CdpObject {
+        public BindRequest() {}
+        /**
+         * Request browser port binding.
+         * @param port protocol value
+         */
+        public BindRequest(long port) {
+            set("port", port);
+        }
+        public static BindRequest fromMap(Map<String, Object> values) {
+            BindRequest instance_ = new BindRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Port number to bind.
+         * @return the protocol field value
+         */
+        public long port() {
+            return ((Number) require("port")).longValue();
+        }
+        /**
+         * Port number to bind.
+         * @param port field value
+         * @return this model
+         */
+        public BindRequest port(long port) {
+            set("port", port);
+            return this;
+        }
+    }
+    /**
+     * Request browser port unbinding.
+     */
+    public static final class UnbindRequest extends CdpObject {
+        public UnbindRequest() {}
+        /**
+         * Request browser port unbinding.
+         * @param port protocol value
+         */
+        public UnbindRequest(long port) {
+            set("port", port);
+        }
+        public static UnbindRequest fromMap(Map<String, Object> values) {
+            UnbindRequest instance_ = new UnbindRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Port number to unbind.
+         * @return the protocol field value
+         */
+        public long port() {
+            return ((Number) require("port")).longValue();
+        }
+        /**
+         * Port number to unbind.
+         * @param port field value
+         * @return this model
+         */
+        public UnbindRequest port(long port) {
+            set("port", port);
+            return this;
+        }
+    }
+    /**
      * Informs that port was successfully bound and got a specified connection id.
      */
     public static final class AcceptedEvent extends CdpObject {
@@ -80,6 +148,14 @@ public final class Tethering {
             return client.call("Tethering.bind", params, result_ -> null);
         }
         /**
+         * Request browser port binding.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> bind(BindRequest request) {
+            return client.call("Tethering.bind", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Request browser port unbinding.
          * @param port protocol value
          * @return a stage completing when the command completes
@@ -88,6 +164,14 @@ public final class Tethering {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("port", CdpObject.json(port));
             return client.call("Tethering.unbind", params, result_ -> null);
+        }
+        /**
+         * Request browser port unbinding.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> unbind(UnbindRequest request) {
+            return client.call("Tethering.unbind", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Informs that port was successfully bound and got a specified connection id.

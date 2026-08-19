@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -168,14 +167,14 @@ class RuntimeServerDevToolsIntegrationTest {
                     EVENT_TIMEOUT);
             assertThat(ready.type()).isEqualTo(Runtime.ConsoleAPICalledEvent.TypeValues.LOG);
 
-            DOM.Node document = get(dom.getDocument(OptionalLong.of(2L), Optional.empty()));
+            DOM.Node document = get(dom.getDocument(new DOM.GetDocumentRequest().depth(2L)));
             DOM.NodeId rootId = document.nodeId();
             DOM.NodeId inputId = query(dom, rootId, "#name-input");
             DOM.NodeId buttonId = query(dom, rootId, "#action-button");
             List<String> buttonAttributes = get(dom.getAttributes(buttonId));
             assertThat(buttonAttributes).contains("id", "action-button", "data-action", "increment");
 
-            get(dom.focus(Optional.of(inputId), Optional.empty(), Optional.empty()));
+            get(dom.focus(new DOM.FocusRequest().nodeId(inputId)));
             get(input.insertText("typed through CDP"));
             assertThat(remoteValue(evaluate(runtime, "document.querySelector('#name-input').value", true, false)))
                     .isEqualTo("typed through CDP");
@@ -183,7 +182,7 @@ class RuntimeServerDevToolsIntegrationTest {
                             evaluate(runtime, "document.querySelector('#typed-output').textContent", true, false)))
                     .isEqualTo("typed through CDP");
 
-            DOM.BoxModel model = get(dom.getBoxModel(Optional.of(buttonId), Optional.empty(), Optional.empty()));
+            DOM.BoxModel model = get(dom.getBoxModel(new DOM.GetBoxModelRequest().nodeId(buttonId)));
             double[] center = quadCenter(model.content());
             dispatchMouse(input, "mouseMoved", center[0], center[1], "none", 0L);
             dispatchMouse(input, "mousePressed", center[0], center[1], "left", 1L);
@@ -303,23 +302,9 @@ class RuntimeServerDevToolsIntegrationTest {
 
     private static Runtime.EvaluateResult evaluate(
             Runtime.Client runtime, String expression, boolean returnByValue, boolean awaitPromise) throws Exception {
-        return get(runtime.evaluate(
-                expression,
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.of(returnByValue),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.of(awaitPromise),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty()));
+        return get(runtime.evaluate(new Runtime.EvaluateRequest(expression)
+                .returnByValue(returnByValue)
+                .awaitPromise(awaitPromise)));
     }
 
     @Nullable
@@ -329,7 +314,7 @@ class RuntimeServerDevToolsIntegrationTest {
     }
 
     private static DOM.NodeId query(DOM.Client dom, DOM.NodeId rootId, String selector) throws Exception {
-        DOM.NodeId nodeId = get(dom.querySelector(rootId, selector));
+        DOM.NodeId nodeId = get(dom.querySelector(new DOM.QuerySelectorRequest(rootId, selector)));
         assertThat(nodeId.value()).as(selector).isPositive();
         return nodeId;
     }
@@ -344,23 +329,15 @@ class RuntimeServerDevToolsIntegrationTest {
 
     private static void dispatchMouse(
             Input.Client input, String type, double x, double y, String button, long clickCount) throws Exception {
-        get(input.dispatchMouseEvent(
-                Input.DispatchMouseEventTypeValues.of(type),
-                x,
-                y,
-                OptionalLong.empty(),
-                Optional.empty(),
-                Optional.of(Input.MouseButton.of(button)),
-                OptionalLong.empty(),
-                OptionalLong.of(clickCount),
-                OptionalDouble.empty(),
-                OptionalDouble.empty(),
-                OptionalDouble.empty(),
-                OptionalDouble.empty(),
-                OptionalLong.empty(),
-                OptionalDouble.empty(),
-                OptionalDouble.empty(),
-                Optional.empty()));
+        Input.DispatchMouseEventRequest request =
+                new Input.DispatchMouseEventRequest(Input.DispatchMouseEventTypeValues.of(type), x, y);
+        if (!"none".equals(button)) {
+            request.button(Input.MouseButton.of(button));
+        }
+        if (clickCount > 0) {
+            request.clickCount(clickCount);
+        }
+        get(input.dispatchMouseEvent(request));
     }
 
     private static boolean consoleContains(Runtime.ConsoleAPICalledEvent event, Object value) {

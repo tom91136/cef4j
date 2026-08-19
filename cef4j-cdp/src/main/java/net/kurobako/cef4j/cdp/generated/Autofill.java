@@ -385,6 +385,149 @@ public final class Autofill {
         }
     }
     /**
+     * Trigger autofill on a form identified by the fieldId. If the field and related form cannot be autofilled, returns an error.
+     */
+    public static final class TriggerRequest extends CdpObject {
+        public TriggerRequest() {}
+        /**
+         * Trigger autofill on a form identified by the fieldId. If the field and related form cannot be autofilled, returns an error.
+         * @param fieldId protocol value
+         */
+        public TriggerRequest(DOM.BackendNodeId fieldId) {
+            set("fieldId", fieldId);
+        }
+        public static TriggerRequest fromMap(Map<String, Object> values) {
+            TriggerRequest instance_ = new TriggerRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifies a field that serves as an anchor for autofill.
+         * @return the protocol field value
+         */
+        public DOM.BackendNodeId fieldId() {
+            return new DOM.BackendNodeId(((Number) require("fieldId")).longValue());
+        }
+        /**
+         * Identifies the frame that field belongs to.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Autofill.CreditCard> card() {
+            return Optional.ofNullable(raw("card") == null ? null : Autofill.CreditCard.fromMap(java.util.Objects.requireNonNull(objectMap(raw("card")))));
+        }
+        /**
+         * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Autofill.Address> address() {
+            return Optional.ofNullable(raw("address") == null ? null : Autofill.Address.fromMap(java.util.Objects.requireNonNull(objectMap(raw("address")))));
+        }
+        /**
+         * Identifies a field that serves as an anchor for autofill.
+         * @param fieldId field value
+         * @return this model
+         */
+        public TriggerRequest fieldId(DOM.BackendNodeId fieldId) {
+            set("fieldId", fieldId);
+            return this;
+        }
+        /**
+         * Identifies the frame that field belongs to.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public TriggerRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifies the frame that field belongs to.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public TriggerRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
+         * @param card field value; empty omits the value
+         * @return this model
+         */
+        public TriggerRequest card(Optional<Autofill.CreditCard> card) {
+            set("card", card.orElse(null));
+            return this;
+        }
+        /**
+         * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
+         * @param card field value; null removes the value
+         * @return this model
+         */
+        public TriggerRequest card(Autofill.CreditCard card) {
+            set("card", card);
+            return this;
+        }
+        /**
+         * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
+         * @param address field value; empty omits the value
+         * @return this model
+         */
+        public TriggerRequest address(Optional<Autofill.Address> address) {
+            set("address", address.orElse(null));
+            return this;
+        }
+        /**
+         * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
+         * @param address field value; null removes the value
+         * @return this model
+         */
+        public TriggerRequest address(Autofill.Address address) {
+            set("address", address);
+            return this;
+        }
+    }
+    /**
+     * Set addresses so that developers can verify their forms implementation.
+     */
+    public static final class SetAddressesRequest extends CdpObject {
+        public SetAddressesRequest() {}
+        /**
+         * Set addresses so that developers can verify their forms implementation.
+         * @param addresses protocol value
+         */
+        public SetAddressesRequest(java.util.List<Autofill.Address> addresses) {
+            set("addresses", addresses);
+        }
+        public static SetAddressesRequest fromMap(Map<String, Object> values) {
+            SetAddressesRequest instance_ = new SetAddressesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the addresses field.
+         * @return the protocol field value
+         */
+        public java.util.List<Autofill.Address> addresses() {
+            return CdpObject.requireList(require("addresses"), element0 -> java.util.Objects.requireNonNull(Autofill.Address.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Sets the addresses field.
+         * @param addresses field value
+         * @return this model
+         */
+        public SetAddressesRequest addresses(java.util.List<Autofill.Address> addresses) {
+            set("addresses", addresses);
+            return this;
+        }
+    }
+    /**
      * Emitted when an address form is filled.
      */
     public static final class AddressFormFilledEvent extends CdpObject {
@@ -454,6 +597,14 @@ public final class Autofill {
             return trigger(fieldId, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Trigger autofill on a form identified by the fieldId. If the field and related form cannot be autofilled, returns an error.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trigger(TriggerRequest request) {
+            return client.call("Autofill.trigger", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Set addresses so that developers can verify their forms implementation.
          * @param addresses protocol value
          * @return a stage completing when the command completes
@@ -462,6 +613,14 @@ public final class Autofill {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("addresses", CdpObject.json(addresses));
             return client.call("Autofill.setAddresses", params, result_ -> null);
+        }
+        /**
+         * Set addresses so that developers can verify their forms implementation.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAddresses(SetAddressesRequest request) {
+            return client.call("Autofill.setAddresses", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Disables autofill domain notifications.

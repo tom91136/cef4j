@@ -1243,6 +1243,1337 @@ public final class Storage {
         }
     }
     /**
+     * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class GetStorageKeyForFrameRequest extends CdpObject {
+        public GetStorageKeyForFrameRequest() {}
+        /**
+         * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
+         * @param frameId protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GetStorageKeyForFrameRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static GetStorageKeyForFrameRequest fromMap(Map<String, Object> values) {
+            GetStorageKeyForFrameRequest instance_ = new GetStorageKeyForFrameRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the frameId field.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * Sets the frameId field.
+         * @param frameId field value
+         * @return this model
+         */
+        public GetStorageKeyForFrameRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetStorageKeyRequest extends CdpObject {
+        public GetStorageKeyRequest() {}
+        public static GetStorageKeyRequest fromMap(Map<String, Object> values) {
+            GetStorageKeyRequest instance_ = new GetStorageKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the frameId field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * Sets the frameId field.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public GetStorageKeyRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the frameId field.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public GetStorageKeyRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Clears storage for origin.
+     */
+    public static final class ClearDataForOriginRequest extends CdpObject {
+        public ClearDataForOriginRequest() {}
+        /**
+         * Clears storage for origin.
+         * @param origin protocol value
+         * @param storageTypes protocol value
+         */
+        public ClearDataForOriginRequest(String origin, String storageTypes) {
+            set("origin", origin);
+            set("storageTypes", storageTypes);
+        }
+        public static ClearDataForOriginRequest fromMap(Map<String, Object> values) {
+            ClearDataForOriginRequest instance_ = new ClearDataForOriginRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Comma separated list of StorageType to clear.
+         * @return the protocol field value
+         */
+        public String storageTypes() {
+            return (String) require("storageTypes");
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public ClearDataForOriginRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Comma separated list of StorageType to clear.
+         * @param storageTypes field value
+         * @return this model
+         */
+        public ClearDataForOriginRequest storageTypes(String storageTypes) {
+            set("storageTypes", storageTypes);
+            return this;
+        }
+    }
+    /**
+     * Clears storage for storage key.
+     */
+    public static final class ClearDataForStorageKeyRequest extends CdpObject {
+        public ClearDataForStorageKeyRequest() {}
+        /**
+         * Clears storage for storage key.
+         * @param storageKey protocol value
+         * @param storageTypes protocol value
+         */
+        public ClearDataForStorageKeyRequest(String storageKey, String storageTypes) {
+            set("storageKey", storageKey);
+            set("storageTypes", storageTypes);
+        }
+        public static ClearDataForStorageKeyRequest fromMap(Map<String, Object> values) {
+            ClearDataForStorageKeyRequest instance_ = new ClearDataForStorageKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value
+         */
+        public String storageKey() {
+            return (String) require("storageKey");
+        }
+        /**
+         * Comma separated list of StorageType to clear.
+         * @return the protocol field value
+         */
+        public String storageTypes() {
+            return (String) require("storageTypes");
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value
+         * @return this model
+         */
+        public ClearDataForStorageKeyRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Comma separated list of StorageType to clear.
+         * @param storageTypes field value
+         * @return this model
+         */
+        public ClearDataForStorageKeyRequest storageTypes(String storageTypes) {
+            set("storageTypes", storageTypes);
+            return this;
+        }
+    }
+    /**
+     * Returns all browser cookies.
+     */
+    public static final class GetCookiesRequest extends CdpObject {
+        public GetCookiesRequest() {}
+        public static GetCookiesRequest fromMap(Map<String, Object> values) {
+            GetCookiesRequest instance_ = new GetCookiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public GetCookiesRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public GetCookiesRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Sets given cookies.
+     */
+    public static final class SetCookiesRequest extends CdpObject {
+        public SetCookiesRequest() {}
+        /**
+         * Sets given cookies.
+         * @param cookies protocol value
+         */
+        public SetCookiesRequest(java.util.List<Network.CookieParam> cookies) {
+            set("cookies", cookies);
+        }
+        public static SetCookiesRequest fromMap(Map<String, Object> values) {
+            SetCookiesRequest instance_ = new SetCookiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Cookies to be set.
+         * @return the protocol field value
+         */
+        public java.util.List<Network.CookieParam> cookies() {
+            return CdpObject.requireList(require("cookies"), element0 -> java.util.Objects.requireNonNull(Network.CookieParam.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Cookies to be set.
+         * @param cookies field value
+         * @return this model
+         */
+        public SetCookiesRequest cookies(java.util.List<Network.CookieParam> cookies) {
+            set("cookies", cookies);
+            return this;
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public SetCookiesRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public SetCookiesRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Clears cookies.
+     */
+    public static final class ClearCookiesRequest extends CdpObject {
+        public ClearCookiesRequest() {}
+        public static ClearCookiesRequest fromMap(Map<String, Object> values) {
+            ClearCookiesRequest instance_ = new ClearCookiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public ClearCookiesRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * Browser context to use when called on the browser endpoint.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public ClearCookiesRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Returns usage and quota in bytes.
+     */
+    public static final class GetUsageAndQuotaRequest extends CdpObject {
+        public GetUsageAndQuotaRequest() {}
+        /**
+         * Returns usage and quota in bytes.
+         * @param origin protocol value
+         */
+        public GetUsageAndQuotaRequest(String origin) {
+            set("origin", origin);
+        }
+        public static GetUsageAndQuotaRequest fromMap(Map<String, Object> values) {
+            GetUsageAndQuotaRequest instance_ = new GetUsageAndQuotaRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public GetUsageAndQuotaRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Override quota for the specified origin
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class OverrideQuotaForOriginRequest extends CdpObject {
+        public OverrideQuotaForOriginRequest() {}
+        /**
+         * Override quota for the specified origin
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param origin protocol value
+         */
+        public OverrideQuotaForOriginRequest(String origin) {
+            set("origin", origin);
+        }
+        public static OverrideQuotaForOriginRequest fromMap(Map<String, Object> values) {
+            OverrideQuotaForOriginRequest instance_ = new OverrideQuotaForOriginRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * The quota size (in bytes) to override the original quota with. If this is called multiple times, the overridden quota will be equal to the quotaSize provided in the final call. If this is called without specifying a quotaSize, the quota will be reset to the default value for the specified origin. If this is called multiple times with different origins, the override will be maintained for each origin until it is disabled (called without a quotaSize).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble quotaSize() {
+            Double value = CdpObject.numberAsDouble(raw("quotaSize"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public OverrideQuotaForOriginRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * The quota size (in bytes) to override the original quota with. If this is called multiple times, the overridden quota will be equal to the quotaSize provided in the final call. If this is called without specifying a quotaSize, the quota will be reset to the default value for the specified origin. If this is called multiple times with different origins, the override will be maintained for each origin until it is disabled (called without a quotaSize).
+         * @param quotaSize field value; empty omits the value
+         * @return this model
+         */
+        public OverrideQuotaForOriginRequest quotaSize(OptionalDouble quotaSize) {
+            set("quotaSize", quotaSize.isPresent() ? quotaSize.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The quota size (in bytes) to override the original quota with. If this is called multiple times, the overridden quota will be equal to the quotaSize provided in the final call. If this is called without specifying a quotaSize, the quota will be reset to the default value for the specified origin. If this is called multiple times with different origins, the override will be maintained for each origin until it is disabled (called without a quotaSize).
+         * @param quotaSize field value; null removes the value
+         * @return this model
+         */
+        public OverrideQuotaForOriginRequest quotaSize(Double quotaSize) {
+            set("quotaSize", quotaSize);
+            return this;
+        }
+    }
+    /**
+     * Registers origin to be notified when an update occurs to its cache storage list.
+     */
+    public static final class TrackCacheStorageForOriginRequest extends CdpObject {
+        public TrackCacheStorageForOriginRequest() {}
+        /**
+         * Registers origin to be notified when an update occurs to its cache storage list.
+         * @param origin protocol value
+         */
+        public TrackCacheStorageForOriginRequest(String origin) {
+            set("origin", origin);
+        }
+        public static TrackCacheStorageForOriginRequest fromMap(Map<String, Object> values) {
+            TrackCacheStorageForOriginRequest instance_ = new TrackCacheStorageForOriginRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public TrackCacheStorageForOriginRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Registers storage key to be notified when an update occurs to its cache storage list.
+     */
+    public static final class TrackCacheStorageForStorageKeyRequest extends CdpObject {
+        public TrackCacheStorageForStorageKeyRequest() {}
+        /**
+         * Registers storage key to be notified when an update occurs to its cache storage list.
+         * @param storageKey protocol value
+         */
+        public TrackCacheStorageForStorageKeyRequest(String storageKey) {
+            set("storageKey", storageKey);
+        }
+        public static TrackCacheStorageForStorageKeyRequest fromMap(Map<String, Object> values) {
+            TrackCacheStorageForStorageKeyRequest instance_ = new TrackCacheStorageForStorageKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value
+         */
+        public String storageKey() {
+            return (String) require("storageKey");
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value
+         * @return this model
+         */
+        public TrackCacheStorageForStorageKeyRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+    }
+    /**
+     * Registers origin to be notified when an update occurs to its IndexedDB.
+     */
+    public static final class TrackIndexedDBForOriginRequest extends CdpObject {
+        public TrackIndexedDBForOriginRequest() {}
+        /**
+         * Registers origin to be notified when an update occurs to its IndexedDB.
+         * @param origin protocol value
+         */
+        public TrackIndexedDBForOriginRequest(String origin) {
+            set("origin", origin);
+        }
+        public static TrackIndexedDBForOriginRequest fromMap(Map<String, Object> values) {
+            TrackIndexedDBForOriginRequest instance_ = new TrackIndexedDBForOriginRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public TrackIndexedDBForOriginRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Registers storage key to be notified when an update occurs to its IndexedDB.
+     */
+    public static final class TrackIndexedDBForStorageKeyRequest extends CdpObject {
+        public TrackIndexedDBForStorageKeyRequest() {}
+        /**
+         * Registers storage key to be notified when an update occurs to its IndexedDB.
+         * @param storageKey protocol value
+         */
+        public TrackIndexedDBForStorageKeyRequest(String storageKey) {
+            set("storageKey", storageKey);
+        }
+        public static TrackIndexedDBForStorageKeyRequest fromMap(Map<String, Object> values) {
+            TrackIndexedDBForStorageKeyRequest instance_ = new TrackIndexedDBForStorageKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value
+         */
+        public String storageKey() {
+            return (String) require("storageKey");
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value
+         * @return this model
+         */
+        public TrackIndexedDBForStorageKeyRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+    }
+    /**
+     * Unregisters origin from receiving notifications for cache storage.
+     */
+    public static final class UntrackCacheStorageForOriginRequest extends CdpObject {
+        public UntrackCacheStorageForOriginRequest() {}
+        /**
+         * Unregisters origin from receiving notifications for cache storage.
+         * @param origin protocol value
+         */
+        public UntrackCacheStorageForOriginRequest(String origin) {
+            set("origin", origin);
+        }
+        public static UntrackCacheStorageForOriginRequest fromMap(Map<String, Object> values) {
+            UntrackCacheStorageForOriginRequest instance_ = new UntrackCacheStorageForOriginRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public UntrackCacheStorageForOriginRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Unregisters storage key from receiving notifications for cache storage.
+     */
+    public static final class UntrackCacheStorageForStorageKeyRequest extends CdpObject {
+        public UntrackCacheStorageForStorageKeyRequest() {}
+        /**
+         * Unregisters storage key from receiving notifications for cache storage.
+         * @param storageKey protocol value
+         */
+        public UntrackCacheStorageForStorageKeyRequest(String storageKey) {
+            set("storageKey", storageKey);
+        }
+        public static UntrackCacheStorageForStorageKeyRequest fromMap(Map<String, Object> values) {
+            UntrackCacheStorageForStorageKeyRequest instance_ = new UntrackCacheStorageForStorageKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value
+         */
+        public String storageKey() {
+            return (String) require("storageKey");
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value
+         * @return this model
+         */
+        public UntrackCacheStorageForStorageKeyRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+    }
+    /**
+     * Unregisters origin from receiving notifications for IndexedDB.
+     */
+    public static final class UntrackIndexedDBForOriginRequest extends CdpObject {
+        public UntrackIndexedDBForOriginRequest() {}
+        /**
+         * Unregisters origin from receiving notifications for IndexedDB.
+         * @param origin protocol value
+         */
+        public UntrackIndexedDBForOriginRequest(String origin) {
+            set("origin", origin);
+        }
+        public static UntrackIndexedDBForOriginRequest fromMap(Map<String, Object> values) {
+            UntrackIndexedDBForOriginRequest instance_ = new UntrackIndexedDBForOriginRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Security origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Security origin.
+         * @param origin field value
+         * @return this model
+         */
+        public UntrackIndexedDBForOriginRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Unregisters storage key from receiving notifications for IndexedDB.
+     */
+    public static final class UntrackIndexedDBForStorageKeyRequest extends CdpObject {
+        public UntrackIndexedDBForStorageKeyRequest() {}
+        /**
+         * Unregisters storage key from receiving notifications for IndexedDB.
+         * @param storageKey protocol value
+         */
+        public UntrackIndexedDBForStorageKeyRequest(String storageKey) {
+            set("storageKey", storageKey);
+        }
+        public static UntrackIndexedDBForStorageKeyRequest fromMap(Map<String, Object> values) {
+            UntrackIndexedDBForStorageKeyRequest instance_ = new UntrackIndexedDBForStorageKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value
+         */
+        public String storageKey() {
+            return (String) require("storageKey");
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value
+         * @return this model
+         */
+        public UntrackIndexedDBForStorageKeyRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+    }
+    /**
+     * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ClearTrustTokensRequest extends CdpObject {
+        public ClearTrustTokensRequest() {}
+        /**
+         * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param issuerOrigin protocol value
+         */
+        public ClearTrustTokensRequest(String issuerOrigin) {
+            set("issuerOrigin", issuerOrigin);
+        }
+        public static ClearTrustTokensRequest fromMap(Map<String, Object> values) {
+            ClearTrustTokensRequest instance_ = new ClearTrustTokensRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the issuerOrigin field.
+         * @return the protocol field value
+         */
+        public String issuerOrigin() {
+            return (String) require("issuerOrigin");
+        }
+        /**
+         * Sets the issuerOrigin field.
+         * @param issuerOrigin field value
+         * @return this model
+         */
+        public ClearTrustTokensRequest issuerOrigin(String issuerOrigin) {
+            set("issuerOrigin", issuerOrigin);
+            return this;
+        }
+    }
+    /**
+     * Gets details for a named interest group.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetInterestGroupDetailsRequest extends CdpObject {
+        public GetInterestGroupDetailsRequest() {}
+        /**
+         * Gets details for a named interest group.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         * @param name protocol value
+         */
+        public GetInterestGroupDetailsRequest(String ownerOrigin, String name) {
+            set("ownerOrigin", ownerOrigin);
+            set("name", name);
+        }
+        public static GetInterestGroupDetailsRequest fromMap(Map<String, Object> values) {
+            GetInterestGroupDetailsRequest instance_ = new GetInterestGroupDetailsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Returns the name field.
+         * @return the protocol field value
+         */
+        public String name() {
+            return (String) require("name");
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public GetInterestGroupDetailsRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public GetInterestGroupDetailsRequest name(String name) {
+            set("name", name);
+            return this;
+        }
+    }
+    /**
+     * Enables/Disables issuing of interestGroupAccessed events.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetInterestGroupTrackingRequest extends CdpObject {
+        public SetInterestGroupTrackingRequest() {}
+        /**
+         * Enables/Disables issuing of interestGroupAccessed events.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enable protocol value
+         */
+        public SetInterestGroupTrackingRequest(boolean enable) {
+            set("enable", enable);
+        }
+        public static SetInterestGroupTrackingRequest fromMap(Map<String, Object> values) {
+            SetInterestGroupTrackingRequest instance_ = new SetInterestGroupTrackingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the enable field.
+         * @return the protocol field value
+         */
+        public boolean enable() {
+            return (Boolean) require("enable");
+        }
+        /**
+         * Sets the enable field.
+         * @param enable field value
+         * @return this model
+         */
+        public SetInterestGroupTrackingRequest enable(boolean enable) {
+            set("enable", enable);
+            return this;
+        }
+    }
+    /**
+     * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetInterestGroupAuctionTrackingRequest extends CdpObject {
+        public SetInterestGroupAuctionTrackingRequest() {}
+        /**
+         * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enable protocol value
+         */
+        public SetInterestGroupAuctionTrackingRequest(boolean enable) {
+            set("enable", enable);
+        }
+        public static SetInterestGroupAuctionTrackingRequest fromMap(Map<String, Object> values) {
+            SetInterestGroupAuctionTrackingRequest instance_ = new SetInterestGroupAuctionTrackingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the enable field.
+         * @return the protocol field value
+         */
+        public boolean enable() {
+            return (Boolean) require("enable");
+        }
+        /**
+         * Sets the enable field.
+         * @param enable field value
+         * @return this model
+         */
+        public SetInterestGroupAuctionTrackingRequest enable(boolean enable) {
+            set("enable", enable);
+            return this;
+        }
+    }
+    /**
+     * Gets metadata for an origin&#x27;s shared storage.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetSharedStorageMetadataRequest extends CdpObject {
+        public GetSharedStorageMetadataRequest() {}
+        /**
+         * Gets metadata for an origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         */
+        public GetSharedStorageMetadataRequest(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+        }
+        public static GetSharedStorageMetadataRequest fromMap(Map<String, Object> values) {
+            GetSharedStorageMetadataRequest instance_ = new GetSharedStorageMetadataRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public GetSharedStorageMetadataRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+    }
+    /**
+     * Gets the entries in an given origin&#x27;s shared storage.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetSharedStorageEntriesRequest extends CdpObject {
+        public GetSharedStorageEntriesRequest() {}
+        /**
+         * Gets the entries in an given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         */
+        public GetSharedStorageEntriesRequest(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+        }
+        public static GetSharedStorageEntriesRequest fromMap(Map<String, Object> values) {
+            GetSharedStorageEntriesRequest instance_ = new GetSharedStorageEntriesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public GetSharedStorageEntriesRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+    }
+    /**
+     * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetSharedStorageEntryRequest extends CdpObject {
+        public SetSharedStorageEntryRequest() {}
+        /**
+         * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         * @param key protocol value
+         * @param value protocol value
+         */
+        public SetSharedStorageEntryRequest(String ownerOrigin, String key, String value) {
+            set("ownerOrigin", ownerOrigin);
+            set("key", key);
+            set("value", value);
+        }
+        public static SetSharedStorageEntryRequest fromMap(Map<String, Object> values) {
+            SetSharedStorageEntryRequest instance_ = new SetSharedStorageEntryRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Returns the key field.
+         * @return the protocol field value
+         */
+        public String key() {
+            return (String) require("key");
+        }
+        /**
+         * Returns the value field.
+         * @return the protocol field value
+         */
+        public String value() {
+            return (String) require("value");
+        }
+        /**
+         * If {@code ignoreIfPresent} is included and true, then only sets the entry if {@code key} doesn&#x27;t already exist.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> ignoreIfPresent() {
+            return Optional.ofNullable((Boolean) raw("ignoreIfPresent"));
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public SetSharedStorageEntryRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+        /**
+         * Sets the key field.
+         * @param key field value
+         * @return this model
+         */
+        public SetSharedStorageEntryRequest key(String key) {
+            set("key", key);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public SetSharedStorageEntryRequest value(String value) {
+            set("value", value);
+            return this;
+        }
+        /**
+         * If {@code ignoreIfPresent} is included and true, then only sets the entry if {@code key} doesn&#x27;t already exist.
+         * @param ignoreIfPresent field value; empty omits the value
+         * @return this model
+         */
+        public SetSharedStorageEntryRequest ignoreIfPresent(Optional<Boolean> ignoreIfPresent) {
+            set("ignoreIfPresent", ignoreIfPresent.orElse(null));
+            return this;
+        }
+        /**
+         * If {@code ignoreIfPresent} is included and true, then only sets the entry if {@code key} doesn&#x27;t already exist.
+         * @param ignoreIfPresent field value; null removes the value
+         * @return this model
+         */
+        public SetSharedStorageEntryRequest ignoreIfPresent(Boolean ignoreIfPresent) {
+            set("ignoreIfPresent", ignoreIfPresent);
+            return this;
+        }
+    }
+    /**
+     * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class DeleteSharedStorageEntryRequest extends CdpObject {
+        public DeleteSharedStorageEntryRequest() {}
+        /**
+         * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         * @param key protocol value
+         */
+        public DeleteSharedStorageEntryRequest(String ownerOrigin, String key) {
+            set("ownerOrigin", ownerOrigin);
+            set("key", key);
+        }
+        public static DeleteSharedStorageEntryRequest fromMap(Map<String, Object> values) {
+            DeleteSharedStorageEntryRequest instance_ = new DeleteSharedStorageEntryRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Returns the key field.
+         * @return the protocol field value
+         */
+        public String key() {
+            return (String) require("key");
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public DeleteSharedStorageEntryRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+        /**
+         * Sets the key field.
+         * @param key field value
+         * @return this model
+         */
+        public DeleteSharedStorageEntryRequest key(String key) {
+            set("key", key);
+            return this;
+        }
+    }
+    /**
+     * Clears all entries for a given origin&#x27;s shared storage.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ClearSharedStorageEntriesRequest extends CdpObject {
+        public ClearSharedStorageEntriesRequest() {}
+        /**
+         * Clears all entries for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         */
+        public ClearSharedStorageEntriesRequest(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+        }
+        public static ClearSharedStorageEntriesRequest fromMap(Map<String, Object> values) {
+            ClearSharedStorageEntriesRequest instance_ = new ClearSharedStorageEntriesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public ClearSharedStorageEntriesRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+    }
+    /**
+     * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ResetSharedStorageBudgetRequest extends CdpObject {
+        public ResetSharedStorageBudgetRequest() {}
+        /**
+         * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         */
+        public ResetSharedStorageBudgetRequest(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+        }
+        public static ResetSharedStorageBudgetRequest fromMap(Map<String, Object> values) {
+            ResetSharedStorageBudgetRequest instance_ = new ResetSharedStorageBudgetRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the ownerOrigin field.
+         * @return the protocol field value
+         */
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public ResetSharedStorageBudgetRequest ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+    }
+    /**
+     * Enables/disables issuing of sharedStorageAccessed events.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetSharedStorageTrackingRequest extends CdpObject {
+        public SetSharedStorageTrackingRequest() {}
+        /**
+         * Enables/disables issuing of sharedStorageAccessed events.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enable protocol value
+         */
+        public SetSharedStorageTrackingRequest(boolean enable) {
+            set("enable", enable);
+        }
+        public static SetSharedStorageTrackingRequest fromMap(Map<String, Object> values) {
+            SetSharedStorageTrackingRequest instance_ = new SetSharedStorageTrackingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the enable field.
+         * @return the protocol field value
+         */
+        public boolean enable() {
+            return (Boolean) require("enable");
+        }
+        /**
+         * Sets the enable field.
+         * @param enable field value
+         * @return this model
+         */
+        public SetSharedStorageTrackingRequest enable(boolean enable) {
+            set("enable", enable);
+            return this;
+        }
+    }
+    /**
+     * Set tracking for a storage key&#x27;s buckets.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetStorageBucketTrackingRequest extends CdpObject {
+        public SetStorageBucketTrackingRequest() {}
+        /**
+         * Set tracking for a storage key&#x27;s buckets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param storageKey protocol value
+         * @param enable protocol value
+         */
+        public SetStorageBucketTrackingRequest(String storageKey, boolean enable) {
+            set("storageKey", storageKey);
+            set("enable", enable);
+        }
+        public static SetStorageBucketTrackingRequest fromMap(Map<String, Object> values) {
+            SetStorageBucketTrackingRequest instance_ = new SetStorageBucketTrackingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the storageKey field.
+         * @return the protocol field value
+         */
+        public String storageKey() {
+            return (String) require("storageKey");
+        }
+        /**
+         * Returns the enable field.
+         * @return the protocol field value
+         */
+        public boolean enable() {
+            return (Boolean) require("enable");
+        }
+        /**
+         * Sets the storageKey field.
+         * @param storageKey field value
+         * @return this model
+         */
+        public SetStorageBucketTrackingRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Sets the enable field.
+         * @param enable field value
+         * @return this model
+         */
+        public SetStorageBucketTrackingRequest enable(boolean enable) {
+            set("enable", enable);
+            return this;
+        }
+    }
+    /**
+     * Deletes the Storage Bucket with the given storage key and bucket name.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class DeleteStorageBucketRequest extends CdpObject {
+        public DeleteStorageBucketRequest() {}
+        /**
+         * Deletes the Storage Bucket with the given storage key and bucket name.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param bucket protocol value
+         */
+        public DeleteStorageBucketRequest(Storage.StorageBucket bucket) {
+            set("bucket", bucket);
+        }
+        public static DeleteStorageBucketRequest fromMap(Map<String, Object> values) {
+            DeleteStorageBucketRequest instance_ = new DeleteStorageBucketRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the bucket field.
+         * @return the protocol field value
+         */
+        public Storage.StorageBucket bucket() {
+            return java.util.Objects.requireNonNull(Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bucket")))));
+        }
+        /**
+         * Sets the bucket field.
+         * @param bucket field value
+         * @return this model
+         */
+        public DeleteStorageBucketRequest bucket(Storage.StorageBucket bucket) {
+            set("bucket", bucket);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Storage.setProtectedAudienceKAnonymity.
+     */
+    public static final class SetProtectedAudienceKAnonymityRequest extends CdpObject {
+        public SetProtectedAudienceKAnonymityRequest() {}
+        /**
+         * Creates a new SetProtectedAudienceKAnonymityRequest with all required parameters.
+         * @param owner protocol value
+         * @param name protocol value
+         * @param hashes protocol value
+         */
+        public SetProtectedAudienceKAnonymityRequest(String owner, String name, java.util.List<String> hashes) {
+            set("owner", owner);
+            set("name", name);
+            set("hashes", hashes);
+        }
+        public static SetProtectedAudienceKAnonymityRequest fromMap(Map<String, Object> values) {
+            SetProtectedAudienceKAnonymityRequest instance_ = new SetProtectedAudienceKAnonymityRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the owner field.
+         * @return the protocol field value
+         */
+        public String owner() {
+            return (String) require("owner");
+        }
+        /**
+         * Returns the name field.
+         * @return the protocol field value
+         */
+        public String name() {
+            return (String) require("name");
+        }
+        /**
+         * Returns the hashes field.
+         * @return the protocol field value
+         */
+        public java.util.List<String> hashes() {
+            return CdpObject.requireList(require("hashes"), element0 -> (String) element0);
+        }
+        /**
+         * Sets the owner field.
+         * @param owner field value
+         * @return this model
+         */
+        public SetProtectedAudienceKAnonymityRequest owner(String owner) {
+            set("owner", owner);
+            return this;
+        }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public SetProtectedAudienceKAnonymityRequest name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Sets the hashes field.
+         * @param hashes field value
+         * @return this model
+         */
+        public SetProtectedAudienceKAnonymityRequest hashes(java.util.List<String> hashes) {
+            set("hashes", hashes);
+            return this;
+        }
+    }
+    /**
      * Returns usage and quota in bytes.
      */
     public static final class GetUsageAndQuotaResult extends CdpObject {
@@ -2249,6 +3580,16 @@ public final class Storage {
             return client.call("Storage.getStorageKeyForFrame", params, result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
         }
         /**
+         * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Storage.SerializedStorageKey> getStorageKeyForFrame(GetStorageKeyForFrameRequest request) {
+            return client.call("Storage.getStorageKeyForFrame", request == null ? null : request.toMap(), result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+        }
+        /**
          * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param frameId protocol value
@@ -2268,6 +3609,15 @@ public final class Storage {
             return getStorageKey(Optional.empty());
         }
         /**
+         * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Storage.SerializedStorageKey> getStorageKey(GetStorageKeyRequest request) {
+            return client.call("Storage.getStorageKey", request == null ? null : request.toMap(), result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+        }
+        /**
          * Clears storage for origin.
          * @param origin protocol value
          * @param storageTypes protocol value
@@ -2280,6 +3630,14 @@ public final class Storage {
             return client.call("Storage.clearDataForOrigin", params, result_ -> null);
         }
         /**
+         * Clears storage for origin.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearDataForOrigin(ClearDataForOriginRequest request) {
+            return client.call("Storage.clearDataForOrigin", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Clears storage for storage key.
          * @param storageKey protocol value
          * @param storageTypes protocol value
@@ -2290,6 +3648,14 @@ public final class Storage {
             params.put("storageKey", CdpObject.json(storageKey));
             params.put("storageTypes", CdpObject.json(storageTypes));
             return client.call("Storage.clearDataForStorageKey", params, result_ -> null);
+        }
+        /**
+         * Clears storage for storage key.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearDataForStorageKey(ClearDataForStorageKeyRequest request) {
+            return client.call("Storage.clearDataForStorageKey", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Returns all browser cookies.
@@ -2307,6 +3673,14 @@ public final class Storage {
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies() {
             return getCookies(Optional.empty());
+        }
+        /**
+         * Returns all browser cookies.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Network.Cookie>> getCookies(GetCookiesRequest request) {
+            return client.call("Storage.getCookies", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sets given cookies.
@@ -2329,6 +3703,14 @@ public final class Storage {
             return setCookies(cookies, Optional.empty());
         }
         /**
+         * Sets given cookies.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setCookies(SetCookiesRequest request) {
+            return client.call("Storage.setCookies", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Clears cookies.
          * @param browserContextId protocol value
          * @return a stage completing when the command completes
@@ -2346,6 +3728,14 @@ public final class Storage {
             return clearCookies(Optional.empty());
         }
         /**
+         * Clears cookies.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearCookies(ClearCookiesRequest request) {
+            return client.call("Storage.clearCookies", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Returns usage and quota in bytes.
          * @param origin protocol value
          * @return a stage completing with the command result
@@ -2354,6 +3744,14 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             return client.call("Storage.getUsageAndQuota", params, result_ -> new GetUsageAndQuotaResult(result_));
+        }
+        /**
+         * Returns usage and quota in bytes.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetUsageAndQuotaResult> getUsageAndQuota(GetUsageAndQuotaRequest request) {
+            return client.call("Storage.getUsageAndQuota", request == null ? null : request.toMap(), result_ -> new GetUsageAndQuotaResult(result_));
         }
         /**
          * Override quota for the specified origin
@@ -2378,6 +3776,15 @@ public final class Storage {
             return overrideQuotaForOrigin(origin, OptionalDouble.empty());
         }
         /**
+         * Override quota for the specified origin
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> overrideQuotaForOrigin(OverrideQuotaForOriginRequest request) {
+            return client.call("Storage.overrideQuotaForOrigin", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Registers origin to be notified when an update occurs to its cache storage list.
          * @param origin protocol value
          * @return a stage completing when the command completes
@@ -2386,6 +3793,14 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             return client.call("Storage.trackCacheStorageForOrigin", params, result_ -> null);
+        }
+        /**
+         * Registers origin to be notified when an update occurs to its cache storage list.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trackCacheStorageForOrigin(TrackCacheStorageForOriginRequest request) {
+            return client.call("Storage.trackCacheStorageForOrigin", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Registers storage key to be notified when an update occurs to its cache storage list.
@@ -2398,6 +3813,14 @@ public final class Storage {
             return client.call("Storage.trackCacheStorageForStorageKey", params, result_ -> null);
         }
         /**
+         * Registers storage key to be notified when an update occurs to its cache storage list.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trackCacheStorageForStorageKey(TrackCacheStorageForStorageKeyRequest request) {
+            return client.call("Storage.trackCacheStorageForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Registers origin to be notified when an update occurs to its IndexedDB.
          * @param origin protocol value
          * @return a stage completing when the command completes
@@ -2406,6 +3829,14 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             return client.call("Storage.trackIndexedDBForOrigin", params, result_ -> null);
+        }
+        /**
+         * Registers origin to be notified when an update occurs to its IndexedDB.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trackIndexedDBForOrigin(TrackIndexedDBForOriginRequest request) {
+            return client.call("Storage.trackIndexedDBForOrigin", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Registers storage key to be notified when an update occurs to its IndexedDB.
@@ -2418,6 +3849,14 @@ public final class Storage {
             return client.call("Storage.trackIndexedDBForStorageKey", params, result_ -> null);
         }
         /**
+         * Registers storage key to be notified when an update occurs to its IndexedDB.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trackIndexedDBForStorageKey(TrackIndexedDBForStorageKeyRequest request) {
+            return client.call("Storage.trackIndexedDBForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Unregisters origin from receiving notifications for cache storage.
          * @param origin protocol value
          * @return a stage completing when the command completes
@@ -2426,6 +3865,14 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             return client.call("Storage.untrackCacheStorageForOrigin", params, result_ -> null);
+        }
+        /**
+         * Unregisters origin from receiving notifications for cache storage.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> untrackCacheStorageForOrigin(UntrackCacheStorageForOriginRequest request) {
+            return client.call("Storage.untrackCacheStorageForOrigin", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Unregisters storage key from receiving notifications for cache storage.
@@ -2438,6 +3885,14 @@ public final class Storage {
             return client.call("Storage.untrackCacheStorageForStorageKey", params, result_ -> null);
         }
         /**
+         * Unregisters storage key from receiving notifications for cache storage.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> untrackCacheStorageForStorageKey(UntrackCacheStorageForStorageKeyRequest request) {
+            return client.call("Storage.untrackCacheStorageForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Unregisters origin from receiving notifications for IndexedDB.
          * @param origin protocol value
          * @return a stage completing when the command completes
@@ -2448,6 +3903,14 @@ public final class Storage {
             return client.call("Storage.untrackIndexedDBForOrigin", params, result_ -> null);
         }
         /**
+         * Unregisters origin from receiving notifications for IndexedDB.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> untrackIndexedDBForOrigin(UntrackIndexedDBForOriginRequest request) {
+            return client.call("Storage.untrackIndexedDBForOrigin", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Unregisters storage key from receiving notifications for IndexedDB.
          * @param storageKey protocol value
          * @return a stage completing when the command completes
@@ -2456,6 +3919,14 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
             return client.call("Storage.untrackIndexedDBForStorageKey", params, result_ -> null);
+        }
+        /**
+         * Unregisters storage key from receiving notifications for IndexedDB.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> untrackIndexedDBForStorageKey(UntrackIndexedDBForStorageKeyRequest request) {
+            return client.call("Storage.untrackIndexedDBForStorageKey", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Returns the number of stored Trust Tokens per issuer for the current browsing context.
@@ -2477,6 +3948,15 @@ public final class Storage {
             return client.call("Storage.clearTrustTokens", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("didDeleteTokens")));
         }
         /**
+         * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Boolean> clearTrustTokens(ClearTrustTokensRequest request) {
+            return client.call("Storage.clearTrustTokens", request == null ? null : request.toMap(), result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("didDeleteTokens")));
+        }
+        /**
          * Gets details for a named interest group.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param ownerOrigin protocol value
@@ -2490,6 +3970,15 @@ public final class Storage {
             return client.call("Storage.getInterestGroupDetails", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("details")))));
         }
         /**
+         * Gets details for a named interest group.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.Map<String, Object>> getInterestGroupDetails(GetInterestGroupDetailsRequest request) {
+            return client.call("Storage.getInterestGroupDetails", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("details")))));
+        }
+        /**
          * Enables/Disables issuing of interestGroupAccessed events.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param enable protocol value
@@ -2499,6 +3988,15 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
             return client.call("Storage.setInterestGroupTracking", params, result_ -> null);
+        }
+        /**
+         * Enables/Disables issuing of interestGroupAccessed events.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setInterestGroupTracking(SetInterestGroupTrackingRequest request) {
+            return client.call("Storage.setInterestGroupTracking", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
@@ -2512,6 +4010,15 @@ public final class Storage {
             return client.call("Storage.setInterestGroupAuctionTracking", params, result_ -> null);
         }
         /**
+         * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setInterestGroupAuctionTracking(SetInterestGroupAuctionTrackingRequest request) {
+            return client.call("Storage.setInterestGroupAuctionTracking", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Gets metadata for an origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param ownerOrigin protocol value
@@ -2523,6 +4030,15 @@ public final class Storage {
             return client.call("Storage.getSharedStorageMetadata", params, result_ -> java.util.Objects.requireNonNull(Storage.SharedStorageMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("metadata")))))));
         }
         /**
+         * Gets metadata for an origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Storage.SharedStorageMetadata> getSharedStorageMetadata(GetSharedStorageMetadataRequest request) {
+            return client.call("Storage.getSharedStorageMetadata", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Storage.SharedStorageMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("metadata")))))));
+        }
+        /**
          * Gets the entries in an given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param ownerOrigin protocol value
@@ -2532,6 +4048,15 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("ownerOrigin", CdpObject.json(ownerOrigin));
             return client.call("Storage.getSharedStorageEntries", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Gets the entries in an given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Storage.SharedStorageEntry>> getSharedStorageEntries(GetSharedStorageEntriesRequest request) {
+            return client.call("Storage.getSharedStorageEntries", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
@@ -2562,6 +4087,15 @@ public final class Storage {
             return setSharedStorageEntry(ownerOrigin, key, value, Optional.empty());
         }
         /**
+         * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setSharedStorageEntry(SetSharedStorageEntryRequest request) {
+            return client.call("Storage.setSharedStorageEntry", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param ownerOrigin protocol value
@@ -2575,6 +4109,15 @@ public final class Storage {
             return client.call("Storage.deleteSharedStorageEntry", params, result_ -> null);
         }
         /**
+         * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deleteSharedStorageEntry(DeleteSharedStorageEntryRequest request) {
+            return client.call("Storage.deleteSharedStorageEntry", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Clears all entries for a given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param ownerOrigin protocol value
@@ -2584,6 +4127,15 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("ownerOrigin", CdpObject.json(ownerOrigin));
             return client.call("Storage.clearSharedStorageEntries", params, result_ -> null);
+        }
+        /**
+         * Clears all entries for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearSharedStorageEntries(ClearSharedStorageEntriesRequest request) {
+            return client.call("Storage.clearSharedStorageEntries", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
@@ -2597,6 +4149,15 @@ public final class Storage {
             return client.call("Storage.resetSharedStorageBudget", params, result_ -> null);
         }
         /**
+         * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> resetSharedStorageBudget(ResetSharedStorageBudgetRequest request) {
+            return client.call("Storage.resetSharedStorageBudget", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enables/disables issuing of sharedStorageAccessed events.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param enable protocol value
@@ -2606,6 +4167,15 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
             return client.call("Storage.setSharedStorageTracking", params, result_ -> null);
+        }
+        /**
+         * Enables/disables issuing of sharedStorageAccessed events.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setSharedStorageTracking(SetSharedStorageTrackingRequest request) {
+            return client.call("Storage.setSharedStorageTracking", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Set tracking for a storage key&#x27;s buckets.
@@ -2621,6 +4191,15 @@ public final class Storage {
             return client.call("Storage.setStorageBucketTracking", params, result_ -> null);
         }
         /**
+         * Set tracking for a storage key&#x27;s buckets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setStorageBucketTracking(SetStorageBucketTrackingRequest request) {
+            return client.call("Storage.setStorageBucketTracking", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Deletes the Storage Bucket with the given storage key and bucket name.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param bucket protocol value
@@ -2630,6 +4209,15 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("bucket", CdpObject.json(bucket));
             return client.call("Storage.deleteStorageBucket", params, result_ -> null);
+        }
+        /**
+         * Deletes the Storage Bucket with the given storage key and bucket name.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deleteStorageBucket(DeleteStorageBucketRequest request) {
+            return client.call("Storage.deleteStorageBucket", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Deletes state for sites identified as potential bounce trackers, immediately.
@@ -2660,6 +4248,14 @@ public final class Storage {
             params.put("name", CdpObject.json(name));
             params.put("hashes", CdpObject.json(hashes));
             return client.call("Storage.setProtectedAudienceKAnonymity", params, result_ -> null);
+        }
+        /**
+         * Invokes Storage.setProtectedAudienceKAnonymity with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setProtectedAudienceKAnonymity(SetProtectedAudienceKAnonymityRequest request) {
+            return client.call("Storage.setProtectedAudienceKAnonymity", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * A cache&#x27;s contents have been modified.

@@ -491,6 +491,126 @@ public final class Profiler {
         }
     }
     /**
+     * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
+     */
+    public static final class SetSamplingIntervalRequest extends CdpObject {
+        public SetSamplingIntervalRequest() {}
+        /**
+         * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
+         * @param interval protocol value
+         */
+        public SetSamplingIntervalRequest(long interval) {
+            set("interval", interval);
+        }
+        public static SetSamplingIntervalRequest fromMap(Map<String, Object> values) {
+            SetSamplingIntervalRequest instance_ = new SetSamplingIntervalRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * New sampling interval in microseconds.
+         * @return the protocol field value
+         */
+        public long interval() {
+            return ((Number) require("interval")).longValue();
+        }
+        /**
+         * New sampling interval in microseconds.
+         * @param interval field value
+         * @return this model
+         */
+        public SetSamplingIntervalRequest interval(long interval) {
+            set("interval", interval);
+            return this;
+        }
+    }
+    /**
+     * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be incomplete. Enabling prevents running optimized code and resets execution counters.
+     */
+    public static final class StartPreciseCoverageRequest extends CdpObject {
+        public StartPreciseCoverageRequest() {}
+        public static StartPreciseCoverageRequest fromMap(Map<String, Object> values) {
+            StartPreciseCoverageRequest instance_ = new StartPreciseCoverageRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Collect accurate call counts beyond simple &#x27;covered&#x27; or &#x27;not covered&#x27;.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> callCount() {
+            return Optional.ofNullable((Boolean) raw("callCount"));
+        }
+        /**
+         * Collect block-based coverage.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> detailed() {
+            return Optional.ofNullable((Boolean) raw("detailed"));
+        }
+        /**
+         * Allow the backend to send updates on its own initiative
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> allowTriggeredUpdates() {
+            return Optional.ofNullable((Boolean) raw("allowTriggeredUpdates"));
+        }
+        /**
+         * Collect accurate call counts beyond simple &#x27;covered&#x27; or &#x27;not covered&#x27;.
+         * @param callCount field value; empty omits the value
+         * @return this model
+         */
+        public StartPreciseCoverageRequest callCount(Optional<Boolean> callCount) {
+            set("callCount", callCount.orElse(null));
+            return this;
+        }
+        /**
+         * Collect accurate call counts beyond simple &#x27;covered&#x27; or &#x27;not covered&#x27;.
+         * @param callCount field value; null removes the value
+         * @return this model
+         */
+        public StartPreciseCoverageRequest callCount(Boolean callCount) {
+            set("callCount", callCount);
+            return this;
+        }
+        /**
+         * Collect block-based coverage.
+         * @param detailed field value; empty omits the value
+         * @return this model
+         */
+        public StartPreciseCoverageRequest detailed(Optional<Boolean> detailed) {
+            set("detailed", detailed.orElse(null));
+            return this;
+        }
+        /**
+         * Collect block-based coverage.
+         * @param detailed field value; null removes the value
+         * @return this model
+         */
+        public StartPreciseCoverageRequest detailed(Boolean detailed) {
+            set("detailed", detailed);
+            return this;
+        }
+        /**
+         * Allow the backend to send updates on its own initiative
+         * @param allowTriggeredUpdates field value; empty omits the value
+         * @return this model
+         */
+        public StartPreciseCoverageRequest allowTriggeredUpdates(Optional<Boolean> allowTriggeredUpdates) {
+            set("allowTriggeredUpdates", allowTriggeredUpdates.orElse(null));
+            return this;
+        }
+        /**
+         * Allow the backend to send updates on its own initiative
+         * @param allowTriggeredUpdates field value; null removes the value
+         * @return this model
+         */
+        public StartPreciseCoverageRequest allowTriggeredUpdates(Boolean allowTriggeredUpdates) {
+            set("allowTriggeredUpdates", allowTriggeredUpdates);
+            return this;
+        }
+    }
+    /**
      * Collect coverage data for the current isolate, and resets execution counters. Precise code coverage needs to have started.
      */
     public static final class TakePreciseCoverageResult extends CdpObject {
@@ -776,6 +896,14 @@ public final class Profiler {
             return client.call("Profiler.setSamplingInterval", params, result_ -> null);
         }
         /**
+         * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setSamplingInterval(SetSamplingIntervalRequest request) {
+            return client.call("Profiler.setSamplingInterval", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes Profiler.start.
          * @return a stage completing when the command completes
          */
@@ -802,6 +930,14 @@ public final class Profiler {
          */
         public CompletionStage<Double> startPreciseCoverage() {
             return startPreciseCoverage(Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be incomplete. Enabling prevents running optimized code and resets execution counters.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Double> startPreciseCoverage(StartPreciseCoverageRequest request) {
+            return client.call("Profiler.startPreciseCoverage", request == null ? null : request.toMap(), result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("timestamp"))).doubleValue());
         }
         /**
          * Invokes Profiler.stop.

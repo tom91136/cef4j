@@ -220,6 +220,40 @@ public final class FileSystem {
             return this;
         }
     }
+    /**
+     * Request parameters for FileSystem.getDirectory.
+     */
+    public static final class GetDirectoryRequest extends CdpObject {
+        public GetDirectoryRequest() {}
+        /**
+         * Creates a new GetDirectoryRequest with all required parameters.
+         * @param bucketFileSystemLocator protocol value
+         */
+        public GetDirectoryRequest(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
+            set("bucketFileSystemLocator", bucketFileSystemLocator);
+        }
+        public static GetDirectoryRequest fromMap(Map<String, Object> values) {
+            GetDirectoryRequest instance_ = new GetDirectoryRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the bucketFileSystemLocator field.
+         * @return the protocol field value
+         */
+        public FileSystem.BucketFileSystemLocator bucketFileSystemLocator() {
+            return java.util.Objects.requireNonNull(FileSystem.BucketFileSystemLocator.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bucketFileSystemLocator")))));
+        }
+        /**
+         * Sets the bucketFileSystemLocator field.
+         * @param bucketFileSystemLocator field value
+         * @return this model
+         */
+        public GetDirectoryRequest bucketFileSystemLocator(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
+            set("bucketFileSystemLocator", bucketFileSystemLocator);
+            return this;
+        }
+    }
     public static final class Client {
         private final CdpClient client;
         public Client(CdpClient client) { this.client = client; }
@@ -232,6 +266,14 @@ public final class FileSystem {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("bucketFileSystemLocator", CdpObject.json(bucketFileSystemLocator));
             return client.call("FileSystem.getDirectory", params, result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("directory")))))));
+        }
+        /**
+         * Invokes FileSystem.getDirectory with a request object.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<FileSystem.Directory> getDirectory(GetDirectoryRequest request) {
+            return client.call("FileSystem.getDirectory", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("directory")))))));
         }
     }
 }

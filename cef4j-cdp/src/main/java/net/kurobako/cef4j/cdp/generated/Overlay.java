@@ -2209,6 +2209,1446 @@ public final class Overlay {
         }
     }
     /**
+     * For testing.
+     */
+    public static final class GetHighlightObjectForTestRequest extends CdpObject {
+        public GetHighlightObjectForTestRequest() {}
+        /**
+         * For testing.
+         * @param nodeId protocol value
+         */
+        public GetHighlightObjectForTestRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetHighlightObjectForTestRequest fromMap(Map<String, Object> values) {
+            GetHighlightObjectForTestRequest instance_ = new GetHighlightObjectForTestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Id of the node to get highlight object for.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Whether to include distance info.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeDistance() {
+            return Optional.ofNullable((Boolean) raw("includeDistance"));
+        }
+        /**
+         * Whether to include style info.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> includeStyle() {
+            return Optional.ofNullable((Boolean) raw("includeStyle"));
+        }
+        /**
+         * The color format to get config with (default: hex).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Overlay.ColorFormat> colorFormat() {
+            return Optional.ofNullable(raw("colorFormat") == null ? null : Overlay.ColorFormat.of((String) raw("colorFormat")));
+        }
+        /**
+         * Whether to show accessibility info (default: true).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> showAccessibilityInfo() {
+            return Optional.ofNullable((Boolean) raw("showAccessibilityInfo"));
+        }
+        /**
+         * Id of the node to get highlight object for.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Whether to include distance info.
+         * @param includeDistance field value; empty omits the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest includeDistance(Optional<Boolean> includeDistance) {
+            set("includeDistance", includeDistance.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include distance info.
+         * @param includeDistance field value; null removes the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest includeDistance(Boolean includeDistance) {
+            set("includeDistance", includeDistance);
+            return this;
+        }
+        /**
+         * Whether to include style info.
+         * @param includeStyle field value; empty omits the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest includeStyle(Optional<Boolean> includeStyle) {
+            set("includeStyle", includeStyle.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to include style info.
+         * @param includeStyle field value; null removes the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest includeStyle(Boolean includeStyle) {
+            set("includeStyle", includeStyle);
+            return this;
+        }
+        /**
+         * The color format to get config with (default: hex).
+         * @param colorFormat field value; empty omits the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest colorFormat(Optional<Overlay.ColorFormat> colorFormat) {
+            set("colorFormat", colorFormat.orElse(null));
+            return this;
+        }
+        /**
+         * The color format to get config with (default: hex).
+         * @param colorFormat field value; null removes the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest colorFormat(Overlay.ColorFormat colorFormat) {
+            set("colorFormat", colorFormat);
+            return this;
+        }
+        /**
+         * Whether to show accessibility info (default: true).
+         * @param showAccessibilityInfo field value; empty omits the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest showAccessibilityInfo(Optional<Boolean> showAccessibilityInfo) {
+            set("showAccessibilityInfo", showAccessibilityInfo.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to show accessibility info (default: true).
+         * @param showAccessibilityInfo field value; null removes the value
+         * @return this model
+         */
+        public GetHighlightObjectForTestRequest showAccessibilityInfo(Boolean showAccessibilityInfo) {
+            set("showAccessibilityInfo", showAccessibilityInfo);
+            return this;
+        }
+    }
+    /**
+     * For Persistent Grid testing.
+     */
+    public static final class GetGridHighlightObjectsForTestRequest extends CdpObject {
+        public GetGridHighlightObjectsForTestRequest() {}
+        /**
+         * For Persistent Grid testing.
+         * @param nodeIds protocol value
+         */
+        public GetGridHighlightObjectsForTestRequest(java.util.List<DOM.NodeId> nodeIds) {
+            set("nodeIds", nodeIds);
+        }
+        public static GetGridHighlightObjectsForTestRequest fromMap(Map<String, Object> values) {
+            GetGridHighlightObjectsForTestRequest instance_ = new GetGridHighlightObjectsForTestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Ids of the node to get highlight object for.
+         * @return the protocol field value
+         */
+        public java.util.List<DOM.NodeId> nodeIds() {
+            return CdpObject.requireList(require("nodeIds"), element0 -> new DOM.NodeId(((Number) element0).longValue()));
+        }
+        /**
+         * Ids of the node to get highlight object for.
+         * @param nodeIds field value
+         * @return this model
+         */
+        public GetGridHighlightObjectsForTestRequest nodeIds(java.util.List<DOM.NodeId> nodeIds) {
+            set("nodeIds", nodeIds);
+            return this;
+        }
+    }
+    /**
+     * For Source Order Viewer testing.
+     */
+    public static final class GetSourceOrderHighlightObjectForTestRequest extends CdpObject {
+        public GetSourceOrderHighlightObjectForTestRequest() {}
+        /**
+         * For Source Order Viewer testing.
+         * @param nodeId protocol value
+         */
+        public GetSourceOrderHighlightObjectForTestRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetSourceOrderHighlightObjectForTestRequest fromMap(Map<String, Object> values) {
+            GetSourceOrderHighlightObjectForTestRequest instance_ = new GetSourceOrderHighlightObjectForTestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Id of the node to highlight.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Id of the node to highlight.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetSourceOrderHighlightObjectForTestRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class HighlightFrameRequest extends CdpObject {
+        public HighlightFrameRequest() {}
+        /**
+         * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
+         * @param frameId protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public HighlightFrameRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static HighlightFrameRequest fromMap(Map<String, Object> values) {
+            HighlightFrameRequest instance_ = new HighlightFrameRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the frame to highlight.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * The content box highlight fill color (default: transparent).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.RGBA> contentColor() {
+            return Optional.ofNullable(raw("contentColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentColor")))));
+        }
+        /**
+         * The content box highlight outline color (default: transparent).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.RGBA> contentOutlineColor() {
+            return Optional.ofNullable(raw("contentOutlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentOutlineColor")))));
+        }
+        /**
+         * Identifier of the frame to highlight.
+         * @param frameId field value
+         * @return this model
+         */
+        public HighlightFrameRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * The content box highlight fill color (default: transparent).
+         * @param contentColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightFrameRequest contentColor(Optional<DOM.RGBA> contentColor) {
+            set("contentColor", contentColor.orElse(null));
+            return this;
+        }
+        /**
+         * The content box highlight fill color (default: transparent).
+         * @param contentColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightFrameRequest contentColor(DOM.RGBA contentColor) {
+            set("contentColor", contentColor);
+            return this;
+        }
+        /**
+         * The content box highlight outline color (default: transparent).
+         * @param contentOutlineColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightFrameRequest contentOutlineColor(Optional<DOM.RGBA> contentOutlineColor) {
+            set("contentOutlineColor", contentOutlineColor.orElse(null));
+            return this;
+        }
+        /**
+         * The content box highlight outline color (default: transparent).
+         * @param contentOutlineColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightFrameRequest contentOutlineColor(DOM.RGBA contentOutlineColor) {
+            set("contentOutlineColor", contentOutlineColor);
+            return this;
+        }
+    }
+    /**
+     * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+     */
+    public static final class HighlightNodeRequest extends CdpObject {
+        public HighlightNodeRequest() {}
+        /**
+         * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+         * @param highlightConfig protocol value
+         */
+        public HighlightNodeRequest(Overlay.HighlightConfig highlightConfig) {
+            set("highlightConfig", highlightConfig);
+        }
+        public static HighlightNodeRequest fromMap(Map<String, Object> values) {
+            HighlightNodeRequest instance_ = new HighlightNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * A descriptor for the highlight appearance.
+         * @return the protocol field value
+         */
+        public Overlay.HighlightConfig highlightConfig() {
+            return java.util.Objects.requireNonNull(Overlay.HighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("highlightConfig")))));
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+        }
+        /**
+         * Identifier of the backend node to highlight.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+        }
+        /**
+         * JavaScript object id of the node to be highlighted.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Runtime.RemoteObjectId> objectId() {
+            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+        }
+        /**
+         * Selectors to highlight relevant nodes.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> selector() {
+            return Optional.ofNullable((String) raw("selector"));
+        }
+        /**
+         * A descriptor for the highlight appearance.
+         * @param highlightConfig field value
+         * @return this model
+         */
+        public HighlightNodeRequest highlightConfig(Overlay.HighlightConfig highlightConfig) {
+            set("highlightConfig", highlightConfig);
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public HighlightNodeRequest nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public HighlightNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Identifier of the backend node to highlight.
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
+         */
+        public HighlightNodeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the backend node to highlight.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
+         */
+        public HighlightNodeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * JavaScript object id of the node to be highlighted.
+         * @param objectId field value; empty omits the value
+         * @return this model
+         */
+        public HighlightNodeRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
+            set("objectId", objectId.orElse(null));
+            return this;
+        }
+        /**
+         * JavaScript object id of the node to be highlighted.
+         * @param objectId field value; null removes the value
+         * @return this model
+         */
+        public HighlightNodeRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+        /**
+         * Selectors to highlight relevant nodes.
+         * @param selector field value; empty omits the value
+         * @return this model
+         */
+        public HighlightNodeRequest selector(Optional<String> selector) {
+            set("selector", selector.orElse(null));
+            return this;
+        }
+        /**
+         * Selectors to highlight relevant nodes.
+         * @param selector field value; null removes the value
+         * @return this model
+         */
+        public HighlightNodeRequest selector(String selector) {
+            set("selector", selector);
+            return this;
+        }
+    }
+    /**
+     * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
+     */
+    public static final class HighlightQuadRequest extends CdpObject {
+        public HighlightQuadRequest() {}
+        /**
+         * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
+         * @param quad protocol value
+         */
+        public HighlightQuadRequest(java.util.List<Double> quad) {
+            set("quad", quad);
+        }
+        public static HighlightQuadRequest fromMap(Map<String, Object> values) {
+            HighlightQuadRequest instance_ = new HighlightQuadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Quad to highlight
+         * @return the protocol field value
+         */
+        public java.util.List<Double> quad() {
+            return CdpObject.requireList(require("quad"), element0 -> ((Number) element0).doubleValue());
+        }
+        /**
+         * The highlight fill color (default: transparent).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.RGBA> color() {
+            return Optional.ofNullable(raw("color") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("color")))));
+        }
+        /**
+         * The highlight outline color (default: transparent).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.RGBA> outlineColor() {
+            return Optional.ofNullable(raw("outlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("outlineColor")))));
+        }
+        /**
+         * Quad to highlight
+         * @param quad field value
+         * @return this model
+         */
+        public HighlightQuadRequest quad(java.util.List<Double> quad) {
+            set("quad", quad);
+            return this;
+        }
+        /**
+         * The highlight fill color (default: transparent).
+         * @param color field value; empty omits the value
+         * @return this model
+         */
+        public HighlightQuadRequest color(Optional<DOM.RGBA> color) {
+            set("color", color.orElse(null));
+            return this;
+        }
+        /**
+         * The highlight fill color (default: transparent).
+         * @param color field value; null removes the value
+         * @return this model
+         */
+        public HighlightQuadRequest color(DOM.RGBA color) {
+            set("color", color);
+            return this;
+        }
+        /**
+         * The highlight outline color (default: transparent).
+         * @param outlineColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightQuadRequest outlineColor(Optional<DOM.RGBA> outlineColor) {
+            set("outlineColor", outlineColor.orElse(null));
+            return this;
+        }
+        /**
+         * The highlight outline color (default: transparent).
+         * @param outlineColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightQuadRequest outlineColor(DOM.RGBA outlineColor) {
+            set("outlineColor", outlineColor);
+            return this;
+        }
+    }
+    /**
+     * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
+     */
+    public static final class HighlightRectRequest extends CdpObject {
+        public HighlightRectRequest() {}
+        /**
+         * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
+         * @param x protocol value
+         * @param y protocol value
+         * @param width protocol value
+         * @param height protocol value
+         */
+        public HighlightRectRequest(long x, long y, long width, long height) {
+            set("x", x);
+            set("y", y);
+            set("width", width);
+            set("height", height);
+        }
+        public static HighlightRectRequest fromMap(Map<String, Object> values) {
+            HighlightRectRequest instance_ = new HighlightRectRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * X coordinate
+         * @return the protocol field value
+         */
+        public long x() {
+            return ((Number) require("x")).longValue();
+        }
+        /**
+         * Y coordinate
+         * @return the protocol field value
+         */
+        public long y() {
+            return ((Number) require("y")).longValue();
+        }
+        /**
+         * Rectangle width
+         * @return the protocol field value
+         */
+        public long width() {
+            return ((Number) require("width")).longValue();
+        }
+        /**
+         * Rectangle height
+         * @return the protocol field value
+         */
+        public long height() {
+            return ((Number) require("height")).longValue();
+        }
+        /**
+         * The highlight fill color (default: transparent).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.RGBA> color() {
+            return Optional.ofNullable(raw("color") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("color")))));
+        }
+        /**
+         * The highlight outline color (default: transparent).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.RGBA> outlineColor() {
+            return Optional.ofNullable(raw("outlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("outlineColor")))));
+        }
+        /**
+         * X coordinate
+         * @param x field value
+         * @return this model
+         */
+        public HighlightRectRequest x(long x) {
+            set("x", x);
+            return this;
+        }
+        /**
+         * Y coordinate
+         * @param y field value
+         * @return this model
+         */
+        public HighlightRectRequest y(long y) {
+            set("y", y);
+            return this;
+        }
+        /**
+         * Rectangle width
+         * @param width field value
+         * @return this model
+         */
+        public HighlightRectRequest width(long width) {
+            set("width", width);
+            return this;
+        }
+        /**
+         * Rectangle height
+         * @param height field value
+         * @return this model
+         */
+        public HighlightRectRequest height(long height) {
+            set("height", height);
+            return this;
+        }
+        /**
+         * The highlight fill color (default: transparent).
+         * @param color field value; empty omits the value
+         * @return this model
+         */
+        public HighlightRectRequest color(Optional<DOM.RGBA> color) {
+            set("color", color.orElse(null));
+            return this;
+        }
+        /**
+         * The highlight fill color (default: transparent).
+         * @param color field value; null removes the value
+         * @return this model
+         */
+        public HighlightRectRequest color(DOM.RGBA color) {
+            set("color", color);
+            return this;
+        }
+        /**
+         * The highlight outline color (default: transparent).
+         * @param outlineColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightRectRequest outlineColor(Optional<DOM.RGBA> outlineColor) {
+            set("outlineColor", outlineColor.orElse(null));
+            return this;
+        }
+        /**
+         * The highlight outline color (default: transparent).
+         * @param outlineColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightRectRequest outlineColor(DOM.RGBA outlineColor) {
+            set("outlineColor", outlineColor);
+            return this;
+        }
+    }
+    /**
+     * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+     */
+    public static final class HighlightSourceOrderRequest extends CdpObject {
+        public HighlightSourceOrderRequest() {}
+        /**
+         * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+         * @param sourceOrderConfig protocol value
+         */
+        public HighlightSourceOrderRequest(Overlay.SourceOrderConfig sourceOrderConfig) {
+            set("sourceOrderConfig", sourceOrderConfig);
+        }
+        public static HighlightSourceOrderRequest fromMap(Map<String, Object> values) {
+            HighlightSourceOrderRequest instance_ = new HighlightSourceOrderRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * A descriptor for the appearance of the overlay drawing.
+         * @return the protocol field value
+         */
+        public Overlay.SourceOrderConfig sourceOrderConfig() {
+            return java.util.Objects.requireNonNull(Overlay.SourceOrderConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("sourceOrderConfig")))));
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+        }
+        /**
+         * Identifier of the backend node to highlight.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+        }
+        /**
+         * JavaScript object id of the node to be highlighted.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Runtime.RemoteObjectId> objectId() {
+            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+        }
+        /**
+         * A descriptor for the appearance of the overlay drawing.
+         * @param sourceOrderConfig field value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest sourceOrderConfig(Overlay.SourceOrderConfig sourceOrderConfig) {
+            set("sourceOrderConfig", sourceOrderConfig);
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Identifier of the backend node to highlight.
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the backend node to highlight.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * JavaScript object id of the node to be highlighted.
+         * @param objectId field value; empty omits the value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
+            set("objectId", objectId.orElse(null));
+            return this;
+        }
+        /**
+         * JavaScript object id of the node to be highlighted.
+         * @param objectId field value; null removes the value
+         * @return this model
+         */
+        public HighlightSourceOrderRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+    }
+    /**
+     * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
+     */
+    public static final class SetInspectModeRequest extends CdpObject {
+        public SetInspectModeRequest() {}
+        /**
+         * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
+         * @param mode protocol value
+         */
+        public SetInspectModeRequest(Overlay.InspectMode mode) {
+            set("mode", mode);
+        }
+        public static SetInspectModeRequest fromMap(Map<String, Object> values) {
+            SetInspectModeRequest instance_ = new SetInspectModeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Set an inspection mode.
+         * @return the protocol field value
+         */
+        public Overlay.InspectMode mode() {
+            return Overlay.InspectMode.of((String) require("mode"));
+        }
+        /**
+         * A descriptor for the highlight appearance of hovered-over nodes. May be omitted if {@code enabled == false}.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Overlay.HighlightConfig> highlightConfig() {
+            return Optional.ofNullable(raw("highlightConfig") == null ? null : Overlay.HighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("highlightConfig")))));
+        }
+        /**
+         * Set an inspection mode.
+         * @param mode field value
+         * @return this model
+         */
+        public SetInspectModeRequest mode(Overlay.InspectMode mode) {
+            set("mode", mode);
+            return this;
+        }
+        /**
+         * A descriptor for the highlight appearance of hovered-over nodes. May be omitted if {@code enabled == false}.
+         * @param highlightConfig field value; empty omits the value
+         * @return this model
+         */
+        public SetInspectModeRequest highlightConfig(Optional<Overlay.HighlightConfig> highlightConfig) {
+            set("highlightConfig", highlightConfig.orElse(null));
+            return this;
+        }
+        /**
+         * A descriptor for the highlight appearance of hovered-over nodes. May be omitted if {@code enabled == false}.
+         * @param highlightConfig field value; null removes the value
+         * @return this model
+         */
+        public SetInspectModeRequest highlightConfig(Overlay.HighlightConfig highlightConfig) {
+            set("highlightConfig", highlightConfig);
+            return this;
+        }
+    }
+    /**
+     * Highlights owner element of all frames detected to be ads.
+     */
+    public static final class SetShowAdHighlightsRequest extends CdpObject {
+        public SetShowAdHighlightsRequest() {}
+        /**
+         * Highlights owner element of all frames detected to be ads.
+         * @param show protocol value
+         */
+        public SetShowAdHighlightsRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowAdHighlightsRequest fromMap(Map<String, Object> values) {
+            SetShowAdHighlightsRequest instance_ = new SetShowAdHighlightsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing ad highlights
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * True for showing ad highlights
+         * @param show field value
+         * @return this model
+         */
+        public SetShowAdHighlightsRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Overlay.setPausedInDebuggerMessage.
+     */
+    public static final class SetPausedInDebuggerMessageRequest extends CdpObject {
+        public SetPausedInDebuggerMessageRequest() {}
+        public static SetPausedInDebuggerMessageRequest fromMap(Map<String, Object> values) {
+            SetPausedInDebuggerMessageRequest instance_ = new SetPausedInDebuggerMessageRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The message to display, also triggers resume and step over controls.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> message() {
+            return Optional.ofNullable((String) raw("message"));
+        }
+        /**
+         * The message to display, also triggers resume and step over controls.
+         * @param message field value; empty omits the value
+         * @return this model
+         */
+        public SetPausedInDebuggerMessageRequest message(Optional<String> message) {
+            set("message", message.orElse(null));
+            return this;
+        }
+        /**
+         * The message to display, also triggers resume and step over controls.
+         * @param message field value; null removes the value
+         * @return this model
+         */
+        public SetPausedInDebuggerMessageRequest message(String message) {
+            set("message", message);
+            return this;
+        }
+    }
+    /**
+     * Requests that backend shows debug borders on layers
+     */
+    public static final class SetShowDebugBordersRequest extends CdpObject {
+        public SetShowDebugBordersRequest() {}
+        /**
+         * Requests that backend shows debug borders on layers
+         * @param show protocol value
+         */
+        public SetShowDebugBordersRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowDebugBordersRequest fromMap(Map<String, Object> values) {
+            SetShowDebugBordersRequest instance_ = new SetShowDebugBordersRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing debug borders
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * True for showing debug borders
+         * @param show field value
+         * @return this model
+         */
+        public SetShowDebugBordersRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Requests that backend shows the FPS counter
+     */
+    public static final class SetShowFPSCounterRequest extends CdpObject {
+        public SetShowFPSCounterRequest() {}
+        /**
+         * Requests that backend shows the FPS counter
+         * @param show protocol value
+         */
+        public SetShowFPSCounterRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowFPSCounterRequest fromMap(Map<String, Object> values) {
+            SetShowFPSCounterRequest instance_ = new SetShowFPSCounterRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing the FPS counter
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * True for showing the FPS counter
+         * @param show field value
+         * @return this model
+         */
+        public SetShowFPSCounterRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Highlight multiple elements with the CSS Grid overlay.
+     */
+    public static final class SetShowGridOverlaysRequest extends CdpObject {
+        public SetShowGridOverlaysRequest() {}
+        /**
+         * Highlight multiple elements with the CSS Grid overlay.
+         * @param gridNodeHighlightConfigs protocol value
+         */
+        public SetShowGridOverlaysRequest(java.util.List<Overlay.GridNodeHighlightConfig> gridNodeHighlightConfigs) {
+            set("gridNodeHighlightConfigs", gridNodeHighlightConfigs);
+        }
+        public static SetShowGridOverlaysRequest fromMap(Map<String, Object> values) {
+            SetShowGridOverlaysRequest instance_ = new SetShowGridOverlaysRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @return the protocol field value
+         */
+        public java.util.List<Overlay.GridNodeHighlightConfig> gridNodeHighlightConfigs() {
+            return CdpObject.requireList(require("gridNodeHighlightConfigs"), element0 -> java.util.Objects.requireNonNull(Overlay.GridNodeHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @param gridNodeHighlightConfigs field value
+         * @return this model
+         */
+        public SetShowGridOverlaysRequest gridNodeHighlightConfigs(java.util.List<Overlay.GridNodeHighlightConfig> gridNodeHighlightConfigs) {
+            set("gridNodeHighlightConfigs", gridNodeHighlightConfigs);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Overlay.setShowFlexOverlays.
+     */
+    public static final class SetShowFlexOverlaysRequest extends CdpObject {
+        public SetShowFlexOverlaysRequest() {}
+        /**
+         * Creates a new SetShowFlexOverlaysRequest with all required parameters.
+         * @param flexNodeHighlightConfigs protocol value
+         */
+        public SetShowFlexOverlaysRequest(java.util.List<Overlay.FlexNodeHighlightConfig> flexNodeHighlightConfigs) {
+            set("flexNodeHighlightConfigs", flexNodeHighlightConfigs);
+        }
+        public static SetShowFlexOverlaysRequest fromMap(Map<String, Object> values) {
+            SetShowFlexOverlaysRequest instance_ = new SetShowFlexOverlaysRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @return the protocol field value
+         */
+        public java.util.List<Overlay.FlexNodeHighlightConfig> flexNodeHighlightConfigs() {
+            return CdpObject.requireList(require("flexNodeHighlightConfigs"), element0 -> java.util.Objects.requireNonNull(Overlay.FlexNodeHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @param flexNodeHighlightConfigs field value
+         * @return this model
+         */
+        public SetShowFlexOverlaysRequest flexNodeHighlightConfigs(java.util.List<Overlay.FlexNodeHighlightConfig> flexNodeHighlightConfigs) {
+            set("flexNodeHighlightConfigs", flexNodeHighlightConfigs);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Overlay.setShowScrollSnapOverlays.
+     */
+    public static final class SetShowScrollSnapOverlaysRequest extends CdpObject {
+        public SetShowScrollSnapOverlaysRequest() {}
+        /**
+         * Creates a new SetShowScrollSnapOverlaysRequest with all required parameters.
+         * @param scrollSnapHighlightConfigs protocol value
+         */
+        public SetShowScrollSnapOverlaysRequest(java.util.List<Overlay.ScrollSnapHighlightConfig> scrollSnapHighlightConfigs) {
+            set("scrollSnapHighlightConfigs", scrollSnapHighlightConfigs);
+        }
+        public static SetShowScrollSnapOverlaysRequest fromMap(Map<String, Object> values) {
+            SetShowScrollSnapOverlaysRequest instance_ = new SetShowScrollSnapOverlaysRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @return the protocol field value
+         */
+        public java.util.List<Overlay.ScrollSnapHighlightConfig> scrollSnapHighlightConfigs() {
+            return CdpObject.requireList(require("scrollSnapHighlightConfigs"), element0 -> java.util.Objects.requireNonNull(Overlay.ScrollSnapHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @param scrollSnapHighlightConfigs field value
+         * @return this model
+         */
+        public SetShowScrollSnapOverlaysRequest scrollSnapHighlightConfigs(java.util.List<Overlay.ScrollSnapHighlightConfig> scrollSnapHighlightConfigs) {
+            set("scrollSnapHighlightConfigs", scrollSnapHighlightConfigs);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Overlay.setShowContainerQueryOverlays.
+     */
+    public static final class SetShowContainerQueryOverlaysRequest extends CdpObject {
+        public SetShowContainerQueryOverlaysRequest() {}
+        /**
+         * Creates a new SetShowContainerQueryOverlaysRequest with all required parameters.
+         * @param containerQueryHighlightConfigs protocol value
+         */
+        public SetShowContainerQueryOverlaysRequest(java.util.List<Overlay.ContainerQueryHighlightConfig> containerQueryHighlightConfigs) {
+            set("containerQueryHighlightConfigs", containerQueryHighlightConfigs);
+        }
+        public static SetShowContainerQueryOverlaysRequest fromMap(Map<String, Object> values) {
+            SetShowContainerQueryOverlaysRequest instance_ = new SetShowContainerQueryOverlaysRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @return the protocol field value
+         */
+        public java.util.List<Overlay.ContainerQueryHighlightConfig> containerQueryHighlightConfigs() {
+            return CdpObject.requireList(require("containerQueryHighlightConfigs"), element0 -> java.util.Objects.requireNonNull(Overlay.ContainerQueryHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @param containerQueryHighlightConfigs field value
+         * @return this model
+         */
+        public SetShowContainerQueryOverlaysRequest containerQueryHighlightConfigs(java.util.List<Overlay.ContainerQueryHighlightConfig> containerQueryHighlightConfigs) {
+            set("containerQueryHighlightConfigs", containerQueryHighlightConfigs);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for Overlay.setShowInspectedElementAnchor.
+     */
+    public static final class SetShowInspectedElementAnchorRequest extends CdpObject {
+        public SetShowInspectedElementAnchorRequest() {}
+        /**
+         * Creates a new SetShowInspectedElementAnchorRequest with all required parameters.
+         * @param inspectedElementAnchorConfig protocol value
+         */
+        public SetShowInspectedElementAnchorRequest(Overlay.InspectedElementAnchorConfig inspectedElementAnchorConfig) {
+            set("inspectedElementAnchorConfig", inspectedElementAnchorConfig);
+        }
+        public static SetShowInspectedElementAnchorRequest fromMap(Map<String, Object> values) {
+            SetShowInspectedElementAnchorRequest instance_ = new SetShowInspectedElementAnchorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Node identifier for which to show an anchor for.
+         * @return the protocol field value
+         */
+        public Overlay.InspectedElementAnchorConfig inspectedElementAnchorConfig() {
+            return java.util.Objects.requireNonNull(Overlay.InspectedElementAnchorConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("inspectedElementAnchorConfig")))));
+        }
+        /**
+         * Node identifier for which to show an anchor for.
+         * @param inspectedElementAnchorConfig field value
+         * @return this model
+         */
+        public SetShowInspectedElementAnchorRequest inspectedElementAnchorConfig(Overlay.InspectedElementAnchorConfig inspectedElementAnchorConfig) {
+            set("inspectedElementAnchorConfig", inspectedElementAnchorConfig);
+            return this;
+        }
+    }
+    /**
+     * Requests that backend shows paint rectangles
+     */
+    public static final class SetShowPaintRectsRequest extends CdpObject {
+        public SetShowPaintRectsRequest() {}
+        /**
+         * Requests that backend shows paint rectangles
+         * @param result protocol value
+         */
+        public SetShowPaintRectsRequest(boolean result) {
+            set("result", result);
+        }
+        public static SetShowPaintRectsRequest fromMap(Map<String, Object> values) {
+            SetShowPaintRectsRequest instance_ = new SetShowPaintRectsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing paint rectangles
+         * @return the protocol field value
+         */
+        public boolean result() {
+            return (Boolean) require("result");
+        }
+        /**
+         * True for showing paint rectangles
+         * @param result field value
+         * @return this model
+         */
+        public SetShowPaintRectsRequest result(boolean result) {
+            set("result", result);
+            return this;
+        }
+    }
+    /**
+     * Requests that backend shows layout shift regions
+     */
+    public static final class SetShowLayoutShiftRegionsRequest extends CdpObject {
+        public SetShowLayoutShiftRegionsRequest() {}
+        /**
+         * Requests that backend shows layout shift regions
+         * @param result protocol value
+         */
+        public SetShowLayoutShiftRegionsRequest(boolean result) {
+            set("result", result);
+        }
+        public static SetShowLayoutShiftRegionsRequest fromMap(Map<String, Object> values) {
+            SetShowLayoutShiftRegionsRequest instance_ = new SetShowLayoutShiftRegionsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing layout shift regions
+         * @return the protocol field value
+         */
+        public boolean result() {
+            return (Boolean) require("result");
+        }
+        /**
+         * True for showing layout shift regions
+         * @param result field value
+         * @return this model
+         */
+        public SetShowLayoutShiftRegionsRequest result(boolean result) {
+            set("result", result);
+            return this;
+        }
+    }
+    /**
+     * Requests that backend shows scroll bottleneck rects
+     */
+    public static final class SetShowScrollBottleneckRectsRequest extends CdpObject {
+        public SetShowScrollBottleneckRectsRequest() {}
+        /**
+         * Requests that backend shows scroll bottleneck rects
+         * @param show protocol value
+         */
+        public SetShowScrollBottleneckRectsRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowScrollBottleneckRectsRequest fromMap(Map<String, Object> values) {
+            SetShowScrollBottleneckRectsRequest instance_ = new SetShowScrollBottleneckRectsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing scroll bottleneck rects
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * True for showing scroll bottleneck rects
+         * @param show field value
+         * @return this model
+         */
+        public SetShowScrollBottleneckRectsRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Deprecated, no longer has any effect.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetShowHitTestBordersRequest extends CdpObject {
+        public SetShowHitTestBordersRequest() {}
+        /**
+         * Deprecated, no longer has any effect.
+         * @param show protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetShowHitTestBordersRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowHitTestBordersRequest fromMap(Map<String, Object> values) {
+            SetShowHitTestBordersRequest instance_ = new SetShowHitTestBordersRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True for showing hit-test borders
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * True for showing hit-test borders
+         * @param show field value
+         * @return this model
+         */
+        public SetShowHitTestBordersRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Deprecated, no longer has any effect.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetShowWebVitalsRequest extends CdpObject {
+        public SetShowWebVitalsRequest() {}
+        /**
+         * Deprecated, no longer has any effect.
+         * @param show protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetShowWebVitalsRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowWebVitalsRequest fromMap(Map<String, Object> values) {
+            SetShowWebVitalsRequest instance_ = new SetShowWebVitalsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the show field.
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * Sets the show field.
+         * @param show field value
+         * @return this model
+         */
+        public SetShowWebVitalsRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Paints viewport size upon main frame resize.
+     */
+    public static final class SetShowViewportSizeOnResizeRequest extends CdpObject {
+        public SetShowViewportSizeOnResizeRequest() {}
+        /**
+         * Paints viewport size upon main frame resize.
+         * @param show protocol value
+         */
+        public SetShowViewportSizeOnResizeRequest(boolean show) {
+            set("show", show);
+        }
+        public static SetShowViewportSizeOnResizeRequest fromMap(Map<String, Object> values) {
+            SetShowViewportSizeOnResizeRequest instance_ = new SetShowViewportSizeOnResizeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to paint size or not.
+         * @return the protocol field value
+         */
+        public boolean show() {
+            return (Boolean) require("show");
+        }
+        /**
+         * Whether to paint size or not.
+         * @param show field value
+         * @return this model
+         */
+        public SetShowViewportSizeOnResizeRequest show(boolean show) {
+            set("show", show);
+            return this;
+        }
+    }
+    /**
+     * Add a dual screen device hinge
+     */
+    public static final class SetShowHingeRequest extends CdpObject {
+        public SetShowHingeRequest() {}
+        public static SetShowHingeRequest fromMap(Map<String, Object> values) {
+            SetShowHingeRequest instance_ = new SetShowHingeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * hinge data, null means hideHinge
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Overlay.HingeConfig> hingeConfig() {
+            return Optional.ofNullable(raw("hingeConfig") == null ? null : Overlay.HingeConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("hingeConfig")))));
+        }
+        /**
+         * hinge data, null means hideHinge
+         * @param hingeConfig field value; empty omits the value
+         * @return this model
+         */
+        public SetShowHingeRequest hingeConfig(Optional<Overlay.HingeConfig> hingeConfig) {
+            set("hingeConfig", hingeConfig.orElse(null));
+            return this;
+        }
+        /**
+         * hinge data, null means hideHinge
+         * @param hingeConfig field value; null removes the value
+         * @return this model
+         */
+        public SetShowHingeRequest hingeConfig(Overlay.HingeConfig hingeConfig) {
+            set("hingeConfig", hingeConfig);
+            return this;
+        }
+    }
+    /**
+     * Show elements in isolation mode with overlays.
+     */
+    public static final class SetShowIsolatedElementsRequest extends CdpObject {
+        public SetShowIsolatedElementsRequest() {}
+        /**
+         * Show elements in isolation mode with overlays.
+         * @param isolatedElementHighlightConfigs protocol value
+         */
+        public SetShowIsolatedElementsRequest(java.util.List<Overlay.IsolatedElementHighlightConfig> isolatedElementHighlightConfigs) {
+            set("isolatedElementHighlightConfigs", isolatedElementHighlightConfigs);
+        }
+        public static SetShowIsolatedElementsRequest fromMap(Map<String, Object> values) {
+            SetShowIsolatedElementsRequest instance_ = new SetShowIsolatedElementsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @return the protocol field value
+         */
+        public java.util.List<Overlay.IsolatedElementHighlightConfig> isolatedElementHighlightConfigs() {
+            return CdpObject.requireList(require("isolatedElementHighlightConfigs"), element0 -> java.util.Objects.requireNonNull(Overlay.IsolatedElementHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * An array of node identifiers and descriptors for the highlight appearance.
+         * @param isolatedElementHighlightConfigs field value
+         * @return this model
+         */
+        public SetShowIsolatedElementsRequest isolatedElementHighlightConfigs(java.util.List<Overlay.IsolatedElementHighlightConfig> isolatedElementHighlightConfigs) {
+            set("isolatedElementHighlightConfigs", isolatedElementHighlightConfigs);
+            return this;
+        }
+    }
+    /**
+     * Show Window Controls Overlay for PWA
+     */
+    public static final class SetShowWindowControlsOverlayRequest extends CdpObject {
+        public SetShowWindowControlsOverlayRequest() {}
+        public static SetShowWindowControlsOverlayRequest fromMap(Map<String, Object> values) {
+            SetShowWindowControlsOverlayRequest instance_ = new SetShowWindowControlsOverlayRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Window Controls Overlay data, null means hide Window Controls Overlay
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Overlay.WindowControlsOverlayConfig> windowControlsOverlayConfig() {
+            return Optional.ofNullable(raw("windowControlsOverlayConfig") == null ? null : Overlay.WindowControlsOverlayConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("windowControlsOverlayConfig")))));
+        }
+        /**
+         * Window Controls Overlay data, null means hide Window Controls Overlay
+         * @param windowControlsOverlayConfig field value; empty omits the value
+         * @return this model
+         */
+        public SetShowWindowControlsOverlayRequest windowControlsOverlayConfig(Optional<Overlay.WindowControlsOverlayConfig> windowControlsOverlayConfig) {
+            set("windowControlsOverlayConfig", windowControlsOverlayConfig.orElse(null));
+            return this;
+        }
+        /**
+         * Window Controls Overlay data, null means hide Window Controls Overlay
+         * @param windowControlsOverlayConfig field value; null removes the value
+         * @return this model
+         */
+        public SetShowWindowControlsOverlayRequest windowControlsOverlayConfig(Overlay.WindowControlsOverlayConfig windowControlsOverlayConfig) {
+            set("windowControlsOverlayConfig", windowControlsOverlayConfig);
+            return this;
+        }
+    }
+    /**
      * Fired when the node should be inspected. This happens after call to {@code setInspectMode} or when user manually inspects an element.
      */
     public static final class InspectNodeRequestedEvent extends CdpObject {
@@ -2392,6 +3832,14 @@ public final class Overlay {
             return getHighlightObjectForTest(nodeId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * For testing.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.Map<String, Object>> getHighlightObjectForTest(GetHighlightObjectForTestRequest request) {
+            return client.call("Overlay.getHighlightObjectForTest", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlight")))));
+        }
+        /**
          * For Persistent Grid testing.
          * @param nodeIds protocol value
          * @return a stage completing with the command result
@@ -2402,6 +3850,14 @@ public final class Overlay {
             return client.call("Overlay.getGridHighlightObjectsForTest", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlights")))));
         }
         /**
+         * For Persistent Grid testing.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.Map<String, Object>> getGridHighlightObjectsForTest(GetGridHighlightObjectsForTestRequest request) {
+            return client.call("Overlay.getGridHighlightObjectsForTest", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlights")))));
+        }
+        /**
          * For Source Order Viewer testing.
          * @param nodeId protocol value
          * @return a stage completing with the command result
@@ -2410,6 +3866,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("Overlay.getSourceOrderHighlightObjectForTest", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlight")))));
+        }
+        /**
+         * For Source Order Viewer testing.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.Map<String, Object>> getSourceOrderHighlightObjectForTest(GetSourceOrderHighlightObjectForTestRequest request) {
+            return client.call("Overlay.getSourceOrderHighlightObjectForTest", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlight")))));
         }
         /**
          * Hides any highlight.
@@ -2445,6 +3909,16 @@ public final class Overlay {
             return highlightFrame(frameId, Optional.empty(), Optional.empty());
         }
         /**
+         * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> highlightFrame(HighlightFrameRequest request) {
+            return client.call("Overlay.highlightFrame", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
          * @param highlightConfig protocol value
          * @param nodeId protocol value
@@ -2471,6 +3945,14 @@ public final class Overlay {
             return highlightNode(highlightConfig, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightNode(HighlightNodeRequest request) {
+            return client.call("Overlay.highlightNode", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
          * @param quad protocol value
          * @param color protocol value
@@ -2491,6 +3973,14 @@ public final class Overlay {
          */
         public CompletionStage<Void> highlightQuad(java.util.List<Double> quad) {
             return highlightQuad(quad, Optional.empty(), Optional.empty());
+        }
+        /**
+         * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightQuad(HighlightQuadRequest request) {
+            return client.call("Overlay.highlightQuad", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
@@ -2524,6 +4014,14 @@ public final class Overlay {
             return highlightRect(x, y, width, height, Optional.empty(), Optional.empty());
         }
         /**
+         * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightRect(HighlightRectRequest request) {
+            return client.call("Overlay.highlightRect", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
          * @param sourceOrderConfig protocol value
          * @param nodeId protocol value
@@ -2548,6 +4046,14 @@ public final class Overlay {
             return highlightSourceOrder(sourceOrderConfig, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightSourceOrder(HighlightSourceOrderRequest request) {
+            return client.call("Overlay.highlightSourceOrder", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
          * @param mode protocol value
          * @param highlightConfig protocol value
@@ -2568,6 +4074,14 @@ public final class Overlay {
             return setInspectMode(mode, Optional.empty());
         }
         /**
+         * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setInspectMode(SetInspectModeRequest request) {
+            return client.call("Overlay.setInspectMode", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Highlights owner element of all frames detected to be ads.
          * @param show protocol value
          * @return a stage completing when the command completes
@@ -2576,6 +4090,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
             return client.call("Overlay.setShowAdHighlights", params, result_ -> null);
+        }
+        /**
+         * Highlights owner element of all frames detected to be ads.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowAdHighlights(SetShowAdHighlightsRequest request) {
+            return client.call("Overlay.setShowAdHighlights", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes Overlay.setPausedInDebuggerMessage.
@@ -2595,6 +4117,14 @@ public final class Overlay {
             return setPausedInDebuggerMessage(Optional.empty());
         }
         /**
+         * Invokes Overlay.setPausedInDebuggerMessage with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setPausedInDebuggerMessage(SetPausedInDebuggerMessageRequest request) {
+            return client.call("Overlay.setPausedInDebuggerMessage", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Requests that backend shows debug borders on layers
          * @param show protocol value
          * @return a stage completing when the command completes
@@ -2603,6 +4133,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
             return client.call("Overlay.setShowDebugBorders", params, result_ -> null);
+        }
+        /**
+         * Requests that backend shows debug borders on layers
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowDebugBorders(SetShowDebugBordersRequest request) {
+            return client.call("Overlay.setShowDebugBorders", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Requests that backend shows the FPS counter
@@ -2615,6 +4153,14 @@ public final class Overlay {
             return client.call("Overlay.setShowFPSCounter", params, result_ -> null);
         }
         /**
+         * Requests that backend shows the FPS counter
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowFPSCounter(SetShowFPSCounterRequest request) {
+            return client.call("Overlay.setShowFPSCounter", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Highlight multiple elements with the CSS Grid overlay.
          * @param gridNodeHighlightConfigs protocol value
          * @return a stage completing when the command completes
@@ -2623,6 +4169,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("gridNodeHighlightConfigs", CdpObject.json(gridNodeHighlightConfigs));
             return client.call("Overlay.setShowGridOverlays", params, result_ -> null);
+        }
+        /**
+         * Highlight multiple elements with the CSS Grid overlay.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowGridOverlays(SetShowGridOverlaysRequest request) {
+            return client.call("Overlay.setShowGridOverlays", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes Overlay.setShowFlexOverlays.
@@ -2635,6 +4189,14 @@ public final class Overlay {
             return client.call("Overlay.setShowFlexOverlays", params, result_ -> null);
         }
         /**
+         * Invokes Overlay.setShowFlexOverlays with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowFlexOverlays(SetShowFlexOverlaysRequest request) {
+            return client.call("Overlay.setShowFlexOverlays", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes Overlay.setShowScrollSnapOverlays.
          * @param scrollSnapHighlightConfigs protocol value
          * @return a stage completing when the command completes
@@ -2643,6 +4205,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("scrollSnapHighlightConfigs", CdpObject.json(scrollSnapHighlightConfigs));
             return client.call("Overlay.setShowScrollSnapOverlays", params, result_ -> null);
+        }
+        /**
+         * Invokes Overlay.setShowScrollSnapOverlays with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowScrollSnapOverlays(SetShowScrollSnapOverlaysRequest request) {
+            return client.call("Overlay.setShowScrollSnapOverlays", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Invokes Overlay.setShowContainerQueryOverlays.
@@ -2655,6 +4225,14 @@ public final class Overlay {
             return client.call("Overlay.setShowContainerQueryOverlays", params, result_ -> null);
         }
         /**
+         * Invokes Overlay.setShowContainerQueryOverlays with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowContainerQueryOverlays(SetShowContainerQueryOverlaysRequest request) {
+            return client.call("Overlay.setShowContainerQueryOverlays", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes Overlay.setShowInspectedElementAnchor.
          * @param inspectedElementAnchorConfig protocol value
          * @return a stage completing when the command completes
@@ -2663,6 +4241,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("inspectedElementAnchorConfig", CdpObject.json(inspectedElementAnchorConfig));
             return client.call("Overlay.setShowInspectedElementAnchor", params, result_ -> null);
+        }
+        /**
+         * Invokes Overlay.setShowInspectedElementAnchor with a request object.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowInspectedElementAnchor(SetShowInspectedElementAnchorRequest request) {
+            return client.call("Overlay.setShowInspectedElementAnchor", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Requests that backend shows paint rectangles
@@ -2675,6 +4261,14 @@ public final class Overlay {
             return client.call("Overlay.setShowPaintRects", params, result_ -> null);
         }
         /**
+         * Requests that backend shows paint rectangles
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowPaintRects(SetShowPaintRectsRequest request) {
+            return client.call("Overlay.setShowPaintRects", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Requests that backend shows layout shift regions
          * @param result protocol value
          * @return a stage completing when the command completes
@@ -2685,6 +4279,14 @@ public final class Overlay {
             return client.call("Overlay.setShowLayoutShiftRegions", params, result_ -> null);
         }
         /**
+         * Requests that backend shows layout shift regions
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowLayoutShiftRegions(SetShowLayoutShiftRegionsRequest request) {
+            return client.call("Overlay.setShowLayoutShiftRegions", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Requests that backend shows scroll bottleneck rects
          * @param show protocol value
          * @return a stage completing when the command completes
@@ -2693,6 +4295,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
             return client.call("Overlay.setShowScrollBottleneckRects", params, result_ -> null);
+        }
+        /**
+         * Requests that backend shows scroll bottleneck rects
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowScrollBottleneckRects(SetShowScrollBottleneckRectsRequest request) {
+            return client.call("Overlay.setShowScrollBottleneckRects", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Deprecated, no longer has any effect.
@@ -2708,6 +4318,16 @@ public final class Overlay {
         }
         /**
          * Deprecated, no longer has any effect.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setShowHitTestBorders(SetShowHitTestBordersRequest request) {
+            return client.call("Overlay.setShowHitTestBorders", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
+         * Deprecated, no longer has any effect.
          * @param show protocol value
          * @return a stage completing when the command completes
          * @deprecated Deprecated by the Chromium DevTools Protocol.
@@ -2719,6 +4339,16 @@ public final class Overlay {
             return client.call("Overlay.setShowWebVitals", params, result_ -> null);
         }
         /**
+         * Deprecated, no longer has any effect.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setShowWebVitals(SetShowWebVitalsRequest request) {
+            return client.call("Overlay.setShowWebVitals", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Paints viewport size upon main frame resize.
          * @param show protocol value
          * @return a stage completing when the command completes
@@ -2727,6 +4357,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
             return client.call("Overlay.setShowViewportSizeOnResize", params, result_ -> null);
+        }
+        /**
+         * Paints viewport size upon main frame resize.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowViewportSizeOnResize(SetShowViewportSizeOnResizeRequest request) {
+            return client.call("Overlay.setShowViewportSizeOnResize", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Add a dual screen device hinge
@@ -2746,6 +4384,14 @@ public final class Overlay {
             return setShowHinge(Optional.empty());
         }
         /**
+         * Add a dual screen device hinge
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowHinge(SetShowHingeRequest request) {
+            return client.call("Overlay.setShowHinge", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Show elements in isolation mode with overlays.
          * @param isolatedElementHighlightConfigs protocol value
          * @return a stage completing when the command completes
@@ -2754,6 +4400,14 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("isolatedElementHighlightConfigs", CdpObject.json(isolatedElementHighlightConfigs));
             return client.call("Overlay.setShowIsolatedElements", params, result_ -> null);
+        }
+        /**
+         * Show elements in isolation mode with overlays.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowIsolatedElements(SetShowIsolatedElementsRequest request) {
+            return client.call("Overlay.setShowIsolatedElements", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Show Window Controls Overlay for PWA
@@ -2771,6 +4425,14 @@ public final class Overlay {
          */
         public CompletionStage<Void> setShowWindowControlsOverlay() {
             return setShowWindowControlsOverlay(Optional.empty());
+        }
+        /**
+         * Show Window Controls Overlay for PWA
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setShowWindowControlsOverlay(SetShowWindowControlsOverlayRequest request) {
+            return client.call("Overlay.setShowWindowControlsOverlay", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Fired when the node should be inspected. This happens after call to {@code setInspectMode} or when user manually inspects an element.

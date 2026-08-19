@@ -257,6 +257,136 @@ public final class Memory {
         }
     }
     /**
+     * Enable/disable suppressing memory pressure notifications in all processes.
+     */
+    public static final class SetPressureNotificationsSuppressedRequest extends CdpObject {
+        public SetPressureNotificationsSuppressedRequest() {}
+        /**
+         * Enable/disable suppressing memory pressure notifications in all processes.
+         * @param suppressed protocol value
+         */
+        public SetPressureNotificationsSuppressedRequest(boolean suppressed) {
+            set("suppressed", suppressed);
+        }
+        public static SetPressureNotificationsSuppressedRequest fromMap(Map<String, Object> values) {
+            SetPressureNotificationsSuppressedRequest instance_ = new SetPressureNotificationsSuppressedRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If true, memory pressure notifications will be suppressed.
+         * @return the protocol field value
+         */
+        public boolean suppressed() {
+            return (Boolean) require("suppressed");
+        }
+        /**
+         * If true, memory pressure notifications will be suppressed.
+         * @param suppressed field value
+         * @return this model
+         */
+        public SetPressureNotificationsSuppressedRequest suppressed(boolean suppressed) {
+            set("suppressed", suppressed);
+            return this;
+        }
+    }
+    /**
+     * Simulate a memory pressure notification in all processes.
+     */
+    public static final class SimulatePressureNotificationRequest extends CdpObject {
+        public SimulatePressureNotificationRequest() {}
+        /**
+         * Simulate a memory pressure notification in all processes.
+         * @param level protocol value
+         */
+        public SimulatePressureNotificationRequest(Memory.PressureLevel level) {
+            set("level", level);
+        }
+        public static SimulatePressureNotificationRequest fromMap(Map<String, Object> values) {
+            SimulatePressureNotificationRequest instance_ = new SimulatePressureNotificationRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Memory pressure level of the notification.
+         * @return the protocol field value
+         */
+        public Memory.PressureLevel level() {
+            return Memory.PressureLevel.of((String) require("level"));
+        }
+        /**
+         * Memory pressure level of the notification.
+         * @param level field value
+         * @return this model
+         */
+        public SimulatePressureNotificationRequest level(Memory.PressureLevel level) {
+            set("level", level);
+            return this;
+        }
+    }
+    /**
+     * Start collecting native memory profile.
+     */
+    public static final class StartSamplingRequest extends CdpObject {
+        public StartSamplingRequest() {}
+        public static StartSamplingRequest fromMap(Map<String, Object> values) {
+            StartSamplingRequest instance_ = new StartSamplingRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Average number of bytes between samples.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong samplingInterval() {
+            Long value = CdpObject.numberAsLong(raw("samplingInterval"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Do not randomize intervals between samples.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> suppressRandomness() {
+            return Optional.ofNullable((Boolean) raw("suppressRandomness"));
+        }
+        /**
+         * Average number of bytes between samples.
+         * @param samplingInterval field value; empty omits the value
+         * @return this model
+         */
+        public StartSamplingRequest samplingInterval(OptionalLong samplingInterval) {
+            set("samplingInterval", samplingInterval.isPresent() ? samplingInterval.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Average number of bytes between samples.
+         * @param samplingInterval field value; null removes the value
+         * @return this model
+         */
+        public StartSamplingRequest samplingInterval(Long samplingInterval) {
+            set("samplingInterval", samplingInterval);
+            return this;
+        }
+        /**
+         * Do not randomize intervals between samples.
+         * @param suppressRandomness field value; empty omits the value
+         * @return this model
+         */
+        public StartSamplingRequest suppressRandomness(Optional<Boolean> suppressRandomness) {
+            set("suppressRandomness", suppressRandomness.orElse(null));
+            return this;
+        }
+        /**
+         * Do not randomize intervals between samples.
+         * @param suppressRandomness field value; null removes the value
+         * @return this model
+         */
+        public StartSamplingRequest suppressRandomness(Boolean suppressRandomness) {
+            set("suppressRandomness", suppressRandomness);
+            return this;
+        }
+    }
+    /**
      * Retruns current DOM object counters.
      */
     public static final class GetDOMCountersResult extends CdpObject {
@@ -356,6 +486,14 @@ public final class Memory {
             return client.call("Memory.setPressureNotificationsSuppressed", params, result_ -> null);
         }
         /**
+         * Enable/disable suppressing memory pressure notifications in all processes.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setPressureNotificationsSuppressed(SetPressureNotificationsSuppressedRequest request) {
+            return client.call("Memory.setPressureNotificationsSuppressed", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Simulate a memory pressure notification in all processes.
          * @param level protocol value
          * @return a stage completing when the command completes
@@ -364,6 +502,14 @@ public final class Memory {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("level", CdpObject.json(level));
             return client.call("Memory.simulatePressureNotification", params, result_ -> null);
+        }
+        /**
+         * Simulate a memory pressure notification in all processes.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> simulatePressureNotification(SimulatePressureNotificationRequest request) {
+            return client.call("Memory.simulatePressureNotification", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Start collecting native memory profile.
@@ -383,6 +529,14 @@ public final class Memory {
          */
         public CompletionStage<Void> startSampling() {
             return startSampling(OptionalLong.empty(), Optional.empty());
+        }
+        /**
+         * Start collecting native memory profile.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> startSampling(StartSamplingRequest request) {
+            return client.call("Memory.startSampling", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Stop collecting native memory profile.

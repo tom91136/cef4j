@@ -608,6 +608,998 @@ public final class Browser {
         }
     }
     /**
+     * Set permission settings for given embedding and embedded origins.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetPermissionRequest extends CdpObject {
+        public SetPermissionRequest() {}
+        /**
+         * Set permission settings for given embedding and embedded origins.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param permission protocol value
+         * @param setting protocol value
+         */
+        public SetPermissionRequest(Browser.PermissionDescriptor permission, Browser.PermissionSetting setting) {
+            set("permission", permission);
+            set("setting", setting);
+        }
+        public static SetPermissionRequest fromMap(Map<String, Object> values) {
+            SetPermissionRequest instance_ = new SetPermissionRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Descriptor of permission to override.
+         * @return the protocol field value
+         */
+        public Browser.PermissionDescriptor permission() {
+            return java.util.Objects.requireNonNull(Browser.PermissionDescriptor.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("permission")))));
+        }
+        /**
+         * Setting of the permission.
+         * @return the protocol field value
+         */
+        public Browser.PermissionSetting setting() {
+            return Browser.PermissionSetting.of((String) require("setting"));
+        }
+        /**
+         * Embedding origin the permission applies to, all origins if not specified.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> origin() {
+            return Optional.ofNullable((String) raw("origin"));
+        }
+        /**
+         * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> embeddedOrigin() {
+            return Optional.ofNullable((String) raw("embeddedOrigin"));
+        }
+        /**
+         * Context to override. When omitted, default browser context is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Descriptor of permission to override.
+         * @param permission field value
+         * @return this model
+         */
+        public SetPermissionRequest permission(Browser.PermissionDescriptor permission) {
+            set("permission", permission);
+            return this;
+        }
+        /**
+         * Setting of the permission.
+         * @param setting field value
+         * @return this model
+         */
+        public SetPermissionRequest setting(Browser.PermissionSetting setting) {
+            set("setting", setting);
+            return this;
+        }
+        /**
+         * Embedding origin the permission applies to, all origins if not specified.
+         * @param origin field value; empty omits the value
+         * @return this model
+         */
+        public SetPermissionRequest origin(Optional<String> origin) {
+            set("origin", origin.orElse(null));
+            return this;
+        }
+        /**
+         * Embedding origin the permission applies to, all origins if not specified.
+         * @param origin field value; null removes the value
+         * @return this model
+         */
+        public SetPermissionRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
+         * @param embeddedOrigin field value; empty omits the value
+         * @return this model
+         */
+        public SetPermissionRequest embeddedOrigin(Optional<String> embeddedOrigin) {
+            set("embeddedOrigin", embeddedOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
+         * @param embeddedOrigin field value; null removes the value
+         * @return this model
+         */
+        public SetPermissionRequest embeddedOrigin(String embeddedOrigin) {
+            set("embeddedOrigin", embeddedOrigin);
+            return this;
+        }
+        /**
+         * Context to override. When omitted, default browser context is used.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public SetPermissionRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * Context to override. When omitted, default browser context is used.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public SetPermissionRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class GrantPermissionsRequest extends CdpObject {
+        public GrantPermissionsRequest() {}
+        /**
+         * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param permissions protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GrantPermissionsRequest(java.util.List<Browser.PermissionType> permissions) {
+            set("permissions", permissions);
+        }
+        public static GrantPermissionsRequest fromMap(Map<String, Object> values) {
+            GrantPermissionsRequest instance_ = new GrantPermissionsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the permissions field.
+         * @return the protocol field value
+         */
+        public java.util.List<Browser.PermissionType> permissions() {
+            return CdpObject.requireList(require("permissions"), element0 -> Browser.PermissionType.of((String) element0));
+        }
+        /**
+         * Origin the permission applies to, all origins if not specified.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> origin() {
+            return Optional.ofNullable((String) raw("origin"));
+        }
+        /**
+         * BrowserContext to override permissions. When omitted, default browser context is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Sets the permissions field.
+         * @param permissions field value
+         * @return this model
+         */
+        public GrantPermissionsRequest permissions(java.util.List<Browser.PermissionType> permissions) {
+            set("permissions", permissions);
+            return this;
+        }
+        /**
+         * Origin the permission applies to, all origins if not specified.
+         * @param origin field value; empty omits the value
+         * @return this model
+         */
+        public GrantPermissionsRequest origin(Optional<String> origin) {
+            set("origin", origin.orElse(null));
+            return this;
+        }
+        /**
+         * Origin the permission applies to, all origins if not specified.
+         * @param origin field value; null removes the value
+         * @return this model
+         */
+        public GrantPermissionsRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * BrowserContext to override permissions. When omitted, default browser context is used.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public GrantPermissionsRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * BrowserContext to override permissions. When omitted, default browser context is used.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public GrantPermissionsRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Reset all permission management for all origins.
+     */
+    public static final class ResetPermissionsRequest extends CdpObject {
+        public ResetPermissionsRequest() {}
+        public static ResetPermissionsRequest fromMap(Map<String, Object> values) {
+            ResetPermissionsRequest instance_ = new ResetPermissionsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * BrowserContext to reset permissions. When omitted, default browser context is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * BrowserContext to reset permissions. When omitted, default browser context is used.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public ResetPermissionsRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * BrowserContext to reset permissions. When omitted, default browser context is used.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public ResetPermissionsRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Set the behavior when downloading a file.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetDownloadBehaviorRequest extends CdpObject {
+        public SetDownloadBehaviorRequest() {}
+        /**
+         * Set the behavior when downloading a file.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param behavior protocol value
+         */
+        public SetDownloadBehaviorRequest(SetDownloadBehaviorBehaviorValues behavior) {
+            set("behavior", behavior);
+        }
+        public static SetDownloadBehaviorRequest fromMap(Map<String, Object> values) {
+            SetDownloadBehaviorRequest instance_ = new SetDownloadBehaviorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their download guids.
+         * @return the protocol field value
+         */
+        public SetDownloadBehaviorBehaviorValues behavior() {
+            return SetDownloadBehaviorBehaviorValues.of((String) require("behavior"));
+        }
+        /**
+         * BrowserContext to set download behavior. When omitted, default browser context is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> downloadPath() {
+            return Optional.ofNullable((String) raw("downloadPath"));
+        }
+        /**
+         * Whether to emit download events (defaults to false).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> eventsEnabled() {
+            return Optional.ofNullable((Boolean) raw("eventsEnabled"));
+        }
+        /**
+         * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their download guids.
+         * @param behavior field value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest behavior(SetDownloadBehaviorBehaviorValues behavior) {
+            set("behavior", behavior);
+            return this;
+        }
+        /**
+         * BrowserContext to set download behavior. When omitted, default browser context is used.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * BrowserContext to set download behavior. When omitted, default browser context is used.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+        /**
+         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
+         * @param downloadPath field value; empty omits the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest downloadPath(Optional<String> downloadPath) {
+            set("downloadPath", downloadPath.orElse(null));
+            return this;
+        }
+        /**
+         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
+         * @param downloadPath field value; null removes the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest downloadPath(String downloadPath) {
+            set("downloadPath", downloadPath);
+            return this;
+        }
+        /**
+         * Whether to emit download events (defaults to false).
+         * @param eventsEnabled field value; empty omits the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest eventsEnabled(Optional<Boolean> eventsEnabled) {
+            set("eventsEnabled", eventsEnabled.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to emit download events (defaults to false).
+         * @param eventsEnabled field value; null removes the value
+         * @return this model
+         */
+        public SetDownloadBehaviorRequest eventsEnabled(Boolean eventsEnabled) {
+            set("eventsEnabled", eventsEnabled);
+            return this;
+        }
+    }
+    /**
+     * Cancel a download if in progress
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class CancelDownloadRequest extends CdpObject {
+        public CancelDownloadRequest() {}
+        /**
+         * Cancel a download if in progress
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param guid protocol value
+         */
+        public CancelDownloadRequest(String guid) {
+            set("guid", guid);
+        }
+        public static CancelDownloadRequest fromMap(Map<String, Object> values) {
+            CancelDownloadRequest instance_ = new CancelDownloadRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Global unique identifier of the download.
+         * @return the protocol field value
+         */
+        public String guid() {
+            return (String) require("guid");
+        }
+        /**
+         * BrowserContext to perform the action in. When omitted, default browser context is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Global unique identifier of the download.
+         * @param guid field value
+         * @return this model
+         */
+        public CancelDownloadRequest guid(String guid) {
+            set("guid", guid);
+            return this;
+        }
+        /**
+         * BrowserContext to perform the action in. When omitted, default browser context is used.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public CancelDownloadRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * BrowserContext to perform the action in. When omitted, default browser context is used.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public CancelDownloadRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
+     * Get Chrome histograms.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetHistogramsRequest extends CdpObject {
+        public GetHistogramsRequest() {}
+        public static GetHistogramsRequest fromMap(Map<String, Object> values) {
+            GetHistogramsRequest instance_ = new GetHistogramsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> query() {
+            return Optional.ofNullable((String) raw("query"));
+        }
+        /**
+         * If true, retrieve delta since last delta call.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> delta() {
+            return Optional.ofNullable((Boolean) raw("delta"));
+        }
+        /**
+         * Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
+         * @param query field value; empty omits the value
+         * @return this model
+         */
+        public GetHistogramsRequest query(Optional<String> query) {
+            set("query", query.orElse(null));
+            return this;
+        }
+        /**
+         * Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
+         * @param query field value; null removes the value
+         * @return this model
+         */
+        public GetHistogramsRequest query(String query) {
+            set("query", query);
+            return this;
+        }
+        /**
+         * If true, retrieve delta since last delta call.
+         * @param delta field value; empty omits the value
+         * @return this model
+         */
+        public GetHistogramsRequest delta(Optional<Boolean> delta) {
+            set("delta", delta.orElse(null));
+            return this;
+        }
+        /**
+         * If true, retrieve delta since last delta call.
+         * @param delta field value; null removes the value
+         * @return this model
+         */
+        public GetHistogramsRequest delta(Boolean delta) {
+            set("delta", delta);
+            return this;
+        }
+    }
+    /**
+     * Get a Chrome histogram by name.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetHistogramRequest extends CdpObject {
+        public GetHistogramRequest() {}
+        /**
+         * Get a Chrome histogram by name.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param name protocol value
+         */
+        public GetHistogramRequest(String name) {
+            set("name", name);
+        }
+        public static GetHistogramRequest fromMap(Map<String, Object> values) {
+            GetHistogramRequest instance_ = new GetHistogramRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Requested histogram name.
+         * @return the protocol field value
+         */
+        public String name() {
+            return (String) require("name");
+        }
+        /**
+         * If true, retrieve delta since last delta call.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> delta() {
+            return Optional.ofNullable((Boolean) raw("delta"));
+        }
+        /**
+         * Requested histogram name.
+         * @param name field value
+         * @return this model
+         */
+        public GetHistogramRequest name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * If true, retrieve delta since last delta call.
+         * @param delta field value; empty omits the value
+         * @return this model
+         */
+        public GetHistogramRequest delta(Optional<Boolean> delta) {
+            set("delta", delta.orElse(null));
+            return this;
+        }
+        /**
+         * If true, retrieve delta since last delta call.
+         * @param delta field value; null removes the value
+         * @return this model
+         */
+        public GetHistogramRequest delta(Boolean delta) {
+            set("delta", delta);
+            return this;
+        }
+    }
+    /**
+     * Get position and size of the browser window.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetWindowBoundsRequest extends CdpObject {
+        public GetWindowBoundsRequest() {}
+        /**
+         * Get position and size of the browser window.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param windowId protocol value
+         */
+        public GetWindowBoundsRequest(Browser.WindowID windowId) {
+            set("windowId", windowId);
+        }
+        public static GetWindowBoundsRequest fromMap(Map<String, Object> values) {
+            GetWindowBoundsRequest instance_ = new GetWindowBoundsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Browser window id.
+         * @return the protocol field value
+         */
+        public Browser.WindowID windowId() {
+            return new Browser.WindowID(((Number) require("windowId")).longValue());
+        }
+        /**
+         * Browser window id.
+         * @param windowId field value
+         * @return this model
+         */
+        public GetWindowBoundsRequest windowId(Browser.WindowID windowId) {
+            set("windowId", windowId);
+            return this;
+        }
+    }
+    /**
+     * Get the browser window that contains the devtools target.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetWindowForTargetRequest extends CdpObject {
+        public GetWindowForTargetRequest() {}
+        public static GetWindowForTargetRequest fromMap(Map<String, Object> values) {
+            GetWindowForTargetRequest instance_ = new GetWindowForTargetRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Devtools agent host id. If called as a part of the session, associated targetId is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Target.TargetID> targetId() {
+            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+        }
+        /**
+         * Devtools agent host id. If called as a part of the session, associated targetId is used.
+         * @param targetId field value; empty omits the value
+         * @return this model
+         */
+        public GetWindowForTargetRequest targetId(Optional<Target.TargetID> targetId) {
+            set("targetId", targetId.orElse(null));
+            return this;
+        }
+        /**
+         * Devtools agent host id. If called as a part of the session, associated targetId is used.
+         * @param targetId field value; null removes the value
+         * @return this model
+         */
+        public GetWindowForTargetRequest targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
+        }
+    }
+    /**
+     * Set position and/or size of the browser window.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetWindowBoundsRequest extends CdpObject {
+        public SetWindowBoundsRequest() {}
+        /**
+         * Set position and/or size of the browser window.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param windowId protocol value
+         * @param bounds protocol value
+         */
+        public SetWindowBoundsRequest(Browser.WindowID windowId, Browser.Bounds bounds) {
+            set("windowId", windowId);
+            set("bounds", bounds);
+        }
+        public static SetWindowBoundsRequest fromMap(Map<String, Object> values) {
+            SetWindowBoundsRequest instance_ = new SetWindowBoundsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Browser window id.
+         * @return the protocol field value
+         */
+        public Browser.WindowID windowId() {
+            return new Browser.WindowID(((Number) require("windowId")).longValue());
+        }
+        /**
+         * New window bounds. The &#x27;minimized&#x27;, &#x27;maximized&#x27; and &#x27;fullscreen&#x27; states cannot be combined with &#x27;left&#x27;, &#x27;top&#x27;, &#x27;width&#x27; or &#x27;height&#x27;. Leaves unspecified fields unchanged.
+         * @return the protocol field value
+         */
+        public Browser.Bounds bounds() {
+            return java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bounds")))));
+        }
+        /**
+         * Browser window id.
+         * @param windowId field value
+         * @return this model
+         */
+        public SetWindowBoundsRequest windowId(Browser.WindowID windowId) {
+            set("windowId", windowId);
+            return this;
+        }
+        /**
+         * New window bounds. The &#x27;minimized&#x27;, &#x27;maximized&#x27; and &#x27;fullscreen&#x27; states cannot be combined with &#x27;left&#x27;, &#x27;top&#x27;, &#x27;width&#x27; or &#x27;height&#x27;. Leaves unspecified fields unchanged.
+         * @param bounds field value
+         * @return this model
+         */
+        public SetWindowBoundsRequest bounds(Browser.Bounds bounds) {
+            set("bounds", bounds);
+            return this;
+        }
+    }
+    /**
+     * Set size of the browser contents resizing browser window as necessary.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetContentsSizeRequest extends CdpObject {
+        public SetContentsSizeRequest() {}
+        /**
+         * Set size of the browser contents resizing browser window as necessary.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param windowId protocol value
+         */
+        public SetContentsSizeRequest(Browser.WindowID windowId) {
+            set("windowId", windowId);
+        }
+        public static SetContentsSizeRequest fromMap(Map<String, Object> values) {
+            SetContentsSizeRequest instance_ = new SetContentsSizeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Browser window id.
+         * @return the protocol field value
+         */
+        public Browser.WindowID windowId() {
+            return new Browser.WindowID(((Number) require("windowId")).longValue());
+        }
+        /**
+         * The window contents width in DIP. Assumes current width if omitted. Must be specified if &#x27;height&#x27; is omitted.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong width() {
+            Long value = CdpObject.numberAsLong(raw("width"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * The window contents height in DIP. Assumes current height if omitted. Must be specified if &#x27;width&#x27; is omitted.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong height() {
+            Long value = CdpObject.numberAsLong(raw("height"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Browser window id.
+         * @param windowId field value
+         * @return this model
+         */
+        public SetContentsSizeRequest windowId(Browser.WindowID windowId) {
+            set("windowId", windowId);
+            return this;
+        }
+        /**
+         * The window contents width in DIP. Assumes current width if omitted. Must be specified if &#x27;height&#x27; is omitted.
+         * @param width field value; empty omits the value
+         * @return this model
+         */
+        public SetContentsSizeRequest width(OptionalLong width) {
+            set("width", width.isPresent() ? width.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The window contents width in DIP. Assumes current width if omitted. Must be specified if &#x27;height&#x27; is omitted.
+         * @param width field value; null removes the value
+         * @return this model
+         */
+        public SetContentsSizeRequest width(Long width) {
+            set("width", width);
+            return this;
+        }
+        /**
+         * The window contents height in DIP. Assumes current height if omitted. Must be specified if &#x27;width&#x27; is omitted.
+         * @param height field value; empty omits the value
+         * @return this model
+         */
+        public SetContentsSizeRequest height(OptionalLong height) {
+            set("height", height.isPresent() ? height.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The window contents height in DIP. Assumes current height if omitted. Must be specified if &#x27;width&#x27; is omitted.
+         * @param height field value; null removes the value
+         * @return this model
+         */
+        public SetContentsSizeRequest height(Long height) {
+            set("height", height);
+            return this;
+        }
+    }
+    /**
+     * Set dock tile details, platform-specific.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetDockTileRequest extends CdpObject {
+        public SetDockTileRequest() {}
+        public static SetDockTileRequest fromMap(Map<String, Object> values) {
+            SetDockTileRequest instance_ = new SetDockTileRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the badgeLabel field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> badgeLabel() {
+            return Optional.ofNullable((String) raw("badgeLabel"));
+        }
+        /**
+         * Png encoded image. (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> image() {
+            return Optional.ofNullable((String) raw("image"));
+        }
+        /**
+         * Sets the badgeLabel field.
+         * @param badgeLabel field value; empty omits the value
+         * @return this model
+         */
+        public SetDockTileRequest badgeLabel(Optional<String> badgeLabel) {
+            set("badgeLabel", badgeLabel.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the badgeLabel field.
+         * @param badgeLabel field value; null removes the value
+         * @return this model
+         */
+        public SetDockTileRequest badgeLabel(String badgeLabel) {
+            set("badgeLabel", badgeLabel);
+            return this;
+        }
+        /**
+         * Png encoded image. (Encoded as a base64 string when passed over JSON)
+         * @param image field value; empty omits the value
+         * @return this model
+         */
+        public SetDockTileRequest image(Optional<String> image) {
+            set("image", image.orElse(null));
+            return this;
+        }
+        /**
+         * Png encoded image. (Encoded as a base64 string when passed over JSON)
+         * @param image field value; null removes the value
+         * @return this model
+         */
+        public SetDockTileRequest image(String image) {
+            set("image", image);
+            return this;
+        }
+    }
+    /**
+     * Invoke custom browser commands used by telemetry.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ExecuteBrowserCommandRequest extends CdpObject {
+        public ExecuteBrowserCommandRequest() {}
+        /**
+         * Invoke custom browser commands used by telemetry.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param commandId protocol value
+         */
+        public ExecuteBrowserCommandRequest(Browser.BrowserCommandId commandId) {
+            set("commandId", commandId);
+        }
+        public static ExecuteBrowserCommandRequest fromMap(Map<String, Object> values) {
+            ExecuteBrowserCommandRequest instance_ = new ExecuteBrowserCommandRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the commandId field.
+         * @return the protocol field value
+         */
+        public Browser.BrowserCommandId commandId() {
+            return Browser.BrowserCommandId.of((String) require("commandId"));
+        }
+        /**
+         * Sets the commandId field.
+         * @param commandId field value
+         * @return this model
+         */
+        public ExecuteBrowserCommandRequest commandId(Browser.BrowserCommandId commandId) {
+            set("commandId", commandId);
+            return this;
+        }
+    }
+    /**
+     * Allows a site to use privacy sandbox features that require enrollment without the site actually being enrolled. Only supported on page targets.
+     */
+    public static final class AddPrivacySandboxEnrollmentOverrideRequest extends CdpObject {
+        public AddPrivacySandboxEnrollmentOverrideRequest() {}
+        /**
+         * Allows a site to use privacy sandbox features that require enrollment without the site actually being enrolled. Only supported on page targets.
+         * @param url protocol value
+         */
+        public AddPrivacySandboxEnrollmentOverrideRequest(String url) {
+            set("url", url);
+        }
+        public static AddPrivacySandboxEnrollmentOverrideRequest fromMap(Map<String, Object> values) {
+            AddPrivacySandboxEnrollmentOverrideRequest instance_ = new AddPrivacySandboxEnrollmentOverrideRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the url field.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * Sets the url field.
+         * @param url field value
+         * @return this model
+         */
+        public AddPrivacySandboxEnrollmentOverrideRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+    }
+    /**
+     * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.
+     */
+    public static final class AddPrivacySandboxCoordinatorKeyConfigRequest extends CdpObject {
+        public AddPrivacySandboxCoordinatorKeyConfigRequest() {}
+        /**
+         * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.
+         * @param api protocol value
+         * @param coordinatorOrigin protocol value
+         * @param keyConfig protocol value
+         */
+        public AddPrivacySandboxCoordinatorKeyConfigRequest(Browser.PrivacySandboxAPI api, String coordinatorOrigin, String keyConfig) {
+            set("api", api);
+            set("coordinatorOrigin", coordinatorOrigin);
+            set("keyConfig", keyConfig);
+        }
+        public static AddPrivacySandboxCoordinatorKeyConfigRequest fromMap(Map<String, Object> values) {
+            AddPrivacySandboxCoordinatorKeyConfigRequest instance_ = new AddPrivacySandboxCoordinatorKeyConfigRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the api field.
+         * @return the protocol field value
+         */
+        public Browser.PrivacySandboxAPI api() {
+            return Browser.PrivacySandboxAPI.of((String) require("api"));
+        }
+        /**
+         * Returns the coordinatorOrigin field.
+         * @return the protocol field value
+         */
+        public String coordinatorOrigin() {
+            return (String) require("coordinatorOrigin");
+        }
+        /**
+         * Returns the keyConfig field.
+         * @return the protocol field value
+         */
+        public String keyConfig() {
+            return (String) require("keyConfig");
+        }
+        /**
+         * BrowserContext to perform the action in. When omitted, default browser context is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+        }
+        /**
+         * Sets the api field.
+         * @param api field value
+         * @return this model
+         */
+        public AddPrivacySandboxCoordinatorKeyConfigRequest api(Browser.PrivacySandboxAPI api) {
+            set("api", api);
+            return this;
+        }
+        /**
+         * Sets the coordinatorOrigin field.
+         * @param coordinatorOrigin field value
+         * @return this model
+         */
+        public AddPrivacySandboxCoordinatorKeyConfigRequest coordinatorOrigin(String coordinatorOrigin) {
+            set("coordinatorOrigin", coordinatorOrigin);
+            return this;
+        }
+        /**
+         * Sets the keyConfig field.
+         * @param keyConfig field value
+         * @return this model
+         */
+        public AddPrivacySandboxCoordinatorKeyConfigRequest keyConfig(String keyConfig) {
+            set("keyConfig", keyConfig);
+            return this;
+        }
+        /**
+         * BrowserContext to perform the action in. When omitted, default browser context is used.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public AddPrivacySandboxCoordinatorKeyConfigRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * BrowserContext to perform the action in. When omitted, default browser context is used.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public AddPrivacySandboxCoordinatorKeyConfigRequest browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+    }
+    /**
      * Returns version information.
      */
     public static final class GetVersionResult extends CdpObject {
@@ -986,6 +1978,15 @@ public final class Browser {
             return setPermission(permission, setting, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Set permission settings for given embedding and embedded origins.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setPermission(SetPermissionRequest request) {
+            return client.call("Browser.setPermission", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param permissions protocol value
@@ -1014,6 +2015,17 @@ public final class Browser {
             return grantPermissions(permissions, Optional.empty(), Optional.empty());
         }
         /**
+         * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> grantPermissions(GrantPermissionsRequest request) {
+            return client.call("Browser.grantPermissions", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Reset all permission management for all origins.
          * @param browserContextId protocol value
          * @return a stage completing when the command completes
@@ -1029,6 +2041,14 @@ public final class Browser {
          */
         public CompletionStage<Void> resetPermissions() {
             return resetPermissions(Optional.empty());
+        }
+        /**
+         * Reset all permission management for all origins.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> resetPermissions(ResetPermissionsRequest request) {
+            return client.call("Browser.resetPermissions", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Set the behavior when downloading a file.
@@ -1057,6 +2077,15 @@ public final class Browser {
             return setDownloadBehavior(behavior, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Set the behavior when downloading a file.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorRequest request) {
+            return client.call("Browser.setDownloadBehavior", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Cancel a download if in progress
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param guid protocol value
@@ -1077,6 +2106,15 @@ public final class Browser {
          */
         public CompletionStage<Void> cancelDownload(String guid) {
             return cancelDownload(guid, Optional.empty());
+        }
+        /**
+         * Cancel a download if in progress
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> cancelDownload(CancelDownloadRequest request) {
+            return client.call("Browser.cancelDownload", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Close browser gracefully.
@@ -1138,6 +2176,15 @@ public final class Browser {
             return getHistograms(Optional.empty(), Optional.empty());
         }
         /**
+         * Get Chrome histograms.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Browser.Histogram>> getHistograms(GetHistogramsRequest request) {
+            return client.call("Browser.getHistograms", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("histograms")), element0 -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Get a Chrome histogram by name.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param name protocol value
@@ -1160,6 +2207,15 @@ public final class Browser {
             return getHistogram(name, Optional.empty());
         }
         /**
+         * Get a Chrome histogram by name.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Browser.Histogram> getHistogram(GetHistogramRequest request) {
+            return client.call("Browser.getHistogram", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("histogram")))))));
+        }
+        /**
          * Get position and size of the browser window.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param windowId protocol value
@@ -1169,6 +2225,15 @@ public final class Browser {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("windowId", CdpObject.json(windowId));
             return client.call("Browser.getWindowBounds", params, result_ -> java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("bounds")))))));
+        }
+        /**
+         * Get position and size of the browser window.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Browser.Bounds> getWindowBounds(GetWindowBoundsRequest request) {
+            return client.call("Browser.getWindowBounds", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("bounds")))))));
         }
         /**
          * Get the browser window that contains the devtools target.
@@ -1190,6 +2255,15 @@ public final class Browser {
             return getWindowForTarget(Optional.empty());
         }
         /**
+         * Get the browser window that contains the devtools target.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetWindowForTargetResult> getWindowForTarget(GetWindowForTargetRequest request) {
+            return client.call("Browser.getWindowForTarget", request == null ? null : request.toMap(), result_ -> new GetWindowForTargetResult(result_));
+        }
+        /**
          * Set position and/or size of the browser window.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param windowId protocol value
@@ -1201,6 +2275,15 @@ public final class Browser {
             params.put("windowId", CdpObject.json(windowId));
             params.put("bounds", CdpObject.json(bounds));
             return client.call("Browser.setWindowBounds", params, result_ -> null);
+        }
+        /**
+         * Set position and/or size of the browser window.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setWindowBounds(SetWindowBoundsRequest request) {
+            return client.call("Browser.setWindowBounds", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Set size of the browser contents resizing browser window as necessary.
@@ -1227,6 +2310,15 @@ public final class Browser {
             return setContentsSize(windowId, OptionalLong.empty(), OptionalLong.empty());
         }
         /**
+         * Set size of the browser contents resizing browser window as necessary.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setContentsSize(SetContentsSizeRequest request) {
+            return client.call("Browser.setContentsSize", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Set dock tile details, platform-specific.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param badgeLabel protocol value
@@ -1248,6 +2340,15 @@ public final class Browser {
             return setDockTile(Optional.empty(), Optional.empty());
         }
         /**
+         * Set dock tile details, platform-specific.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setDockTile(SetDockTileRequest request) {
+            return client.call("Browser.setDockTile", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invoke custom browser commands used by telemetry.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param commandId protocol value
@@ -1259,6 +2360,15 @@ public final class Browser {
             return client.call("Browser.executeBrowserCommand", params, result_ -> null);
         }
         /**
+         * Invoke custom browser commands used by telemetry.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> executeBrowserCommand(ExecuteBrowserCommandRequest request) {
+            return client.call("Browser.executeBrowserCommand", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Allows a site to use privacy sandbox features that require enrollment without the site actually being enrolled. Only supported on page targets.
          * @param url protocol value
          * @return a stage completing when the command completes
@@ -1267,6 +2377,14 @@ public final class Browser {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("url", CdpObject.json(url));
             return client.call("Browser.addPrivacySandboxEnrollmentOverride", params, result_ -> null);
+        }
+        /**
+         * Allows a site to use privacy sandbox features that require enrollment without the site actually being enrolled. Only supported on page targets.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> addPrivacySandboxEnrollmentOverride(AddPrivacySandboxEnrollmentOverrideRequest request) {
+            return client.call("Browser.addPrivacySandboxEnrollmentOverride", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.
@@ -1293,6 +2411,14 @@ public final class Browser {
          */
         public CompletionStage<Void> addPrivacySandboxCoordinatorKeyConfig(Browser.PrivacySandboxAPI api, String coordinatorOrigin, String keyConfig) {
             return addPrivacySandboxCoordinatorKeyConfig(api, coordinatorOrigin, keyConfig, Optional.empty());
+        }
+        /**
+         * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> addPrivacySandboxCoordinatorKeyConfig(AddPrivacySandboxCoordinatorKeyConfigRequest request) {
+            return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Fired when page is about to start a download.

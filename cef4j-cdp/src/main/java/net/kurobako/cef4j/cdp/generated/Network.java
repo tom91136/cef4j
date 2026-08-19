@@ -7550,6 +7550,2435 @@ public final class Network {
         }
     }
     /**
+     * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetAcceptedEncodingsRequest extends CdpObject {
+        public SetAcceptedEncodingsRequest() {}
+        /**
+         * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param encodings protocol value
+         */
+        public SetAcceptedEncodingsRequest(java.util.List<Network.ContentEncoding> encodings) {
+            set("encodings", encodings);
+        }
+        public static SetAcceptedEncodingsRequest fromMap(Map<String, Object> values) {
+            SetAcceptedEncodingsRequest instance_ = new SetAcceptedEncodingsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * List of accepted content encodings.
+         * @return the protocol field value
+         */
+        public java.util.List<Network.ContentEncoding> encodings() {
+            return CdpObject.requireList(require("encodings"), element0 -> Network.ContentEncoding.of((String) element0));
+        }
+        /**
+         * List of accepted content encodings.
+         * @param encodings field value
+         * @return this model
+         */
+        public SetAcceptedEncodingsRequest encodings(java.util.List<Network.ContentEncoding> encodings) {
+            set("encodings", encodings);
+            return this;
+        }
+    }
+    /**
+     * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class ContinueInterceptedRequestRequest extends CdpObject {
+        public ContinueInterceptedRequestRequest() {}
+        /**
+         * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param interceptionId protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public ContinueInterceptedRequestRequest(Network.InterceptionId interceptionId) {
+            set("interceptionId", interceptionId);
+        }
+        public static ContinueInterceptedRequestRequest fromMap(Map<String, Object> values) {
+            ContinueInterceptedRequestRequest instance_ = new ContinueInterceptedRequestRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the interceptionId field.
+         * @return the protocol field value
+         */
+        public Network.InterceptionId interceptionId() {
+            return new Network.InterceptionId((String) require("interceptionId"));
+        }
+        /**
+         * If set this causes the request to fail with the given reason. Passing {@code Aborted} for requests marked with {@code isNavigationRequest} also cancels the navigation. Must not be set in response to an authChallenge.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.ErrorReason> errorReason() {
+            return Optional.ofNullable(raw("errorReason") == null ? null : Network.ErrorReason.of((String) raw("errorReason")));
+        }
+        /**
+         * If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> rawResponse() {
+            return Optional.ofNullable((String) raw("rawResponse"));
+        }
+        /**
+         * If set the request url will be modified in a way that&#x27;s not observable by page. Must not be set in response to an authChallenge.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> url() {
+            return Optional.ofNullable((String) raw("url"));
+        }
+        /**
+         * If set this allows the request method to be overridden. Must not be set in response to an authChallenge.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> method() {
+            return Optional.ofNullable((String) raw("method"));
+        }
+        /**
+         * If set this allows postData to be set. Must not be set in response to an authChallenge.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> postData() {
+            return Optional.ofNullable((String) raw("postData"));
+        }
+        /**
+         * If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.Map<String, Object>> headers() {
+            return Optional.ofNullable(objectMap(raw("headers")));
+        }
+        /**
+         * Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.AuthChallengeResponse> authChallengeResponse() {
+            return Optional.ofNullable(raw("authChallengeResponse") == null ? null : Network.AuthChallengeResponse.fromMap(java.util.Objects.requireNonNull(objectMap(raw("authChallengeResponse")))));
+        }
+        /**
+         * Sets the interceptionId field.
+         * @param interceptionId field value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest interceptionId(Network.InterceptionId interceptionId) {
+            set("interceptionId", interceptionId);
+            return this;
+        }
+        /**
+         * If set this causes the request to fail with the given reason. Passing {@code Aborted} for requests marked with {@code isNavigationRequest} also cancels the navigation. Must not be set in response to an authChallenge.
+         * @param errorReason field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest errorReason(Optional<Network.ErrorReason> errorReason) {
+            set("errorReason", errorReason.orElse(null));
+            return this;
+        }
+        /**
+         * If set this causes the request to fail with the given reason. Passing {@code Aborted} for requests marked with {@code isNavigationRequest} also cancels the navigation. Must not be set in response to an authChallenge.
+         * @param errorReason field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest errorReason(Network.ErrorReason errorReason) {
+            set("errorReason", errorReason);
+            return this;
+        }
+        /**
+         * If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
+         * @param rawResponse field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest rawResponse(Optional<String> rawResponse) {
+            set("rawResponse", rawResponse.orElse(null));
+            return this;
+        }
+        /**
+         * If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
+         * @param rawResponse field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest rawResponse(String rawResponse) {
+            set("rawResponse", rawResponse);
+            return this;
+        }
+        /**
+         * If set the request url will be modified in a way that&#x27;s not observable by page. Must not be set in response to an authChallenge.
+         * @param url field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest url(Optional<String> url) {
+            set("url", url.orElse(null));
+            return this;
+        }
+        /**
+         * If set the request url will be modified in a way that&#x27;s not observable by page. Must not be set in response to an authChallenge.
+         * @param url field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * If set this allows the request method to be overridden. Must not be set in response to an authChallenge.
+         * @param method field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest method(Optional<String> method) {
+            set("method", method.orElse(null));
+            return this;
+        }
+        /**
+         * If set this allows the request method to be overridden. Must not be set in response to an authChallenge.
+         * @param method field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest method(String method) {
+            set("method", method);
+            return this;
+        }
+        /**
+         * If set this allows postData to be set. Must not be set in response to an authChallenge.
+         * @param postData field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest postData(Optional<String> postData) {
+            set("postData", postData.orElse(null));
+            return this;
+        }
+        /**
+         * If set this allows postData to be set. Must not be set in response to an authChallenge.
+         * @param postData field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest postData(String postData) {
+            set("postData", postData);
+            return this;
+        }
+        /**
+         * If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
+         * @param headers field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest headers(Optional<java.util.Map<String, Object>> headers) {
+            set("headers", headers.orElse(null));
+            return this;
+        }
+        /**
+         * If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
+         * @param headers field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest headers(java.util.Map<String, Object> headers) {
+            set("headers", headers);
+            return this;
+        }
+        /**
+         * Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
+         * @param authChallengeResponse field value; empty omits the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest authChallengeResponse(Optional<Network.AuthChallengeResponse> authChallengeResponse) {
+            set("authChallengeResponse", authChallengeResponse.orElse(null));
+            return this;
+        }
+        /**
+         * Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
+         * @param authChallengeResponse field value; null removes the value
+         * @return this model
+         */
+        public ContinueInterceptedRequestRequest authChallengeResponse(Network.AuthChallengeResponse authChallengeResponse) {
+            set("authChallengeResponse", authChallengeResponse);
+            return this;
+        }
+    }
+    /**
+     * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
+     */
+    public static final class DeleteCookiesRequest extends CdpObject {
+        public DeleteCookiesRequest() {}
+        /**
+         * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
+         * @param name protocol value
+         */
+        public DeleteCookiesRequest(String name) {
+            set("name", name);
+        }
+        public static DeleteCookiesRequest fromMap(Map<String, Object> values) {
+            DeleteCookiesRequest instance_ = new DeleteCookiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Name of the cookies to remove.
+         * @return the protocol field value
+         */
+        public String name() {
+            return (String) require("name");
+        }
+        /**
+         * If specified, deletes all the cookies with the given name where domain and path match provided URL.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> url() {
+            return Optional.ofNullable((String) raw("url"));
+        }
+        /**
+         * If specified, deletes only cookies with the exact domain.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> domain() {
+            return Optional.ofNullable((String) raw("domain"));
+        }
+        /**
+         * If specified, deletes only cookies with the exact path.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> path() {
+            return Optional.ofNullable((String) raw("path"));
+        }
+        /**
+         * If specified, deletes only cookies with the the given name and partitionKey where all partition key attributes match the cookie partition key attribute.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.CookiePartitionKey> partitionKey() {
+            return Optional.ofNullable(raw("partitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitionKey")))));
+        }
+        /**
+         * Name of the cookies to remove.
+         * @param name field value
+         * @return this model
+         */
+        public DeleteCookiesRequest name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * If specified, deletes all the cookies with the given name where domain and path match provided URL.
+         * @param url field value; empty omits the value
+         * @return this model
+         */
+        public DeleteCookiesRequest url(Optional<String> url) {
+            set("url", url.orElse(null));
+            return this;
+        }
+        /**
+         * If specified, deletes all the cookies with the given name where domain and path match provided URL.
+         * @param url field value; null removes the value
+         * @return this model
+         */
+        public DeleteCookiesRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * If specified, deletes only cookies with the exact domain.
+         * @param domain field value; empty omits the value
+         * @return this model
+         */
+        public DeleteCookiesRequest domain(Optional<String> domain) {
+            set("domain", domain.orElse(null));
+            return this;
+        }
+        /**
+         * If specified, deletes only cookies with the exact domain.
+         * @param domain field value; null removes the value
+         * @return this model
+         */
+        public DeleteCookiesRequest domain(String domain) {
+            set("domain", domain);
+            return this;
+        }
+        /**
+         * If specified, deletes only cookies with the exact path.
+         * @param path field value; empty omits the value
+         * @return this model
+         */
+        public DeleteCookiesRequest path(Optional<String> path) {
+            set("path", path.orElse(null));
+            return this;
+        }
+        /**
+         * If specified, deletes only cookies with the exact path.
+         * @param path field value; null removes the value
+         * @return this model
+         */
+        public DeleteCookiesRequest path(String path) {
+            set("path", path);
+            return this;
+        }
+        /**
+         * If specified, deletes only cookies with the the given name and partitionKey where all partition key attributes match the cookie partition key attribute.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param partitionKey field value; empty omits the value
+         * @return this model
+         */
+        public DeleteCookiesRequest partitionKey(Optional<Network.CookiePartitionKey> partitionKey) {
+            set("partitionKey", partitionKey.orElse(null));
+            return this;
+        }
+        /**
+         * If specified, deletes only cookies with the the given name and partitionKey where all partition key attributes match the cookie partition key attribute.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param partitionKey field value; null removes the value
+         * @return this model
+         */
+        public DeleteCookiesRequest partitionKey(Network.CookiePartitionKey partitionKey) {
+            set("partitionKey", partitionKey);
+            return this;
+        }
+    }
+    /**
+     * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class EmulateNetworkConditionsRequest extends CdpObject {
+        public EmulateNetworkConditionsRequest() {}
+        /**
+         * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
+         * @param offline protocol value
+         * @param latency protocol value
+         * @param downloadThroughput protocol value
+         * @param uploadThroughput protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public EmulateNetworkConditionsRequest(boolean offline, double latency, double downloadThroughput, double uploadThroughput) {
+            set("offline", offline);
+            set("latency", latency);
+            set("downloadThroughput", downloadThroughput);
+            set("uploadThroughput", uploadThroughput);
+        }
+        public static EmulateNetworkConditionsRequest fromMap(Map<String, Object> values) {
+            EmulateNetworkConditionsRequest instance_ = new EmulateNetworkConditionsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True to emulate internet disconnection.
+         * @return the protocol field value
+         */
+        public boolean offline() {
+            return (Boolean) require("offline");
+        }
+        /**
+         * Minimum latency from request sent to response headers received (ms).
+         * @return the protocol field value
+         */
+        public double latency() {
+            return ((Number) require("latency")).doubleValue();
+        }
+        /**
+         * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+         * @return the protocol field value
+         */
+        public double downloadThroughput() {
+            return ((Number) require("downloadThroughput")).doubleValue();
+        }
+        /**
+         * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
+         * @return the protocol field value
+         */
+        public double uploadThroughput() {
+            return ((Number) require("uploadThroughput")).doubleValue();
+        }
+        /**
+         * Connection type if known.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.ConnectionType> connectionType() {
+            return Optional.ofNullable(raw("connectionType") == null ? null : Network.ConnectionType.of((String) raw("connectionType")));
+        }
+        /**
+         * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble packetLoss() {
+            Double value = CdpObject.numberAsDouble(raw("packetLoss"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * WebRTC packet queue length (packet). 0 removes any queue length limitations.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong packetQueueLength() {
+            Long value = CdpObject.numberAsLong(raw("packetQueueLength"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * WebRTC packetReordering feature.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> packetReordering() {
+            return Optional.ofNullable((Boolean) raw("packetReordering"));
+        }
+        /**
+         * True to emulate internet disconnection.
+         * @param offline field value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest offline(boolean offline) {
+            set("offline", offline);
+            return this;
+        }
+        /**
+         * Minimum latency from request sent to response headers received (ms).
+         * @param latency field value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest latency(double latency) {
+            set("latency", latency);
+            return this;
+        }
+        /**
+         * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+         * @param downloadThroughput field value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest downloadThroughput(double downloadThroughput) {
+            set("downloadThroughput", downloadThroughput);
+            return this;
+        }
+        /**
+         * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
+         * @param uploadThroughput field value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest uploadThroughput(double uploadThroughput) {
+            set("uploadThroughput", uploadThroughput);
+            return this;
+        }
+        /**
+         * Connection type if known.
+         * @param connectionType field value; empty omits the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest connectionType(Optional<Network.ConnectionType> connectionType) {
+            set("connectionType", connectionType.orElse(null));
+            return this;
+        }
+        /**
+         * Connection type if known.
+         * @param connectionType field value; null removes the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest connectionType(Network.ConnectionType connectionType) {
+            set("connectionType", connectionType);
+            return this;
+        }
+        /**
+         * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param packetLoss field value; empty omits the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest packetLoss(OptionalDouble packetLoss) {
+            set("packetLoss", packetLoss.isPresent() ? packetLoss.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param packetLoss field value; null removes the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest packetLoss(Double packetLoss) {
+            set("packetLoss", packetLoss);
+            return this;
+        }
+        /**
+         * WebRTC packet queue length (packet). 0 removes any queue length limitations.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param packetQueueLength field value; empty omits the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest packetQueueLength(OptionalLong packetQueueLength) {
+            set("packetQueueLength", packetQueueLength.isPresent() ? packetQueueLength.getAsLong() : null);
+            return this;
+        }
+        /**
+         * WebRTC packet queue length (packet). 0 removes any queue length limitations.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param packetQueueLength field value; null removes the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest packetQueueLength(Long packetQueueLength) {
+            set("packetQueueLength", packetQueueLength);
+            return this;
+        }
+        /**
+         * WebRTC packetReordering feature.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param packetReordering field value; empty omits the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest packetReordering(Optional<Boolean> packetReordering) {
+            set("packetReordering", packetReordering.orElse(null));
+            return this;
+        }
+        /**
+         * WebRTC packetReordering feature.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param packetReordering field value; null removes the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsRequest packetReordering(Boolean packetReordering) {
+            set("packetReordering", packetReordering);
+            return this;
+        }
+    }
+    /**
+     * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class EmulateNetworkConditionsByRuleRequest extends CdpObject {
+        public EmulateNetworkConditionsByRuleRequest() {}
+        /**
+         * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param matchedNetworkConditions protocol value
+         */
+        public EmulateNetworkConditionsByRuleRequest(java.util.List<Network.NetworkConditions> matchedNetworkConditions) {
+            set("matchedNetworkConditions", matchedNetworkConditions);
+        }
+        public static EmulateNetworkConditionsByRuleRequest fromMap(Map<String, Object> values) {
+            EmulateNetworkConditionsByRuleRequest instance_ = new EmulateNetworkConditionsByRuleRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions or emulateOfflineServiceWorker instead.
+         * @return the protocol field value, empty when absent
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Optional<Boolean> offline() {
+            return Optional.ofNullable((Boolean) raw("offline"));
+        }
+        /**
+         * True to emulate offline service worker.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> emulateOfflineServiceWorker() {
+            return Optional.ofNullable((Boolean) raw("emulateOfflineServiceWorker"));
+        }
+        /**
+         * Configure conditions for matching requests. If multiple entries match a request, the first entry wins. Global conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are also applied for throttling of p2p connections.
+         * @return the protocol field value
+         */
+        public java.util.List<Network.NetworkConditions> matchedNetworkConditions() {
+            return CdpObject.requireList(require("matchedNetworkConditions"), element0 -> java.util.Objects.requireNonNull(Network.NetworkConditions.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions or emulateOfflineServiceWorker instead.
+         * @param offline field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public EmulateNetworkConditionsByRuleRequest offline(Optional<Boolean> offline) {
+            set("offline", offline.orElse(null));
+            return this;
+        }
+        /**
+         * True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions or emulateOfflineServiceWorker instead.
+         * @param offline field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public EmulateNetworkConditionsByRuleRequest offline(Boolean offline) {
+            set("offline", offline);
+            return this;
+        }
+        /**
+         * True to emulate offline service worker.
+         * @param emulateOfflineServiceWorker field value; empty omits the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsByRuleRequest emulateOfflineServiceWorker(Optional<Boolean> emulateOfflineServiceWorker) {
+            set("emulateOfflineServiceWorker", emulateOfflineServiceWorker.orElse(null));
+            return this;
+        }
+        /**
+         * True to emulate offline service worker.
+         * @param emulateOfflineServiceWorker field value; null removes the value
+         * @return this model
+         */
+        public EmulateNetworkConditionsByRuleRequest emulateOfflineServiceWorker(Boolean emulateOfflineServiceWorker) {
+            set("emulateOfflineServiceWorker", emulateOfflineServiceWorker);
+            return this;
+        }
+        /**
+         * Configure conditions for matching requests. If multiple entries match a request, the first entry wins. Global conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are also applied for throttling of p2p connections.
+         * @param matchedNetworkConditions field value
+         * @return this model
+         */
+        public EmulateNetworkConditionsByRuleRequest matchedNetworkConditions(java.util.List<Network.NetworkConditions> matchedNetworkConditions) {
+            set("matchedNetworkConditions", matchedNetworkConditions);
+            return this;
+        }
+    }
+    /**
+     * Override the state of navigator.onLine and navigator.connection.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class OverrideNetworkStateRequest extends CdpObject {
+        public OverrideNetworkStateRequest() {}
+        /**
+         * Override the state of navigator.onLine and navigator.connection.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param offline protocol value
+         * @param latency protocol value
+         * @param downloadThroughput protocol value
+         * @param uploadThroughput protocol value
+         */
+        public OverrideNetworkStateRequest(boolean offline, double latency, double downloadThroughput, double uploadThroughput) {
+            set("offline", offline);
+            set("latency", latency);
+            set("downloadThroughput", downloadThroughput);
+            set("uploadThroughput", uploadThroughput);
+        }
+        public static OverrideNetworkStateRequest fromMap(Map<String, Object> values) {
+            OverrideNetworkStateRequest instance_ = new OverrideNetworkStateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * True to emulate internet disconnection.
+         * @return the protocol field value
+         */
+        public boolean offline() {
+            return (Boolean) require("offline");
+        }
+        /**
+         * Minimum latency from request sent to response headers received (ms).
+         * @return the protocol field value
+         */
+        public double latency() {
+            return ((Number) require("latency")).doubleValue();
+        }
+        /**
+         * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+         * @return the protocol field value
+         */
+        public double downloadThroughput() {
+            return ((Number) require("downloadThroughput")).doubleValue();
+        }
+        /**
+         * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
+         * @return the protocol field value
+         */
+        public double uploadThroughput() {
+            return ((Number) require("uploadThroughput")).doubleValue();
+        }
+        /**
+         * Connection type if known.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.ConnectionType> connectionType() {
+            return Optional.ofNullable(raw("connectionType") == null ? null : Network.ConnectionType.of((String) raw("connectionType")));
+        }
+        /**
+         * True to emulate internet disconnection.
+         * @param offline field value
+         * @return this model
+         */
+        public OverrideNetworkStateRequest offline(boolean offline) {
+            set("offline", offline);
+            return this;
+        }
+        /**
+         * Minimum latency from request sent to response headers received (ms).
+         * @param latency field value
+         * @return this model
+         */
+        public OverrideNetworkStateRequest latency(double latency) {
+            set("latency", latency);
+            return this;
+        }
+        /**
+         * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+         * @param downloadThroughput field value
+         * @return this model
+         */
+        public OverrideNetworkStateRequest downloadThroughput(double downloadThroughput) {
+            set("downloadThroughput", downloadThroughput);
+            return this;
+        }
+        /**
+         * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
+         * @param uploadThroughput field value
+         * @return this model
+         */
+        public OverrideNetworkStateRequest uploadThroughput(double uploadThroughput) {
+            set("uploadThroughput", uploadThroughput);
+            return this;
+        }
+        /**
+         * Connection type if known.
+         * @param connectionType field value; empty omits the value
+         * @return this model
+         */
+        public OverrideNetworkStateRequest connectionType(Optional<Network.ConnectionType> connectionType) {
+            set("connectionType", connectionType.orElse(null));
+            return this;
+        }
+        /**
+         * Connection type if known.
+         * @param connectionType field value; null removes the value
+         * @return this model
+         */
+        public OverrideNetworkStateRequest connectionType(Network.ConnectionType connectionType) {
+            set("connectionType", connectionType);
+            return this;
+        }
+    }
+    /**
+     * Enables network tracking, network events will now be delivered to the client.
+     */
+    public static final class EnableRequest extends CdpObject {
+        public EnableRequest() {}
+        public static EnableRequest fromMap(Map<String, Object> values) {
+            EnableRequest instance_ = new EnableRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxTotalBufferSize() {
+            Long value = CdpObject.numberAsLong(raw("maxTotalBufferSize"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxResourceBufferSize() {
+            Long value = CdpObject.numberAsLong(raw("maxResourceBufferSize"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Longest post body size (in bytes) that would be included in requestWillBeSent notification
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxPostDataSize() {
+            Long value = CdpObject.numberAsLong(raw("maxPostDataSize"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Whether DirectSocket chunk send/receive events should be reported.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> reportDirectSocketTraffic() {
+            return Optional.ofNullable((Boolean) raw("reportDirectSocketTraffic"));
+        }
+        /**
+         * Enable storing response bodies outside of renderer, so that these survive a cross-process navigation. Requires maxTotalBufferSize to be set. Currently defaults to false. This field is being deprecated in favor of the dedicated configureDurableMessages command, due to the possibility of deadlocks when awaiting Network.enable before issuing Runtime.runIfWaitingForDebugger.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> enableDurableMessages() {
+            return Optional.ofNullable((Boolean) raw("enableDurableMessages"));
+        }
+        /**
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param maxTotalBufferSize field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest maxTotalBufferSize(OptionalLong maxTotalBufferSize) {
+            set("maxTotalBufferSize", maxTotalBufferSize.isPresent() ? maxTotalBufferSize.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param maxTotalBufferSize field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest maxTotalBufferSize(Long maxTotalBufferSize) {
+            set("maxTotalBufferSize", maxTotalBufferSize);
+            return this;
+        }
+        /**
+         * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param maxResourceBufferSize field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest maxResourceBufferSize(OptionalLong maxResourceBufferSize) {
+            set("maxResourceBufferSize", maxResourceBufferSize.isPresent() ? maxResourceBufferSize.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param maxResourceBufferSize field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest maxResourceBufferSize(Long maxResourceBufferSize) {
+            set("maxResourceBufferSize", maxResourceBufferSize);
+            return this;
+        }
+        /**
+         * Longest post body size (in bytes) that would be included in requestWillBeSent notification
+         * @param maxPostDataSize field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest maxPostDataSize(OptionalLong maxPostDataSize) {
+            set("maxPostDataSize", maxPostDataSize.isPresent() ? maxPostDataSize.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Longest post body size (in bytes) that would be included in requestWillBeSent notification
+         * @param maxPostDataSize field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest maxPostDataSize(Long maxPostDataSize) {
+            set("maxPostDataSize", maxPostDataSize);
+            return this;
+        }
+        /**
+         * Whether DirectSocket chunk send/receive events should be reported.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param reportDirectSocketTraffic field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest reportDirectSocketTraffic(Optional<Boolean> reportDirectSocketTraffic) {
+            set("reportDirectSocketTraffic", reportDirectSocketTraffic.orElse(null));
+            return this;
+        }
+        /**
+         * Whether DirectSocket chunk send/receive events should be reported.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param reportDirectSocketTraffic field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest reportDirectSocketTraffic(Boolean reportDirectSocketTraffic) {
+            set("reportDirectSocketTraffic", reportDirectSocketTraffic);
+            return this;
+        }
+        /**
+         * Enable storing response bodies outside of renderer, so that these survive a cross-process navigation. Requires maxTotalBufferSize to be set. Currently defaults to false. This field is being deprecated in favor of the dedicated configureDurableMessages command, due to the possibility of deadlocks when awaiting Network.enable before issuing Runtime.runIfWaitingForDebugger.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enableDurableMessages field value; empty omits the value
+         * @return this model
+         */
+        public EnableRequest enableDurableMessages(Optional<Boolean> enableDurableMessages) {
+            set("enableDurableMessages", enableDurableMessages.orElse(null));
+            return this;
+        }
+        /**
+         * Enable storing response bodies outside of renderer, so that these survive a cross-process navigation. Requires maxTotalBufferSize to be set. Currently defaults to false. This field is being deprecated in favor of the dedicated configureDurableMessages command, due to the possibility of deadlocks when awaiting Network.enable before issuing Runtime.runIfWaitingForDebugger.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enableDurableMessages field value; null removes the value
+         * @return this model
+         */
+        public EnableRequest enableDurableMessages(Boolean enableDurableMessages) {
+            set("enableDurableMessages", enableDurableMessages);
+            return this;
+        }
+    }
+    /**
+     * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ConfigureDurableMessagesRequest extends CdpObject {
+        public ConfigureDurableMessagesRequest() {}
+        public static ConfigureDurableMessagesRequest fromMap(Map<String, Object> values) {
+            ConfigureDurableMessagesRequest instance_ = new ConfigureDurableMessagesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxTotalBufferSize() {
+            Long value = CdpObject.numberAsLong(raw("maxTotalBufferSize"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong maxResourceBufferSize() {
+            Long value = CdpObject.numberAsLong(raw("maxResourceBufferSize"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * @param maxTotalBufferSize field value; empty omits the value
+         * @return this model
+         */
+        public ConfigureDurableMessagesRequest maxTotalBufferSize(OptionalLong maxTotalBufferSize) {
+            set("maxTotalBufferSize", maxTotalBufferSize.isPresent() ? maxTotalBufferSize.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * @param maxTotalBufferSize field value; null removes the value
+         * @return this model
+         */
+        public ConfigureDurableMessagesRequest maxTotalBufferSize(Long maxTotalBufferSize) {
+            set("maxTotalBufferSize", maxTotalBufferSize);
+            return this;
+        }
+        /**
+         * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * @param maxResourceBufferSize field value; empty omits the value
+         * @return this model
+         */
+        public ConfigureDurableMessagesRequest maxResourceBufferSize(OptionalLong maxResourceBufferSize) {
+            set("maxResourceBufferSize", maxResourceBufferSize.isPresent() ? maxResourceBufferSize.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * @param maxResourceBufferSize field value; null removes the value
+         * @return this model
+         */
+        public ConfigureDurableMessagesRequest maxResourceBufferSize(Long maxResourceBufferSize) {
+            set("maxResourceBufferSize", maxResourceBufferSize);
+            return this;
+        }
+    }
+    /**
+     * Returns the DER-encoded certificate.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetCertificateRequest extends CdpObject {
+        public GetCertificateRequest() {}
+        /**
+         * Returns the DER-encoded certificate.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param origin protocol value
+         */
+        public GetCertificateRequest(String origin) {
+            set("origin", origin);
+        }
+        public static GetCertificateRequest fromMap(Map<String, Object> values) {
+            GetCertificateRequest instance_ = new GetCertificateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Origin to get certificate for.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * Origin to get certificate for.
+         * @param origin field value
+         * @return this model
+         */
+        public GetCertificateRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
+     */
+    public static final class GetCookiesRequest extends CdpObject {
+        public GetCookiesRequest() {}
+        public static GetCookiesRequest fromMap(Map<String, Object> values) {
+            GetCookiesRequest instance_ = new GetCookiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The list of URLs for which applicable cookies will be fetched. If not specified, it&#x27;s assumed to be set to the list containing the URLs of the page and all of its subframes.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<String>> urls() {
+            return Optional.ofNullable(list(raw("urls"), element0 -> (String) element0));
+        }
+        /**
+         * The list of URLs for which applicable cookies will be fetched. If not specified, it&#x27;s assumed to be set to the list containing the URLs of the page and all of its subframes.
+         * @param urls field value; empty omits the value
+         * @return this model
+         */
+        public GetCookiesRequest urls(Optional<java.util.List<String>> urls) {
+            set("urls", urls.orElse(null));
+            return this;
+        }
+        /**
+         * The list of URLs for which applicable cookies will be fetched. If not specified, it&#x27;s assumed to be set to the list containing the URLs of the page and all of its subframes.
+         * @param urls field value; null removes the value
+         * @return this model
+         */
+        public GetCookiesRequest urls(java.util.List<String> urls) {
+            set("urls", urls);
+            return this;
+        }
+    }
+    /**
+     * Returns content served for the given request.
+     */
+    public static final class GetResponseBodyRequest extends CdpObject {
+        public GetResponseBodyRequest() {}
+        /**
+         * Returns content served for the given request.
+         * @param requestId protocol value
+         */
+        public GetResponseBodyRequest(Network.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static GetResponseBodyRequest fromMap(Map<String, Object> values) {
+            GetResponseBodyRequest instance_ = new GetResponseBodyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the network request to get content for.
+         * @return the protocol field value
+         */
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
+        }
+        /**
+         * Identifier of the network request to get content for.
+         * @param requestId field value
+         * @return this model
+         */
+        public GetResponseBodyRequest requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Returns post data sent with the request. Returns an error when no data was sent with the request.
+     */
+    public static final class GetRequestPostDataRequest extends CdpObject {
+        public GetRequestPostDataRequest() {}
+        /**
+         * Returns post data sent with the request. Returns an error when no data was sent with the request.
+         * @param requestId protocol value
+         */
+        public GetRequestPostDataRequest(Network.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static GetRequestPostDataRequest fromMap(Map<String, Object> values) {
+            GetRequestPostDataRequest instance_ = new GetRequestPostDataRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the network request to get content for.
+         * @return the protocol field value
+         */
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
+        }
+        /**
+         * Identifier of the network request to get content for.
+         * @param requestId field value
+         * @return this model
+         */
+        public GetRequestPostDataRequest requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Returns content served for the given currently intercepted request.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetResponseBodyForInterceptionRequest extends CdpObject {
+        public GetResponseBodyForInterceptionRequest() {}
+        /**
+         * Returns content served for the given currently intercepted request.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param interceptionId protocol value
+         */
+        public GetResponseBodyForInterceptionRequest(Network.InterceptionId interceptionId) {
+            set("interceptionId", interceptionId);
+        }
+        public static GetResponseBodyForInterceptionRequest fromMap(Map<String, Object> values) {
+            GetResponseBodyForInterceptionRequest instance_ = new GetResponseBodyForInterceptionRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier for the intercepted request to get body for.
+         * @return the protocol field value
+         */
+        public Network.InterceptionId interceptionId() {
+            return new Network.InterceptionId((String) require("interceptionId"));
+        }
+        /**
+         * Identifier for the intercepted request to get body for.
+         * @param interceptionId field value
+         * @return this model
+         */
+        public GetResponseBodyForInterceptionRequest interceptionId(Network.InterceptionId interceptionId) {
+            set("interceptionId", interceptionId);
+            return this;
+        }
+    }
+    /**
+     * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class TakeResponseBodyForInterceptionAsStreamRequest extends CdpObject {
+        public TakeResponseBodyForInterceptionAsStreamRequest() {}
+        /**
+         * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param interceptionId protocol value
+         */
+        public TakeResponseBodyForInterceptionAsStreamRequest(Network.InterceptionId interceptionId) {
+            set("interceptionId", interceptionId);
+        }
+        public static TakeResponseBodyForInterceptionAsStreamRequest fromMap(Map<String, Object> values) {
+            TakeResponseBodyForInterceptionAsStreamRequest instance_ = new TakeResponseBodyForInterceptionAsStreamRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the interceptionId field.
+         * @return the protocol field value
+         */
+        public Network.InterceptionId interceptionId() {
+            return new Network.InterceptionId((String) require("interceptionId"));
+        }
+        /**
+         * Sets the interceptionId field.
+         * @param interceptionId field value
+         * @return this model
+         */
+        public TakeResponseBodyForInterceptionAsStreamRequest interceptionId(Network.InterceptionId interceptionId) {
+            set("interceptionId", interceptionId);
+            return this;
+        }
+    }
+    /**
+     * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ReplayXHRRequest extends CdpObject {
+        public ReplayXHRRequest() {}
+        /**
+         * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param requestId protocol value
+         */
+        public ReplayXHRRequest(Network.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static ReplayXHRRequest fromMap(Map<String, Object> values) {
+            ReplayXHRRequest instance_ = new ReplayXHRRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of XHR to replay.
+         * @return the protocol field value
+         */
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
+        }
+        /**
+         * Identifier of XHR to replay.
+         * @param requestId field value
+         * @return this model
+         */
+        public ReplayXHRRequest requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Searches for given string in response content.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SearchInResponseBodyRequest extends CdpObject {
+        public SearchInResponseBodyRequest() {}
+        /**
+         * Searches for given string in response content.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param requestId protocol value
+         * @param query protocol value
+         */
+        public SearchInResponseBodyRequest(Network.RequestId requestId, String query) {
+            set("requestId", requestId);
+            set("query", query);
+        }
+        public static SearchInResponseBodyRequest fromMap(Map<String, Object> values) {
+            SearchInResponseBodyRequest instance_ = new SearchInResponseBodyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the network response to search.
+         * @return the protocol field value
+         */
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
+        }
+        /**
+         * String to search for.
+         * @return the protocol field value
+         */
+        public String query() {
+            return (String) require("query");
+        }
+        /**
+         * If true, search is case sensitive.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> caseSensitive() {
+            return Optional.ofNullable((Boolean) raw("caseSensitive"));
+        }
+        /**
+         * If true, treats string parameter as regex.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> isRegex() {
+            return Optional.ofNullable((Boolean) raw("isRegex"));
+        }
+        /**
+         * Identifier of the network response to search.
+         * @param requestId field value
+         * @return this model
+         */
+        public SearchInResponseBodyRequest requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * String to search for.
+         * @param query field value
+         * @return this model
+         */
+        public SearchInResponseBodyRequest query(String query) {
+            set("query", query);
+            return this;
+        }
+        /**
+         * If true, search is case sensitive.
+         * @param caseSensitive field value; empty omits the value
+         * @return this model
+         */
+        public SearchInResponseBodyRequest caseSensitive(Optional<Boolean> caseSensitive) {
+            set("caseSensitive", caseSensitive.orElse(null));
+            return this;
+        }
+        /**
+         * If true, search is case sensitive.
+         * @param caseSensitive field value; null removes the value
+         * @return this model
+         */
+        public SearchInResponseBodyRequest caseSensitive(Boolean caseSensitive) {
+            set("caseSensitive", caseSensitive);
+            return this;
+        }
+        /**
+         * If true, treats string parameter as regex.
+         * @param isRegex field value; empty omits the value
+         * @return this model
+         */
+        public SearchInResponseBodyRequest isRegex(Optional<Boolean> isRegex) {
+            set("isRegex", isRegex.orElse(null));
+            return this;
+        }
+        /**
+         * If true, treats string parameter as regex.
+         * @param isRegex field value; null removes the value
+         * @return this model
+         */
+        public SearchInResponseBodyRequest isRegex(Boolean isRegex) {
+            set("isRegex", isRegex);
+            return this;
+        }
+    }
+    /**
+     * Blocks URLs from loading.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetBlockedURLsRequest extends CdpObject {
+        public SetBlockedURLsRequest() {}
+        public static SetBlockedURLsRequest fromMap(Map<String, Object> values) {
+            SetBlockedURLsRequest instance_ = new SetBlockedURLsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Patterns to match in the order in which they are given. These patterns also take precedence over any wildcard patterns defined in {@code urls}.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<java.util.List<Network.BlockPattern>> urlPatterns() {
+            return Optional.ofNullable(list(raw("urlPatterns"), element0 -> java.util.Objects.requireNonNull(Network.BlockPattern.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * URL patterns to block. Wildcards (&#x27;*&#x27;) are allowed.
+         * @return the protocol field value, empty when absent
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Optional<java.util.List<String>> urls() {
+            return Optional.ofNullable(list(raw("urls"), element0 -> (String) element0));
+        }
+        /**
+         * Patterns to match in the order in which they are given. These patterns also take precedence over any wildcard patterns defined in {@code urls}.
+         * @param urlPatterns field value; empty omits the value
+         * @return this model
+         */
+        public SetBlockedURLsRequest urlPatterns(Optional<java.util.List<Network.BlockPattern>> urlPatterns) {
+            set("urlPatterns", urlPatterns.orElse(null));
+            return this;
+        }
+        /**
+         * Patterns to match in the order in which they are given. These patterns also take precedence over any wildcard patterns defined in {@code urls}.
+         * @param urlPatterns field value; null removes the value
+         * @return this model
+         */
+        public SetBlockedURLsRequest urlPatterns(java.util.List<Network.BlockPattern> urlPatterns) {
+            set("urlPatterns", urlPatterns);
+            return this;
+        }
+        /**
+         * URL patterns to block. Wildcards (&#x27;*&#x27;) are allowed.
+         * @param urls field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetBlockedURLsRequest urls(Optional<java.util.List<String>> urls) {
+            set("urls", urls.orElse(null));
+            return this;
+        }
+        /**
+         * URL patterns to block. Wildcards (&#x27;*&#x27;) are allowed.
+         * @param urls field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetBlockedURLsRequest urls(java.util.List<String> urls) {
+            set("urls", urls);
+            return this;
+        }
+    }
+    /**
+     * Toggles ignoring of service worker for each request.
+     */
+    public static final class SetBypassServiceWorkerRequest extends CdpObject {
+        public SetBypassServiceWorkerRequest() {}
+        /**
+         * Toggles ignoring of service worker for each request.
+         * @param bypass protocol value
+         */
+        public SetBypassServiceWorkerRequest(boolean bypass) {
+            set("bypass", bypass);
+        }
+        public static SetBypassServiceWorkerRequest fromMap(Map<String, Object> values) {
+            SetBypassServiceWorkerRequest instance_ = new SetBypassServiceWorkerRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Bypass service worker and load from network.
+         * @return the protocol field value
+         */
+        public boolean bypass() {
+            return (Boolean) require("bypass");
+        }
+        /**
+         * Bypass service worker and load from network.
+         * @param bypass field value
+         * @return this model
+         */
+        public SetBypassServiceWorkerRequest bypass(boolean bypass) {
+            set("bypass", bypass);
+            return this;
+        }
+    }
+    /**
+     * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
+     */
+    public static final class SetCacheDisabledRequest extends CdpObject {
+        public SetCacheDisabledRequest() {}
+        /**
+         * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
+         * @param cacheDisabled protocol value
+         */
+        public SetCacheDisabledRequest(boolean cacheDisabled) {
+            set("cacheDisabled", cacheDisabled);
+        }
+        public static SetCacheDisabledRequest fromMap(Map<String, Object> values) {
+            SetCacheDisabledRequest instance_ = new SetCacheDisabledRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Cache disabled state.
+         * @return the protocol field value
+         */
+        public boolean cacheDisabled() {
+            return (Boolean) require("cacheDisabled");
+        }
+        /**
+         * Cache disabled state.
+         * @param cacheDisabled field value
+         * @return this model
+         */
+        public SetCacheDisabledRequest cacheDisabled(boolean cacheDisabled) {
+            set("cacheDisabled", cacheDisabled);
+            return this;
+        }
+    }
+    /**
+     * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
+     */
+    public static final class SetCookieRequest extends CdpObject {
+        public SetCookieRequest() {}
+        /**
+         * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
+         * @param name protocol value
+         * @param value protocol value
+         */
+        public SetCookieRequest(String name, String value) {
+            set("name", name);
+            set("value", value);
+        }
+        public static SetCookieRequest fromMap(Map<String, Object> values) {
+            SetCookieRequest instance_ = new SetCookieRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Cookie name.
+         * @return the protocol field value
+         */
+        public String name() {
+            return (String) require("name");
+        }
+        /**
+         * Cookie value.
+         * @return the protocol field value
+         */
+        public String value() {
+            return (String) require("value");
+        }
+        /**
+         * The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> url() {
+            return Optional.ofNullable((String) raw("url"));
+        }
+        /**
+         * Cookie domain.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> domain() {
+            return Optional.ofNullable((String) raw("domain"));
+        }
+        /**
+         * Cookie path.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> path() {
+            return Optional.ofNullable((String) raw("path"));
+        }
+        /**
+         * True if cookie is secure.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> secure() {
+            return Optional.ofNullable((Boolean) raw("secure"));
+        }
+        /**
+         * True if cookie is http-only.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> httpOnly() {
+            return Optional.ofNullable((Boolean) raw("httpOnly"));
+        }
+        /**
+         * Cookie SameSite type.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.CookieSameSite> sameSite() {
+            return Optional.ofNullable(raw("sameSite") == null ? null : Network.CookieSameSite.of((String) raw("sameSite")));
+        }
+        /**
+         * Cookie expiration date, session cookie if not set
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.TimeSinceEpoch> expires() {
+            return Optional.ofNullable(raw("expires") == null ? null : new Network.TimeSinceEpoch(((Number) raw("expires")).doubleValue()));
+        }
+        /**
+         * Cookie Priority type.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.CookiePriority> priority() {
+            return Optional.ofNullable(raw("priority") == null ? null : Network.CookiePriority.of((String) raw("priority")));
+        }
+        /**
+         * Cookie source scheme type.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.CookieSourceScheme> sourceScheme() {
+            return Optional.ofNullable(raw("sourceScheme") == null ? null : Network.CookieSourceScheme.of((String) raw("sourceScheme")));
+        }
+        /**
+         * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong sourcePort() {
+            Long value = CdpObject.numberAsLong(raw("sourcePort"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * Cookie partition key. If not set, the cookie will be set as not partitioned.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Network.CookiePartitionKey> partitionKey() {
+            return Optional.ofNullable(raw("partitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitionKey")))));
+        }
+        /**
+         * Cookie name.
+         * @param name field value
+         * @return this model
+         */
+        public SetCookieRequest name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Cookie value.
+         * @param value field value
+         * @return this model
+         */
+        public SetCookieRequest value(String value) {
+            set("value", value);
+            return this;
+        }
+        /**
+         * The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
+         * @param url field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest url(Optional<String> url) {
+            set("url", url.orElse(null));
+            return this;
+        }
+        /**
+         * The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
+         * @param url field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Cookie domain.
+         * @param domain field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest domain(Optional<String> domain) {
+            set("domain", domain.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie domain.
+         * @param domain field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest domain(String domain) {
+            set("domain", domain);
+            return this;
+        }
+        /**
+         * Cookie path.
+         * @param path field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest path(Optional<String> path) {
+            set("path", path.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie path.
+         * @param path field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest path(String path) {
+            set("path", path);
+            return this;
+        }
+        /**
+         * True if cookie is secure.
+         * @param secure field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest secure(Optional<Boolean> secure) {
+            set("secure", secure.orElse(null));
+            return this;
+        }
+        /**
+         * True if cookie is secure.
+         * @param secure field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest secure(Boolean secure) {
+            set("secure", secure);
+            return this;
+        }
+        /**
+         * True if cookie is http-only.
+         * @param httpOnly field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest httpOnly(Optional<Boolean> httpOnly) {
+            set("httpOnly", httpOnly.orElse(null));
+            return this;
+        }
+        /**
+         * True if cookie is http-only.
+         * @param httpOnly field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest httpOnly(Boolean httpOnly) {
+            set("httpOnly", httpOnly);
+            return this;
+        }
+        /**
+         * Cookie SameSite type.
+         * @param sameSite field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest sameSite(Optional<Network.CookieSameSite> sameSite) {
+            set("sameSite", sameSite.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie SameSite type.
+         * @param sameSite field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest sameSite(Network.CookieSameSite sameSite) {
+            set("sameSite", sameSite);
+            return this;
+        }
+        /**
+         * Cookie expiration date, session cookie if not set
+         * @param expires field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest expires(Optional<Network.TimeSinceEpoch> expires) {
+            set("expires", expires.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie expiration date, session cookie if not set
+         * @param expires field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest expires(Network.TimeSinceEpoch expires) {
+            set("expires", expires);
+            return this;
+        }
+        /**
+         * Cookie Priority type.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param priority field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest priority(Optional<Network.CookiePriority> priority) {
+            set("priority", priority.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie Priority type.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param priority field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest priority(Network.CookiePriority priority) {
+            set("priority", priority);
+            return this;
+        }
+        /**
+         * Cookie source scheme type.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param sourceScheme field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest sourceScheme(Optional<Network.CookieSourceScheme> sourceScheme) {
+            set("sourceScheme", sourceScheme.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie source scheme type.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param sourceScheme field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest sourceScheme(Network.CookieSourceScheme sourceScheme) {
+            set("sourceScheme", sourceScheme);
+            return this;
+        }
+        /**
+         * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param sourcePort field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest sourcePort(OptionalLong sourcePort) {
+            set("sourcePort", sourcePort.isPresent() ? sourcePort.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param sourcePort field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest sourcePort(Long sourcePort) {
+            set("sourcePort", sourcePort);
+            return this;
+        }
+        /**
+         * Cookie partition key. If not set, the cookie will be set as not partitioned.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param partitionKey field value; empty omits the value
+         * @return this model
+         */
+        public SetCookieRequest partitionKey(Optional<Network.CookiePartitionKey> partitionKey) {
+            set("partitionKey", partitionKey.orElse(null));
+            return this;
+        }
+        /**
+         * Cookie partition key. If not set, the cookie will be set as not partitioned.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param partitionKey field value; null removes the value
+         * @return this model
+         */
+        public SetCookieRequest partitionKey(Network.CookiePartitionKey partitionKey) {
+            set("partitionKey", partitionKey);
+            return this;
+        }
+    }
+    /**
+     * Sets given cookies.
+     */
+    public static final class SetCookiesRequest extends CdpObject {
+        public SetCookiesRequest() {}
+        /**
+         * Sets given cookies.
+         * @param cookies protocol value
+         */
+        public SetCookiesRequest(java.util.List<Network.CookieParam> cookies) {
+            set("cookies", cookies);
+        }
+        public static SetCookiesRequest fromMap(Map<String, Object> values) {
+            SetCookiesRequest instance_ = new SetCookiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Cookies to be set.
+         * @return the protocol field value
+         */
+        public java.util.List<Network.CookieParam> cookies() {
+            return CdpObject.requireList(require("cookies"), element0 -> java.util.Objects.requireNonNull(Network.CookieParam.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Cookies to be set.
+         * @param cookies field value
+         * @return this model
+         */
+        public SetCookiesRequest cookies(java.util.List<Network.CookieParam> cookies) {
+            set("cookies", cookies);
+            return this;
+        }
+    }
+    /**
+     * Specifies whether to always send extra HTTP headers with the requests from this page.
+     */
+    public static final class SetExtraHTTPHeadersRequest extends CdpObject {
+        public SetExtraHTTPHeadersRequest() {}
+        /**
+         * Specifies whether to always send extra HTTP headers with the requests from this page.
+         * @param headers protocol value
+         */
+        public SetExtraHTTPHeadersRequest(java.util.Map<String, Object> headers) {
+            set("headers", headers);
+        }
+        public static SetExtraHTTPHeadersRequest fromMap(Map<String, Object> values) {
+            SetExtraHTTPHeadersRequest instance_ = new SetExtraHTTPHeadersRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Map with extra HTTP headers.
+         * @return the protocol field value
+         */
+        public java.util.Map<String, Object> headers() {
+            return java.util.Objects.requireNonNull(CdpObject.objectMap(require("headers")));
+        }
+        /**
+         * Map with extra HTTP headers.
+         * @param headers field value
+         * @return this model
+         */
+        public SetExtraHTTPHeadersRequest headers(java.util.Map<String, Object> headers) {
+            set("headers", headers);
+            return this;
+        }
+    }
+    /**
+     * Specifies whether to attach a page script stack id in requests
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetAttachDebugStackRequest extends CdpObject {
+        public SetAttachDebugStackRequest() {}
+        /**
+         * Specifies whether to attach a page script stack id in requests
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enabled protocol value
+         */
+        public SetAttachDebugStackRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetAttachDebugStackRequest fromMap(Map<String, Object> values) {
+            SetAttachDebugStackRequest instance_ = new SetAttachDebugStackRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to attach a page script stack for debugging purpose.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * Whether to attach a page script stack for debugging purpose.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetAttachDebugStackRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+    }
+    /**
+     * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetRequestInterceptionRequest extends CdpObject {
+        public SetRequestInterceptionRequest() {}
+        /**
+         * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param patterns protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetRequestInterceptionRequest(java.util.List<Network.RequestPattern> patterns) {
+            set("patterns", patterns);
+        }
+        public static SetRequestInterceptionRequest fromMap(Map<String, Object> values) {
+            SetRequestInterceptionRequest instance_ = new SetRequestInterceptionRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
+         * @return the protocol field value
+         */
+        public java.util.List<Network.RequestPattern> patterns() {
+            return CdpObject.requireList(require("patterns"), element0 -> java.util.Objects.requireNonNull(Network.RequestPattern.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
+         * @param patterns field value
+         * @return this model
+         */
+        public SetRequestInterceptionRequest patterns(java.util.List<Network.RequestPattern> patterns) {
+            set("patterns", patterns);
+            return this;
+        }
+    }
+    /**
+     * Allows overriding user agent with the given string.
+     */
+    public static final class SetUserAgentOverrideRequest extends CdpObject {
+        public SetUserAgentOverrideRequest() {}
+        /**
+         * Allows overriding user agent with the given string.
+         * @param userAgent protocol value
+         */
+        public SetUserAgentOverrideRequest(String userAgent) {
+            set("userAgent", userAgent);
+        }
+        public static SetUserAgentOverrideRequest fromMap(Map<String, Object> values) {
+            SetUserAgentOverrideRequest instance_ = new SetUserAgentOverrideRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * User agent to use.
+         * @return the protocol field value
+         */
+        public String userAgent() {
+            return (String) require("userAgent");
+        }
+        /**
+         * Browser language to emulate.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> acceptLanguage() {
+            return Optional.ofNullable((String) raw("acceptLanguage"));
+        }
+        /**
+         * The platform navigator.platform should return.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> platform() {
+            return Optional.ofNullable((String) raw("platform"));
+        }
+        /**
+         * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Emulation.UserAgentMetadata> userAgentMetadata() {
+            return Optional.ofNullable(raw("userAgentMetadata") == null ? null : Emulation.UserAgentMetadata.fromMap(java.util.Objects.requireNonNull(objectMap(raw("userAgentMetadata")))));
+        }
+        /**
+         * User agent to use.
+         * @param userAgent field value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest userAgent(String userAgent) {
+            set("userAgent", userAgent);
+            return this;
+        }
+        /**
+         * Browser language to emulate.
+         * @param acceptLanguage field value; empty omits the value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest acceptLanguage(Optional<String> acceptLanguage) {
+            set("acceptLanguage", acceptLanguage.orElse(null));
+            return this;
+        }
+        /**
+         * Browser language to emulate.
+         * @param acceptLanguage field value; null removes the value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest acceptLanguage(String acceptLanguage) {
+            set("acceptLanguage", acceptLanguage);
+            return this;
+        }
+        /**
+         * The platform navigator.platform should return.
+         * @param platform field value; empty omits the value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest platform(Optional<String> platform) {
+            set("platform", platform.orElse(null));
+            return this;
+        }
+        /**
+         * The platform navigator.platform should return.
+         * @param platform field value; null removes the value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest platform(String platform) {
+            set("platform", platform);
+            return this;
+        }
+        /**
+         * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param userAgentMetadata field value; empty omits the value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest userAgentMetadata(Optional<Emulation.UserAgentMetadata> userAgentMetadata) {
+            set("userAgentMetadata", userAgentMetadata.orElse(null));
+            return this;
+        }
+        /**
+         * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param userAgentMetadata field value; null removes the value
+         * @return this model
+         */
+        public SetUserAgentOverrideRequest userAgentMetadata(Emulation.UserAgentMetadata userAgentMetadata) {
+            set("userAgentMetadata", userAgentMetadata);
+            return this;
+        }
+    }
+    /**
+     * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class StreamResourceContentRequest extends CdpObject {
+        public StreamResourceContentRequest() {}
+        /**
+         * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param requestId protocol value
+         */
+        public StreamResourceContentRequest(Network.RequestId requestId) {
+            set("requestId", requestId);
+        }
+        public static StreamResourceContentRequest fromMap(Map<String, Object> values) {
+            StreamResourceContentRequest instance_ = new StreamResourceContentRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the request to stream.
+         * @return the protocol field value
+         */
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
+        }
+        /**
+         * Identifier of the request to stream.
+         * @param requestId field value
+         * @return this model
+         */
+        public StreamResourceContentRequest requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+    }
+    /**
+     * Returns information about the COEP/COOP isolation status.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetSecurityIsolationStatusRequest extends CdpObject {
+        public GetSecurityIsolationStatusRequest() {}
+        public static GetSecurityIsolationStatusRequest fromMap(Map<String, Object> values) {
+            GetSecurityIsolationStatusRequest instance_ = new GetSecurityIsolationStatusRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * If no frameId is provided, the status of the target is provided.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * If no frameId is provided, the status of the target is provided.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public GetSecurityIsolationStatusRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * If no frameId is provided, the status of the target is provided.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public GetSecurityIsolationStatusRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class EnableReportingApiRequest extends CdpObject {
+        public EnableReportingApiRequest() {}
+        /**
+         * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enable protocol value
+         */
+        public EnableReportingApiRequest(boolean enable) {
+            set("enable", enable);
+        }
+        public static EnableReportingApiRequest fromMap(Map<String, Object> values) {
+            EnableReportingApiRequest instance_ = new EnableReportingApiRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to enable or disable events for the Reporting API
+         * @return the protocol field value
+         */
+        public boolean enable() {
+            return (Boolean) require("enable");
+        }
+        /**
+         * Whether to enable or disable events for the Reporting API
+         * @param enable field value
+         * @return this model
+         */
+        public EnableReportingApiRequest enable(boolean enable) {
+            set("enable", enable);
+            return this;
+        }
+    }
+    /**
+     * Sets up tracking device bound sessions and fetching of initial set of sessions.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class EnableDeviceBoundSessionsRequest extends CdpObject {
+        public EnableDeviceBoundSessionsRequest() {}
+        /**
+         * Sets up tracking device bound sessions and fetching of initial set of sessions.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enable protocol value
+         */
+        public EnableDeviceBoundSessionsRequest(boolean enable) {
+            set("enable", enable);
+        }
+        public static EnableDeviceBoundSessionsRequest fromMap(Map<String, Object> values) {
+            EnableDeviceBoundSessionsRequest instance_ = new EnableDeviceBoundSessionsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether to enable or disable events.
+         * @return the protocol field value
+         */
+        public boolean enable() {
+            return (Boolean) require("enable");
+        }
+        /**
+         * Whether to enable or disable events.
+         * @param enable field value
+         * @return this model
+         */
+        public EnableDeviceBoundSessionsRequest enable(boolean enable) {
+            set("enable", enable);
+            return this;
+        }
+    }
+    /**
+     * Deletes a device bound session.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class DeleteDeviceBoundSessionRequest extends CdpObject {
+        public DeleteDeviceBoundSessionRequest() {}
+        /**
+         * Deletes a device bound session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param key protocol value
+         */
+        public DeleteDeviceBoundSessionRequest(Network.DeviceBoundSessionKey key) {
+            set("key", key);
+        }
+        public static DeleteDeviceBoundSessionRequest fromMap(Map<String, Object> values) {
+            DeleteDeviceBoundSessionRequest instance_ = new DeleteDeviceBoundSessionRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the key field.
+         * @return the protocol field value
+         */
+        public Network.DeviceBoundSessionKey key() {
+            return java.util.Objects.requireNonNull(Network.DeviceBoundSessionKey.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("key")))));
+        }
+        /**
+         * Sets the key field.
+         * @param key field value
+         * @return this model
+         */
+        public DeleteDeviceBoundSessionRequest key(Network.DeviceBoundSessionKey key) {
+            set("key", key);
+            return this;
+        }
+    }
+    /**
+     * Fetches the schemeful site for a specific origin.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class FetchSchemefulSiteRequest extends CdpObject {
+        public FetchSchemefulSiteRequest() {}
+        /**
+         * Fetches the schemeful site for a specific origin.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param origin protocol value
+         */
+        public FetchSchemefulSiteRequest(String origin) {
+            set("origin", origin);
+        }
+        public static FetchSchemefulSiteRequest fromMap(Map<String, Object> values) {
+            FetchSchemefulSiteRequest instance_ = new FetchSchemefulSiteRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The URL origin.
+         * @return the protocol field value
+         */
+        public String origin() {
+            return (String) require("origin");
+        }
+        /**
+         * The URL origin.
+         * @param origin field value
+         * @return this model
+         */
+        public FetchSchemefulSiteRequest origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+    }
+    /**
+     * Fetches the resource and returns the content.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class LoadNetworkResourceRequest extends CdpObject {
+        public LoadNetworkResourceRequest() {}
+        /**
+         * Fetches the resource and returns the content.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param url protocol value
+         * @param options protocol value
+         */
+        public LoadNetworkResourceRequest(String url, Network.LoadNetworkResourceOptions options) {
+            set("url", url);
+            set("options", options);
+        }
+        public static LoadNetworkResourceRequest fromMap(Map<String, Object> values) {
+            LoadNetworkResourceRequest instance_ = new LoadNetworkResourceRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Frame id to get the resource for. Mandatory for frame targets, and should be omitted for worker targets.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * URL of the resource to get content for.
+         * @return the protocol field value
+         */
+        public String url() {
+            return (String) require("url");
+        }
+        /**
+         * Options for the request.
+         * @return the protocol field value
+         */
+        public Network.LoadNetworkResourceOptions options() {
+            return java.util.Objects.requireNonNull(Network.LoadNetworkResourceOptions.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("options")))));
+        }
+        /**
+         * Frame id to get the resource for. Mandatory for frame targets, and should be omitted for worker targets.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public LoadNetworkResourceRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * Frame id to get the resource for. Mandatory for frame targets, and should be omitted for worker targets.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public LoadNetworkResourceRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * URL of the resource to get content for.
+         * @param url field value
+         * @return this model
+         */
+        public LoadNetworkResourceRequest url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Options for the request.
+         * @param options field value
+         * @return this model
+         */
+        public LoadNetworkResourceRequest options(Network.LoadNetworkResourceOptions options) {
+            set("options", options);
+            return this;
+        }
+    }
+    /**
+     * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetCookieControlsRequest extends CdpObject {
+        public SetCookieControlsRequest() {}
+        /**
+         * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enableThirdPartyCookieRestriction protocol value
+         */
+        public SetCookieControlsRequest(boolean enableThirdPartyCookieRestriction) {
+            set("enableThirdPartyCookieRestriction", enableThirdPartyCookieRestriction);
+        }
+        public static SetCookieControlsRequest fromMap(Map<String, Object> values) {
+            SetCookieControlsRequest instance_ = new SetCookieControlsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether 3pc restriction is enabled.
+         * @return the protocol field value
+         */
+        public boolean enableThirdPartyCookieRestriction() {
+            return (Boolean) require("enableThirdPartyCookieRestriction");
+        }
+        /**
+         * Whether 3pc restriction is enabled.
+         * @param enableThirdPartyCookieRestriction field value
+         * @return this model
+         */
+        public SetCookieControlsRequest enableThirdPartyCookieRestriction(boolean enableThirdPartyCookieRestriction) {
+            set("enableThirdPartyCookieRestriction", enableThirdPartyCookieRestriction);
+            return this;
+        }
+    }
+    /**
      * Returns content served for the given request.
      */
     public static final class GetResponseBodyResult extends CdpObject {
@@ -11343,6 +13772,15 @@ public final class Network {
             return client.call("Network.setAcceptedEncodings", params, result_ -> null);
         }
         /**
+         * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAcceptedEncodings(SetAcceptedEncodingsRequest request) {
+            return client.call("Network.setAcceptedEncodings", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Clears accepted encodings set by setAcceptedEncodings
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing when the command completes
@@ -11430,6 +13868,17 @@ public final class Network {
             return continueInterceptedRequest(interceptionId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> continueInterceptedRequest(ContinueInterceptedRequestRequest request) {
+            return client.call("Network.continueInterceptedRequest", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
          * @param name protocol value
          * @param url protocol value
@@ -11454,6 +13903,14 @@ public final class Network {
          */
         public CompletionStage<Void> deleteCookies(String name) {
             return deleteCookies(name, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deleteCookies(DeleteCookiesRequest request) {
+            return client.call("Network.deleteCookies", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Disables network tracking, prevents network events from being sent to the client.
@@ -11502,6 +13959,16 @@ public final class Network {
             return emulateNetworkConditions(offline, latency, downloadThroughput, uploadThroughput, Optional.empty(), OptionalDouble.empty(), OptionalLong.empty(), Optional.empty());
         }
         /**
+         * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> emulateNetworkConditions(EmulateNetworkConditionsRequest request) {
+            return client.call("Network.emulateNetworkConditions", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param offline protocol value
@@ -11524,6 +13991,15 @@ public final class Network {
          */
         public CompletionStage<java.util.List<String>> emulateNetworkConditionsByRule(java.util.List<Network.NetworkConditions> matchedNetworkConditions) {
             return emulateNetworkConditionsByRule(Optional.empty(), Optional.empty(), matchedNetworkConditions);
+        }
+        /**
+         * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<String>> emulateNetworkConditionsByRule(EmulateNetworkConditionsByRuleRequest request) {
+            return client.call("Network.emulateNetworkConditionsByRule", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleIds")), element0 -> (String) element0));
         }
         /**
          * Override the state of navigator.onLine and navigator.connection.
@@ -11557,6 +14033,15 @@ public final class Network {
             return overrideNetworkState(offline, latency, downloadThroughput, uploadThroughput, Optional.empty());
         }
         /**
+         * Override the state of navigator.onLine and navigator.connection.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> overrideNetworkState(OverrideNetworkStateRequest request) {
+            return client.call("Network.overrideNetworkState", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enables network tracking, network events will now be delivered to the client.
          * @param maxTotalBufferSize protocol value
          * @param maxResourceBufferSize protocol value
@@ -11582,6 +14067,14 @@ public final class Network {
             return enable(OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Enables network tracking, network events will now be delivered to the client.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enable(EnableRequest request) {
+            return client.call("Network.enable", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param maxTotalBufferSize protocol value
@@ -11601,6 +14094,15 @@ public final class Network {
          */
         public CompletionStage<Void> configureDurableMessages() {
             return configureDurableMessages(OptionalLong.empty(), OptionalLong.empty());
+        }
+        /**
+         * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> configureDurableMessages(ConfigureDurableMessagesRequest request) {
+            return client.call("Network.configureDurableMessages", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the {@code cookies} field. Deprecated. Use Storage.getCookies instead.
@@ -11623,6 +14125,15 @@ public final class Network {
             return client.call("Network.getCertificate", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("tableNames")), element0 -> (String) element0));
         }
         /**
+         * Returns the DER-encoded certificate.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<String>> getCertificate(GetCertificateRequest request) {
+            return client.call("Network.getCertificate", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("tableNames")), element0 -> (String) element0));
+        }
+        /**
          * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
          * @param urls protocol value
          * @return a stage completing with the command result
@@ -11640,6 +14151,14 @@ public final class Network {
             return getCookies(Optional.empty());
         }
         /**
+         * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Network.Cookie>> getCookies(GetCookiesRequest request) {
+            return client.call("Network.getCookies", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Returns content served for the given request.
          * @param requestId protocol value
          * @return a stage completing with the command result
@@ -11650,6 +14169,14 @@ public final class Network {
             return client.call("Network.getResponseBody", params, result_ -> new GetResponseBodyResult(result_));
         }
         /**
+         * Returns content served for the given request.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetResponseBodyResult> getResponseBody(GetResponseBodyRequest request) {
+            return client.call("Network.getResponseBody", request == null ? null : request.toMap(), result_ -> new GetResponseBodyResult(result_));
+        }
+        /**
          * Returns post data sent with the request. Returns an error when no data was sent with the request.
          * @param requestId protocol value
          * @return a stage completing with the command result
@@ -11658,6 +14185,14 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("Network.getRequestPostData", params, result_ -> new GetRequestPostDataResult(result_));
+        }
+        /**
+         * Returns post data sent with the request. Returns an error when no data was sent with the request.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetRequestPostDataResult> getRequestPostData(GetRequestPostDataRequest request) {
+            return client.call("Network.getRequestPostData", request == null ? null : request.toMap(), result_ -> new GetRequestPostDataResult(result_));
         }
         /**
          * Returns content served for the given currently intercepted request.
@@ -11671,6 +14206,15 @@ public final class Network {
             return client.call("Network.getResponseBodyForInterception", params, result_ -> new GetResponseBodyForInterceptionResult(result_));
         }
         /**
+         * Returns content served for the given currently intercepted request.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetResponseBodyForInterceptionResult> getResponseBodyForInterception(GetResponseBodyForInterceptionRequest request) {
+            return client.call("Network.getResponseBodyForInterception", request == null ? null : request.toMap(), result_ -> new GetResponseBodyForInterceptionResult(result_));
+        }
+        /**
          * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param interceptionId protocol value
@@ -11682,6 +14226,15 @@ public final class Network {
             return client.call("Network.takeResponseBodyForInterceptionAsStream", params, result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
         }
         /**
+         * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<IO.StreamHandle> takeResponseBodyForInterceptionAsStream(TakeResponseBodyForInterceptionAsStreamRequest request) {
+            return client.call("Network.takeResponseBodyForInterceptionAsStream", request == null ? null : request.toMap(), result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
+        }
+        /**
          * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param requestId protocol value
@@ -11691,6 +14244,15 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("Network.replayXHR", params, result_ -> null);
+        }
+        /**
+         * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> replayXHR(ReplayXHRRequest request) {
+            return client.call("Network.replayXHR", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Searches for given string in response content.
@@ -11720,6 +14282,15 @@ public final class Network {
             return searchInResponseBody(requestId, query, Optional.empty(), Optional.empty());
         }
         /**
+         * Searches for given string in response content.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResponseBody(SearchInResponseBodyRequest request) {
+            return client.call("Network.searchInResponseBody", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Blocks URLs from loading.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param urlPatterns protocol value
@@ -11741,6 +14312,15 @@ public final class Network {
             return setBlockedURLs(Optional.empty(), Optional.empty());
         }
         /**
+         * Blocks URLs from loading.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setBlockedURLs(SetBlockedURLsRequest request) {
+            return client.call("Network.setBlockedURLs", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Toggles ignoring of service worker for each request.
          * @param bypass protocol value
          * @return a stage completing when the command completes
@@ -11751,6 +14331,14 @@ public final class Network {
             return client.call("Network.setBypassServiceWorker", params, result_ -> null);
         }
         /**
+         * Toggles ignoring of service worker for each request.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setBypassServiceWorker(SetBypassServiceWorkerRequest request) {
+            return client.call("Network.setBypassServiceWorker", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
          * @param cacheDisabled protocol value
          * @return a stage completing when the command completes
@@ -11759,6 +14347,14 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheDisabled", CdpObject.json(cacheDisabled));
             return client.call("Network.setCacheDisabled", params, result_ -> null);
+        }
+        /**
+         * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setCacheDisabled(SetCacheDisabledRequest request) {
+            return client.call("Network.setCacheDisabled", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
@@ -11804,6 +14400,14 @@ public final class Network {
             return setCookie(name, value, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), OptionalLong.empty(), Optional.empty());
         }
         /**
+         * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Boolean> setCookie(SetCookieRequest request) {
+            return client.call("Network.setCookie", request == null ? null : request.toMap(), result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("success")));
+        }
+        /**
          * Sets given cookies.
          * @param cookies protocol value
          * @return a stage completing when the command completes
@@ -11814,6 +14418,14 @@ public final class Network {
             return client.call("Network.setCookies", params, result_ -> null);
         }
         /**
+         * Sets given cookies.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setCookies(SetCookiesRequest request) {
+            return client.call("Network.setCookies", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Specifies whether to always send extra HTTP headers with the requests from this page.
          * @param headers protocol value
          * @return a stage completing when the command completes
@@ -11822,6 +14434,14 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("headers", CdpObject.json(headers));
             return client.call("Network.setExtraHTTPHeaders", params, result_ -> null);
+        }
+        /**
+         * Specifies whether to always send extra HTTP headers with the requests from this page.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setExtraHTTPHeaders(SetExtraHTTPHeadersRequest request) {
+            return client.call("Network.setExtraHTTPHeaders", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Specifies whether to attach a page script stack id in requests
@@ -11835,6 +14455,15 @@ public final class Network {
             return client.call("Network.setAttachDebugStack", params, result_ -> null);
         }
         /**
+         * Specifies whether to attach a page script stack id in requests
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAttachDebugStack(SetAttachDebugStackRequest request) {
+            return client.call("Network.setAttachDebugStack", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param patterns protocol value
@@ -11846,6 +14475,17 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("patterns", CdpObject.json(patterns));
             return client.call("Network.setRequestInterception", params, result_ -> null);
+        }
+        /**
+         * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> setRequestInterception(SetRequestInterceptionRequest request) {
+            return client.call("Network.setRequestInterception", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Allows overriding user agent with the given string.
@@ -11872,6 +14512,14 @@ public final class Network {
             return setUserAgentOverride(userAgent, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Allows overriding user agent with the given string.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setUserAgentOverride(SetUserAgentOverrideRequest request) {
+            return client.call("Network.setUserAgentOverride", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param requestId protocol value
@@ -11881,6 +14529,15 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("Network.streamResourceContent", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("bufferedData")));
+        }
+        /**
+         * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> streamResourceContent(StreamResourceContentRequest request) {
+            return client.call("Network.streamResourceContent", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("bufferedData")));
         }
         /**
          * Returns information about the COEP/COOP isolation status.
@@ -11902,6 +14559,15 @@ public final class Network {
             return getSecurityIsolationStatus(Optional.empty());
         }
         /**
+         * Returns information about the COEP/COOP isolation status.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Network.SecurityIsolationStatus> getSecurityIsolationStatus(GetSecurityIsolationStatusRequest request) {
+            return client.call("Network.getSecurityIsolationStatus", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Network.SecurityIsolationStatus.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("status")))))));
+        }
+        /**
          * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param enable protocol value
@@ -11911,6 +14577,15 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
             return client.call("Network.enableReportingApi", params, result_ -> null);
+        }
+        /**
+         * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enableReportingApi(EnableReportingApiRequest request) {
+            return client.call("Network.enableReportingApi", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Sets up tracking device bound sessions and fetching of initial set of sessions.
@@ -11924,6 +14599,15 @@ public final class Network {
             return client.call("Network.enableDeviceBoundSessions", params, result_ -> null);
         }
         /**
+         * Sets up tracking device bound sessions and fetching of initial set of sessions.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> enableDeviceBoundSessions(EnableDeviceBoundSessionsRequest request) {
+            return client.call("Network.enableDeviceBoundSessions", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Deletes a device bound session.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param key protocol value
@@ -11935,6 +14619,15 @@ public final class Network {
             return client.call("Network.deleteDeviceBoundSession", params, result_ -> null);
         }
         /**
+         * Deletes a device bound session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deleteDeviceBoundSession(DeleteDeviceBoundSessionRequest request) {
+            return client.call("Network.deleteDeviceBoundSession", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Fetches the schemeful site for a specific origin.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param origin protocol value
@@ -11944,6 +14637,15 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             return client.call("Network.fetchSchemefulSite", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("schemefulSite")));
+        }
+        /**
+         * Fetches the schemeful site for a specific origin.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> fetchSchemefulSite(FetchSchemefulSiteRequest request) {
+            return client.call("Network.fetchSchemefulSite", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("schemefulSite")));
         }
         /**
          * Fetches the resource and returns the content.
@@ -11971,6 +14673,15 @@ public final class Network {
             return loadNetworkResource(Optional.empty(), url, options);
         }
         /**
+         * Fetches the resource and returns the content.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Network.LoadNetworkResourcePageResult> loadNetworkResource(LoadNetworkResourceRequest request) {
+            return client.call("Network.loadNetworkResource", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Network.LoadNetworkResourcePageResult.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("resource")))))));
+        }
+        /**
          * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param enableThirdPartyCookieRestriction protocol value
@@ -11980,6 +14691,15 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enableThirdPartyCookieRestriction", CdpObject.json(enableThirdPartyCookieRestriction));
             return client.call("Network.setCookieControls", params, result_ -> null);
+        }
+        /**
+         * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setCookieControls(SetCookieControlsRequest request) {
+            return client.call("Network.setCookieControls", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Fired when data chunk was received over the network.

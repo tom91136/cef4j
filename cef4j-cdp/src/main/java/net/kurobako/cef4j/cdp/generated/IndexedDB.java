@@ -620,6 +620,922 @@ public final class IndexedDB {
         }
     }
     /**
+     * Clears all entries from an object store.
+     */
+    public static final class ClearObjectStoreRequest extends CdpObject {
+        public ClearObjectStoreRequest() {}
+        /**
+         * Clears all entries from an object store.
+         * @param databaseName protocol value
+         * @param objectStoreName protocol value
+         */
+        public ClearObjectStoreRequest(String databaseName, String objectStoreName) {
+            set("databaseName", databaseName);
+            set("objectStoreName", objectStoreName);
+        }
+        public static ClearObjectStoreRequest fromMap(Map<String, Object> values) {
+            ClearObjectStoreRequest instance_ = new ClearObjectStoreRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * Database name.
+         * @return the protocol field value
+         */
+        public String databaseName() {
+            return (String) require("databaseName");
+        }
+        /**
+         * Object store name.
+         * @return the protocol field value
+         */
+        public String objectStoreName() {
+            return (String) require("objectStoreName");
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public ClearObjectStoreRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public ClearObjectStoreRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public ClearObjectStoreRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public ClearObjectStoreRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public ClearObjectStoreRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public ClearObjectStoreRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * Database name.
+         * @param databaseName field value
+         * @return this model
+         */
+        public ClearObjectStoreRequest databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+        /**
+         * Object store name.
+         * @param objectStoreName field value
+         * @return this model
+         */
+        public ClearObjectStoreRequest objectStoreName(String objectStoreName) {
+            set("objectStoreName", objectStoreName);
+            return this;
+        }
+    }
+    /**
+     * Deletes a database.
+     */
+    public static final class DeleteDatabaseRequest extends CdpObject {
+        public DeleteDatabaseRequest() {}
+        /**
+         * Deletes a database.
+         * @param databaseName protocol value
+         */
+        public DeleteDatabaseRequest(String databaseName) {
+            set("databaseName", databaseName);
+        }
+        public static DeleteDatabaseRequest fromMap(Map<String, Object> values) {
+            DeleteDatabaseRequest instance_ = new DeleteDatabaseRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * Database name.
+         * @return the protocol field value
+         */
+        public String databaseName() {
+            return (String) require("databaseName");
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public DeleteDatabaseRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public DeleteDatabaseRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public DeleteDatabaseRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public DeleteDatabaseRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public DeleteDatabaseRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public DeleteDatabaseRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * Database name.
+         * @param databaseName field value
+         * @return this model
+         */
+        public DeleteDatabaseRequest databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+    }
+    /**
+     * Delete a range of entries from an object store
+     */
+    public static final class DeleteObjectStoreEntriesRequest extends CdpObject {
+        public DeleteObjectStoreEntriesRequest() {}
+        /**
+         * Delete a range of entries from an object store
+         * @param databaseName protocol value
+         * @param objectStoreName protocol value
+         * @param keyRange protocol value
+         */
+        public DeleteObjectStoreEntriesRequest(String databaseName, String objectStoreName, IndexedDB.KeyRange keyRange) {
+            set("databaseName", databaseName);
+            set("objectStoreName", objectStoreName);
+            set("keyRange", keyRange);
+        }
+        public static DeleteObjectStoreEntriesRequest fromMap(Map<String, Object> values) {
+            DeleteObjectStoreEntriesRequest instance_ = new DeleteObjectStoreEntriesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * Returns the databaseName field.
+         * @return the protocol field value
+         */
+        public String databaseName() {
+            return (String) require("databaseName");
+        }
+        /**
+         * Returns the objectStoreName field.
+         * @return the protocol field value
+         */
+        public String objectStoreName() {
+            return (String) require("objectStoreName");
+        }
+        /**
+         * Range of entry keys to delete
+         * @return the protocol field value
+         */
+        public IndexedDB.KeyRange keyRange() {
+            return java.util.Objects.requireNonNull(IndexedDB.KeyRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("keyRange")))));
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * Sets the databaseName field.
+         * @param databaseName field value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+        /**
+         * Sets the objectStoreName field.
+         * @param objectStoreName field value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest objectStoreName(String objectStoreName) {
+            set("objectStoreName", objectStoreName);
+            return this;
+        }
+        /**
+         * Range of entry keys to delete
+         * @param keyRange field value
+         * @return this model
+         */
+        public DeleteObjectStoreEntriesRequest keyRange(IndexedDB.KeyRange keyRange) {
+            set("keyRange", keyRange);
+            return this;
+        }
+    }
+    /**
+     * Requests data from object store or index.
+     */
+    public static final class RequestDataRequest extends CdpObject {
+        public RequestDataRequest() {}
+        /**
+         * Requests data from object store or index.
+         * @param databaseName protocol value
+         * @param objectStoreName protocol value
+         * @param skipCount protocol value
+         * @param pageSize protocol value
+         */
+        public RequestDataRequest(String databaseName, String objectStoreName, long skipCount, long pageSize) {
+            set("databaseName", databaseName);
+            set("objectStoreName", objectStoreName);
+            set("skipCount", skipCount);
+            set("pageSize", pageSize);
+        }
+        public static RequestDataRequest fromMap(Map<String, Object> values) {
+            RequestDataRequest instance_ = new RequestDataRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * Database name.
+         * @return the protocol field value
+         */
+        public String databaseName() {
+            return (String) require("databaseName");
+        }
+        /**
+         * Object store name.
+         * @return the protocol field value
+         */
+        public String objectStoreName() {
+            return (String) require("objectStoreName");
+        }
+        /**
+         * Index name. If not specified, it performs an object store data request.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> indexName() {
+            return Optional.ofNullable((String) raw("indexName"));
+        }
+        /**
+         * Number of records to skip.
+         * @return the protocol field value
+         */
+        public long skipCount() {
+            return ((Number) require("skipCount")).longValue();
+        }
+        /**
+         * Number of records to fetch.
+         * @return the protocol field value
+         */
+        public long pageSize() {
+            return ((Number) require("pageSize")).longValue();
+        }
+        /**
+         * Key range.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<IndexedDB.KeyRange> keyRange() {
+            return Optional.ofNullable(raw("keyRange") == null ? null : IndexedDB.KeyRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("keyRange")))));
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public RequestDataRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public RequestDataRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public RequestDataRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public RequestDataRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public RequestDataRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public RequestDataRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * Database name.
+         * @param databaseName field value
+         * @return this model
+         */
+        public RequestDataRequest databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+        /**
+         * Object store name.
+         * @param objectStoreName field value
+         * @return this model
+         */
+        public RequestDataRequest objectStoreName(String objectStoreName) {
+            set("objectStoreName", objectStoreName);
+            return this;
+        }
+        /**
+         * Index name. If not specified, it performs an object store data request.
+         * @param indexName field value; empty omits the value
+         * @return this model
+         */
+        public RequestDataRequest indexName(Optional<String> indexName) {
+            set("indexName", indexName.orElse(null));
+            return this;
+        }
+        /**
+         * Index name. If not specified, it performs an object store data request.
+         * @param indexName field value; null removes the value
+         * @return this model
+         */
+        public RequestDataRequest indexName(String indexName) {
+            set("indexName", indexName);
+            return this;
+        }
+        /**
+         * Number of records to skip.
+         * @param skipCount field value
+         * @return this model
+         */
+        public RequestDataRequest skipCount(long skipCount) {
+            set("skipCount", skipCount);
+            return this;
+        }
+        /**
+         * Number of records to fetch.
+         * @param pageSize field value
+         * @return this model
+         */
+        public RequestDataRequest pageSize(long pageSize) {
+            set("pageSize", pageSize);
+            return this;
+        }
+        /**
+         * Key range.
+         * @param keyRange field value; empty omits the value
+         * @return this model
+         */
+        public RequestDataRequest keyRange(Optional<IndexedDB.KeyRange> keyRange) {
+            set("keyRange", keyRange.orElse(null));
+            return this;
+        }
+        /**
+         * Key range.
+         * @param keyRange field value; null removes the value
+         * @return this model
+         */
+        public RequestDataRequest keyRange(IndexedDB.KeyRange keyRange) {
+            set("keyRange", keyRange);
+            return this;
+        }
+    }
+    /**
+     * Gets metadata of an object store.
+     */
+    public static final class GetMetadataRequest extends CdpObject {
+        public GetMetadataRequest() {}
+        /**
+         * Gets metadata of an object store.
+         * @param databaseName protocol value
+         * @param objectStoreName protocol value
+         */
+        public GetMetadataRequest(String databaseName, String objectStoreName) {
+            set("databaseName", databaseName);
+            set("objectStoreName", objectStoreName);
+        }
+        public static GetMetadataRequest fromMap(Map<String, Object> values) {
+            GetMetadataRequest instance_ = new GetMetadataRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * Database name.
+         * @return the protocol field value
+         */
+        public String databaseName() {
+            return (String) require("databaseName");
+        }
+        /**
+         * Object store name.
+         * @return the protocol field value
+         */
+        public String objectStoreName() {
+            return (String) require("objectStoreName");
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public GetMetadataRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public GetMetadataRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public GetMetadataRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public GetMetadataRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public GetMetadataRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public GetMetadataRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * Database name.
+         * @param databaseName field value
+         * @return this model
+         */
+        public GetMetadataRequest databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+        /**
+         * Object store name.
+         * @param objectStoreName field value
+         * @return this model
+         */
+        public GetMetadataRequest objectStoreName(String objectStoreName) {
+            set("objectStoreName", objectStoreName);
+            return this;
+        }
+    }
+    /**
+     * Requests database with given name in given frame.
+     */
+    public static final class RequestDatabaseRequest extends CdpObject {
+        public RequestDatabaseRequest() {}
+        /**
+         * Requests database with given name in given frame.
+         * @param databaseName protocol value
+         */
+        public RequestDatabaseRequest(String databaseName) {
+            set("databaseName", databaseName);
+        }
+        public static RequestDatabaseRequest fromMap(Map<String, Object> values) {
+            RequestDatabaseRequest instance_ = new RequestDatabaseRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * Database name.
+         * @return the protocol field value
+         */
+        public String databaseName() {
+            return (String) require("databaseName");
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public RequestDatabaseRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public RequestDatabaseRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public RequestDatabaseRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public RequestDatabaseRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public RequestDatabaseRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public RequestDatabaseRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * Database name.
+         * @param databaseName field value
+         * @return this model
+         */
+        public RequestDatabaseRequest databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+    }
+    /**
+     * Requests database names for given security origin.
+     */
+    public static final class RequestDatabaseNamesRequest extends CdpObject {
+        public RequestDatabaseNamesRequest() {}
+        public static RequestDatabaseNamesRequest fromMap(Map<String, Object> values) {
+            RequestDatabaseNamesRequest instance_ = new RequestDatabaseNamesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> securityOrigin() {
+            return Optional.ofNullable((String) raw("securityOrigin"));
+        }
+        /**
+         * Storage key.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> storageKey() {
+            return Optional.ofNullable((String) raw("storageKey"));
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; empty omits the value
+         * @return this model
+         */
+        public RequestDatabaseNamesRequest securityOrigin(Optional<String> securityOrigin) {
+            set("securityOrigin", securityOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
+         * @param securityOrigin field value; null removes the value
+         * @return this model
+         */
+        public RequestDatabaseNamesRequest securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; empty omits the value
+         * @return this model
+         */
+        public RequestDatabaseNamesRequest storageKey(Optional<String> storageKey) {
+            set("storageKey", storageKey.orElse(null));
+            return this;
+        }
+        /**
+         * Storage key.
+         * @param storageKey field value; null removes the value
+         * @return this model
+         */
+        public RequestDatabaseNamesRequest storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public RequestDatabaseNamesRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket. If not specified, it uses the default bucket.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public RequestDatabaseNamesRequest storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+    }
+    /**
      * Requests data from object store or index.
      */
     public static final class RequestDataResult extends CdpObject {
@@ -734,6 +1650,14 @@ public final class IndexedDB {
             return clearObjectStore(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName);
         }
         /**
+         * Clears all entries from an object store.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> clearObjectStore(ClearObjectStoreRequest request) {
+            return client.call("IndexedDB.clearObjectStore", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Deletes a database.
          * @param securityOrigin protocol value
          * @param storageKey protocol value
@@ -756,6 +1680,14 @@ public final class IndexedDB {
          */
         public CompletionStage<Void> deleteDatabase(String databaseName) {
             return deleteDatabase(Optional.empty(), Optional.empty(), Optional.empty(), databaseName);
+        }
+        /**
+         * Deletes a database.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deleteDatabase(DeleteDatabaseRequest request) {
+            return client.call("IndexedDB.deleteDatabase", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Delete a range of entries from an object store
@@ -786,6 +1718,14 @@ public final class IndexedDB {
          */
         public CompletionStage<Void> deleteObjectStoreEntries(String databaseName, String objectStoreName, IndexedDB.KeyRange keyRange) {
             return deleteObjectStoreEntries(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName, keyRange);
+        }
+        /**
+         * Delete a range of entries from an object store
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> deleteObjectStoreEntries(DeleteObjectStoreEntriesRequest request) {
+            return client.call("IndexedDB.deleteObjectStoreEntries", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Disables events from backend.
@@ -839,6 +1779,14 @@ public final class IndexedDB {
             return requestData(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName, Optional.empty(), skipCount, pageSize, Optional.empty());
         }
         /**
+         * Requests data from object store or index.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<RequestDataResult> requestData(RequestDataRequest request) {
+            return client.call("IndexedDB.requestData", request == null ? null : request.toMap(), result_ -> new RequestDataResult(result_));
+        }
+        /**
          * Gets metadata of an object store.
          * @param securityOrigin protocol value
          * @param storageKey protocol value
@@ -866,6 +1814,14 @@ public final class IndexedDB {
             return getMetadata(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName);
         }
         /**
+         * Gets metadata of an object store.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetMetadataResult> getMetadata(GetMetadataRequest request) {
+            return client.call("IndexedDB.getMetadata", request == null ? null : request.toMap(), result_ -> new GetMetadataResult(result_));
+        }
+        /**
          * Requests database with given name in given frame.
          * @param securityOrigin protocol value
          * @param storageKey protocol value
@@ -890,6 +1846,14 @@ public final class IndexedDB {
             return requestDatabase(Optional.empty(), Optional.empty(), Optional.empty(), databaseName);
         }
         /**
+         * Requests database with given name in given frame.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<IndexedDB.DatabaseWithObjectStores> requestDatabase(RequestDatabaseRequest request) {
+            return client.call("IndexedDB.requestDatabase", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(IndexedDB.DatabaseWithObjectStores.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("databaseWithObjectStores")))))));
+        }
+        /**
          * Requests database names for given security origin.
          * @param securityOrigin protocol value
          * @param storageKey protocol value
@@ -909,6 +1873,14 @@ public final class IndexedDB {
          */
         public CompletionStage<java.util.List<String>> requestDatabaseNames() {
             return requestDatabaseNames(Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Requests database names for given security origin.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<String>> requestDatabaseNames(RequestDatabaseNamesRequest request) {
+            return client.call("IndexedDB.requestDatabaseNames", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("databaseNames")), element0 -> (String) element0));
         }
     }
 }

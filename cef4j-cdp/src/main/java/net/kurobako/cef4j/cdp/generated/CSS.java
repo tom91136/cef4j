@@ -4269,6 +4269,1751 @@ public final class CSS {
         }
     }
     /**
+     * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
+     */
+    public static final class AddRuleRequest extends CdpObject {
+        public AddRuleRequest() {}
+        /**
+         * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
+         * @param styleSheetId protocol value
+         * @param ruleText protocol value
+         * @param location protocol value
+         */
+        public AddRuleRequest(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location) {
+            set("styleSheetId", styleSheetId);
+            set("ruleText", ruleText);
+            set("location", location);
+        }
+        public static AddRuleRequest fromMap(Map<String, Object> values) {
+            AddRuleRequest instance_ = new AddRuleRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The css style sheet identifier where a new rule should be inserted.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * The text of a new rule.
+         * @return the protocol field value
+         */
+        public String ruleText() {
+            return (String) require("ruleText");
+        }
+        /**
+         * Text position of a new rule in the target style sheet.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange location() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("location")))));
+        }
+        /**
+         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
+            return Optional.ofNullable(raw("nodeForPropertySyntaxValidation") == null ? null : new DOM.NodeId(((Number) raw("nodeForPropertySyntaxValidation")).longValue()));
+        }
+        /**
+         * The css style sheet identifier where a new rule should be inserted.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public AddRuleRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * The text of a new rule.
+         * @param ruleText field value
+         * @return this model
+         */
+        public AddRuleRequest ruleText(String ruleText) {
+            set("ruleText", ruleText);
+            return this;
+        }
+        /**
+         * Text position of a new rule in the target style sheet.
+         * @param location field value
+         * @return this model
+         */
+        public AddRuleRequest location(CSS.SourceRange location) {
+            set("location", location);
+            return this;
+        }
+        /**
+         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeForPropertySyntaxValidation field value; empty omits the value
+         * @return this model
+         */
+        public AddRuleRequest nodeForPropertySyntaxValidation(Optional<DOM.NodeId> nodeForPropertySyntaxValidation) {
+            set("nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation.orElse(null));
+            return this;
+        }
+        /**
+         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeForPropertySyntaxValidation field value; null removes the value
+         * @return this model
+         */
+        public AddRuleRequest nodeForPropertySyntaxValidation(DOM.NodeId nodeForPropertySyntaxValidation) {
+            set("nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation);
+            return this;
+        }
+    }
+    /**
+     * Returns all class names from specified stylesheet.
+     */
+    public static final class CollectClassNamesRequest extends CdpObject {
+        public CollectClassNamesRequest() {}
+        /**
+         * Returns all class names from specified stylesheet.
+         * @param styleSheetId protocol value
+         */
+        public CollectClassNamesRequest(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+        }
+        public static CollectClassNamesRequest fromMap(Map<String, Object> values) {
+            CollectClassNamesRequest instance_ = new CollectClassNamesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public CollectClassNamesRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+    }
+    /**
+     * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
+     */
+    public static final class CreateStyleSheetRequest extends CdpObject {
+        public CreateStyleSheetRequest() {}
+        /**
+         * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
+         * @param frameId protocol value
+         */
+        public CreateStyleSheetRequest(Page.FrameId frameId) {
+            set("frameId", frameId);
+        }
+        public static CreateStyleSheetRequest fromMap(Map<String, Object> values) {
+            CreateStyleSheetRequest instance_ = new CreateStyleSheetRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the frame where &quot;via-inspector&quot; stylesheet should be created.
+         * @return the protocol field value
+         */
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
+        }
+        /**
+         * If true, creates a new stylesheet for every call. If false, returns a stylesheet previously created by a call with force=false for the frame&#x27;s document if it exists or creates a new stylesheet (default: false).
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> force() {
+            return Optional.ofNullable((Boolean) raw("force"));
+        }
+        /**
+         * Identifier of the frame where &quot;via-inspector&quot; stylesheet should be created.
+         * @param frameId field value
+         * @return this model
+         */
+        public CreateStyleSheetRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * If true, creates a new stylesheet for every call. If false, returns a stylesheet previously created by a call with force=false for the frame&#x27;s document if it exists or creates a new stylesheet (default: false).
+         * @param force field value; empty omits the value
+         * @return this model
+         */
+        public CreateStyleSheetRequest force(Optional<Boolean> force) {
+            set("force", force.orElse(null));
+            return this;
+        }
+        /**
+         * If true, creates a new stylesheet for every call. If false, returns a stylesheet previously created by a call with force=false for the frame&#x27;s document if it exists or creates a new stylesheet (default: false).
+         * @param force field value; null removes the value
+         * @return this model
+         */
+        public CreateStyleSheetRequest force(Boolean force) {
+            set("force", force);
+            return this;
+        }
+    }
+    /**
+     * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
+     */
+    public static final class ForcePseudoStateRequest extends CdpObject {
+        public ForcePseudoStateRequest() {}
+        /**
+         * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
+         * @param nodeId protocol value
+         * @param forcedPseudoClasses protocol value
+         */
+        public ForcePseudoStateRequest(DOM.NodeId nodeId, java.util.List<String> forcedPseudoClasses) {
+            set("nodeId", nodeId);
+            set("forcedPseudoClasses", forcedPseudoClasses);
+        }
+        public static ForcePseudoStateRequest fromMap(Map<String, Object> values) {
+            ForcePseudoStateRequest instance_ = new ForcePseudoStateRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The element id for which to force the pseudo state.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Element pseudo classes to force when computing the element&#x27;s style.
+         * @return the protocol field value
+         */
+        public java.util.List<String> forcedPseudoClasses() {
+            return CdpObject.requireList(require("forcedPseudoClasses"), element0 -> (String) element0);
+        }
+        /**
+         * The element id for which to force the pseudo state.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ForcePseudoStateRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Element pseudo classes to force when computing the element&#x27;s style.
+         * @param forcedPseudoClasses field value
+         * @return this model
+         */
+        public ForcePseudoStateRequest forcedPseudoClasses(java.util.List<String> forcedPseudoClasses) {
+            set("forcedPseudoClasses", forcedPseudoClasses);
+            return this;
+        }
+    }
+    /**
+     * Ensures that the given node is in its starting-style state.
+     */
+    public static final class ForceStartingStyleRequest extends CdpObject {
+        public ForceStartingStyleRequest() {}
+        /**
+         * Ensures that the given node is in its starting-style state.
+         * @param nodeId protocol value
+         * @param forced protocol value
+         */
+        public ForceStartingStyleRequest(DOM.NodeId nodeId, boolean forced) {
+            set("nodeId", nodeId);
+            set("forced", forced);
+        }
+        public static ForceStartingStyleRequest fromMap(Map<String, Object> values) {
+            ForceStartingStyleRequest instance_ = new ForceStartingStyleRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The element id for which to force the starting-style state.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Boolean indicating if this is on or off.
+         * @return the protocol field value
+         */
+        public boolean forced() {
+            return (Boolean) require("forced");
+        }
+        /**
+         * The element id for which to force the starting-style state.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ForceStartingStyleRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Boolean indicating if this is on or off.
+         * @param forced field value
+         * @return this model
+         */
+        public ForceStartingStyleRequest forced(boolean forced) {
+            set("forced", forced);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for CSS.getBackgroundColors.
+     */
+    public static final class GetBackgroundColorsRequest extends CdpObject {
+        public GetBackgroundColorsRequest() {}
+        /**
+         * Creates a new GetBackgroundColorsRequest with all required parameters.
+         * @param nodeId protocol value
+         */
+        public GetBackgroundColorsRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetBackgroundColorsRequest fromMap(Map<String, Object> values) {
+            GetBackgroundColorsRequest instance_ = new GetBackgroundColorsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Id of the node to get background colors for.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Id of the node to get background colors for.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetBackgroundColorsRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Returns the computed style for a DOM node identified by {@code nodeId}.
+     */
+    public static final class GetComputedStyleForNodeRequest extends CdpObject {
+        public GetComputedStyleForNodeRequest() {}
+        /**
+         * Returns the computed style for a DOM node identified by {@code nodeId}.
+         * @param nodeId protocol value
+         */
+        public GetComputedStyleForNodeRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetComputedStyleForNodeRequest fromMap(Map<String, Object> values) {
+            GetComputedStyleForNodeRequest instance_ = new GetComputedStyleForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetComputedStyleForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ResolveValuesRequest extends CdpObject {
+        public ResolveValuesRequest() {}
+        /**
+         * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param values protocol value
+         * @param nodeId protocol value
+         */
+        public ResolveValuesRequest(java.util.List<String> values, DOM.NodeId nodeId) {
+            set("values", values);
+            set("nodeId", nodeId);
+        }
+        public static ResolveValuesRequest fromMap(Map<String, Object> values) {
+            ResolveValuesRequest instance_ = new ResolveValuesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Cascade-dependent keywords (revert/revert-layer) do not work.
+         * @return the protocol field value
+         */
+        public java.util.List<String> values() {
+            return CdpObject.requireList(require("values"), element0 -> (String) element0);
+        }
+        /**
+         * Id of the node in whose context the expression is evaluated
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Only longhands and custom property names are accepted.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> propertyName() {
+            return Optional.ofNullable((String) raw("propertyName"));
+        }
+        /**
+         * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.PseudoType> pseudoType() {
+            return Optional.ofNullable(raw("pseudoType") == null ? null : DOM.PseudoType.of((String) raw("pseudoType")));
+        }
+        /**
+         * Pseudo element custom ident.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> pseudoIdentifier() {
+            return Optional.ofNullable((String) raw("pseudoIdentifier"));
+        }
+        /**
+         * Cascade-dependent keywords (revert/revert-layer) do not work.
+         * @param values field value
+         * @return this model
+         */
+        public ResolveValuesRequest values(java.util.List<String> values) {
+            set("values", values);
+            return this;
+        }
+        /**
+         * Id of the node in whose context the expression is evaluated
+         * @param nodeId field value
+         * @return this model
+         */
+        public ResolveValuesRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Only longhands and custom property names are accepted.
+         * @param propertyName field value; empty omits the value
+         * @return this model
+         */
+        public ResolveValuesRequest propertyName(Optional<String> propertyName) {
+            set("propertyName", propertyName.orElse(null));
+            return this;
+        }
+        /**
+         * Only longhands and custom property names are accepted.
+         * @param propertyName field value; null removes the value
+         * @return this model
+         */
+        public ResolveValuesRequest propertyName(String propertyName) {
+            set("propertyName", propertyName);
+            return this;
+        }
+        /**
+         * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
+         * @param pseudoType field value; empty omits the value
+         * @return this model
+         */
+        public ResolveValuesRequest pseudoType(Optional<DOM.PseudoType> pseudoType) {
+            set("pseudoType", pseudoType.orElse(null));
+            return this;
+        }
+        /**
+         * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
+         * @param pseudoType field value; null removes the value
+         * @return this model
+         */
+        public ResolveValuesRequest pseudoType(DOM.PseudoType pseudoType) {
+            set("pseudoType", pseudoType);
+            return this;
+        }
+        /**
+         * Pseudo element custom ident.
+         * @param pseudoIdentifier field value; empty omits the value
+         * @return this model
+         */
+        public ResolveValuesRequest pseudoIdentifier(Optional<String> pseudoIdentifier) {
+            set("pseudoIdentifier", pseudoIdentifier.orElse(null));
+            return this;
+        }
+        /**
+         * Pseudo element custom ident.
+         * @param pseudoIdentifier field value; null removes the value
+         * @return this model
+         */
+        public ResolveValuesRequest pseudoIdentifier(String pseudoIdentifier) {
+            set("pseudoIdentifier", pseudoIdentifier);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for CSS.getLonghandProperties.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetLonghandPropertiesRequest extends CdpObject {
+        public GetLonghandPropertiesRequest() {}
+        /**
+         * Creates a new GetLonghandPropertiesRequest with all required parameters.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param shorthandName protocol value
+         * @param value protocol value
+         */
+        public GetLonghandPropertiesRequest(String shorthandName, String value) {
+            set("shorthandName", shorthandName);
+            set("value", value);
+        }
+        public static GetLonghandPropertiesRequest fromMap(Map<String, Object> values) {
+            GetLonghandPropertiesRequest instance_ = new GetLonghandPropertiesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the shorthandName field.
+         * @return the protocol field value
+         */
+        public String shorthandName() {
+            return (String) require("shorthandName");
+        }
+        /**
+         * Returns the value field.
+         * @return the protocol field value
+         */
+        public String value() {
+            return (String) require("value");
+        }
+        /**
+         * Sets the shorthandName field.
+         * @param shorthandName field value
+         * @return this model
+         */
+        public GetLonghandPropertiesRequest shorthandName(String shorthandName) {
+            set("shorthandName", shorthandName);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public GetLonghandPropertiesRequest value(String value) {
+            set("value", value);
+            return this;
+        }
+    }
+    /**
+     * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
+     */
+    public static final class GetInlineStylesForNodeRequest extends CdpObject {
+        public GetInlineStylesForNodeRequest() {}
+        /**
+         * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
+         * @param nodeId protocol value
+         */
+        public GetInlineStylesForNodeRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetInlineStylesForNodeRequest fromMap(Map<String, Object> values) {
+            GetInlineStylesForNodeRequest instance_ = new GetInlineStylesForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetInlineStylesForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetAnimatedStylesForNodeRequest extends CdpObject {
+        public GetAnimatedStylesForNodeRequest() {}
+        /**
+         * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeId protocol value
+         */
+        public GetAnimatedStylesForNodeRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetAnimatedStylesForNodeRequest fromMap(Map<String, Object> values) {
+            GetAnimatedStylesForNodeRequest instance_ = new GetAnimatedStylesForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetAnimatedStylesForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Returns requested styles for a DOM node identified by {@code nodeId}.
+     */
+    public static final class GetMatchedStylesForNodeRequest extends CdpObject {
+        public GetMatchedStylesForNodeRequest() {}
+        /**
+         * Returns requested styles for a DOM node identified by {@code nodeId}.
+         * @param nodeId protocol value
+         */
+        public GetMatchedStylesForNodeRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetMatchedStylesForNodeRequest fromMap(Map<String, Object> values) {
+            GetMatchedStylesForNodeRequest instance_ = new GetMatchedStylesForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetMatchedStylesForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Requests information about platform fonts which we used to render child TextNodes in the given node.
+     */
+    public static final class GetPlatformFontsForNodeRequest extends CdpObject {
+        public GetPlatformFontsForNodeRequest() {}
+        /**
+         * Requests information about platform fonts which we used to render child TextNodes in the given node.
+         * @param nodeId protocol value
+         */
+        public GetPlatformFontsForNodeRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetPlatformFontsForNodeRequest fromMap(Map<String, Object> values) {
+            GetPlatformFontsForNodeRequest instance_ = new GetPlatformFontsForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetPlatformFontsForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Returns the current textual content for a stylesheet.
+     */
+    public static final class GetStyleSheetTextRequest extends CdpObject {
+        public GetStyleSheetTextRequest() {}
+        /**
+         * Returns the current textual content for a stylesheet.
+         * @param styleSheetId protocol value
+         */
+        public GetStyleSheetTextRequest(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+        }
+        public static GetStyleSheetTextRequest fromMap(Map<String, Object> values) {
+            GetStyleSheetTextRequest instance_ = new GetStyleSheetTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public GetStyleSheetTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+    }
+    /**
+     * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetLayersForNodeRequest extends CdpObject {
+        public GetLayersForNodeRequest() {}
+        /**
+         * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeId protocol value
+         */
+        public GetLayersForNodeRequest(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+        }
+        public static GetLayersForNodeRequest fromMap(Map<String, Object> values) {
+            GetLayersForNodeRequest instance_ = new GetLayersForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GetLayersForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetLocationForSelectorRequest extends CdpObject {
+        public GetLocationForSelectorRequest() {}
+        /**
+         * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param styleSheetId protocol value
+         * @param selectorText protocol value
+         */
+        public GetLocationForSelectorRequest(DOM.StyleSheetId styleSheetId, String selectorText) {
+            set("styleSheetId", styleSheetId);
+            set("selectorText", selectorText);
+        }
+        public static GetLocationForSelectorRequest fromMap(Map<String, Object> values) {
+            GetLocationForSelectorRequest instance_ = new GetLocationForSelectorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the selectorText field.
+         * @return the protocol field value
+         */
+        public String selectorText() {
+            return (String) require("selectorText");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public GetLocationForSelectorRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the selectorText field.
+         * @param selectorText field value
+         * @return this model
+         */
+        public GetLocationForSelectorRequest selectorText(String selectorText) {
+            set("selectorText", selectorText);
+            return this;
+        }
+    }
+    /**
+     * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class TrackComputedStyleUpdatesForNodeRequest extends CdpObject {
+        public TrackComputedStyleUpdatesForNodeRequest() {}
+        public static TrackComputedStyleUpdatesForNodeRequest fromMap(Map<String, Object> values) {
+            TrackComputedStyleUpdatesForNodeRequest instance_ = new TrackComputedStyleUpdatesForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the nodeId field.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public TrackComputedStyleUpdatesForNodeRequest nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public TrackComputedStyleUpdatesForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+    }
+    /**
+     * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class TrackComputedStyleUpdatesRequest extends CdpObject {
+        public TrackComputedStyleUpdatesRequest() {}
+        /**
+         * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param propertiesToTrack protocol value
+         */
+        public TrackComputedStyleUpdatesRequest(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
+            set("propertiesToTrack", propertiesToTrack);
+        }
+        public static TrackComputedStyleUpdatesRequest fromMap(Map<String, Object> values) {
+            TrackComputedStyleUpdatesRequest instance_ = new TrackComputedStyleUpdatesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the propertiesToTrack field.
+         * @return the protocol field value
+         */
+        public java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack() {
+            return CdpObject.requireList(require("propertiesToTrack"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * Sets the propertiesToTrack field.
+         * @param propertiesToTrack field value
+         * @return this model
+         */
+        public TrackComputedStyleUpdatesRequest propertiesToTrack(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
+            set("propertiesToTrack", propertiesToTrack);
+            return this;
+        }
+    }
+    /**
+     * Find a rule with the given active property for the given node and set the new value for this property
+     */
+    public static final class SetEffectivePropertyValueForNodeRequest extends CdpObject {
+        public SetEffectivePropertyValueForNodeRequest() {}
+        /**
+         * Find a rule with the given active property for the given node and set the new value for this property
+         * @param nodeId protocol value
+         * @param propertyName protocol value
+         * @param value protocol value
+         */
+        public SetEffectivePropertyValueForNodeRequest(DOM.NodeId nodeId, String propertyName, String value) {
+            set("nodeId", nodeId);
+            set("propertyName", propertyName);
+            set("value", value);
+        }
+        public static SetEffectivePropertyValueForNodeRequest fromMap(Map<String, Object> values) {
+            SetEffectivePropertyValueForNodeRequest instance_ = new SetEffectivePropertyValueForNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The element id for which to set property.
+         * @return the protocol field value
+         */
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+        }
+        /**
+         * Returns the propertyName field.
+         * @return the protocol field value
+         */
+        public String propertyName() {
+            return (String) require("propertyName");
+        }
+        /**
+         * Returns the value field.
+         * @return the protocol field value
+         */
+        public String value() {
+            return (String) require("value");
+        }
+        /**
+         * The element id for which to set property.
+         * @param nodeId field value
+         * @return this model
+         */
+        public SetEffectivePropertyValueForNodeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Sets the propertyName field.
+         * @param propertyName field value
+         * @return this model
+         */
+        public SetEffectivePropertyValueForNodeRequest propertyName(String propertyName) {
+            set("propertyName", propertyName);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public SetEffectivePropertyValueForNodeRequest value(String value) {
+            set("value", value);
+            return this;
+        }
+    }
+    /**
+     * Modifies the property rule property name.
+     */
+    public static final class SetPropertyRulePropertyNameRequest extends CdpObject {
+        public SetPropertyRulePropertyNameRequest() {}
+        /**
+         * Modifies the property rule property name.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param propertyName protocol value
+         */
+        public SetPropertyRulePropertyNameRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String propertyName) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("propertyName", propertyName);
+        }
+        public static SetPropertyRulePropertyNameRequest fromMap(Map<String, Object> values) {
+            SetPropertyRulePropertyNameRequest instance_ = new SetPropertyRulePropertyNameRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the propertyName field.
+         * @return the protocol field value
+         */
+        public String propertyName() {
+            return (String) require("propertyName");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetPropertyRulePropertyNameRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetPropertyRulePropertyNameRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the propertyName field.
+         * @param propertyName field value
+         * @return this model
+         */
+        public SetPropertyRulePropertyNameRequest propertyName(String propertyName) {
+            set("propertyName", propertyName);
+            return this;
+        }
+    }
+    /**
+     * Modifies the keyframe rule key text.
+     */
+    public static final class SetKeyframeKeyRequest extends CdpObject {
+        public SetKeyframeKeyRequest() {}
+        /**
+         * Modifies the keyframe rule key text.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param keyText protocol value
+         */
+        public SetKeyframeKeyRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String keyText) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("keyText", keyText);
+        }
+        public static SetKeyframeKeyRequest fromMap(Map<String, Object> values) {
+            SetKeyframeKeyRequest instance_ = new SetKeyframeKeyRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the keyText field.
+         * @return the protocol field value
+         */
+        public String keyText() {
+            return (String) require("keyText");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetKeyframeKeyRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetKeyframeKeyRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the keyText field.
+         * @param keyText field value
+         * @return this model
+         */
+        public SetKeyframeKeyRequest keyText(String keyText) {
+            set("keyText", keyText);
+            return this;
+        }
+    }
+    /**
+     * Modifies the rule selector.
+     */
+    public static final class SetMediaTextRequest extends CdpObject {
+        public SetMediaTextRequest() {}
+        /**
+         * Modifies the rule selector.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param text protocol value
+         */
+        public SetMediaTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("text", text);
+        }
+        public static SetMediaTextRequest fromMap(Map<String, Object> values) {
+            SetMediaTextRequest instance_ = new SetMediaTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetMediaTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetMediaTextRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetMediaTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
+     */
+    @Deprecated
+    public static final class SetContainerQueryTextRequest extends CdpObject {
+        public SetContainerQueryTextRequest() {}
+        /**
+         * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param text protocol value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public SetContainerQueryTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("text", text);
+        }
+        public static SetContainerQueryTextRequest fromMap(Map<String, Object> values) {
+            SetContainerQueryTextRequest instance_ = new SetContainerQueryTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetContainerQueryTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetContainerQueryTextRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetContainerQueryTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Request parameters for CSS.setContainerQueryConditionText.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetContainerQueryConditionTextRequest extends CdpObject {
+        public SetContainerQueryConditionTextRequest() {}
+        /**
+         * Creates a new SetContainerQueryConditionTextRequest with all required parameters.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param text protocol value
+         */
+        public SetContainerQueryConditionTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("text", text);
+        }
+        public static SetContainerQueryConditionTextRequest fromMap(Map<String, Object> values) {
+            SetContainerQueryConditionTextRequest instance_ = new SetContainerQueryConditionTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetContainerQueryConditionTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetContainerQueryConditionTextRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetContainerQueryConditionTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Modifies the expression of a supports at-rule.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetSupportsTextRequest extends CdpObject {
+        public SetSupportsTextRequest() {}
+        /**
+         * Modifies the expression of a supports at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param text protocol value
+         */
+        public SetSupportsTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("text", text);
+        }
+        public static SetSupportsTextRequest fromMap(Map<String, Object> values) {
+            SetSupportsTextRequest instance_ = new SetSupportsTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetSupportsTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetSupportsTextRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetSupportsTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Modifies the expression of a navigation at-rule.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetNavigationTextRequest extends CdpObject {
+        public SetNavigationTextRequest() {}
+        /**
+         * Modifies the expression of a navigation at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param text protocol value
+         */
+        public SetNavigationTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("text", text);
+        }
+        public static SetNavigationTextRequest fromMap(Map<String, Object> values) {
+            SetNavigationTextRequest instance_ = new SetNavigationTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetNavigationTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetNavigationTextRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetNavigationTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Modifies the expression of a scope at-rule.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetScopeTextRequest extends CdpObject {
+        public SetScopeTextRequest() {}
+        /**
+         * Modifies the expression of a scope at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param text protocol value
+         */
+        public SetScopeTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("text", text);
+        }
+        public static SetScopeTextRequest fromMap(Map<String, Object> values) {
+            SetScopeTextRequest instance_ = new SetScopeTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetScopeTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetScopeTextRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetScopeTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Modifies the rule selector.
+     */
+    public static final class SetRuleSelectorRequest extends CdpObject {
+        public SetRuleSelectorRequest() {}
+        /**
+         * Modifies the rule selector.
+         * @param styleSheetId protocol value
+         * @param range protocol value
+         * @param selector protocol value
+         */
+        public SetRuleSelectorRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String selector) {
+            set("styleSheetId", styleSheetId);
+            set("range", range);
+            set("selector", selector);
+        }
+        public static SetRuleSelectorRequest fromMap(Map<String, Object> values) {
+            SetRuleSelectorRequest instance_ = new SetRuleSelectorRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        public CSS.SourceRange range() {
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+        }
+        /**
+         * Returns the selector field.
+         * @return the protocol field value
+         */
+        public String selector() {
+            return (String) require("selector");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetRuleSelectorRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the range field.
+         * @param range field value
+         * @return this model
+         */
+        public SetRuleSelectorRequest range(CSS.SourceRange range) {
+            set("range", range);
+            return this;
+        }
+        /**
+         * Sets the selector field.
+         * @param selector field value
+         * @return this model
+         */
+        public SetRuleSelectorRequest selector(String selector) {
+            set("selector", selector);
+            return this;
+        }
+    }
+    /**
+     * Sets the new stylesheet text.
+     */
+    public static final class SetStyleSheetTextRequest extends CdpObject {
+        public SetStyleSheetTextRequest() {}
+        /**
+         * Sets the new stylesheet text.
+         * @param styleSheetId protocol value
+         * @param text protocol value
+         */
+        public SetStyleSheetTextRequest(DOM.StyleSheetId styleSheetId, String text) {
+            set("styleSheetId", styleSheetId);
+            set("text", text);
+        }
+        public static SetStyleSheetTextRequest fromMap(Map<String, Object> values) {
+            SetStyleSheetTextRequest instance_ = new SetStyleSheetTextRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        public DOM.StyleSheetId styleSheetId() {
+            return new DOM.StyleSheetId((String) require("styleSheetId"));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        public String text() {
+            return (String) require("text");
+        }
+        /**
+         * Sets the styleSheetId field.
+         * @param styleSheetId field value
+         * @return this model
+         */
+        public SetStyleSheetTextRequest styleSheetId(DOM.StyleSheetId styleSheetId) {
+            set("styleSheetId", styleSheetId);
+            return this;
+        }
+        /**
+         * Sets the text field.
+         * @param text field value
+         * @return this model
+         */
+        public SetStyleSheetTextRequest text(String text) {
+            set("text", text);
+            return this;
+        }
+    }
+    /**
+     * Applies specified style edits one after another in the given order.
+     */
+    public static final class SetStyleTextsRequest extends CdpObject {
+        public SetStyleTextsRequest() {}
+        /**
+         * Applies specified style edits one after another in the given order.
+         * @param edits protocol value
+         */
+        public SetStyleTextsRequest(java.util.List<CSS.StyleDeclarationEdit> edits) {
+            set("edits", edits);
+        }
+        public static SetStyleTextsRequest fromMap(Map<String, Object> values) {
+            SetStyleTextsRequest instance_ = new SetStyleTextsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the edits field.
+         * @return the protocol field value
+         */
+        public java.util.List<CSS.StyleDeclarationEdit> edits() {
+            return CdpObject.requireList(require("edits"), element0 -> java.util.Objects.requireNonNull(CSS.StyleDeclarationEdit.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+        }
+        /**
+         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
+            return Optional.ofNullable(raw("nodeForPropertySyntaxValidation") == null ? null : new DOM.NodeId(((Number) raw("nodeForPropertySyntaxValidation")).longValue()));
+        }
+        /**
+         * Sets the edits field.
+         * @param edits field value
+         * @return this model
+         */
+        public SetStyleTextsRequest edits(java.util.List<CSS.StyleDeclarationEdit> edits) {
+            set("edits", edits);
+            return this;
+        }
+        /**
+         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeForPropertySyntaxValidation field value; empty omits the value
+         * @return this model
+         */
+        public SetStyleTextsRequest nodeForPropertySyntaxValidation(Optional<DOM.NodeId> nodeForPropertySyntaxValidation) {
+            set("nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation.orElse(null));
+            return this;
+        }
+        /**
+         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeForPropertySyntaxValidation field value; null removes the value
+         * @return this model
+         */
+        public SetStyleTextsRequest nodeForPropertySyntaxValidation(DOM.NodeId nodeForPropertySyntaxValidation) {
+            set("nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation);
+            return this;
+        }
+    }
+    /**
+     * Enables/disables rendering of local CSS fonts (enabled by default).
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetLocalFontsEnabledRequest extends CdpObject {
+        public SetLocalFontsEnabledRequest() {}
+        /**
+         * Enables/disables rendering of local CSS fonts (enabled by default).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param enabled protocol value
+         */
+        public SetLocalFontsEnabledRequest(boolean enabled) {
+            set("enabled", enabled);
+        }
+        public static SetLocalFontsEnabledRequest fromMap(Map<String, Object> values) {
+            SetLocalFontsEnabledRequest instance_ = new SetLocalFontsEnabledRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Whether rendering of local fonts is enabled.
+         * @return the protocol field value
+         */
+        public boolean enabled() {
+            return (Boolean) require("enabled");
+        }
+        /**
+         * Whether rendering of local fonts is enabled.
+         * @param enabled field value
+         * @return this model
+         */
+        public SetLocalFontsEnabledRequest enabled(boolean enabled) {
+            set("enabled", enabled);
+            return this;
+        }
+    }
+    /**
      * Result of CSS.getBackgroundColors.
      */
     public static final class GetBackgroundColorsResult extends CdpObject {
@@ -5132,6 +6877,14 @@ public final class CSS {
             return addRule(styleSheetId, ruleText, location, Optional.empty());
         }
         /**
+         * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSRule> addRule(AddRuleRequest request) {
+            return client.call("CSS.addRule", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rule")))))));
+        }
+        /**
          * Returns all class names from specified stylesheet.
          * @param styleSheetId protocol value
          * @return a stage completing with the command result
@@ -5140,6 +6893,14 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             return client.call("CSS.collectClassNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
+        }
+        /**
+         * Returns all class names from specified stylesheet.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<String>> collectClassNames(CollectClassNamesRequest request) {
+            return client.call("CSS.collectClassNames", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
         }
         /**
          * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
@@ -5160,6 +6921,14 @@ public final class CSS {
          */
         public CompletionStage<DOM.StyleSheetId> createStyleSheet(Page.FrameId frameId) {
             return createStyleSheet(frameId, Optional.empty());
+        }
+        /**
+         * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DOM.StyleSheetId> createStyleSheet(CreateStyleSheetRequest request) {
+            return client.call("CSS.createStyleSheet", request == null ? null : request.toMap(), result_ -> new DOM.StyleSheetId((String) java.util.Objects.requireNonNull(result_.get("styleSheetId"))));
         }
         /**
          * Disables the CSS agent for the given page.
@@ -5188,6 +6957,14 @@ public final class CSS {
             return client.call("CSS.forcePseudoState", params, result_ -> null);
         }
         /**
+         * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> forcePseudoState(ForcePseudoStateRequest request) {
+            return client.call("CSS.forcePseudoState", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Ensures that the given node is in its starting-style state.
          * @param nodeId protocol value
          * @param forced protocol value
@@ -5200,6 +6977,14 @@ public final class CSS {
             return client.call("CSS.forceStartingStyle", params, result_ -> null);
         }
         /**
+         * Ensures that the given node is in its starting-style state.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> forceStartingStyle(ForceStartingStyleRequest request) {
+            return client.call("CSS.forceStartingStyle", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Invokes CSS.getBackgroundColors.
          * @param nodeId protocol value
          * @return a stage completing with the command result
@@ -5210,6 +6995,14 @@ public final class CSS {
             return client.call("CSS.getBackgroundColors", params, result_ -> new GetBackgroundColorsResult(result_));
         }
         /**
+         * Invokes CSS.getBackgroundColors with a request object.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetBackgroundColorsResult> getBackgroundColors(GetBackgroundColorsRequest request) {
+            return client.call("CSS.getBackgroundColors", request == null ? null : request.toMap(), result_ -> new GetBackgroundColorsResult(result_));
+        }
+        /**
          * Returns the computed style for a DOM node identified by {@code nodeId}.
          * @param nodeId protocol value
          * @return a stage completing with the command result
@@ -5218,6 +7011,14 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getComputedStyleForNode", params, result_ -> new GetComputedStyleForNodeResult(result_));
+        }
+        /**
+         * Returns the computed style for a DOM node identified by {@code nodeId}.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetComputedStyleForNodeResult> getComputedStyleForNode(GetComputedStyleForNodeRequest request) {
+            return client.call("CSS.getComputedStyleForNode", request == null ? null : request.toMap(), result_ -> new GetComputedStyleForNodeResult(result_));
         }
         /**
          * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
@@ -5249,6 +7050,15 @@ public final class CSS {
             return resolveValues(values, nodeId, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<String>> resolveValues(ResolveValuesRequest request) {
+            return client.call("CSS.resolveValues", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("results")), element0 -> (String) element0));
+        }
+        /**
          * Invokes CSS.getLonghandProperties.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param shorthandName protocol value
@@ -5262,6 +7072,15 @@ public final class CSS {
             return client.call("CSS.getLonghandProperties", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
+         * Invokes CSS.getLonghandProperties with a request object.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<CSS.CSSProperty>> getLonghandProperties(GetLonghandPropertiesRequest request) {
+            return client.call("CSS.getLonghandProperties", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
          * @param nodeId protocol value
          * @return a stage completing with the command result
@@ -5270,6 +7089,14 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getInlineStylesForNode", params, result_ -> new GetInlineStylesForNodeResult(result_));
+        }
+        /**
+         * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetInlineStylesForNodeResult> getInlineStylesForNode(GetInlineStylesForNodeRequest request) {
+            return client.call("CSS.getInlineStylesForNode", request == null ? null : request.toMap(), result_ -> new GetInlineStylesForNodeResult(result_));
         }
         /**
          * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
@@ -5283,6 +7110,15 @@ public final class CSS {
             return client.call("CSS.getAnimatedStylesForNode", params, result_ -> new GetAnimatedStylesForNodeResult(result_));
         }
         /**
+         * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetAnimatedStylesForNodeResult> getAnimatedStylesForNode(GetAnimatedStylesForNodeRequest request) {
+            return client.call("CSS.getAnimatedStylesForNode", request == null ? null : request.toMap(), result_ -> new GetAnimatedStylesForNodeResult(result_));
+        }
+        /**
          * Returns requested styles for a DOM node identified by {@code nodeId}.
          * @param nodeId protocol value
          * @return a stage completing with the command result
@@ -5291,6 +7127,14 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getMatchedStylesForNode", params, result_ -> new GetMatchedStylesForNodeResult(result_));
+        }
+        /**
+         * Returns requested styles for a DOM node identified by {@code nodeId}.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetMatchedStylesForNodeResult> getMatchedStylesForNode(GetMatchedStylesForNodeRequest request) {
+            return client.call("CSS.getMatchedStylesForNode", request == null ? null : request.toMap(), result_ -> new GetMatchedStylesForNodeResult(result_));
         }
         /**
          * Returns the values of the default UA-defined environment variables used in env()
@@ -5318,6 +7162,14 @@ public final class CSS {
             return client.call("CSS.getPlatformFontsForNode", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
+         * Requests information about platform fonts which we used to render child TextNodes in the given node.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<CSS.PlatformFontUsage>> getPlatformFontsForNode(GetPlatformFontsForNodeRequest request) {
+            return client.call("CSS.getPlatformFontsForNode", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Returns the current textual content for a stylesheet.
          * @param styleSheetId protocol value
          * @return a stage completing with the command result
@@ -5326,6 +7178,14 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             return client.call("CSS.getStyleSheetText", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("text")));
+        }
+        /**
+         * Returns the current textual content for a stylesheet.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<String> getStyleSheetText(GetStyleSheetTextRequest request) {
+            return client.call("CSS.getStyleSheetText", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("text")));
         }
         /**
          * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
@@ -5339,6 +7199,15 @@ public final class CSS {
             return client.call("CSS.getLayersForNode", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rootLayer")))))));
         }
         /**
+         * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSLayerData> getLayersForNode(GetLayersForNodeRequest request) {
+            return client.call("CSS.getLayersForNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rootLayer")))))));
+        }
+        /**
          * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param styleSheetId protocol value
@@ -5350,6 +7219,15 @@ public final class CSS {
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("selectorText", CdpObject.json(selectorText));
             return client.call("CSS.getLocationForSelector", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
+         * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<CSS.SourceRange>> getLocationForSelector(GetLocationForSelectorRequest request) {
+            return client.call("CSS.getLocationForSelector", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -5371,6 +7249,15 @@ public final class CSS {
             return trackComputedStyleUpdatesForNode(Optional.empty());
         }
         /**
+         * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trackComputedStyleUpdatesForNode(TrackComputedStyleUpdatesForNodeRequest request) {
+            return client.call("CSS.trackComputedStyleUpdatesForNode", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param propertiesToTrack protocol value
@@ -5380,6 +7267,15 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("propertiesToTrack", CdpObject.json(propertiesToTrack));
             return client.call("CSS.trackComputedStyleUpdates", params, result_ -> null);
+        }
+        /**
+         * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> trackComputedStyleUpdates(TrackComputedStyleUpdatesRequest request) {
+            return client.call("CSS.trackComputedStyleUpdates", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Polls the next batch of computed style updates.
@@ -5404,6 +7300,14 @@ public final class CSS {
             return client.call("CSS.setEffectivePropertyValueForNode", params, result_ -> null);
         }
         /**
+         * Find a rule with the given active property for the given node and set the new value for this property
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setEffectivePropertyValueForNode(SetEffectivePropertyValueForNodeRequest request) {
+            return client.call("CSS.setEffectivePropertyValueForNode", request == null ? null : request.toMap(), result_ -> null);
+        }
+        /**
          * Modifies the property rule property name.
          * @param styleSheetId protocol value
          * @param range protocol value
@@ -5416,6 +7320,14 @@ public final class CSS {
             params.put("range", CdpObject.json(range));
             params.put("propertyName", CdpObject.json(propertyName));
             return client.call("CSS.setPropertyRulePropertyName", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("propertyName")))))));
+        }
+        /**
+         * Modifies the property rule property name.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.Value> setPropertyRulePropertyName(SetPropertyRulePropertyNameRequest request) {
+            return client.call("CSS.setPropertyRulePropertyName", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("propertyName")))))));
         }
         /**
          * Modifies the keyframe rule key text.
@@ -5432,6 +7344,14 @@ public final class CSS {
             return client.call("CSS.setKeyframeKey", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("keyText")))))));
         }
         /**
+         * Modifies the keyframe rule key text.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.Value> setKeyframeKey(SetKeyframeKeyRequest request) {
+            return client.call("CSS.setKeyframeKey", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("keyText")))))));
+        }
+        /**
          * Modifies the rule selector.
          * @param styleSheetId protocol value
          * @param range protocol value
@@ -5444,6 +7364,14 @@ public final class CSS {
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
             return client.call("CSS.setMediaText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("media")))))));
+        }
+        /**
+         * Modifies the rule selector.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSMedia> setMediaText(SetMediaTextRequest request) {
+            return client.call("CSS.setMediaText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("media")))))));
         }
         /**
          * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
@@ -5463,6 +7391,17 @@ public final class CSS {
             return client.call("CSS.setContainerQueryText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
         }
         /**
+         * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<CSS.CSSContainerQuery> setContainerQueryText(SetContainerQueryTextRequest request) {
+            return client.call("CSS.setContainerQueryText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
+        }
+        /**
          * Invokes CSS.setContainerQueryConditionText.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param styleSheetId protocol value
@@ -5476,6 +7415,15 @@ public final class CSS {
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
             return client.call("CSS.setContainerQueryConditionText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
+        }
+        /**
+         * Invokes CSS.setContainerQueryConditionText with a request object.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSContainerQuery> setContainerQueryConditionText(SetContainerQueryConditionTextRequest request) {
+            return client.call("CSS.setContainerQueryConditionText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
         }
         /**
          * Modifies the expression of a supports at-rule.
@@ -5493,6 +7441,15 @@ public final class CSS {
             return client.call("CSS.setSupportsText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("supports")))))));
         }
         /**
+         * Modifies the expression of a supports at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSSupports> setSupportsText(SetSupportsTextRequest request) {
+            return client.call("CSS.setSupportsText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("supports")))))));
+        }
+        /**
          * Modifies the expression of a navigation at-rule.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param styleSheetId protocol value
@@ -5506,6 +7463,15 @@ public final class CSS {
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
             return client.call("CSS.setNavigationText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("navigation")))))));
+        }
+        /**
+         * Modifies the expression of a navigation at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSNavigation> setNavigationText(SetNavigationTextRequest request) {
+            return client.call("CSS.setNavigationText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("navigation")))))));
         }
         /**
          * Modifies the expression of a scope at-rule.
@@ -5523,6 +7489,15 @@ public final class CSS {
             return client.call("CSS.setScopeText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("scope")))))));
         }
         /**
+         * Modifies the expression of a scope at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.CSSScope> setScopeText(SetScopeTextRequest request) {
+            return client.call("CSS.setScopeText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("scope")))))));
+        }
+        /**
          * Modifies the rule selector.
          * @param styleSheetId protocol value
          * @param range protocol value
@@ -5537,6 +7512,14 @@ public final class CSS {
             return client.call("CSS.setRuleSelector", params, result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("selectorList")))))));
         }
         /**
+         * Modifies the rule selector.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CSS.SelectorList> setRuleSelector(SetRuleSelectorRequest request) {
+            return client.call("CSS.setRuleSelector", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("selectorList")))))));
+        }
+        /**
          * Sets the new stylesheet text.
          * @param styleSheetId protocol value
          * @param text protocol value
@@ -5547,6 +7530,14 @@ public final class CSS {
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("text", CdpObject.json(text));
             return client.call("CSS.setStyleSheetText", params, result_ -> Optional.ofNullable((String) result_.get("sourceMapURL")));
+        }
+        /**
+         * Sets the new stylesheet text.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Optional<String>> setStyleSheetText(SetStyleSheetTextRequest request) {
+            return client.call("CSS.setStyleSheetText", request == null ? null : request.toMap(), result_ -> Optional.ofNullable((String) result_.get("sourceMapURL")));
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -5567,6 +7558,14 @@ public final class CSS {
          */
         public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(java.util.List<CSS.StyleDeclarationEdit> edits) {
             return setStyleTexts(edits, Optional.empty());
+        }
+        /**
+         * Applies specified style edits one after another in the given order.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(SetStyleTextsRequest request) {
+            return client.call("CSS.setStyleTexts", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Enables the selector recording.
@@ -5599,6 +7598,15 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("CSS.setLocalFontsEnabled", params, result_ -> null);
+        }
+        /**
+         * Enables/disables rendering of local CSS fonts (enabled by default).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setLocalFontsEnabled(SetLocalFontsEnabledRequest request) {
+            return client.call("CSS.setLocalFontsEnabled", request == null ? null : request.toMap(), result_ -> null);
         }
         /**
          * Fires whenever a web font is updated. A non-empty font parameter indicates a successfully loaded web font.

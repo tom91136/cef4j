@@ -947,6 +947,503 @@ public final class Accessibility {
         }
     }
     /**
+     * Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetPartialAXTreeRequest extends CdpObject {
+        public GetPartialAXTreeRequest() {}
+        public static GetPartialAXTreeRequest fromMap(Map<String, Object> values) {
+            GetPartialAXTreeRequest instance_ = new GetPartialAXTreeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the node to get the partial accessibility tree for.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+        }
+        /**
+         * Identifier of the backend node to get the partial accessibility tree for.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+        }
+        /**
+         * JavaScript object id of the node wrapper to get the partial accessibility tree for.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Runtime.RemoteObjectId> objectId() {
+            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+        }
+        /**
+         * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> fetchRelatives() {
+            return Optional.ofNullable((Boolean) raw("fetchRelatives"));
+        }
+        /**
+         * Identifier of the node to get the partial accessibility tree for.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the node to get the partial accessibility tree for.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Identifier of the backend node to get the partial accessibility tree for.
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the backend node to get the partial accessibility tree for.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * JavaScript object id of the node wrapper to get the partial accessibility tree for.
+         * @param objectId field value; empty omits the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
+            set("objectId", objectId.orElse(null));
+            return this;
+        }
+        /**
+         * JavaScript object id of the node wrapper to get the partial accessibility tree for.
+         * @param objectId field value; null removes the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+        /**
+         * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
+         * @param fetchRelatives field value; empty omits the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest fetchRelatives(Optional<Boolean> fetchRelatives) {
+            set("fetchRelatives", fetchRelatives.orElse(null));
+            return this;
+        }
+        /**
+         * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
+         * @param fetchRelatives field value; null removes the value
+         * @return this model
+         */
+        public GetPartialAXTreeRequest fetchRelatives(Boolean fetchRelatives) {
+            set("fetchRelatives", fetchRelatives);
+            return this;
+        }
+    }
+    /**
+     * Fetches the entire accessibility tree for the root Document
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetFullAXTreeRequest extends CdpObject {
+        public GetFullAXTreeRequest() {}
+        public static GetFullAXTreeRequest fromMap(Map<String, Object> values) {
+            GetFullAXTreeRequest instance_ = new GetFullAXTreeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalLong depth() {
+            Long value = CdpObject.numberAsLong(raw("depth"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+        }
+        /**
+         * The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
+         * @param depth field value; empty omits the value
+         * @return this model
+         */
+        public GetFullAXTreeRequest depth(OptionalLong depth) {
+            set("depth", depth.isPresent() ? depth.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
+         * @param depth field value; null removes the value
+         * @return this model
+         */
+        public GetFullAXTreeRequest depth(Long depth) {
+            set("depth", depth);
+            return this;
+        }
+        /**
+         * The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public GetFullAXTreeRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public GetFullAXTreeRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Fetches the root node. Requires {@code enable()} to have been called previously.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetRootAXNodeRequest extends CdpObject {
+        public GetRootAXNodeRequest() {}
+        public static GetRootAXNodeRequest fromMap(Map<String, Object> values) {
+            GetRootAXNodeRequest instance_ = new GetRootAXNodeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * The frame in whose document the node resides. If omitted, the root frame is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * The frame in whose document the node resides. If omitted, the root frame is used.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public GetRootAXNodeRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * The frame in whose document the node resides. If omitted, the root frame is used.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public GetRootAXNodeRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetAXNodeAndAncestorsRequest extends CdpObject {
+        public GetAXNodeAndAncestorsRequest() {}
+        public static GetAXNodeAndAncestorsRequest fromMap(Map<String, Object> values) {
+            GetAXNodeAndAncestorsRequest instance_ = new GetAXNodeAndAncestorsRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the node to get.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+        }
+        /**
+         * Identifier of the backend node to get.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+        }
+        /**
+         * JavaScript object id of the node wrapper to get.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Runtime.RemoteObjectId> objectId() {
+            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+        }
+        /**
+         * Identifier of the node to get.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public GetAXNodeAndAncestorsRequest nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the node to get.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public GetAXNodeAndAncestorsRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Identifier of the backend node to get.
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
+         */
+        public GetAXNodeAndAncestorsRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the backend node to get.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
+         */
+        public GetAXNodeAndAncestorsRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * JavaScript object id of the node wrapper to get.
+         * @param objectId field value; empty omits the value
+         * @return this model
+         */
+        public GetAXNodeAndAncestorsRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
+            set("objectId", objectId.orElse(null));
+            return this;
+        }
+        /**
+         * JavaScript object id of the node wrapper to get.
+         * @param objectId field value; null removes the value
+         * @return this model
+         */
+        public GetAXNodeAndAncestorsRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+    }
+    /**
+     * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class GetChildAXNodesRequest extends CdpObject {
+        public GetChildAXNodesRequest() {}
+        /**
+         * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param id protocol value
+         */
+        public GetChildAXNodesRequest(Accessibility.AXNodeId id) {
+            set("id", id);
+        }
+        public static GetChildAXNodesRequest fromMap(Map<String, Object> values) {
+            GetChildAXNodesRequest instance_ = new GetChildAXNodesRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the id field.
+         * @return the protocol field value
+         */
+        public Accessibility.AXNodeId id() {
+            return new Accessibility.AXNodeId((String) require("id"));
+        }
+        /**
+         * The frame in whose document the node resides. If omitted, the root frame is used.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+        }
+        /**
+         * Sets the id field.
+         * @param id field value
+         * @return this model
+         */
+        public GetChildAXNodesRequest id(Accessibility.AXNodeId id) {
+            set("id", id);
+            return this;
+        }
+        /**
+         * The frame in whose document the node resides. If omitted, the root frame is used.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public GetChildAXNodesRequest frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * The frame in whose document the node resides. If omitted, the root frame is used.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public GetChildAXNodesRequest frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+    }
+    /**
+     * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class QueryAXTreeRequest extends CdpObject {
+        public QueryAXTreeRequest() {}
+        public static QueryAXTreeRequest fromMap(Map<String, Object> values) {
+            QueryAXTreeRequest instance_ = new QueryAXTreeRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Identifier of the node for the root to query.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+        }
+        /**
+         * Identifier of the backend node for the root to query.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+        }
+        /**
+         * JavaScript object id of the node wrapper for the root to query.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Runtime.RemoteObjectId> objectId() {
+            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+        }
+        /**
+         * Find nodes with this computed name.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> accessibleName() {
+            return Optional.ofNullable((String) raw("accessibleName"));
+        }
+        /**
+         * Find nodes with this computed role.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<String> role() {
+            return Optional.ofNullable((String) raw("role"));
+        }
+        /**
+         * Identifier of the node for the root to query.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public QueryAXTreeRequest nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the node for the root to query.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public QueryAXTreeRequest nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Identifier of the backend node for the root to query.
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
+         */
+        public QueryAXTreeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the backend node for the root to query.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
+         */
+        public QueryAXTreeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * JavaScript object id of the node wrapper for the root to query.
+         * @param objectId field value; empty omits the value
+         * @return this model
+         */
+        public QueryAXTreeRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
+            set("objectId", objectId.orElse(null));
+            return this;
+        }
+        /**
+         * JavaScript object id of the node wrapper for the root to query.
+         * @param objectId field value; null removes the value
+         * @return this model
+         */
+        public QueryAXTreeRequest objectId(Runtime.RemoteObjectId objectId) {
+            set("objectId", objectId);
+            return this;
+        }
+        /**
+         * Find nodes with this computed name.
+         * @param accessibleName field value; empty omits the value
+         * @return this model
+         */
+        public QueryAXTreeRequest accessibleName(Optional<String> accessibleName) {
+            set("accessibleName", accessibleName.orElse(null));
+            return this;
+        }
+        /**
+         * Find nodes with this computed name.
+         * @param accessibleName field value; null removes the value
+         * @return this model
+         */
+        public QueryAXTreeRequest accessibleName(String accessibleName) {
+            set("accessibleName", accessibleName);
+            return this;
+        }
+        /**
+         * Find nodes with this computed role.
+         * @param role field value; empty omits the value
+         * @return this model
+         */
+        public QueryAXTreeRequest role(Optional<String> role) {
+            set("role", role.orElse(null));
+            return this;
+        }
+        /**
+         * Find nodes with this computed role.
+         * @param role field value; null removes the value
+         * @return this model
+         */
+        public QueryAXTreeRequest role(String role) {
+            set("role", role);
+            return this;
+        }
+    }
+    /**
      * The loadComplete event mirrors the load complete event sent by the browser to assistive technology when the web page has finished loading.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
@@ -1043,6 +1540,15 @@ public final class Accessibility {
             return getPartialAXTree(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getPartialAXTree(GetPartialAXTreeRequest request) {
+            return client.call("Accessibility.getPartialAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Fetches the entire accessibility tree for the root Document
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param depth protocol value
@@ -1064,6 +1570,15 @@ public final class Accessibility {
             return getFullAXTree(OptionalLong.empty(), Optional.empty());
         }
         /**
+         * Fetches the entire accessibility tree for the root Document
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getFullAXTree(GetFullAXTreeRequest request) {
+            return client.call("Accessibility.getFullAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Fetches the root node. Requires {@code enable()} to have been called previously.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param frameId protocol value
@@ -1081,6 +1596,15 @@ public final class Accessibility {
          */
         public CompletionStage<Accessibility.AXNode> getRootAXNode() {
             return getRootAXNode(Optional.empty());
+        }
+        /**
+         * Fetches the root node. Requires {@code enable()} to have been called previously.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Accessibility.AXNode> getRootAXNode(GetRootAXNodeRequest request) {
+            return client.call("Accessibility.getRootAXNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("node")))))));
         }
         /**
          * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
@@ -1106,6 +1630,15 @@ public final class Accessibility {
             return getAXNodeAndAncestors(Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
+         * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getAXNodeAndAncestors(GetAXNodeAndAncestorsRequest request) {
+            return client.call("Accessibility.getAXNodeAndAncestors", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        }
+        /**
          * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param id protocol value
@@ -1126,6 +1659,15 @@ public final class Accessibility {
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getChildAXNodes(Accessibility.AXNodeId id) {
             return getChildAXNodes(id, Optional.empty());
+        }
+        /**
+         * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getChildAXNodes(GetChildAXNodesRequest request) {
+            return client.call("Accessibility.getChildAXNodes", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
@@ -1153,6 +1695,15 @@ public final class Accessibility {
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> queryAXTree() {
             return queryAXTree(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<Accessibility.AXNode>> queryAXTree(QueryAXTreeRequest request) {
+            return client.call("Accessibility.queryAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The loadComplete event mirrors the load complete event sent by the browser to assistive technology when the web page has finished loading.

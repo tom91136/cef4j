@@ -676,6 +676,40 @@ public final class WebAudio {
         }
     }
     /**
+     * Fetch the realtime data from the registered contexts.
+     */
+    public static final class GetRealtimeDataRequest extends CdpObject {
+        public GetRealtimeDataRequest() {}
+        /**
+         * Fetch the realtime data from the registered contexts.
+         * @param contextId protocol value
+         */
+        public GetRealtimeDataRequest(WebAudio.GraphObjectId contextId) {
+            set("contextId", contextId);
+        }
+        public static GetRealtimeDataRequest fromMap(Map<String, Object> values) {
+            GetRealtimeDataRequest instance_ = new GetRealtimeDataRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Returns the contextId field.
+         * @return the protocol field value
+         */
+        public WebAudio.GraphObjectId contextId() {
+            return new WebAudio.GraphObjectId((String) require("contextId"));
+        }
+        /**
+         * Sets the contextId field.
+         * @param contextId field value
+         * @return this model
+         */
+        public GetRealtimeDataRequest contextId(WebAudio.GraphObjectId contextId) {
+            set("contextId", contextId);
+            return this;
+        }
+    }
+    /**
      * Notifies that a new BaseAudioContext has been created.
      */
     public static final class ContextCreatedEvent extends CdpObject {
@@ -1387,6 +1421,14 @@ public final class WebAudio {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("contextId", CdpObject.json(contextId));
             return client.call("WebAudio.getRealtimeData", params, result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("realtimeData")))))));
+        }
+        /**
+         * Fetch the realtime data from the registered contexts.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<WebAudio.ContextRealtimeData> getRealtimeData(GetRealtimeDataRequest request) {
+            return client.call("WebAudio.getRealtimeData", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("realtimeData")))))));
         }
         /**
          * Notifies that a new BaseAudioContext has been created.

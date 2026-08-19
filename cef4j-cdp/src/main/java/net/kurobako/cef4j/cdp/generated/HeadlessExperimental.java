@@ -130,6 +130,119 @@ public final class HeadlessExperimental {
     /**
      * Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also https://goo.gle/chrome-headless-rendering for more background.
      */
+    public static final class BeginFrameRequest extends CdpObject {
+        public BeginFrameRequest() {}
+        public static BeginFrameRequest fromMap(Map<String, Object> values) {
+            BeginFrameRequest instance_ = new BeginFrameRequest();
+            if (values != null) instance_.values.putAll(values);
+            return instance_;
+        }
+        /**
+         * Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble frameTimeTicks() {
+            Double value = CdpObject.numberAsDouble(raw("frameTimeTicks"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
+         * @return the protocol field value, empty when absent
+         */
+        public OptionalDouble interval() {
+            Double value = CdpObject.numberAsDouble(raw("interval"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+        }
+        /**
+         * Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<Boolean> noDisplayUpdates() {
+            return Optional.ofNullable((Boolean) raw("noDisplayUpdates"));
+        }
+        /**
+         * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<HeadlessExperimental.ScreenshotParams> screenshot() {
+            return Optional.ofNullable(raw("screenshot") == null ? null : HeadlessExperimental.ScreenshotParams.fromMap(java.util.Objects.requireNonNull(objectMap(raw("screenshot")))));
+        }
+        /**
+         * Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
+         * @param frameTimeTicks field value; empty omits the value
+         * @return this model
+         */
+        public BeginFrameRequest frameTimeTicks(OptionalDouble frameTimeTicks) {
+            set("frameTimeTicks", frameTimeTicks.isPresent() ? frameTimeTicks.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
+         * @param frameTimeTicks field value; null removes the value
+         * @return this model
+         */
+        public BeginFrameRequest frameTimeTicks(Double frameTimeTicks) {
+            set("frameTimeTicks", frameTimeTicks);
+            return this;
+        }
+        /**
+         * The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
+         * @param interval field value; empty omits the value
+         * @return this model
+         */
+        public BeginFrameRequest interval(OptionalDouble interval) {
+            set("interval", interval.isPresent() ? interval.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
+         * @param interval field value; null removes the value
+         * @return this model
+         */
+        public BeginFrameRequest interval(Double interval) {
+            set("interval", interval);
+            return this;
+        }
+        /**
+         * Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
+         * @param noDisplayUpdates field value; empty omits the value
+         * @return this model
+         */
+        public BeginFrameRequest noDisplayUpdates(Optional<Boolean> noDisplayUpdates) {
+            set("noDisplayUpdates", noDisplayUpdates.orElse(null));
+            return this;
+        }
+        /**
+         * Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
+         * @param noDisplayUpdates field value; null removes the value
+         * @return this model
+         */
+        public BeginFrameRequest noDisplayUpdates(Boolean noDisplayUpdates) {
+            set("noDisplayUpdates", noDisplayUpdates);
+            return this;
+        }
+        /**
+         * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
+         * @param screenshot field value; empty omits the value
+         * @return this model
+         */
+        public BeginFrameRequest screenshot(Optional<HeadlessExperimental.ScreenshotParams> screenshot) {
+            set("screenshot", screenshot.orElse(null));
+            return this;
+        }
+        /**
+         * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
+         * @param screenshot field value; null removes the value
+         * @return this model
+         */
+        public BeginFrameRequest screenshot(HeadlessExperimental.ScreenshotParams screenshot) {
+            set("screenshot", screenshot);
+            return this;
+        }
+    }
+    /**
+     * Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also https://goo.gle/chrome-headless-rendering for more background.
+     */
     public static final class BeginFrameResult extends CdpObject {
         public BeginFrameResult() {}
         private BeginFrameResult(Map<String, Object> values) { super(values); }
@@ -203,6 +316,14 @@ public final class HeadlessExperimental {
          */
         public CompletionStage<BeginFrameResult> beginFrame() {
             return beginFrame(OptionalDouble.empty(), OptionalDouble.empty(), Optional.empty(), Optional.empty());
+        }
+        /**
+         * Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also https://goo.gle/chrome-headless-rendering for more background.
+         * @param request request parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<BeginFrameResult> beginFrame(BeginFrameRequest request) {
+            return client.call("HeadlessExperimental.beginFrame", request == null ? null : request.toMap(), result_ -> new BeginFrameResult(result_));
         }
         /**
          * Disables headless events for the target.
