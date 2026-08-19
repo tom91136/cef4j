@@ -120,9 +120,12 @@ non_javafx=$(./mvnw -q -N help:evaluate -Dexpression=cef4j.nonJavafxModules -Dfo
 properties=(
     "-Dcef.version=${CEF_VERSION}"
     "-Dcef.api.version=${CEF_API}"
-    "-Djavafx.version=${JAVAFX_VERSION}"
-    "-Djavafx.test.version=${JAVAFX_VERSION}"
 )
+# XXX An empty -Djavafx.version= overrides the parent pom property and breaks project reads;
+# omit it when JavaFX is unavailable for the platform/JDK instead.
+if [ -n "${JAVAFX_VERSION}" ]; then
+    properties+=("-Djavafx.version=${JAVAFX_VERSION}" "-Djavafx.test.version=${JAVAFX_VERSION}")
+fi
 if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 150 ]; then
     properties+=("-Dcef4j.test.ldPreload=${repo_root}/.cef-dist/cef_binary_${CEF_VERSION}_linuxarm64_minimal/Release/libcef.so")
 fi
