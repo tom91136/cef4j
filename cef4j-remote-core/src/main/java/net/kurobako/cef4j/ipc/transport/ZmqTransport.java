@@ -38,7 +38,7 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
-    private static final long BOOTSTRAP_REPLY_TIMEOUT_NANOS = 500_000_000L;
+    private static final long HANDSHAKE_TIMEOUT_NANOS = 500_000_000L;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -60,7 +60,8 @@ public final class ZmqTransport implements CefTransport {
     private volatile boolean disconnected = false;
     private volatile boolean peerReady = false;
     private boolean tcpConnected = false;
-    private long bootstrapReplyDeadlineNanos = 0;
+    private boolean zmtpHandshaken = false;
+    private long handshakeDeadlineNanos = 0;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
     // Worker-owned diagnostics; only emitted at DEBUG and useful for distinguishing an established-but-stalled pipe
     // from a worker/socket failure.
@@ -114,8 +115,11 @@ public final class ZmqTransport implements CefTransport {
             main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
             main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
 
-            int eventMask =
-                    ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_CONNECT_RETRIED | ZMQ.EVENT_DISCONNECTED;
+            int eventMask = ZMQ.EVENT_CONNECTED
+                    | ZMQ.EVENT_ACCEPTED
+                    | ZMQ.EVENT_CONNECT_RETRIED
+                    | ZMQ.EVENT_DISCONNECTED
+                    | ZMQ.EVENT_HANDSHAKE_PROTOCOL;
             // The event callback runs on JeroMQ's I/O thread. It only transfers immutable event values to the socket
             // owner; application callbacks and socket operations stay on this worker.
             if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
@@ -230,10 +234,16 @@ public final class ZmqTransport implements CefTransport {
             if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
                 tcpConnected = true;
                 peerReady = true;
-                bootstrapReplyDeadlineNanos = System.nanoTime() + BOOTSTRAP_REPLY_TIMEOUT_NANOS;
+                if (!zmtpHandshaken) {
+                    handshakeDeadlineNanos = System.nanoTime() + HANDSHAKE_TIMEOUT_NANOS;
+                }
+            } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL || event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
+                zmtpHandshaken = true;
+                handshakeDeadlineNanos = 0;
             } else if (event == ZMonitor.Event.DISCONNECTED || event == ZMonitor.Event.CONNECT_RETRIED) {
                 tcpConnected = false;
-                bootstrapReplyDeadlineNanos = 0;
+                zmtpHandshaken = false;
+                handshakeDeadlineNanos = 0;
                 if (!peerReady) continue;
                 if (closed) return true; // suppress event triggered by local close
                 disconnected = true;
@@ -245,19 +255,19 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void restartStalledHandshake(ZMQ.Socket main) {
-        if (!runtimeServerClient || receivedFrames > 0 || !tcpConnected || bootstrapReplyDeadlineNanos == 0) return;
-        if (sentFrames == 0 && outbound.isEmpty()) return;
-        if (System.nanoTime() < bootstrapReplyDeadlineNanos) return;
-        restartConnection(main, "bootstrap reply timeout");
+        if (!runtimeServerClient || zmtpHandshaken || !tcpConnected || handshakeDeadlineNanos == 0) return;
+        if (System.nanoTime() < handshakeDeadlineNanos) return;
+        restartConnection(main, "handshake timeout");
     }
 
     private void restartConnection(ZMQ.Socket main, String reason) {
         LOG.debug("restarting {} after {}", endpoint, reason);
         peerReady = false;
+        zmtpHandshaken = false;
         main.disconnect(endpoint);
         main.connect(endpoint);
         tcpConnected = false;
-        bootstrapReplyDeadlineNanos = 0;
+        handshakeDeadlineNanos = 0;
     }
 
     private void drainIncoming(ZMQ.Socket main) {
