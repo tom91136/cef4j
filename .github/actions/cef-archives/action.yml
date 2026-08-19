@@ -64,7 +64,10 @@ runs:
         for platform in "${TARGET_PLATFORM}" linux64 macosx64 windows64; do
           name="cef_binary_${CEF_VERSION}_${platform}_minimal.tar.bz2"
           archive=".cef-dist/${name}"
-          test -f "${archive}" && continue
+          if test -f "${archive}" && tar -tjf "${archive}" >/dev/null 2>&1; then
+            continue
+          fi
+          rm -f "${archive}"
           partial="${archive}.part"
           rm -f "${partial}"
           curl --fail --location --retry 5 --retry-all-errors --connect-timeout 30 \
