@@ -3,8 +3,10 @@ package net.kurobako.cef4j.webdriver;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.generated.Browser;
 import net.kurobako.cef4j.cdp.generated.DOM;
 import net.kurobako.cef4j.cdp.generated.Input;
@@ -27,6 +30,7 @@ import net.kurobako.cef4j.cdp.generated.Runtime;
 /** Shared CDP-backed automation implementation, independent of in-process or remote CEF lifecycle. */
 public final class CdpAutomationBackend implements AutomationBackend {
     private final JsonCdpBrowser cdp;
+    private final CdpClient client;
     private final JsonObject capabilities;
     private final AtomicBoolean closed = new AtomicBoolean();
     private final ConcurrentHashMap<String, DOM.BackendNodeId> elements = new ConcurrentHashMap<>();
@@ -38,6 +42,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     private CdpAutomationBackend(JsonCdpBrowser cdp, CdpClient client, Browser.GetVersionResult version) {
         this.cdp = cdp;
+        this.client = client;
         runtime = client.domains().runtime();
         dom = client.domains().dOM();
         page = client.domains().page();
@@ -102,9 +107,15 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Override
     @Nonnull
     public CompletableFuture<String> pageSource() {
+        // getOuterHTML gained includeShadowDOM in newer protocol versions, use the raw command for a stable parameter
+        // set
         return dom.getDocument(OptionalLong.of(0), Optional.empty())
-                .thenCompose(root -> dom.getOuterHTML(
-                        Optional.of(root.nodeId()), Optional.empty(), Optional.empty(), Optional.empty()))
+                .thenCompose(root -> {
+                    Map<String, Object> params = new LinkedHashMap<>();
+                    params.put("nodeId", CdpObject.json(root.nodeId()));
+                    return client.call("DOM.getOuterHTML", params, result ->
+                            (String) Objects.requireNonNull(result.get("outerHTML")));
+                })
                 .toCompletableFuture();
     }
 
@@ -405,24 +416,25 @@ public final class CdpAutomationBackend implements AutomationBackend {
             return failed(failure(WebDriverError.INVALID_ARGUMENT, "cookie value must be a string"));
         }
         return currentUrl()
-                .thenCompose(url -> network.setCookie(
-                                cookie.get("name").string(),
-                                cookie.get("value").string(),
-                                Optional.of(url),
-                                optionalString(cookie, "domain"),
-                                optionalString(cookie, "path"),
-                                optionalBoolean(cookie, "secure"),
-                                optionalBoolean(cookie, "httpOnly"),
-                                optionalSameSite(cookie),
-                                optionalExpiry(cookie),
-                                Optional.empty(),
-                                Optional.empty(),
-                                OptionalLong.empty(),
-                                Optional.empty())
-                        .thenApply(success -> {
-                            if (!success) throw failure(WebDriverError.INVALID_ARGUMENT, "CEF rejected cookie");
-                            return null;
-                        }));
+                .thenCompose(url -> {
+                    // setCookie's optional parameter set grew sameParty between protocol versions, use the raw command
+                    Map<String, Object> params = new LinkedHashMap<>();
+                    params.put("name", CdpObject.json(cookie.get("name").string()));
+                    params.put("value", CdpObject.json(cookie.get("value").string()));
+                    params.put("url", CdpObject.json(url));
+                    optionalString(cookie, "domain").ifPresent(value -> params.put("domain", CdpObject.json(value)));
+                    optionalString(cookie, "path").ifPresent(value -> params.put("path", CdpObject.json(value)));
+                    optionalBoolean(cookie, "secure").ifPresent(value -> params.put("secure", value));
+                    optionalBoolean(cookie, "httpOnly").ifPresent(value -> params.put("httpOnly", value));
+                    optionalSameSite(cookie).ifPresent(value -> params.put("sameSite", CdpObject.json(value)));
+                    optionalExpiry(cookie).ifPresent(value -> params.put("expires", CdpObject.json(value)));
+                    return client.call("Network.setCookie", params, result ->
+                            (Boolean) Objects.requireNonNull(result.get("success")));
+                })
+                .thenApply(success -> {
+                    if (!success) throw failure(WebDriverError.INVALID_ARGUMENT, "CEF rejected cookie");
+                    return null;
+                });
     }
 
     private static Optional<String> optionalString(JsonObject source, String name) {
