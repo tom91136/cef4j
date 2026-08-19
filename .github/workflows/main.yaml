@@ -183,6 +183,8 @@ jobs:
 
       # XXX Per-JDK rebuild; JDK 17 also forks the JDK 11 runtime smoke.
       - name: JDK 17 (incl. JDK 11 runtime smoke)
+        id: jdk17_build
+        continue-on-error: true
         shell: bash
         env:
           JAVA_HOME: ${{ steps.jdk17.outputs.java-home }}
@@ -191,6 +193,8 @@ jobs:
         run: .github/ci/build.sh
 
       - name: JDK 21
+        id: jdk21_build
+        continue-on-error: true
         shell: bash
         env:
           JAVA_HOME: ${{ steps.jdk21.outputs.java-home }}
@@ -198,6 +202,8 @@ jobs:
         run: .github/ci/build.sh
 
       - name: JDK 25
+        id: jdk25_build
+        continue-on-error: true
         shell: bash
         env:
           JAVA_HOME: ${{ steps.jdk25.outputs.java-home }}
@@ -205,7 +211,7 @@ jobs:
         run: .github/ci/build.sh
 
       - name: Upload test reports on failure
-        if: failure()
+        if: always() && (steps.jdk17_build.outcome != 'success' || steps.jdk21_build.outcome != 'success' || steps.jdk25_build.outcome != 'success')
         uses: actions/upload-artifact@v7
         with:
           name: reports-${{ matrix.os.label }}-cef${{ matrix.cef.api }}
@@ -214,6 +220,25 @@ jobs:
             **/hs_err_pid*.log
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Verify all JDK builds passed
+        if: always()
+        shell: bash
+        run: |
+          failed=0
+          if [ "${{ steps.jdk17_build.outcome }}" != "success" ]; then
+            echo "::error::JDK 17 (incl. JDK 11 runtime smoke) build failed"
+            failed=1
+          fi
+          if [ "${{ steps.jdk21_build.outcome }}" != "success" ]; then
+            echo "::error::JDK 21 build failed"
+            failed=1
+          fi
+          if [ "${{ steps.jdk25_build.outcome }}" != "success" ]; then
+            echo "::error::JDK 25 build failed"
+            failed=1
+          fi
+          exit $failed
 
   consumer:
     name: Consumer examples

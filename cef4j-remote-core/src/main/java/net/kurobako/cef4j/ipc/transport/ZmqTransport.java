@@ -147,7 +147,7 @@ public final class ZmqTransport implements CefTransport {
                 restartStalledHandshake(main);
                 // Only this worker touches the socket. send() callers may run on arbitrary
                 // application threads and communicate solely through the thread-safe queue.
-                if (peerReady && !outbound.isEmpty()) drainOutbound(main);
+                if (!outbound.isEmpty()) drainOutbound(main);
                 dispatchPendingIfReady();
             }
         } catch (ZMQException e) {
@@ -242,10 +242,8 @@ public final class ZmqTransport implements CefTransport {
                 zmtpHandshaken = false;
                 handshakeDeadlineNanos = 0;
                 if (!peerReady) continue;
-                if (closed) return true; // suppress event triggered by local close
                 disconnected = true;
                 fireDisconnectIfReady();
-                return true;
             }
         }
         return false;
@@ -253,6 +251,7 @@ public final class ZmqTransport implements CefTransport {
 
     private void restartStalledHandshake(ZMQ.Socket main) {
         if (!runtimeServerClient || zmtpHandshaken || !tcpConnected || handshakeDeadlineNanos == 0) return;
+        if (receivedFrames > 0) return;
         if (System.nanoTime() < handshakeDeadlineNanos) return;
         restartConnection(main, "handshake timeout");
     }
@@ -271,6 +270,8 @@ public final class ZmqTransport implements CefTransport {
         byte[] frame;
         while ((frame = main.recv(ZMQ.DONTWAIT)) != null) {
             receivedFrames++;
+            zmtpHandshaken = true;
+            handshakeDeadlineNanos = 0;
             if (receivedFrames == 1) LOG.debug("first frame received on {}", endpoint);
             pending.add(frame);
         }
