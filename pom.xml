@@ -123,6 +123,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-code-policy</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala3-library_3</artifactId>
                 <version>${scala.version}</version>

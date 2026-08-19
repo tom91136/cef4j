@@ -241,7 +241,7 @@
                 <executions>
                     <execution>
                         <id>assemble-platform-bridge</id>
-                        <phase>package</phase>
+                        <phase>process-classes</phase>
                         <goals><goal>single</goal></goals>
                         <configuration>
                             <skipAssembly>${platform.assembly.skip}</skipAssembly>

@@ -27,6 +27,11 @@
             <artifactId>cef4j-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-code-policy</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
             <scope>provided</scope>
@@ -131,6 +136,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>

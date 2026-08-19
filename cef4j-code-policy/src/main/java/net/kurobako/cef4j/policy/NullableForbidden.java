@@ -3,6 +3,7 @@ package net.kurobako.cef4j.policy;
 import static com.google.errorprone.matchers.Description.NO_MATCH;
 
 import com.google.auto.service.AutoService;
+import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.BugPattern.SeverityLevel;
 import com.google.errorprone.ErrorProneFlags;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -45,22 +47,24 @@ import javax.lang.model.type.TypeMirror;
  */
 @AutoService(BugChecker.class)
 @BugPattern(
-        name = "NullableForbidden",
         summary = "@Nullable must not appear on public/protected API; model absence with Optional<T>",
         severity = SeverityLevel.ERROR)
-public final class NullableForbiddenCheck extends BugChecker implements AnnotationTreeMatcher {
+public final class NullableForbidden extends BugChecker implements AnnotationTreeMatcher {
+    private static final long serialVersionUID = 1L;
+
     private static final String NULLABLE = "javax.annotation.Nullable";
     private static final String NULL_UNMARKED = "com.uber.nullaway.annotations.NullUnmarked";
     private static final String ALLOWED_PACKAGES = "NullableForbidden:AllowedPackages";
 
-    private final Set<String> allowedPackages = new HashSet<>();
+    private final ImmutableSet<String> allowedPackages;
 
-    public NullableForbiddenCheck() {
+    public NullableForbidden() {
         this(ErrorProneFlags.empty());
     }
 
-    public NullableForbiddenCheck(ErrorProneFlags flags) {
-        allowedPackages.addAll(flags.getSetOrEmpty(ALLOWED_PACKAGES));
+    @Inject
+    public NullableForbidden(ErrorProneFlags flags) {
+        this.allowedPackages = ImmutableSet.copyOf(flags.getSetOrEmpty(ALLOWED_PACKAGES));
     }
 
     @Override
@@ -79,7 +83,7 @@ public final class NullableForbiddenCheck extends BugChecker implements Annotati
         if (allowedPackages.contains(packageOf(symbol))) {
             return NO_MATCH;
         }
-        if (isInheritedNullable(tree, member, symbol, state)) {
+        if (isInheritedNullable(member, symbol, state)) {
             return NO_MATCH;
         }
         return buildDescription(tree)
@@ -89,7 +93,7 @@ public final class NullableForbiddenCheck extends BugChecker implements Annotati
 
     private static boolean isNullable(AnnotationTree tree) {
         Element symbol = ASTHelpers.getSymbol(tree);
-        return symbol instanceof TypeElement && NULLABLE.contentEquals(((TypeElement) symbol).getQualifiedName());
+        return symbol instanceof TypeElement typeElement && NULLABLE.contentEquals(typeElement.getQualifiedName());
     }
 
     private static @Nullable Tree enclosingMember(TreePath path) {
@@ -162,7 +166,7 @@ public final class NullableForbiddenCheck extends BugChecker implements Annotati
     }
 
     // @Nullable on an override is required when the overridden declaration is itself @Nullable
-    private static boolean isInheritedNullable(AnnotationTree tree, Tree member, Element symbol, VisitorState state) {
+    private static boolean isInheritedNullable(Tree member, Element symbol, VisitorState state) {
         if (symbol.getKind() != ElementKind.METHOD) {
             return false;
         }
@@ -184,21 +188,16 @@ public final class NullableForbiddenCheck extends BugChecker implements Annotati
             }
             ExecutableElement method = Objects.requireNonNull((ExecutableElement) param.getEnclosingElement());
             int index = method.getParameters().indexOf((VariableElement) param);
-            return overridesNullable(
-                    method, Objects.requireNonNull((TypeElement) method.getEnclosingElement()), index, state);
+            return overridesNullable(method, Objects.requireNonNull((TypeElement) method.getEnclosingElement()), index);
         }
         if (member instanceof MethodTree) {
             return overridesNullable(
-                    (ExecutableElement) symbol,
-                    Objects.requireNonNull((TypeElement) symbol.getEnclosingElement()),
-                    -1,
-                    state);
+                    (ExecutableElement) symbol, Objects.requireNonNull((TypeElement) symbol.getEnclosingElement()), -1);
         }
         return false;
     }
 
-    private static boolean overridesNullable(
-            ExecutableElement method, TypeElement enclosing, int paramIndex, VisitorState state) {
+    private static boolean overridesNullable(ExecutableElement method, TypeElement enclosing, int paramIndex) {
         Deque<TypeMirror> worklist = new ArrayDeque<>();
         pushSupertypes(enclosing, worklist);
         Set<TypeElement> visited = new HashSet<>();
@@ -228,10 +227,10 @@ public final class NullableForbiddenCheck extends BugChecker implements Annotati
     }
 
     private static @Nullable TypeElement typeSymbol(TypeMirror type) {
-        if (!(type instanceof com.sun.tools.javac.code.Type)) {
+        if (!(type instanceof com.sun.tools.javac.code.Type t)) {
             return null;
         }
-        return (TypeElement) ((com.sun.tools.javac.code.Type) type).tsym;
+        return (TypeElement) t.tsym;
     }
 
     private static void pushSupertypes(TypeElement type, Deque<TypeMirror> worklist) {

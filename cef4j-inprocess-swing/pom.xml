@@ -21,6 +21,11 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-code-policy</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
             <classifier>${cef.classifier}</classifier>
             <scope>test</scope>

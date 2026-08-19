@@ -30,6 +30,11 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-code-policy</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-inprocess-swing</artifactId>
         </dependency>
         <dependency>

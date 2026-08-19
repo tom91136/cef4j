@@ -364,7 +364,7 @@ class CefSessionImplTest {
 
     @Test
     void sessionSurvivesAFailedEncode() throws Exception {
-        session.request(new FailingEncoder(), TestMessages.bytesDecoder(MSG_PING));
+        var unused = session.request(new FailingEncoder(), TestMessages.bytesDecoder(MSG_PING));
         CompletableFuture<TestMessages.BytesView> healthy = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, "ok".getBytes(StandardCharsets.UTF_8)),
                 TestMessages.bytesDecoder(MSG_PING));

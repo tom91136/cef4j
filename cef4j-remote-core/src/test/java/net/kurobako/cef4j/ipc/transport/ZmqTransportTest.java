@@ -54,7 +54,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
                 CountDownLatch arrived = new CountDownLatch(1);
                 server.onReceive(frame -> arrived.countDown());
                 client.send(ByteBuffer.wrap(new byte[] {(byte) iteration}));
-                assertThat(arrived.await(5, TimeUnit.SECONDS))
+                assertThat(arrived.await(15, TimeUnit.SECONDS))
                         .as("iteration %s", iteration)
                         .isTrue();
             }

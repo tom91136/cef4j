@@ -136,7 +136,7 @@ final class RuntimeServerSupervisorTest {
                         Map.of("CEF4J_STUB_PID_FILE", pidFile.toString()))
                 .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
         RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
-        supervisor.start();
+        var unused = supervisor.start();
         assertThat(installing.await(10, TimeUnit.SECONDS)).isTrue();
         supervisor.close();
 

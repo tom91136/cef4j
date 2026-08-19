@@ -156,10 +156,6 @@ run_reactor retry ./mvnw -B dependency:go-offline \
 retry ./mvnw -B dependency:get "-Dartifact=org.apache.maven.surefire:surefire-junit-platform:3.5.6"
 retry ./mvnw -B -pl cef4j-platform spotless:check "${properties[@]}"
 
-# XXX The checker is an annotation processor in the same reactor, but Maven's annotationProcessorPaths
-# cannot resolve a reactor-built jar; install it first so downstream modules pick it up from the local repo.
-retry ./mvnw -B -pl cef4j-code-policy install -DskipTests "${properties[@]}"
-
 run_reactor ./mvnw -B clean install -DskipTests "${properties[@]}"
 verify_thin_platform_jar
 [ "${is_linux:-}" = 1 ] && verify_linux_abi
