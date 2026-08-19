@@ -49,6 +49,9 @@ JAVAFX_TESTS=false
 [ -n "${JAVAFX_VERSION}" ] && JAVAFX_TESTS=true
 JAVAFX_PLATFORM=""
 [ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
+# XXX aarch64 runners OOM when the reactor links libcef4j.so while other modules compile
+THREADS=""
+[ "${ARCH}" = aarch64 ] && THREADS="-T1"
 EXTRA_ARGS="--disable-gpu"
 [ "${is_macos:-}" = 1 ] && EXTRA_ARGS="--disable-gpu,--use-mock-keychain"
 
@@ -137,9 +140,9 @@ properties+=(
 
 run_reactor() {
     if [ "${is_linux:-}" = 1 ] && [ "${JAVAFX_TESTS}" != true ]; then
-        "$@" -pl "${non_javafx}"
+        "$@" -pl "${non_javafx}" ${THREADS:-}
     else
-        "$@"
+        "$@" ${THREADS:-}
     fi
 }
 
