@@ -201,6 +201,7 @@
                         <cef4j.runtime.server.resources>${cef4j.reactor.runtime.dir}</cef4j.runtime.server.resources>
                     </systemPropertyVariables>
                     <reuseForks>false</reuseForks>
+                    <forkCount>4</forkCount>
                 </configuration>
             </plugin>
         </plugins>
