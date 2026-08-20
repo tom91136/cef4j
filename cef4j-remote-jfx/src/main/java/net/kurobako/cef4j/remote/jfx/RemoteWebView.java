@@ -370,6 +370,12 @@ public final class RemoteWebView extends Region {
     }
 
     @Override
+    public void resize(double width, double height) {
+        super.resize(width, height);
+        reportViewportSize((int) Math.max(1, width), (int) Math.max(1, height));
+    }
+
+    @Override
     protected void layoutChildren() {
         // Stretch the image view to our layout bounds, then push the new viewport size to the server if it
         // changed. The server updates its render-handler view rect and triggers a was_resized so CEF

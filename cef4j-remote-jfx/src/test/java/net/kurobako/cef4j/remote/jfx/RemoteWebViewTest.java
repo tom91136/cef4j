@@ -23,11 +23,10 @@ import org.junit.jupiter.api.Test;
 class RemoteWebViewTest {
 
     @Test
-    void layoutBeforeAttachIsFlushedWhenBrowserBecomesReady() {
+    void resizeBeforeAttachIsFlushedWhenBrowserBecomesReady() {
         FakeSession session = new FakeSession();
         RemoteWebView view = new RemoteWebView();
         view.resize(640, 480);
-        view.layout();
 
         view.attach(session);
         session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(7)));

@@ -8,13 +8,19 @@ cd "${repo_root}"
 for name in CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION; do
     [ -n "${!name:-}" ] || { echo "${name} is required" >&2; exit 1; }
 done
-# setup-java does not always emit the java-home output; fall back to the java on PATH.
+# Fall back to the Java on PATH for local invocations that do not set JAVA_HOME.
 if [ -z "${JAVA_HOME:-}" ] || [ ! -d "${JAVA_HOME}/bin" ]; then
     JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
 fi
 [ -d "${JAVA_HOME}/bin" ] || { echo "invalid JAVA_HOME: ${JAVA_HOME}" >&2; exit 1; }
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
+actual_jdk=$(java -XshowSettings:properties -version 2>&1 \
+    | sed -n 's/^[[:space:]]*java.specification.version = //p')
+[ "${actual_jdk}" = "${JDK_VERSION}" ] || {
+    echo "JDK_VERSION=${JDK_VERSION}, but JAVA_HOME selects Java ${actual_jdk:-unknown}" >&2
+    exit 1
+}
 
 case "${CEF_PLATFORM}" in
     linux64|linuxarm64) is_linux=1 ;;
@@ -126,8 +132,11 @@ properties=(
 if [ -n "${JAVAFX_VERSION}" ]; then
     properties+=("-Djavafx.version=${JAVAFX_VERSION}" "-Djavafx.test.version=${JAVAFX_VERSION}")
 fi
-if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 150 ]; then
-    properties+=("-Dcef4j.test.ldPreload=${repo_root}/.cef-dist/cef_binary_${CEF_VERSION}_linuxarm64_minimal/Release/libcef.so")
+if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 139 ]; then
+    # CEF's Linux ARM64 binaries before M139 use enough static TLS that loading
+    # libcef.so after JVM startup can exhaust glibc's optional reserve. Reserve
+    # room without LD_PRELOAD: preloading libcef breaks old CEF ICU path setup.
+    properties+=("-Dcef4j.test.glibcTunables=glibc.rtld.optional_static_tls=4096")
 fi
 properties+=(
     "-Dcef4j.test.extraArgs=${EXTRA_ARGS}"

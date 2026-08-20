@@ -604,7 +604,7 @@
                     <arch>aarch64</arch>
                 </os>
                 <property>
-                    <name>cef4j.test.ldPreload</name>
+                    <name>cef4j.test.glibcTunables</name>
                 </property>
             </activation>
             <build>
@@ -614,7 +614,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <environmentVariables>
-                                <LD_PRELOAD>${cef4j.test.ldPreload}</LD_PRELOAD>
+                                <GLIBC_TUNABLES>${cef4j.test.glibcTunables}</GLIBC_TUNABLES>
                             </environmentVariables>
                         </configuration>
                     </plugin>

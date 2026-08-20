@@ -120,7 +120,7 @@ jobs:
       - name: Build platform release artifacts (Linux)
         if: runner.os == 'Linux'
         env:
-          JAVA_HOME: ${{ steps.jdk21.outputs.java-home }}
+          JAVA_HOME: ${{ steps.jdk21.outputs.path }}
           JDK_VERSION: '21'
           CEF_PLATFORM: ${{ matrix.platform }}
           ARCH: ${{ matrix.arch }}

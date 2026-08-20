@@ -185,7 +185,7 @@ jobs:
       - name: JDK 17 (incl. JDK 11 runtime smoke)
         shell: bash
         env:
-          JAVA_HOME: ${{ steps.jdk17.outputs.java-home }}
+          JAVA_HOME: ${{ steps.jdk17.outputs.path }}
           JDK_VERSION: '17'
           JAVA11_SMOKE: true
         run: .github/ci/build.sh
@@ -194,7 +194,7 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         env:
-          JAVA_HOME: ${{ steps.jdk21.outputs.java-home }}
+          JAVA_HOME: ${{ steps.jdk21.outputs.path }}
           JDK_VERSION: '21'
         run: .github/ci/build.sh
 
@@ -202,7 +202,7 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         env:
-          JAVA_HOME: ${{ steps.jdk25.outputs.java-home }}
+          JAVA_HOME: ${{ steps.jdk25.outputs.path }}
           JDK_VERSION: '25'
         run: .github/ci/build.sh
 

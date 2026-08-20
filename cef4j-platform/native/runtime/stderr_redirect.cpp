@@ -160,6 +160,10 @@ static HANDLE origStderrHandle = INVALID_HANDLE_VALUE;
 // Set from Java after cef_initialize to hold the exact chrome_debug.log path.
 static char crashLogPath[4096] = {0};
 
+CEF4J_JNI_EXPORT_RT(jboolean, NativeStderr, internalDescriptorsCloseOnExec0)(JNIEnv*, jclass) {
+    return JNI_TRUE;
+}
+
 static void writeCrashMessage(const char* suffix) {
     if (origStderrHandle == INVALID_HANDLE_VALUE) return;
     DWORD written;
