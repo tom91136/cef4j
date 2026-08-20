@@ -6,10 +6,13 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.newsclub.net.unix.AFUNIXServerSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
 
+@DisabledOnOs(value = OS.WINDOWS, disabledReason = "Unix-domain sockets are not a Windows transport")
 final class UdsTransportTest extends CefTransportContractTest {
     @TempDir
     static Path tmpDir;

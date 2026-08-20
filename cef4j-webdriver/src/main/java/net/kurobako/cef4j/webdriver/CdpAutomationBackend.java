@@ -310,8 +310,11 @@ public final class CdpAutomationBackend implements AutomationBackend {
                                             WebDriverError.ELEMENT_CLICK_INTERCEPTED,
                                             "another element obscures the click point");
                                 }
-                                return dispatchMouse("mousePressed", x, y)
-                                        .thenCompose(ignored -> dispatchMouse("mouseReleased", x, y));
+                                return dispatchMouse("mouseMoved", x, y, Input.MouseButton.NONE, 0, 0)
+                                        .thenCompose(ignored ->
+                                                dispatchMouse("mousePressed", x, y, Input.MouseButton.LEFT, 1, 1))
+                                        .thenCompose(ignored ->
+                                                dispatchMouse("mouseReleased", x, y, Input.MouseButton.LEFT, 1, 0));
                             });
                 });
     }
@@ -484,14 +487,16 @@ public final class CdpAutomationBackend implements AutomationBackend {
                 .thenApply(ignored -> null);
     }
 
-    private CompletableFuture<Void> dispatchMouse(String type, double x, double y) {
+    private CompletableFuture<Void> dispatchMouse(
+            String type, double x, double y, Input.MouseButton button, int clickCount, int buttons) {
         // dispatchMouseEvent's tiltX/tiltY types changed between protocol versions, use the raw command
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("type", CdpObject.json(type));
         params.put("x", x);
         params.put("y", y);
-        params.put("button", CdpObject.json(Input.MouseButton.LEFT));
-        params.put("clickCount", 1);
+        params.put("button", CdpObject.json(button));
+        params.put("buttons", buttons);
+        params.put("clickCount", clickCount);
         return client.<Void>call("Input.dispatchMouseEvent", params, result -> null)
                 .toCompletableFuture();
     }

@@ -3,11 +3,16 @@ set -euo pipefail
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 cd "${repo_root}"
+source "${repo_root}/.github/ci/build-env.sh"
 
 # XXX Required env: CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION.
 for name in CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION; do
     [ -n "${!name:-}" ] || { echo "${name} is required" >&2; exit 1; }
 done
+# setup-java emits a native Windows path, while this script runs under Git Bash.
+if [ -n "${JAVA_HOME:-}" ]; then
+    JAVA_HOME=$(normalize_java_home "${JAVA_HOME}")
+fi
 # Fall back to the Java on PATH for local invocations that do not set JAVA_HOME.
 if [ -z "${JAVA_HOME:-}" ] || [ ! -d "${JAVA_HOME}/bin" ]; then
     JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
@@ -16,7 +21,7 @@ fi
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
 actual_jdk=$(java -XshowSettings:properties -version 2>&1 \
-    | sed -n 's/^[[:space:]]*java.specification.version = //p')
+    | java_specification_version)
 [ "${actual_jdk}" = "${JDK_VERSION}" ] || {
     echo "JDK_VERSION=${JDK_VERSION}, but JAVA_HOME selects Java ${actual_jdk:-unknown}" >&2
     exit 1
@@ -28,6 +33,13 @@ case "${CEF_PLATFORM}" in
     macosx64|macosarm64) is_macos=1 ;;
     *) echo "unknown CEF_PLATFORM: ${CEF_PLATFORM}" >&2; exit 2 ;;
 esac
+
+if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 139 ]; then
+    # The reserve is fixed when glibc starts a process, so export it before
+    # launching Maven and its test JVMs. Preloading libcef breaks old CEF's
+    # subprocess ICU setup.
+    export GLIBC_TUNABLES=glibc.rtld.optional_static_tls=4096
+fi
 
 if [ "${is_linux:-}" = 1 ]; then
     : "${CMAKE_SYSROOT:?CMAKE_SYSROOT must point at a prepared Linux sysroot}"
@@ -56,7 +68,7 @@ JAVAFX_TESTS=false
 JAVAFX_PLATFORM=""
 [ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
 EXTRA_ARGS="--disable-gpu"
-[ "${is_macos:-}" = 1 ] && EXTRA_ARGS="--disable-gpu,--use-mock-keychain"
+[ "${is_macos:-}" = 1 ] && EXTRA_ARGS="--disable-gpu,--disable-gpu-compositing,--use-mock-keychain"
 
 retry() {
     local attempt
@@ -131,12 +143,6 @@ properties=(
 # omit it when JavaFX is unavailable for the platform/JDK instead.
 if [ -n "${JAVAFX_VERSION}" ]; then
     properties+=("-Djavafx.version=${JAVAFX_VERSION}" "-Djavafx.test.version=${JAVAFX_VERSION}")
-fi
-if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 139 ]; then
-    # CEF's Linux ARM64 binaries before M139 use enough static TLS that loading
-    # libcef.so after JVM startup can exhaust glibc's optional reserve. Reserve
-    # room without LD_PRELOAD: preloading libcef breaks old CEF ICU path setup.
-    properties+=("-Dcef4j.test.glibcTunables=glibc.rtld.optional_static_tls=4096")
 fi
 properties+=(
     "-Dcef4j.test.extraArgs=${EXTRA_ARGS}"

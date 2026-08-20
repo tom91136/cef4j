@@ -184,9 +184,9 @@ class RuntimeServerDevToolsIntegrationTest {
 
             DOM.BoxModel model = get(dom.getBoxModel(new DOM.GetBoxModelRequest().nodeId(buttonId)));
             double[] center = quadCenter(model.content());
-            dispatchMouse(input, "mouseMoved", center[0], center[1], "none", 0L);
-            dispatchMouse(input, "mousePressed", center[0], center[1], "left", 1L);
-            dispatchMouse(input, "mouseReleased", center[0], center[1], "left", 1L);
+            dispatchMouse(input, "mouseMoved", center[0], center[1], "none", 0L, 0L);
+            dispatchMouse(input, "mousePressed", center[0], center[1], "left", 1L, 1L);
+            dispatchMouse(input, "mouseReleased", center[0], center[1], "left", 1L, 0L);
 
             Runtime.ConsoleAPICalledEvent clicked = console.await(
                     event -> consoleContains(event, "cef4j-fixture-click") && consoleContains(event, run),
@@ -328,9 +328,10 @@ class RuntimeServerDevToolsIntegrationTest {
     }
 
     private static void dispatchMouse(
-            Input.Client input, String type, double x, double y, String button, long clickCount) throws Exception {
+            Input.Client input, String type, double x, double y, String button, long clickCount, long buttons)
+            throws Exception {
         Input.DispatchMouseEventRequest request =
-                new Input.DispatchMouseEventRequest(Input.DispatchMouseEventTypeValues.of(type), x, y);
+                new Input.DispatchMouseEventRequest(Input.DispatchMouseEventTypeValues.of(type), x, y).buttons(buttons);
         if (!"none".equals(button)) {
             request.button(Input.MouseButton.of(button));
         }
