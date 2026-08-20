@@ -125,7 +125,7 @@ class CefXmlReaderTest extends CefTestBase {
         @Override
         public void close() {
             xmlReader.cefClose();
-            streamReader.cefClose();
+            streamReader.close();
         }
     }
 
