@@ -57,3 +57,5 @@ grep -q 'cef_binary_.*minimal.tar.bz2.sha1' "${repo_root}/.github/actions/cef-ar
 if grep -q -- '<argument>--without-swiftshader</argument>' "${repo_root}/cef4j-platform/pom.xml"; then
     fail "reactor test runtimes must retain SwiftShader"
 fi
+grep -q -- '-Doutput="${non_javafx_file}"' "${repo_root}/.github/ci/build.sh" \
+    || fail "non-JavaFX module discovery must preserve visible Maven diagnostics"

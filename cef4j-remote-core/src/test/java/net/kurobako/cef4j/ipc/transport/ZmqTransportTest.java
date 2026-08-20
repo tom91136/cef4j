@@ -93,16 +93,17 @@ final class ZmqTransportTest extends CefTransportContractTest {
     @Test
     void reconnectsWhenPeerGreetingNeverCompletes() throws Exception {
         byte[] zmtpGreetingPrefix = {(byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 1, 0x7f};
-        CountDownLatch connections = new CountDownLatch(2);
+        CountDownLatch firstConnection = new CountDownLatch(1);
+        CountDownLatch reconnected = new CountDownLatch(1);
         try (ServerSocket server = new ServerSocket(0, 2, InetAddress.getLoopbackAddress())) {
             Thread peer = new Thread(
                     () -> {
                         try (Socket first = server.accept()) {
-                            connections.countDown();
+                            firstConnection.countDown();
                             first.getOutputStream().write(zmtpGreetingPrefix);
                             first.getOutputStream().flush();
                             try (Socket second = server.accept()) {
-                                if (second.isConnected()) connections.countDown();
+                                if (second.isConnected()) reconnected.countDown();
                             }
                         } catch (Exception ignored) {
                             // Closing the test server is the expected way to release a pending accept.
@@ -113,7 +114,13 @@ final class ZmqTransportTest extends CefTransportContractTest {
             peer.start();
             try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort())) {
                 transport.send(ByteBuffer.wrap(new byte[] {1}));
-                assertThat(connections.await(5, TimeUnit.SECONDS)).isTrue();
+                assertThat(firstConnection.await(2, TimeUnit.SECONDS)).isTrue();
+                assertThat(reconnected.await(5, TimeUnit.SECONDS))
+                        .as("a slow but live CI peer should get more than five seconds to finish its greeting")
+                        .isFalse();
+                assertThat(reconnected.await(10, TimeUnit.SECONDS))
+                        .as("a permanently stalled greeting should eventually reconnect")
+                        .isTrue();
             }
         }
     }

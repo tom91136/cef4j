@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -38,8 +39,8 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
-    private static final int HANDSHAKE_TIMEOUT_MS = 3_000;
-    private static final long HANDSHAKE_TIMEOUT_NANOS = 3_000_000_000L;
+    private static final int HANDSHAKE_TIMEOUT_MS = 10_000;
+    private static final long HANDSHAKE_TIMEOUT_NANOS = TimeUnit.MILLISECONDS.toNanos(HANDSHAKE_TIMEOUT_MS);
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -128,8 +129,11 @@ public final class ZmqTransport implements CefTransport {
             // never reaches the peer. The client-side monitor recovery below remains a second line of defence.
             main.setHandshakeIvl(HANDSHAKE_TIMEOUT_MS);
 
-            int eventMask =
-                    ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_DISCONNECTED | ZMQ.EVENT_HANDSHAKE_PROTOCOL;
+            int eventMask = ZMQ.EVENT_CONNECTED
+                    | ZMQ.EVENT_ACCEPTED
+                    | ZMQ.EVENT_DISCONNECTED
+                    | ZMQ.EVENT_HANDSHAKE_PROTOCOL
+                    | ZMQ.HANDSHAKE_SUCCEEDED;
             // The event callback runs on JeroMQ's I/O thread. It only transfers immutable event values to the socket
             // owner; application callbacks and socket operations stay on this worker.
             if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {

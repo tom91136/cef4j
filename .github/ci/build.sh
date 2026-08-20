@@ -147,7 +147,12 @@ verify_linux_abi() {
 java -version
 [ "${is_linux:-}" = 1 ] && clang++ --version
 
-non_javafx=$(./mvnw -q -N help:evaluate -Dexpression=cef4j.nonJavafxModules -DforceStdout -DskipTests)
+mkdir -p target
+non_javafx_file=target/ci-non-javafx-modules.txt
+./mvnw -B -N help:evaluate -Dexpression=cef4j.nonJavafxModules -DforceStdout -DskipTests \
+    -Doutput="${non_javafx_file}"
+non_javafx=$(tr -d '\r\n' < "${non_javafx_file}")
+[ -n "${non_javafx}" ] || { echo "cef4j.nonJavafxModules evaluated to an empty value" >&2; exit 1; }
 properties=(
     "-Dcef.version=${CEF_VERSION}"
     "-Dcef.api.version=${CEF_API}"
