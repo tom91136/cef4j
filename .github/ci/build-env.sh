@@ -20,6 +20,12 @@ cef_extra_args() {
     esac
 }
 
+xvfb_server_args() {
+    # DisplayLock serialises UI classes, leaving short client-free gaps between them.
+    # Do not let Xvfb reset during those gaps while the parallel reactor is still running.
+    printf '%s\n' '-screen 0 1920x1080x24 -noreset'
+}
+
 static_tls_reserve() {
     local platform=$1 arch=$2 cef_api=$3
     if [ "${platform}" = linuxarm64 ] && [ "${arch}" = aarch64 ] && [ "${cef_api}" -lt 139 ]; then

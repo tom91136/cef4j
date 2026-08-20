@@ -173,7 +173,7 @@ run_reactor() {
 
 run_with_display() {
     if [ "${is_linux:-}" = 1 ]; then
-        xvfb-run -a "$@"
+        xvfb-run -a --server-args="$(xvfb_server_args)" "$@"
     else
         "$@"
     fi

@@ -51,6 +51,11 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-shared</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

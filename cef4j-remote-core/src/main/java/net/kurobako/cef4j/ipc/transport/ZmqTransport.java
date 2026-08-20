@@ -38,6 +38,7 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
+    private static final int HANDSHAKE_TIMEOUT_MS = 3_000;
     private static final long HANDSHAKE_TIMEOUT_NANOS = 3_000_000_000L;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
@@ -122,6 +123,10 @@ public final class ZmqTransport implements CefTransport {
             // Local runtime servers still have immediate Process.onExit supervision independent of this timeout.
             main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
             main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
+            // Bound and connected sockets both need a finite native handshake interval. Without it, JeroMQ can
+            // occasionally leave a rapidly replaced DEALER pipe half-open indefinitely, so the first queued frame
+            // never reaches the peer. The client-side monitor recovery below remains a second line of defence.
+            main.setHandshakeIvl(HANDSHAKE_TIMEOUT_MS);
 
             int eventMask =
                     ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_DISCONNECTED | ZMQ.EVENT_HANDSHAKE_PROTOCOL;

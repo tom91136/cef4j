@@ -30,6 +30,12 @@ actual=$(cef_extra_args macosx64)
 actual=$(cef_extra_args linux64)
 [ "${actual}" = --disable-gpu ] || fail "unexpected Linux CEF arguments: ${actual}"
 
+actual=$(xvfb_server_args)
+case " ${actual} " in
+    *' -noreset '*) ;;
+    *) fail "Xvfb must remain alive between display-locked UI test classes: ${actual}" ;;
+esac
+
 actual=$(static_tls_reserve linuxarm64 aarch64 116)
 [ "${actual}" = 65536 ] || fail "unexpected ARM64 static TLS reserve: ${actual}"
 [ -z "$(static_tls_reserve linuxarm64 aarch64 144)" ] || fail "CEF 144 should not need an enlarged static TLS reserve"
@@ -42,6 +48,8 @@ actual=$(printf '%s\n' \
 [ "${actual}" = 0x10000 ] || fail "unexpected parsed glibc tunable: ${actual}"
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
+grep -q '<spotbugs.timeout>1800000</spotbugs.timeout>' "${repo_root}/pom.xml" \
+    || fail "SpotBugs must allow slower ARM64 analysis to run for 30 minutes"
 grep -q 'archive}.sha1" skipexisting="true"' "${repo_root}/cef4j-cef-dist/pom.xml" \
     || fail "Maven must reuse the CEF SHA-1 sidecar prepared by CI"
 grep -q 'cef_binary_.*minimal.tar.bz2.sha1' "${repo_root}/.github/actions/cef-archives/action.yml" \

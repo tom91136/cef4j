@@ -18,8 +18,11 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.test.DisplayLock;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(DisplayLock.class)
 class RemoteWebViewTest {
 
     @Test

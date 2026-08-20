@@ -63,6 +63,8 @@
         <commons.compress.version>1.28.0</commons.compress.version>
         <selenium.version>4.47.0</selenium.version>
         <spotbugs.version>4.10.3.0</spotbugs.version>
+        <!-- Max-effort analysis exceeds the plugin's 10-minute default on hosted ARM64 runners. -->
+        <spotbugs.timeout>1800000</spotbugs.timeout>
         <maven.source.version>3.4.0</maven.source.version>
         <maven.release.version>3.3.1</maven.release.version>
         <maven.gpg.version>3.2.8</maven.gpg.version>

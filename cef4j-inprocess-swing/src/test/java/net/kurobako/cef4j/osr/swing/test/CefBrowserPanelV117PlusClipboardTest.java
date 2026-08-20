@@ -64,6 +64,9 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             setSystemClipboardText("seed");
             selectSourceText(panel, layout);
             performClipboardAction(panel, Region.SOURCE, ClipboardAction.CUT, cut);
+            assertThat(waitUntil(() -> titleFor(panel).equals("|"), 5_000))
+                    .as("cut iteration %s should complete before focus moves", iteration)
+                    .isTrue();
             focusTarget(panel, layout);
             performClipboardAction(panel, Region.TARGET, ClipboardAction.PASTE, paste);
 
