@@ -70,7 +70,7 @@ class VisitorCallbackIntegrationTest {
     void getSourceVisitorRoundTrip() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Wire visitor routing once per session via the codegen-emitted server. CefStringVisitor.route()
             // subscribes the matching XxxCallbackEvent and dispatches by callbackId into the supplied table.

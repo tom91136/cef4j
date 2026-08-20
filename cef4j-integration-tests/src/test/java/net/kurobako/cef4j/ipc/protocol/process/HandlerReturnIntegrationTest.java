@@ -48,7 +48,7 @@ class HandlerReturnIntegrationTest {
     void doCloseInterceptFiresAndReceivesJvmAnswer() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             CompletableFuture<RemoteHandle> doCloseFuture = new CompletableFuture<>();

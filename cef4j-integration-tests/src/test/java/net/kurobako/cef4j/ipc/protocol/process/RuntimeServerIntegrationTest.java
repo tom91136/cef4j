@@ -105,7 +105,7 @@ class RuntimeServerIntegrationTest {
         Path socket = tmp.resolve("ipc.sock");
         try (RuntimeServerProcess server = startServerWithEnv("uds", "unix://" + socket);
                 CefTransport transport = server.connect();
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             CreateBrowserResponse response = session.request(
                             new CreateBrowserRequest(
                                     "about:blank", BrowserSettings.builder().build()),
@@ -125,7 +125,7 @@ class RuntimeServerIntegrationTest {
                 isWindows() ? "pipe://cef4j-test-" + Long.toUnsignedString(System.nanoTime()) : "tcp://127.0.0.1:0";
         try (RuntimeServerProcess server = startServerWithEnv("local", endpoint);
                 CefTransport transport = server.connect();
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             CreateBrowserResponse response = session.request(
                             new CreateBrowserRequest(
                                     "about:blank", BrowserSettings.builder().build()),
@@ -141,7 +141,7 @@ class RuntimeServerIntegrationTest {
     void webSocketTransportBootstrapsRuntimeServerSession() throws Exception {
         try (RuntimeServerProcess server = startServerWithEnv("websocket", "ws://127.0.0.1:0/cef4j");
                 CefTransport transport = server.connect();
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             CreateBrowserResponse response = session.request(
                             new CreateBrowserRequest(
                                     "about:blank", BrowserSettings.builder().build()),
@@ -160,7 +160,7 @@ class RuntimeServerIntegrationTest {
         HttpServer fixture = startFixture();
         try (RuntimeServerProcess server = startServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
@@ -213,7 +213,7 @@ class RuntimeServerIntegrationTest {
         HttpServer fixture = startFixture();
         try (RuntimeServerProcess server = startServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();

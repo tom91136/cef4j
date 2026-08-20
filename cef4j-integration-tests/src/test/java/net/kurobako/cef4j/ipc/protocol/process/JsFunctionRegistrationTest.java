@@ -75,7 +75,7 @@ class JsFunctionRegistrationTest {
     void registeredJsFunctionFiresOnInvocation() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Wire JsFunctionCallEvent → callbackId → registered Java callback. Mirrors the visitor
             // codegen pattern from #77 (JvmCallbackTable holds Java handlers, event arrives with id).

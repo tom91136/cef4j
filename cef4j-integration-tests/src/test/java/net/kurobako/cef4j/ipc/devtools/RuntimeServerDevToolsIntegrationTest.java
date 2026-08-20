@@ -83,7 +83,7 @@ class RuntimeServerDevToolsIntegrationTest {
         try (FixtureSite site = FixtureSite.start();
                 RuntimeServerProcess server = startServer(runtime);
                 CefTransport transport = server.connect();
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
             session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,

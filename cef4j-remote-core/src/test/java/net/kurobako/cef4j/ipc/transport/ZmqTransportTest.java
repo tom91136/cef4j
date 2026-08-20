@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.zeromq.SocketType;
+import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
 final class ZmqTransportTest extends CefTransportContractTest {
     @Override
@@ -24,6 +27,18 @@ final class ZmqTransportTest extends CefTransportContractTest {
     @Test
     void providerIsDiscoverable() {
         assertThat(CefTransports.available()).contains("zmq");
+    }
+
+    @Test
+    void allowsLongCiSchedulingPausesBeforeDeclaringPeerDead() {
+        try (ZContext context = new ZContext();
+                ZMQ.Socket socket = context.createSocket(SocketType.DEALER)) {
+            ZmqTransport.configureLiveness(socket);
+
+            assertThat(socket.getHeartbeatIvl()).isEqualTo(1_000);
+            assertThat(socket.getHeartbeatTimeout()).isEqualTo(30_000);
+            assertThat(socket.getHandshakeIvl()).isEqualTo(10_000);
+        }
     }
 
     @Test

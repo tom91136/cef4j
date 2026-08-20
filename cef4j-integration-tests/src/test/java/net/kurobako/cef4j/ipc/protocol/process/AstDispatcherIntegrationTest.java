@@ -62,7 +62,7 @@ class AstDispatcherIntegrationTest {
     void browserIsValidThroughAstDispatcher() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             session.onLatest(
@@ -92,7 +92,7 @@ class AstDispatcherIntegrationTest {
         // replay rather than depending on process startup timing.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> viaTyped = new CompletableFuture<>();
             CompletableFuture<RemoteHandle> viaRaw = new CompletableFuture<>();
@@ -119,7 +119,7 @@ class AstDispatcherIntegrationTest {
         // finds a receiver and the response comes back empty (default-decoded "").
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             session.onLatest(
@@ -163,7 +163,7 @@ class AstDispatcherIntegrationTest {
         // carries the same session so chained calls (e.g. `frame.getUrl()`) work without manual rewrapping.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             session.onLatest(
@@ -189,7 +189,7 @@ class AstDispatcherIntegrationTest {
         // signals when CEF has finished navigating; getUrl() afterward is expected to match what we asked for.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             session.onLatest(
@@ -227,7 +227,7 @@ class AstDispatcherIntegrationTest {
         // calls route to the right receiver — getUrl() on browser A returns A's URL, not B's.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
             session.onLatest(
@@ -287,7 +287,7 @@ class AstDispatcherIntegrationTest {
         // browser's handle differs from the bootstrap's, proving the server minted a fresh table entry.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
             session.onLatest(

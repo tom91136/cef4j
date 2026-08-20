@@ -137,7 +137,9 @@ final class RuntimeServerSupervisorTest {
                 .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
         RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
         var unused = supervisor.start();
-        assertThat(installing.await(10, TimeUnit.SECONDS)).isTrue();
+        // The latch guards the race being tested, not startup performance. Native CI builds can starve the stub
+        // process for more than ten seconds before it reaches the install transition.
+        assertThat(installing.await(30, TimeUnit.SECONDS)).isTrue();
         supervisor.close();
 
         // Wait for spawn to execute its install transition, then for the final state to settle at CLOSED.

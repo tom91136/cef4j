@@ -36,7 +36,7 @@ class ApiRecordingReplayIntegrationTest {
                         environment.binary(), environment.resources(), Duration.ofSeconds(20));
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 RecordingCefSession recording =
-                        RecordingCefSession.toFile(new CefSessionImpl(transport, Duration.ofSeconds(20)), trace)) {
+                        RecordingCefSession.toFile(new CefSessionImpl(transport, Duration.ofSeconds(30)), trace)) {
             AtomicReference<RemoteHandle> browserHandle = new AtomicReference<>();
             CefSession.HandlerRegistration lifecycle = recording.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,

@@ -52,7 +52,7 @@ class MmapFrameTransportIntegrationTest {
     void onFrameDeliversBgraPixelsAndDirtyRect() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Bind the frame transport eagerly — the server's first paint can fire before
             // LifeSpanHandlerOnAfterCreatedEvent reaches us, and a `bind(session, handle)` issued after
@@ -129,7 +129,7 @@ class MmapFrameTransportIntegrationTest {
     void onFrameOnlyDeliversForBoundBrowser() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             session.onLatest(

@@ -67,7 +67,7 @@ class InterceptWireIntegrationTest {
     void interceptHandlerReturnIsRoutedBackToRuntimeServer() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             byte[] requestPayload = "ping".getBytes(java.nio.charset.StandardCharsets.UTF_8);
             byte[] expectedReply = "pong".getBytes(java.nio.charset.StandardCharsets.UTF_8);

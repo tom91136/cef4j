@@ -62,7 +62,7 @@ class OsrPaintIntegrationTest {
     void osrPaintEventDeliversNonEmptyBitmap() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<OsrPaintEvent> events = new LinkedBlockingQueue<>();
             session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, events::offer);

@@ -76,7 +76,7 @@ class CodegenV8DispatchTest {
     void codegenIsStringMatchesEvalKind() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Bootstrap: wait for an after-created browser + V8 context.
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
@@ -112,7 +112,7 @@ class CodegenV8DispatchTest {
     void codegenDrillsIntoPropertiesAndReadsLeafValues() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Same bootstrap dance as the first test.
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
@@ -163,7 +163,7 @@ class CodegenV8DispatchTest {
     void rendererReleaseHandleDropsRendererTableEntry() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
             session.onLatest(

@@ -56,7 +56,7 @@ class ViewportResizeIntegrationTest {
     void setViewportSizeTriggersRepaintAtNewDimensions() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Subscribe to OsrPaintEvent first so the bootstrap paint isn't dropped.
             LinkedBlockingQueue<OsrPaintEvent> paints = new LinkedBlockingQueue<>();

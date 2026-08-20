@@ -54,7 +54,7 @@ class RendererRelayIntegrationTest {
     void v8ContextCreatedEventReachesJvmFromRenderer() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<V8ContextCreatedEvent> events = new LinkedBlockingQueue<>();
             session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, events::offer);

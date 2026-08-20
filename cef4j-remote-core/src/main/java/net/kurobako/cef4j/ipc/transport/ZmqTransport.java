@@ -38,7 +38,7 @@ public final class ZmqTransport implements CefTransport {
     private static final Logger LOG = LoggerFactory.getLogger(ZmqTransport.class);
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
-    private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
+    private static final int HEARTBEAT_TIMEOUT_MS = 30_000;
     private static final int HANDSHAKE_TIMEOUT_MS = 10_000;
     private static final long HANDSHAKE_TIMEOUT_NANOS = TimeUnit.MILLISECONDS.toNanos(HANDSHAKE_TIMEOUT_MS);
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
@@ -117,17 +117,7 @@ public final class ZmqTransport implements CefTransport {
         ZContext ctx = SharedContext.INSTANCE.shadow();
         ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
         try {
-            main.setLinger(0);
-            main.setImmediate(true);
-            // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
-            // time to resume: a two-second timeout produced false disconnects during concurrent native CI builds.
-            // Local runtime servers still have immediate Process.onExit supervision independent of this timeout.
-            main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
-            main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
-            // Bound and connected sockets both need a finite native handshake interval. Without it, JeroMQ can
-            // occasionally leave a rapidly replaced DEALER pipe half-open indefinitely, so the first queued frame
-            // never reaches the peer. The client-side monitor recovery below remains a second line of defence.
-            main.setHandshakeIvl(HANDSHAKE_TIMEOUT_MS);
+            configureLiveness(main);
 
             int eventMask = ZMQ.EVENT_CONNECTED
                     | ZMQ.EVENT_ACCEPTED
@@ -198,6 +188,20 @@ public final class ZmqTransport implements CefTransport {
                     sentFrames,
                     receivedFrames);
         }
+    }
+
+    static void configureLiveness(ZMQ.Socket socket) {
+        socket.setLinger(0);
+        socket.setImmediate(true);
+        // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
+        // time to resume: shorter timeouts produced false disconnects during concurrent native CI builds. Local
+        // runtime servers still have immediate Process.onExit supervision independent of this timeout.
+        socket.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
+        socket.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
+        // Bound and connected sockets both need a finite native handshake interval. Without it, JeroMQ can
+        // occasionally leave a rapidly replaced DEALER pipe half-open indefinitely, so the first queued frame never
+        // reaches the peer. The client-side monitor recovery below remains a second line of defence.
+        socket.setHandshakeIvl(HANDSHAKE_TIMEOUT_MS);
     }
 
     @Override

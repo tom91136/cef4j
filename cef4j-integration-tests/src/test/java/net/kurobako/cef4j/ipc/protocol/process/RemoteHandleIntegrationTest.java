@@ -55,7 +55,7 @@ class RemoteHandleIntegrationTest {
     void remoteHandleRoundTripThroughRealRuntimeServer() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
             session.onLatest(
@@ -81,7 +81,7 @@ class RemoteHandleIntegrationTest {
     void requestWithUnknownHandleDoesNotCrashRuntimeServer() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Bogus handle: dispatcher's null-receiver path now sends Kind::Error(ReceiverGone), which the
             // session translates into CefRemoteException. Runtime server stays alive (no UI-thread post, no crash).

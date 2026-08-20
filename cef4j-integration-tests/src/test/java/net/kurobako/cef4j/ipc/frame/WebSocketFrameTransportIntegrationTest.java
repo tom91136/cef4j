@@ -34,7 +34,7 @@ final class WebSocketFrameTransportIntegrationTest {
     void realRuntimeServerPublishesInlinePixelsOverWebSocket() throws Exception {
         try (RuntimeServerProcess server = spawnServer();
                 CefTransport control = server.connect();
-                CefSession session = new CefSessionImpl(control, Duration.ofSeconds(20));
+                CefSession session = new CefSessionImpl(control, Duration.ofSeconds(30));
                 InlineFrameTransport frames = InlineFrameTransport.bindAll(session)) {
             CountDownLatch arrived = new CountDownLatch(1);
             AtomicInteger width = new AtomicInteger();

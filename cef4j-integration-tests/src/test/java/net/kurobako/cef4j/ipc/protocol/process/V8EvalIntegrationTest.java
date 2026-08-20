@@ -131,7 +131,7 @@ class V8EvalIntegrationTest {
     void retainsObjectAsV8HandleAndDrillsIntoProperty() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
 
@@ -183,7 +183,7 @@ class V8EvalIntegrationTest {
     void executesJsFunctionFromJvmHandle() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
 
@@ -220,7 +220,7 @@ class V8EvalIntegrationTest {
     void primitiveValuesDoNotPopulateHandleEvenWhenRetainRequested() throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
 
@@ -258,7 +258,7 @@ class V8EvalIntegrationTest {
     private EvaluateJavascriptResponse runEval(String code) throws Exception {
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
             return session.request(
                             new EvaluateJavascriptRequest(frame.handle(), code, false),
