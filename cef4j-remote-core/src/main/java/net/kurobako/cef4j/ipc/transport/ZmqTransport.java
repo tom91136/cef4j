@@ -38,7 +38,7 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
-    private static final long HANDSHAKE_TIMEOUT_NANOS = 2_000_000_000L;
+    private static final long HANDSHAKE_TIMEOUT_NANOS = 3_000_000_000L;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -231,6 +231,7 @@ public final class ZmqTransport implements CefTransport {
             if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
                 tcpConnected = true;
                 peerReady = true;
+                disconnected = false;
                 if (!zmtpHandshaken && handshakeDeadlineNanos == 0) {
                     handshakeDeadlineNanos = System.nanoTime() + HANDSHAKE_TIMEOUT_NANOS;
                 }

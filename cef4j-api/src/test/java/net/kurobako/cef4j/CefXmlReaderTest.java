@@ -113,19 +113,38 @@ class CefXmlReaderTest extends CefTestBase {
         }
     }
 
-    private static CefXmlReader openXml(
+    private static final class ManagedXmlReader implements AutoCloseable {
+        final CefStreamReader streamReader;
+        final CefXmlReader xmlReader;
+
+        ManagedXmlReader(CefStreamReader streamReader, CefXmlReader xmlReader) {
+            this.streamReader = streamReader;
+            this.xmlReader = xmlReader;
+        }
+
+        @Override
+        public void close() {
+            xmlReader.cefClose();
+            streamReader.cefClose();
+        }
+    }
+
+    private static ManagedXmlReader openXml(
             BiFunction<byte[], Path, CefStreamReader> factory, String xmlString, Path tmpDir, String uri) {
         byte[] bytes = xmlString.getBytes(StandardCharsets.UTF_8);
-        CefStreamReader reader = factory.apply(bytes, tmpDir);
-        return CefXmlReader.create(reader, CefXmlEncodingType.of(CefXmlEncodingType.Kind.UTF8), uri)
+        CefStreamReader streamReader = factory.apply(bytes, tmpDir);
+        CefXmlReader xmlReader = CefXmlReader.create(
+                        streamReader, CefXmlEncodingType.of(CefXmlEncodingType.Kind.UTF8), uri)
                 .orElseThrow();
+        return new ManagedXmlReader(streamReader, xmlReader);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
     void parseElementsAndText(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir)
             throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://simple.xml")) {
+        try (ManagedXmlReader mxr = openXml(factory, SIMPLE_XML, tmpDir, "test://simple.xml")) {
+            CefXmlReader xr = mxr.xmlReader;
             List<String> elementNames = new ArrayList<>();
             List<String> textValues = new ArrayList<>();
 
@@ -142,14 +161,14 @@ class CefXmlReaderTest extends CefTestBase {
             assertThat(xr.hasError()).isFalse();
             assertThat(elementNames).containsExactly("root", "item", "item", "empty");
             assertThat(textValues).containsExactly("first", "second");
-            assertThat(xr.cefClose()).isTrue();
         }
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
     void parseAttributes(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://attrs.xml")) {
+        try (ManagedXmlReader mxr = openXml(factory, SIMPLE_XML, tmpDir, "test://attrs.xml")) {
+            CefXmlReader xr = mxr.xmlReader;
             List<String> attrValues = new ArrayList<>();
 
             while (xr.moveToNextNode()) {
@@ -161,14 +180,14 @@ class CefXmlReaderTest extends CefTestBase {
 
             assertThat(xr.hasError()).isFalse();
             assertThat(attrValues).containsExactly("1", "2");
-            assertThat(xr.cefClose()).isTrue();
         }
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
     void emptyElement(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://empty.xml")) {
+        try (ManagedXmlReader mxr = openXml(factory, SIMPLE_XML, tmpDir, "test://empty.xml")) {
+            CefXmlReader xr = mxr.xmlReader;
             boolean foundEmpty = false;
 
             while (xr.moveToNextNode()) {
@@ -183,14 +202,14 @@ class CefXmlReaderTest extends CefTestBase {
 
             assertThat(foundEmpty).isTrue();
             assertThat(xr.hasError()).isFalse();
-            assertThat(xr.cefClose()).isTrue();
         }
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
     void depthAndLineNumbers(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://depth.xml")) {
+        try (ManagedXmlReader mxr = openXml(factory, SIMPLE_XML, tmpDir, "test://depth.xml")) {
+            CefXmlReader xr = mxr.xmlReader;
             int maxDepth = 0;
             List<Integer> elementLines = new ArrayList<>();
 
@@ -205,7 +224,6 @@ class CefXmlReaderTest extends CefTestBase {
             assertThat(elementLines).allSatisfy(l -> assertThat(l).isGreaterThan(0));
             assertThat(maxDepth).isGreaterThanOrEqualTo(1);
             assertThat(xr.hasError()).isFalse();
-            assertThat(xr.cefClose()).isTrue();
         }
     }
 
@@ -213,7 +231,8 @@ class CefXmlReaderTest extends CefTestBase {
     @MethodSource("streamFactories")
     void namespacePrefixAndUri(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir)
             throws Exception {
-        try (CefXmlReader xr = openXml(factory, NS_XML, tmpDir, "test://ns.xml")) {
+        try (ManagedXmlReader mxr = openXml(factory, NS_XML, tmpDir, "test://ns.xml")) {
+            CefXmlReader xr = mxr.xmlReader;
             boolean foundChild = false;
 
             while (xr.moveToNextNode()) {
@@ -230,7 +249,6 @@ class CefXmlReaderTest extends CefTestBase {
 
             assertThat(foundChild).isTrue();
             assertThat(xr.hasError()).isFalse();
-            assertThat(xr.cefClose()).isTrue();
         }
     }
 
@@ -238,7 +256,8 @@ class CefXmlReaderTest extends CefTestBase {
     @MethodSource("streamFactories")
     void innerAndOuterXml(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><child>text</child></root>\n";
-        try (CefXmlReader xr = openXml(factory, xml, tmpDir, "test://innerxml.xml")) {
+        try (ManagedXmlReader mxr = openXml(factory, xml, tmpDir, "test://innerxml.xml")) {
+            CefXmlReader xr = mxr.xmlReader;
             while (xr.moveToNextNode()) {
                 if (xr.getType().kind().orElse(null) == CefXmlNodeType.Kind.ELEMENT_START
                         && xr.getLocalName().orElse("").equals("root")) {
@@ -248,7 +267,6 @@ class CefXmlReaderTest extends CefTestBase {
                 }
             }
             assertThat(xr.hasError()).isFalse();
-            assertThat(xr.cefClose()).isTrue();
         }
     }
 }
