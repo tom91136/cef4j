@@ -59,3 +59,9 @@ if grep -q -- '<argument>--without-swiftshader</argument>' "${repo_root}/cef4j-p
 fi
 grep -q -- '-Doutput="${non_javafx_file}"' "${repo_root}/.github/ci/build.sh" \
     || fail "non-JavaFX module discovery must preserve visible Maven diagnostics"
+grep -Eq 'HEARTBEAT_TIMEOUT_MS = 30_000;' \
+    "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
+    || fail "the JVM transport must tolerate a 30-second scheduler stall"
+grep -Eq 'kHeartbeatTimeoutMs = 30000;' \
+    "${repo_root}/cef4j-runtime-server/src/main/cpp/ZmqIpcServer.cpp" \
+    || fail "the native transport must match the JVM heartbeat timeout"
