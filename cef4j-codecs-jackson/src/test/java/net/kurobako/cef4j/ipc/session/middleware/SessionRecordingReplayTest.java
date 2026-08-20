@@ -169,10 +169,11 @@ class SessionRecordingReplayTest {
                         3, TimeUnit.MILLISECONDS.toNanos(101), SessionTrace.Kind.CLOSE, 0, 0, null, null, null));
         ReplayCefSession replay =
                 new ReplayCefSession(new SessionTrace.Recording(Collections.emptyMap(), entries), ReplayMode.TIMED);
+        long startedAt = System.nanoTime();
         replay.start();
         CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
-        assertThat(result).isNotDone();
         assertThat(result.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
+        assertThat(System.nanoTime() - startedAt).isGreaterThanOrEqualTo(TimeUnit.MILLISECONDS.toNanos(100));
         replay.close();
         replay.verifyComplete();
     }

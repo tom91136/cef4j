@@ -80,7 +80,13 @@ final class NativeStderr {
         setCrashLogPath0(cachePath + sep + "chrome_debug.log");
     }
 
+    static boolean internalDescriptorsCloseOnExec() {
+        return OS.isWindows() || internalDescriptorsCloseOnExec0();
+    }
+
     private static native Object[] redirectStderr0();
 
     private static native void setCrashLogPath0(String path);
+
+    private static native boolean internalDescriptorsCloseOnExec0();
 }

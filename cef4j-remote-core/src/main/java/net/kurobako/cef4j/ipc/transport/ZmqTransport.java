@@ -43,6 +43,14 @@ public final class ZmqTransport implements CefTransport {
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
+    /**
+     * JeroMQ recommends one context per process. Each worker owns a shadow so its socket lifecycle remains isolated,
+     * while rapid transport restart does not repeatedly create and tear down JeroMQ's I/O infrastructure.
+     */
+    private static final class SharedContext {
+        private static final ZContext INSTANCE = new ZContext(1);
+    }
+
     private volatile String endpoint;
     private final boolean runtimeServerClient;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
@@ -102,9 +110,9 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
-        // Create, use and close both the context and socket on this thread. JeroMQ sockets are thread-confined,
+        // Create, use and close both the context shadow and socket on this thread. JeroMQ sockets are thread-confined,
         // so the transport never hands a live socket between its construction and worker threads.
-        ZContext ctx = new ZContext(1);
+        ZContext ctx = SharedContext.INSTANCE.shadow();
         ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
         try {
             main.setLinger(0);

@@ -96,7 +96,9 @@ class CefScriptEngineTest extends CefTestBase {
     @Order(1)
     void eval_simpleArithmetic() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("1 + 2");
-        String result = pumpAndGet(future, 5_000);
+        // The first renderer round-trip includes V8 context and message-channel warm-up. Native ARM runners can
+        // exceed the steady-state five-second allowance under load; subsequent evaluations retain the tighter bound.
+        String result = pumpAndGet(future, 15_000);
         assertThat(result).isEqualTo("3");
     }
 

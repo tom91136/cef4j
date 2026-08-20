@@ -5,12 +5,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
 class SystemBootstrapTest {
 
     @TempDir
     Path tempDir;
+
+    @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
+    void nativeStderrDescriptorsAreNotInheritedByCefSubprocesses() {
+        SystemBootstrap.load();
+
+        assertThat(NativeStderr.internalDescriptorsCloseOnExec()).isTrue();
+    }
 
     @Test
     void packagedRuntimeWinsOverAutoDiscoveryButNotExplicitConfiguration() {

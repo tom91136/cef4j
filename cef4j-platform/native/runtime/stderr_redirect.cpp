@@ -22,6 +22,9 @@
 
 // Saved fd for the crash handler to write diagnostics to original stderr.
 static int origStderrFd = -1;
+// Read end retained by the Java logger thread. Tracked so tests can verify that
+// neither private descriptor leaks into CEF subprocesses across exec().
+static int stderrReadFd = -1;
 // Set from Java after cef_initialize to hold the exact chrome_debug.log path.
 static char crashLogPath[4096] = {0};
 
@@ -72,23 +75,46 @@ static jobject makeFdObject(JNIEnv* env, int fd) {
     return fdObj;
 }
 
+static bool setCloseOnExec(int fd) {
+    int flags = fcntl(fd, F_GETFD);
+    return flags >= 0 && fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == 0;
+}
+
 CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jclass) {
     // Save original stderr before redirect
     int savedStderr = dup(STDERR_FILENO);
     if (savedStderr < 0) return nullptr;
+    if (!setCloseOnExec(savedStderr)) {
+        close(savedStderr);
+        return nullptr;
+    }
 
     int fds[2];
     if (pipe(fds) != 0) {
         close(savedStderr);
         return nullptr;
     }
+    if (!setCloseOnExec(fds[0]) || !setCloseOnExec(fds[1])) {
+        close(fds[0]);
+        close(fds[1]);
+        close(savedStderr);
+        return nullptr;
+    }
     // fds[0] = read end, fds[1] = write end
-    dup2(fds[1], STDERR_FILENO);
+    // dup2 clears FD_CLOEXEC on fd 2, so CEF subprocess stderr remains captured while the
+    // logger's private read end and saved Java stderr are closed during exec.
+    if (dup2(fds[1], STDERR_FILENO) < 0) {
+        close(fds[0]);
+        close(fds[1]);
+        close(savedStderr);
+        return nullptr;
+    }
     close(fds[1]);
 
     // Install crash handler for fatal signals. CEF's LOG(FATAL) uses
     // __builtin_trap() (SIGTRAP) on Linux. Also handle SIGABRT for abort().
     origStderrFd = savedStderr;
+    stderrReadFd = fds[0];
     struct sigaction sa = {};
     sa.sa_handler = crashHandler;
     sigemptyset(&sa.sa_mask);
@@ -114,6 +140,13 @@ CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jc
     env->SetObjectArrayElement(result, 0, fis);
     env->SetObjectArrayElement(result, 1, fos);
     return result;
+}
+
+CEF4J_JNI_EXPORT_RT(jboolean, NativeStderr, internalDescriptorsCloseOnExec0)(JNIEnv*, jclass) {
+    if (origStderrFd < 0 || stderrReadFd < 0) return JNI_FALSE;
+    int stderrFlags = fcntl(origStderrFd, F_GETFD);
+    int readFlags = fcntl(stderrReadFd, F_GETFD);
+    return stderrFlags >= 0 && readFlags >= 0 && (stderrFlags & FD_CLOEXEC) != 0 && (readFlags & FD_CLOEXEC) != 0;
 }
 
 #else

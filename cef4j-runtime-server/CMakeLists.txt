@@ -43,9 +43,8 @@ set(ENABLE_DRAFTS OFF CACHE BOOL "" FORCE)
 set(WITH_DOCS OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     libzmq
-    GIT_REPOSITORY https://github.com/zeromq/libzmq.git
-    GIT_TAG        v4.3.5
-    GIT_SHALLOW    TRUE
+    URL      https://github.com/zeromq/libzmq/releases/download/v4.3.5/zeromq-4.3.5.tar.gz
+    URL_HASH SHA1=bdbf686c8a40ba638e21cf74e34dbb425e108500
 )
 FetchContent_MakeAvailable(libzmq)
 # libzmq exposes its object library on Unix builds, but not in every Windows

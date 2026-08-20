@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -59,6 +61,33 @@ final class ZmqTransportTest extends CefTransportContractTest {
                         .isTrue();
             }
         }
+    }
+
+    @Test
+    void multipleTransportsReuseJeroMqIoInfrastructure() {
+        int threadsBefore = jeroMqInfrastructureThreads();
+        List<ZmqTransport> transports = new ArrayList<>();
+        try {
+            for (int i = 0; i < 4; i++) {
+                ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
+                transports.add(server);
+                transports.add(ZmqTransport.connect(server.endpoint()));
+            }
+
+            assertThat(jeroMqInfrastructureThreads() - threadsBefore)
+                    .as("additional JeroMQ I/O and reaper threads")
+                    .isLessThanOrEqualTo(2);
+        } finally {
+            for (int i = transports.size() - 1; i >= 0; i--) transports.get(i).close();
+        }
+    }
+
+    private static int jeroMqInfrastructureThreads() {
+        return (int) Thread.getAllStackTraces().keySet().stream()
+                .filter(Thread::isAlive)
+                .map(Thread::getName)
+                .filter(name -> name.startsWith("iothread-") || name.startsWith("reaper-"))
+                .count();
     }
 
     @Test

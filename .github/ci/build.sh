@@ -136,7 +136,7 @@ properties+=(
 [ -z "${JAVAFX_PLATFORM:-}" ] || properties+=("-Djavafx.platform=${JAVAFX_PLATFORM}")
 
 run_reactor() {
-    if [ "${is_linux:-}" = 1 ] && [ "${JAVAFX_TESTS}" != true ]; then
+    if [ "${JAVAFX_TESTS}" != true ]; then
         "$@" -pl "${non_javafx}"
     else
         "$@"

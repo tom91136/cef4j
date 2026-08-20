@@ -7,6 +7,8 @@
 
 CEF4J_JNI_EXPORT_RT(void, NativeMemory, putBytes)(JNIEnv* env, jclass clz, jlong address, jobjectArray src, jint offset, jint length);
 
+CEF4J_JNI_EXPORT_RT(jboolean, NativeStderr, internalDescriptorsCloseOnExec0)(JNIEnv* env, jclass clz);
+
 CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jclass clz);
 
 CEF4J_JNI_EXPORT_RT(void, NativeStderr, setCrashLogPath0)(JNIEnv* env, jclass clz, jstring path);
