@@ -214,7 +214,6 @@
                                 <argument>--cache=${cef.dist.cache}</argument>
                                 <argument>--offline</argument>
                                 <argument>--locales=en-US</argument>
-                                <argument>--without-swiftshader</argument>
                                 <argument>--skip-if-current</argument>
                                 <argument>--output=${cef4j.reactor.runtime.root}</argument>
                             </arguments>

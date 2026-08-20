@@ -34,11 +34,25 @@ case "${CEF_PLATFORM}" in
     *) echo "unknown CEF_PLATFORM: ${CEF_PLATFORM}" >&2; exit 2 ;;
 esac
 
-if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 139 ]; then
+static_tls_bytes=$(static_tls_reserve "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")
+if [ -n "${static_tls_bytes}" ]; then
     # The reserve is fixed when glibc starts a process, so export it before
     # launching Maven and its test JVMs. Preloading libcef breaks old CEF's
     # subprocess ICU setup.
-    export GLIBC_TUNABLES=glibc.rtld.optional_static_tls=4096
+    export GLIBC_TUNABLES="glibc.rtld.optional_static_tls=${static_tls_bytes}"
+
+    # Prove that this runner's loader supports the tunable and accepted the
+    # requested value. A misspelled/unsupported tunable is otherwise ignored.
+    dynamic_loader=$(LC_ALL=C readelf -l "${JAVA_HOME}/bin/java" \
+        | sed -n 's/.*interpreter: \([^]]*\)].*/\1/p')
+    [ -x "${dynamic_loader}" ] || { echo "unable to locate Java dynamic loader" >&2; exit 1; }
+    effective_static_tls=$("${dynamic_loader}" --list-tunables \
+        | glibc_tunable_value glibc.rtld.optional_static_tls)
+    [ -n "${effective_static_tls}" ] && [ "$((effective_static_tls))" -ge "${static_tls_bytes}" ] || {
+        echo "glibc did not accept optional_static_tls=${static_tls_bytes}: ${effective_static_tls:-missing}" >&2
+        exit 1
+    }
+    echo "Verified glibc optional static TLS reserve: ${effective_static_tls}"
 fi
 
 if [ "${is_linux:-}" = 1 ]; then
@@ -67,8 +81,7 @@ JAVAFX_TESTS=false
 [ -n "${JAVAFX_VERSION}" ] && JAVAFX_TESTS=true
 JAVAFX_PLATFORM=""
 [ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
-EXTRA_ARGS="--disable-gpu"
-[ "${is_macos:-}" = 1 ] && EXTRA_ARGS="--disable-gpu,--disable-gpu-compositing,--use-mock-keychain"
+EXTRA_ARGS=$(cef_extra_args "${CEF_PLATFORM}")
 
 retry() {
     local attempt

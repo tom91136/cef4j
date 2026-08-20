@@ -33,6 +33,7 @@ class CefRuntimePackagerTest {
         assertThat(result.runtimeRoot().resolve("cef-runtime.properties")).isRegularFile();
         assertThat(result.runtimeRoot().resolve("CEF-LICENSE.txt")).hasContent("license");
         assertThat(result.files()).doesNotContain("libcef.lib", "libcef.a");
+        assertThat(result.files()).anyMatch(path -> path.toLowerCase().contains("swiftshader"));
         assertThat(new CefRuntimeVerifier().verify(output, platform)).isEmpty();
     }
 

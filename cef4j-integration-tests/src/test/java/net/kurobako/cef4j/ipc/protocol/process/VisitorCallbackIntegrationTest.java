@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.CefStringVisitor;
 import net.kurobako.cef4j.ipc.protocol.gen.Frame;
@@ -90,34 +91,33 @@ class VisitorCallbackIntegrationTest {
             Frame mainFrame = browser.getMainFrame().get(5, TimeUnit.SECONDS);
             mainFrame.loadUrl(dataUrl).get(5, TimeUnit.SECONDS);
 
-            // Poll until the navigation is committed (CEF re-mints the main frame across loads).
-            String currentUrl = "";
-            long deadline = System.nanoTime() + Duration.ofSeconds(15).toNanos();
-            while (System.nanoTime() < deadline) {
-                Frame current = browser.getMainFrame().get(5, TimeUnit.SECONDS);
-                currentUrl = current.getUrl().get(5, TimeUnit.SECONDS);
-                if (currentUrl.startsWith("data:text/html")) break;
-                Thread.sleep(100);
+            // CEF can expose the target URL before its renderer has committed the document. Windows CI
+            // reliably observed an empty first source in that window, so retry the complete visitor
+            // round-trip rather than treating URL visibility as document readiness.
+            String observed = "";
+            long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
+            while (System.nanoTime() < deadline && !observed.contains("RMI-callback-marker-9341")) {
+                CompletableFuture<String> sourceFuture = new CompletableFuture<>();
+                CefStringVisitor visitor = text -> {
+                    if (!sourceFuture.isDone()) sourceFuture.complete(text);
+                };
+                int callbackId = visitors.register(visitor);
+                try {
+                    Frame currentFrame = browser.getMainFrame().get(5, TimeUnit.SECONDS);
+                    currentFrame.getSource(new RemoteHandle(callbackId)).get(5, TimeUnit.SECONDS);
+                    try {
+                        observed = sourceFuture.get(5, TimeUnit.SECONDS);
+                    } catch (TimeoutException ignored) {
+                        observed = "";
+                    }
+                } finally {
+                    // Belt-and-braces: in real code the visitor's first call would auto-release; tests cleanup
+                    // explicitly to keep the table tidy regardless of whether visit() fired.
+                    visitors.release(callbackId);
+                }
+                if (!observed.contains("RMI-callback-marker-9341")) Thread.sleep(100);
             }
-            assertThat(currentUrl).startsWith("data:text/html");
-
-            // Register a one-shot visitor: completes a future when CEF delivers the page source.
-            CompletableFuture<String> sourceFuture = new CompletableFuture<>();
-            CefStringVisitor visitor = text -> {
-                if (!sourceFuture.isDone()) sourceFuture.complete(text);
-            };
-            int callbackId = visitors.register(visitor);
-            try {
-                Frame currentFrame = browser.getMainFrame().get(5, TimeUnit.SECONDS);
-                currentFrame.getSource(new RemoteHandle(callbackId)).get(5, TimeUnit.SECONDS);
-
-                String observed = sourceFuture.get(15, TimeUnit.SECONDS);
-                assertThat(observed).contains("RMI-callback-marker-9341");
-            } finally {
-                // Belt-and-braces: in real code the visitor's first call would auto-release; tests cleanup
-                // explicitly to keep the table tidy regardless of whether visit() fired.
-                visitors.release(callbackId);
-            }
+            assertThat(observed).contains("RMI-callback-marker-9341");
         }
     }
 }

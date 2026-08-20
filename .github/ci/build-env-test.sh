@@ -22,3 +22,30 @@ cygpath() {
 
 actual=$(normalize_java_home 'C:\hostedtoolcache\Java\17\x64')
 [ "${actual}" = /c/hostedtoolcache/Java/17/x64 ] || fail "unexpected normalized Java home: ${actual}"
+
+actual=$(cef_extra_args macosx64)
+[ "${actual}" = '--use-gl=angle,--use-angle=swiftshader,--enable-unsafe-swiftshader,--use-mock-keychain' ] \
+    || fail "unexpected macOS CEF arguments: ${actual}"
+
+actual=$(cef_extra_args linux64)
+[ "${actual}" = --disable-gpu ] || fail "unexpected Linux CEF arguments: ${actual}"
+
+actual=$(static_tls_reserve linuxarm64 aarch64 116)
+[ "${actual}" = 65536 ] || fail "unexpected ARM64 static TLS reserve: ${actual}"
+[ -z "$(static_tls_reserve linuxarm64 aarch64 144)" ] || fail "CEF 144 should not need an enlarged static TLS reserve"
+[ -z "$(static_tls_reserve linux64 x86_64 116)" ] || fail "x64 should not need an enlarged static TLS reserve"
+
+actual=$(printf '%s\n' \
+    'glibc.malloc.trim_threshold: 0x0 (min: 0x0, max: 0xffff)' \
+    'glibc.rtld.optional_static_tls: 0x10000 (min: 0x0, max: 0xffff)' \
+    | glibc_tunable_value glibc.rtld.optional_static_tls)
+[ "${actual}" = 0x10000 ] || fail "unexpected parsed glibc tunable: ${actual}"
+
+repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
+grep -q 'archive}.sha1" skipexisting="true"' "${repo_root}/cef4j-cef-dist/pom.xml" \
+    || fail "Maven must reuse the CEF SHA-1 sidecar prepared by CI"
+grep -q 'cef_binary_.*minimal.tar.bz2.sha1' "${repo_root}/.github/actions/cef-archives/action.yml" \
+    || fail "the CEF archive action must prepare SHA-1 sidecars"
+if grep -q -- '<argument>--without-swiftshader</argument>' "${repo_root}/cef4j-platform/pom.xml"; then
+    fail "reactor test runtimes must retain SwiftShader"
+fi

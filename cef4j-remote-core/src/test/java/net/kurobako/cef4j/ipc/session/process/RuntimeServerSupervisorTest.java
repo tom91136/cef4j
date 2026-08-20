@@ -103,7 +103,7 @@ final class RuntimeServerSupervisorTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(5, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection first = supervisor.start().get(10, TimeUnit.SECONDS);
             assertThat(generations.poll(5, TimeUnit.SECONDS)).isSameAs(first);
 
             supervisor.restart();

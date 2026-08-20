@@ -41,7 +41,7 @@
                                         <local name="cef.actual.sha1.2"/>
                                         <local name="cef.sha.ok2"/>
                                         <local name="cef.extracted"/>
-                                        <get src="@{url}.sha1" dest="@{archive}.sha1"/>
+                                        <get src="@{url}.sha1" dest="@{archive}.sha1" skipexisting="true"/>
                                         <loadfile property="cef.expected.sha1" srcFile="@{archive}.sha1">
                                             <filterchain>
                                                 <tokenfilter><deletecharacters chars="\r\n"/></tokenfilter>
