@@ -91,6 +91,9 @@ grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
 grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "native CEF test modules must run serially inside each matrix job"
-grep -q 'UI message loop ready; publishing endpoint' \
+grep -q 'on_context_initialized' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/main.cpp" \
-    || fail "the runtime server must not advertise itself before TID_UI can execute tasks"
+    || fail "the runtime server must wait for CEF browser-context initialization"
+grep -q 'CEF context initialized; publishing endpoint' \
+    "${repo_root}/cef4j-runtime-server/src/main/cpp/main.cpp" \
+    || fail "the runtime server must publish its endpoint from the CEF context-ready callback"

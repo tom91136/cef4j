@@ -22,6 +22,7 @@
 
 #include "include/capi/cef_app_capi.h"
 #include "include/capi/cef_browser_capi.h"
+#include "include/capi/cef_browser_process_handler_capi.h"
 #include "include/capi/cef_client_capi.h"
 #include "include/capi/cef_devtools_message_observer_capi.h"
 #include "include/capi/cef_life_span_handler_capi.h"
@@ -172,6 +173,9 @@ private:
 
 static IpcServer* g_ipc       = nullptr;
 static cef_client_t* g_client = nullptr;
+static std::function<void()> g_publishEndpoint;
+static bool g_contextInitialized = false;
+static bool g_endpointPublished = false;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
 
 // Track browser ownership independently of client-released facade handles.
@@ -1922,15 +1926,42 @@ struct RenderProcessHandler : cef_render_process_handler_t {
 };
 
 // ---------------------------------------------------------------------------
-// CefApp. Browser-process and renderer-subprocess share the struct but only the renderer's variant exposes
-// get_render_process_handler — `cef_execute_process` queries it once for renderer processes.
+// CefApp. Browser-process and renderer-subprocess share the struct. The browser-process callback is also the
+// runtime's startup barrier: CEF only guarantees execution of TID_UI tasks after on_context_initialized.
 // ---------------------------------------------------------------------------
+
+struct BrowserProcessHandler : cef_browser_process_handler_t {
+    std::atomic<int> refCount{1};
+
+    BrowserProcessHandler() : cef_browser_process_handler_t{} {
+        initRef<BrowserProcessHandler, cef_browser_process_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(this));
+        on_context_initialized = [](cef_browser_process_handler_t*) {
+            g_contextInitialized = true;
+            // cef_initialize normally reaches this callback before the IPC endpoint exists. If initialization is
+            // deferred until the message loop on a platform/version, publish directly from this UI-thread callback.
+            if (g_publishEndpoint && !g_endpointPublished) {
+                g_endpointPublished = true;
+                g_publishEndpoint();
+            }
+        };
+    }
+};
 
 struct App : cef_app_t {
     std::atomic<int> refCount{1};
+    BrowserProcessHandler* browserProcessHandler;
     RenderProcessHandler* renderProcessHandler;
-    App() : cef_app_t{}, renderProcessHandler(new RenderProcessHandler()) {
+    App()
+            : cef_app_t{}, browserProcessHandler(new BrowserProcessHandler()),
+              renderProcessHandler(new RenderProcessHandler()) {
         initRef<App, cef_app_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
+        get_browser_process_handler = [](cef_app_t* self) -> cef_browser_process_handler_t* {
+            auto* a = reinterpret_cast<App*>(self);
+            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(a->browserProcessHandler);
+            base->add_ref(base);
+            return a->browserProcessHandler;
+        };
         get_render_process_handler = [](cef_app_t* self) -> cef_render_process_handler_t* {
             auto* a = reinterpret_cast<App*>(self);
             auto* base = reinterpret_cast<cef_base_ref_counted_t*>(a->renderProcessHandler);
@@ -2665,32 +2696,40 @@ int main(int argc, char* argv[]) {
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    // RuntimeServerProcess treats this line as the process handshake. Publish it from TID_UI so a client cannot
-    // begin its session-readiness timeout while CEF is still starting (GPU/ANGLE initialization can block the UI
-    // loop for minutes on hosted runners). The subsequent SessionReady task is now guaranteed to be queued behind
-    // a task that CEF actually executed rather than merely behind a successful cef_initialize call.
+    // RuntimeServerProcess treats this line as the process handshake. Publish it from on_context_initialized, the
+    // documented point after which CEF guarantees TID_UI tasks will execute. An arbitrary early UI task is not a
+    // sufficient barrier: GPU/ANGLE and browser-context startup can still block subsequent tasks for minutes.
     const std::string advertisedEndpoint = ipc->endpoint();
-    auto* publishEndpoint = new gendisp::LambdaTask(
-        [transportName, frameTransportName, advertisedEndpoint]() {
-            std::fprintf(stderr, "[cef4j-runtime-server] UI message loop ready; publishing endpoint\n");
-            std::printf(
-                "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
-                "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
-                CEF_API_VERSION,
-                transportName.c_str(),
-                frameTransportName.c_str(),
-                advertisedEndpoint.c_str());
-            std::fflush(stdout);
+    g_publishEndpoint = [transportName, frameTransportName, advertisedEndpoint]() {
+        std::fprintf(stderr, "[cef4j-runtime-server] CEF context initialized; publishing endpoint\n");
+        std::printf(
+            "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
+            "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
+            CEF_API_VERSION,
+            transportName.c_str(),
+            frameTransportName.c_str(),
+            advertisedEndpoint.c_str());
+        std::fflush(stdout);
+    };
+    if (g_contextInitialized) {
+        // on_context_initialized ran synchronously inside cef_initialize, before the endpoint was available. Posting
+        // now creates a barrier after that callback, where CEF guarantees TID_UI task execution.
+        auto* publishEndpoint = new gendisp::LambdaTask([]() {
+            if (g_publishEndpoint && !g_endpointPublished) {
+                g_endpointPublished = true;
+                g_publishEndpoint();
+            }
         });
-    if (!cef_post_task(TID_UI, publishEndpoint)) {
-        std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule UI readiness barrier\n");
-        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(publishEndpoint);
-        base->release(base);
-        ipc->stop();
-        g_ipc = nullptr;
-        genhandlers::g_ipc = nullptr;
-        cef_shutdown();
-        return 1;
+        if (!cef_post_task(TID_UI, publishEndpoint)) {
+            std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule context-ready endpoint publication\n");
+            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(publishEndpoint);
+            base->release(base);
+            ipc->stop();
+            g_ipc = nullptr;
+            genhandlers::g_ipc = nullptr;
+            cef_shutdown();
+            return 1;
+        }
     }
 
     // The transport-independent parent pipe remains usable after an IPC failure.
@@ -2712,6 +2751,9 @@ int main(int argc, char* argv[]) {
     releaseTrackedBrowsers();
     // Join the IPC worker before tearing down CEF so no worker sends on g_ipc during shutdown.
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");
+    g_publishEndpoint = {};
+    g_contextInitialized = false;
+    g_endpointPublished = false;
     ipc->stop();
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: IPC transport stopped\n");
     g_ipc = nullptr;
