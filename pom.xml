@@ -871,7 +871,9 @@
                     <version>3.5.6</version>
                     <configuration>
                         <argLine>${surefire.argLine}</argLine>
-                        <forkedProcessTimeoutInSeconds>180</forkedProcessTimeoutInSeconds>
+                        <!-- Must exceed the longest class-level timeout. A constrained runner can spend
+                             several minutes establishing CEF before the test itself makes progress. -->
+                        <forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
                         <systemPropertyVariables>
                             <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>

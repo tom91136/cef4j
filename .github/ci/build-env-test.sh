@@ -85,3 +85,6 @@ grep -Eq 'kHeartbeatTimeoutMs = 360000;' \
 grep -q '<junit.jupiter.execution.timeout.default>60 s</junit.jupiter.execution.timeout.default>' \
     "${repo_root}/pom.xml" \
     || fail "ordinary tests must tolerate a minute of CI runner starvation"
+grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
+    "${repo_root}/pom.xml" \
+    || fail "Surefire forks must outlive the longest class-level CI timeout"
