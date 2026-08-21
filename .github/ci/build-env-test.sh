@@ -73,9 +73,9 @@ grep -q -- '-Doutput="${non_javafx_file}"' "${repo_root}/.github/ci/build.sh" \
 grep -Eq 'HEARTBEAT_TIMEOUT_MS = 360_000;' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
     || fail "the JVM transport must tolerate a six-minute scheduler stall"
-grep -Eq 'HANDSHAKE_TIMEOUT_MS = 360_000;' \
+grep -Eq 'HANDSHAKE_TIMEOUT_MS = 30_000;' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
-    || fail "the JVM transport must tolerate a 120-second native handshake stall"
+    || fail "the JVM transport must recover an initial handshake before session readiness expires"
 grep -Eq 'RUNTIME_SESSION_READY_TIMEOUT = Duration.ofMinutes\(5\);' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/session/CefSessionImpl.java" \
     || fail "runtime readiness must have its own 180-second startup budget"
