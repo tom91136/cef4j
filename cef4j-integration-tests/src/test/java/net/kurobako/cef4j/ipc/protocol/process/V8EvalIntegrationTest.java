@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Timeout;
  * DOM access all layer onto the same wire shape — JVM owns the frame handle, renderer does the V8 work, results flow
  * back through process messages with corrId tracking.
  */
-@Timeout(60)
+@Timeout(120)
 class V8EvalIntegrationTest {
 
     private static Path serverBinary;

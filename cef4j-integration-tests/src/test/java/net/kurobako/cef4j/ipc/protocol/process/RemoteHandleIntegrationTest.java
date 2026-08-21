@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Timeout;
  * <p>Smallest test validating the whole {@code RemoteHandle} round-trip through the AST pipeline: handle allocation,
  * wire encoding, server-side dispatch with handle resolution, typed response decoding.
  */
-@Timeout(60)
+@Timeout(120)
 class RemoteHandleIntegrationTest {
 
     private static Path serverBinary;

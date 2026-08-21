@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 /** End-to-end runtime-server lifecycle and transport coverage. */
-@Timeout(60)
+@Timeout(120)
 class RuntimeServerIntegrationTest {
 
     private static Path serverBinary;

@@ -75,6 +75,14 @@ class CefSessionImplTest {
     }
 
     @Test
+    void runtimeSessionReadinessDoesNotConsumeTheRequestTimeout() {
+        AcknowledgingRuntimeTransport transport = new AcknowledgingRuntimeTransport(0, 200);
+        try (CefSessionImpl acknowledged = new CefSessionImpl(transport, Duration.ofMillis(100))) {
+            assertThat(acknowledged).isNotNull();
+        }
+    }
+
+    @Test
     void requestResolvesWhenResponseArrives() throws Exception {
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, "ping".getBytes(StandardCharsets.UTF_8)),
@@ -94,6 +102,7 @@ class CefSessionImplTest {
 
     private static final class AcknowledgingRuntimeTransport implements CefTransport {
         private final int requestsToDrop;
+        private final long acknowledgementDelayMillis;
 
         @Nullable
         private Consumer<ByteBuffer> receiver;
@@ -108,7 +117,12 @@ class CefSessionImplTest {
         }
 
         private AcknowledgingRuntimeTransport(int requestsToDrop) {
+            this(requestsToDrop, 0);
+        }
+
+        private AcknowledgingRuntimeTransport(int requestsToDrop, long acknowledgementDelayMillis) {
             this.requestsToDrop = requestsToDrop;
+            this.acknowledgementDelayMillis = acknowledgementDelayMillis;
         }
 
         @Override
@@ -121,7 +135,22 @@ class CefSessionImplTest {
             ByteBuffer response = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
             Envelope.writeHeader(response, Envelope.Kind.RESPONSE, 0, request.corrId, request.messageId, 0);
             response.flip();
-            Objects.requireNonNull(receiver).accept(response);
+            if (acknowledgementDelayMillis == 0) {
+                Objects.requireNonNull(receiver).accept(response);
+            } else {
+                Thread delayed = new Thread(
+                        () -> {
+                            try {
+                                Thread.sleep(acknowledgementDelayMillis);
+                                Objects.requireNonNull(receiver).accept(response);
+                            } catch (InterruptedException interrupted) {
+                                Thread.currentThread().interrupt();
+                            }
+                        },
+                        "delayed-runtime-ready");
+                delayed.setDaemon(true);
+                delayed.start();
+            }
         }
 
         @Override

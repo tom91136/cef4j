@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Timeout;
  * uncaught exceptions). Method dispatch in the reverse direction (JVM→renderer for V8 method calls) uses the same
  * process-message hop and is tracked separately.
  */
-@Timeout(60)
+@Timeout(120)
 class RendererRelayIntegrationTest {
 
     private static Path serverBinary;

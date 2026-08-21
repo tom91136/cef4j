@@ -20,6 +20,17 @@ cef_extra_args() {
     esac
 }
 
+surefire_extra_arg() {
+    local platform=$1 jdk_version=$2
+    case "${platform}:${jdk_version}" in
+        windows64:25|windowsarm64:25)
+            # JDK 25 rejects Surefire's manifest-only classpath when the checkout and dependency cache use different
+            # drive roots. This switch affects test JVM bootstrap only; Maven and published runtimes are unchanged.
+            printf '%s\n' '-Djdk.net.URLClassPath.disableClassPathURLCheck=true'
+            ;;
+    esac
+}
+
 xvfb_server_args() {
     # DisplayLock serialises UI classes, leaving short client-free gaps between them.
     # Do not let Xvfb reset during those gaps while the parallel reactor is still running.

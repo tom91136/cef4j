@@ -29,6 +29,7 @@ public final class CefSessionImpl implements CefSession {
     private static final int RUNTIME_SESSION_READY_MESSAGE_ID = 0;
     private static final int RUNTIME_SESSION_READY_CORR_ID = 0;
     private static final long RUNTIME_SESSION_READY_RETRY_NANOS = TimeUnit.MILLISECONDS.toNanos(250);
+    private static final Duration RUNTIME_SESSION_READY_TIMEOUT = Duration.ofSeconds(60);
 
     private final CefTransport transport;
     private final Duration defaultTimeout;
@@ -83,7 +84,10 @@ public final class CefSessionImpl implements CefSession {
         Envelope.writeHeader(
                 buf, Envelope.Kind.REQUEST, 0, RUNTIME_SESSION_READY_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID, 0);
         buf.flip();
-        long deadline = System.nanoTime() + defaultTimeout.toNanos();
+        // Request timeouts begin only after startup. The transport may legitimately spend up to 30 seconds completing
+        // its native handshake, so the TID_UI readiness barrier needs an independent budget rather than consuming the
+        // caller's per-request timeout before a session exists.
+        long deadline = System.nanoTime() + RUNTIME_SESSION_READY_TIMEOUT.toNanos();
         try {
             while (!runtimeSessionReady.isDone()) {
                 // SessionReady is an idempotent bootstrap barrier. Retransmit it until acknowledged so a transport
