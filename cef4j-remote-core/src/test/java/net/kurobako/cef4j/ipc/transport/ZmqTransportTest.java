@@ -37,7 +37,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
 
             assertThat(socket.getHeartbeatIvl()).isEqualTo(1_000);
             assertThat(socket.getHeartbeatTimeout()).isEqualTo(30_000);
-            assertThat(socket.getHandshakeIvl()).isEqualTo(10_000);
+            assertThat(socket.getHandshakeIvl()).isEqualTo(30_000);
         }
     }
 
@@ -127,13 +127,13 @@ final class ZmqTransportTest extends CefTransportContractTest {
                     "stalled-zmtp-peer");
             peer.setDaemon(true);
             peer.start();
-            try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort())) {
+            try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort(), 1_000)) {
                 transport.send(ByteBuffer.wrap(new byte[] {1}));
                 assertThat(firstConnection.await(2, TimeUnit.SECONDS)).isTrue();
-                assertThat(reconnected.await(5, TimeUnit.SECONDS))
-                        .as("a slow but live CI peer should get more than five seconds to finish its greeting")
+                assertThat(reconnected.await(500, TimeUnit.MILLISECONDS))
+                        .as("the configured greeting window should be honoured")
                         .isFalse();
-                assertThat(reconnected.await(10, TimeUnit.SECONDS))
+                assertThat(reconnected.await(3, TimeUnit.SECONDS))
                         .as("a permanently stalled greeting should eventually reconnect")
                         .isTrue();
             }

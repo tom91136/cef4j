@@ -39,8 +39,7 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 30_000;
-    private static final int HANDSHAKE_TIMEOUT_MS = 10_000;
-    private static final long HANDSHAKE_TIMEOUT_NANOS = TimeUnit.MILLISECONDS.toNanos(HANDSHAKE_TIMEOUT_MS);
+    private static final int HANDSHAKE_TIMEOUT_MS = 30_000;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -55,6 +54,8 @@ public final class ZmqTransport implements CefTransport {
 
     private volatile String endpoint;
     private final boolean runtimeServerClient;
+    private final int handshakeTimeoutMs;
+    private final long handshakeTimeoutNanos;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>(MAX_QUEUED_FRAMES);
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
@@ -81,12 +82,17 @@ public final class ZmqTransport implements CefTransport {
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
     public static ZmqTransport bind(@Nonnull String endpoint) {
-        return new ZmqTransport(true, endpoint);
+        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS);
     }
 
     /** Connect to a previously bound endpoint. */
     public static ZmqTransport connect(@Nonnull String endpoint) {
-        return new ZmqTransport(false, endpoint);
+        return connect(endpoint, HANDSHAKE_TIMEOUT_MS);
+    }
+
+    static ZmqTransport connect(String endpoint, int handshakeTimeoutMs) {
+        if (handshakeTimeoutMs <= 0) throw new IllegalArgumentException("handshakeTimeoutMs must be positive");
+        return new ZmqTransport(false, endpoint, handshakeTimeoutMs);
     }
 
     /** Resolved endpoint (for {@link #bind} this is the OS-assigned port; for {@link #connect} it is the input). */
@@ -94,8 +100,10 @@ public final class ZmqTransport implements CefTransport {
         return endpoint;
     }
 
-    private ZmqTransport(boolean isBind, String requestedEndpoint) {
+    private ZmqTransport(boolean isBind, String requestedEndpoint, int handshakeTimeoutMs) {
         this.runtimeServerClient = !isBind;
+        this.handshakeTimeoutMs = handshakeTimeoutMs;
+        this.handshakeTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(handshakeTimeoutMs);
         this.endpoint = requestedEndpoint;
         int id = INSTANCE.incrementAndGet();
         CompletableFuture<String> setup = new CompletableFuture<>();
@@ -117,7 +125,7 @@ public final class ZmqTransport implements CefTransport {
         ZContext ctx = SharedContext.INSTANCE.shadow();
         ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
         try {
-            configureLiveness(main);
+            configureLiveness(main, handshakeTimeoutMs);
 
             int eventMask = ZMQ.EVENT_CONNECTED
                     | ZMQ.EVENT_ACCEPTED
@@ -191,6 +199,10 @@ public final class ZmqTransport implements CefTransport {
     }
 
     static void configureLiveness(ZMQ.Socket socket) {
+        configureLiveness(socket, HANDSHAKE_TIMEOUT_MS);
+    }
+
+    private static void configureLiveness(ZMQ.Socket socket, int handshakeTimeoutMs) {
         socket.setLinger(0);
         socket.setImmediate(true);
         // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
@@ -201,7 +213,7 @@ public final class ZmqTransport implements CefTransport {
         // Bound and connected sockets both need a finite native handshake interval. Without it, JeroMQ can
         // occasionally leave a rapidly replaced DEALER pipe half-open indefinitely, so the first queued frame never
         // reaches the peer. The client-side monitor recovery below remains a second line of defence.
-        socket.setHandshakeIvl(HANDSHAKE_TIMEOUT_MS);
+        socket.setHandshakeIvl(handshakeTimeoutMs);
     }
 
     @Override
@@ -254,7 +266,7 @@ public final class ZmqTransport implements CefTransport {
                 peerReady = true;
                 disconnected = false;
                 if (!zmtpHandshaken && handshakeDeadlineNanos == 0) {
-                    handshakeDeadlineNanos = System.nanoTime() + HANDSHAKE_TIMEOUT_NANOS;
+                    handshakeDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
                 }
             } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL || event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
                 zmtpHandshaken = true;

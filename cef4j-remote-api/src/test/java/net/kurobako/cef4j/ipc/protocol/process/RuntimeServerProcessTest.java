@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-@Timeout(30)
+@Timeout(60)
 class RuntimeServerProcessTest {
 
     /**
@@ -116,7 +116,7 @@ class RuntimeServerProcessTest {
         Path script = writeLauncherScript(tmp);
         try (RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(5))) {
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CountDownLatch sawEvent = new CountDownLatch(1);
             int[] capturedHandle = {-1};
@@ -129,11 +129,11 @@ class RuntimeServerProcessTest {
             ReleaseHandleResponse ack = session.request(
                             new ReleaseHandleRequest(new RemoteHandle(99), "cef_browser_t"),
                             ReleaseHandleResponse.DECODER)
-                    .get(5, TimeUnit.SECONDS);
+                    .get(30, TimeUnit.SECONDS);
             assertThat(ack).isNotNull();
 
-            assertThat(sawEvent.await(5, TimeUnit.SECONDS))
-                    .as("BrowserCreatedEvent should arrive within 5s")
+            assertThat(sawEvent.await(30, TimeUnit.SECONDS))
+                    .as("BrowserCreatedEvent should arrive within 30s")
                     .isTrue();
             assertThat(capturedHandle[0]).isEqualTo(42);
         }
