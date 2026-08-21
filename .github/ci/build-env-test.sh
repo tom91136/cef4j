@@ -88,3 +88,6 @@ grep -q '<junit.jupiter.execution.timeout.default>60 s</junit.jupiter.execution.
 grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
     "${repo_root}/pom.xml" \
     || fail "Surefire forks must outlive the longest class-level CI timeout"
+grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
+    "${repo_root}/.github/ci/build.sh" \
+    || fail "native CEF test modules must run serially inside each matrix job"

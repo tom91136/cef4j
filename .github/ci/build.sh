@@ -197,7 +197,11 @@ run_reactor ./mvnw -B clean install -DskipTests "${properties[@]}"
 verify_thin_platform_jar
 [ "${is_linux:-}" = 1 ] && verify_linux_abi
 
-run_reactor run_with_display ./mvnw -B test "${properties[@]}"
+# Keep dependency resolution, compilation, and the outer platform matrix parallel,
+# but do not initialize several native CEF runtimes at once inside one runner.
+# DisplayLock only coordinates annotated display tests; it cannot isolate native
+# runtime-server and in-process test modules from each other.
+run_reactor run_with_display ./mvnw -B -T1 test "${properties[@]}"
 
 if [ "${JAVA11_SMOKE:-false}" = true ]; then
     ./mvnw -B -pl cef4j-remote-core,cef4j-remote-frame,cef4j-cdp,cef4j-webdriver,cef4j-codecs-gson,cef4j-codecs-jackson,cef4j-remote-webdriver test \
