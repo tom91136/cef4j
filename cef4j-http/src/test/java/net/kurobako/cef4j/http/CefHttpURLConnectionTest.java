@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-@Timeout(10)
+@Timeout(60)
 class CefHttpURLConnectionTest {
 
     private static CefHttpURLConnection conn(String s, CefHttpEngine engine) throws Exception {

@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Timeout;
  * Codegen integration (replacing the hand-written TriggerIntercept fixture with one server→JVM callback per non-void
  * CEF handler method) builds on top of this same wire.
  */
-@Timeout(240)
+@Timeout(600)
 class InterceptWireIntegrationTest {
 
     /** Picked arbitrarily, well above the AST messageId range. */

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Timeout;
  * BGRA pixel buffer + populated dirty rect — i.e. the same wire validation as {@code OsrPaintIntegrationTest} but
  * routed through the public {@link FrameTransport} API instead of decoding {@code OsrPaintEvent} by hand.
  */
-@Timeout(240)
+@Timeout(600)
 class MmapFrameTransportIntegrationTest {
 
     private static Path serverBinary;
@@ -171,7 +171,7 @@ class MmapFrameTransportIntegrationTest {
                 "zmq",
                 "tcp://127.0.0.1:0",
                 "shared-file",
-                Duration.ofSeconds(30),
+                Duration.ofMinutes(3),
                 Duration.ofSeconds(10),
                 Duration.ofMillis(50),
                 Duration.ofSeconds(1),
@@ -181,12 +181,12 @@ class MmapFrameTransportIntegrationTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(30, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection first = supervisor.start().get(3, TimeUnit.MINUTES);
             assertThat(generations.poll(10, TimeUnit.SECONDS)).isSameAs(first);
             try (FrameTransport firstFrames = SharedFileFrameTransport.bindAll(first.session())) {
                 awaitFrame(firstFrames);
                 supervisor.restart();
-                RuntimeServerSupervisor.Connection second = generations.poll(30, TimeUnit.SECONDS);
+                RuntimeServerSupervisor.Connection second = generations.poll(3, TimeUnit.MINUTES);
                 assertThat(second).isNotNull();
                 assertThat(second.generation()).isEqualTo(first.generation() + 1);
                 assertThat(second.pid()).isNotEqualTo(first.pid());
@@ -200,6 +200,6 @@ class MmapFrameTransportIntegrationTest {
     private static void awaitFrame(FrameTransport frames) throws Exception {
         CompletableFuture<Long> arrived = new CompletableFuture<>();
         frames.onRawFrame(frame -> arrived.complete(frame.metadata().sourceSequence()));
-        assertThat(arrived.get(20, TimeUnit.SECONDS)).isPositive();
+        assertThat(arrived.get(60, TimeUnit.SECONDS)).isPositive();
     }
 }

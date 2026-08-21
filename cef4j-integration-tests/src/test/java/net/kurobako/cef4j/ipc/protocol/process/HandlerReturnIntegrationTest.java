@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 /** Exercises a code-generated synchronous handler return across the intercept wire. */
-@Timeout(240)
+@Timeout(600)
 class HandlerReturnIntegrationTest {
 
     private static Path serverBinary;

@@ -36,8 +36,8 @@ final class ZmqTransportTest extends CefTransportContractTest {
             ZmqTransport.configureLiveness(socket);
 
             assertThat(socket.getHeartbeatIvl()).isEqualTo(1_000);
-            assertThat(socket.getHeartbeatTimeout()).isEqualTo(120_000);
-            assertThat(socket.getHandshakeIvl()).isEqualTo(120_000);
+            assertThat(socket.getHeartbeatTimeout()).isEqualTo(360_000);
+            assertThat(socket.getHandshakeIvl()).isEqualTo(360_000);
         }
     }
 

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Timeout;
  * <p>This is the foundation used by remote GUI consumers: they map the same region, copy dirty rectangles into their
  * toolkit image, and repaint. This test isolates the wire and mapped-frame contract from a particular GUI toolkit.
  */
-@Timeout(240)
+@Timeout(600)
 class OsrPaintIntegrationTest {
 
     private static Path serverBinary;

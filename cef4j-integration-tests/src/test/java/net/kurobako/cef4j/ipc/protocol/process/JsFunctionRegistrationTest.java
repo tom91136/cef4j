@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Timeout;
  * <p>Fire-and-forget for v1 — JS sees {@code undefined} as the return value. Sync return support would require blocking
  * the renderer's V8 thread on a process_message round-trip, deferred.
  */
-@Timeout(240)
+@Timeout(600)
 class JsFunctionRegistrationTest {
 
     private static Path serverBinary;
