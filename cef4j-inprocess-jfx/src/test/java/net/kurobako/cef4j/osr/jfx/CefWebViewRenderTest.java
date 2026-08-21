@@ -15,6 +15,7 @@ import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
@@ -72,12 +73,18 @@ class CefWebViewRenderTest {
                     onFxThread(() -> {
                         CefWebView v = new CefWebView();
                         Stage stage = new Stage();
+                        stage.initStyle(StageStyle.UNDECORATED);
                         stage.setScene(new Scene(new StackPane(v), 400, 300));
                         stage.show();
                         return v;
                     }),
                     "view");
             try {
+                assertThat(onFxThread(
+                                () -> view.getChildrenUnmodifiable().stream().noneMatch(javafx.scene.Node::isManaged)))
+                        .as("paint surfaces must not contribute their last frame size to viewport layout")
+                        .isTrue();
+
                 onFxThread(() -> view.getEngine()
                         .loadContent(
                                 "<html><body style='margin:0;height:100vh;background:#ff0000'>hello</body></html>"));
@@ -92,6 +99,18 @@ class CefWebViewRenderTest {
 
                 assertThat(waitUntil(() -> view.framesPainted.sum() > 0, 10_000))
                         .as("CefWebView should have received at least one paint (framesPainted > 0)")
+                        .isTrue();
+
+                onFxThread(() -> {
+                    Stage stage = (Stage) view.getScene().getWindow();
+                    stage.setWidth(300);
+                    stage.setHeight(200);
+                });
+                assertThat(waitUntil(
+                                () -> onFxThreadUnchecked(() -> view.getScene().getWidth() == 300
+                                        && view.getScene().getHeight() == 200),
+                                5_000))
+                        .as("a painted CefWebView must not prevent its viewport from shrinking")
                         .isTrue();
             } finally {
                 CompletableFuture<Void> released = onFxThread(view::releaseAsync);

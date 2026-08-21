@@ -226,6 +226,9 @@ public class CefWebView extends Region {
         });
 
         getChildren().add(imageView);
+        // The image is the view's paint surface, not layout content. Keeping it managed lets the dimensions of the
+        // last frame become this Region's computed minimum size, which can prevent a parent window from shrinking.
+        imageView.setManaged(false);
         imageView.setPreserveRatio(false);
         imageView.setSmooth(false);
         imageView.setMouseTransparent(true);
