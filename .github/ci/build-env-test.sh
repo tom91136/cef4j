@@ -65,15 +65,15 @@ if grep -q -- '<argument>--without-swiftshader</argument>' "${repo_root}/cef4j-p
 fi
 grep -q -- '-Doutput="${non_javafx_file}"' "${repo_root}/.github/ci/build.sh" \
     || fail "non-JavaFX module discovery must preserve visible Maven diagnostics"
-grep -Eq 'HEARTBEAT_TIMEOUT_MS = 30_000;' \
+grep -Eq 'HEARTBEAT_TIMEOUT_MS = 60_000;' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
-    || fail "the JVM transport must tolerate a 30-second scheduler stall"
-grep -Eq 'HANDSHAKE_TIMEOUT_MS = 30_000;' \
+    || fail "the JVM transport must tolerate a 60-second scheduler stall"
+grep -Eq 'HANDSHAKE_TIMEOUT_MS = 60_000;' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
-    || fail "the JVM transport must tolerate a 30-second native handshake stall"
-grep -Eq 'RUNTIME_SESSION_READY_TIMEOUT = Duration.ofSeconds\(60\);' \
+    || fail "the JVM transport must tolerate a 60-second native handshake stall"
+grep -Eq 'RUNTIME_SESSION_READY_TIMEOUT = Duration.ofSeconds\(90\);' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/session/CefSessionImpl.java" \
-    || fail "runtime readiness must have its own 60-second startup budget"
-grep -Eq 'kHeartbeatTimeoutMs = 30000;' \
+    || fail "runtime readiness must have its own 90-second startup budget"
+grep -Eq 'kHeartbeatTimeoutMs = 60000;' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/ZmqIpcServer.cpp" \
     || fail "the native transport must match the JVM heartbeat timeout"

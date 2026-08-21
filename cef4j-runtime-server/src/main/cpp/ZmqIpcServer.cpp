@@ -13,7 +13,7 @@ namespace {
 constexpr std::size_t kMaxFrameSize = 64U * 1024U * 1024U;
 constexpr long kPollTimeoutMs = 10;
 constexpr int kHeartbeatIntervalMs = 1000;
-constexpr int kHeartbeatTimeoutMs = 30000;
+constexpr int kHeartbeatTimeoutMs = 60000;
 
 void setLingerZero(void* sock) {
     int linger = 0;

@@ -38,8 +38,8 @@ public final class ZmqTransport implements CefTransport {
     private static final Logger LOG = LoggerFactory.getLogger(ZmqTransport.class);
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
-    private static final int HEARTBEAT_TIMEOUT_MS = 30_000;
-    private static final int HANDSHAKE_TIMEOUT_MS = 30_000;
+    private static final int HEARTBEAT_TIMEOUT_MS = 60_000;
+    private static final int HANDSHAKE_TIMEOUT_MS = 60_000;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();

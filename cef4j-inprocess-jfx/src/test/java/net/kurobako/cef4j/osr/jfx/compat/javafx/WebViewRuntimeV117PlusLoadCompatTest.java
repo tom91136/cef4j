@@ -211,8 +211,7 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
 
         assertThat(waitUntilOnFx(() -> "host-stable".equals(view.getEngine().getTitle()), 5_000))
                 .isTrue();
-        Thread.sleep(300);
-        assertThat(onFxThread(() -> view.getEngine().getLoadWorker().getState()))
-                .isEqualTo(Worker.State.SUCCEEDED);
+        assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
+                .isTrue();
     }
 }
