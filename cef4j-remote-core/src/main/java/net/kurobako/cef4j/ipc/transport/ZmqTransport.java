@@ -39,7 +39,9 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 360_000;
-    private static final int HANDSHAKE_TIMEOUT_MS = 360_000;
+    // SessionReady has a five-minute deadline. Recover an incomplete initial ZMTP greeting well before that deadline
+    // while retaining the longer heartbeat tolerance once a peer has actually exchanged traffic.
+    private static final int HANDSHAKE_TIMEOUT_MS = 30_000;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -268,13 +270,28 @@ public final class ZmqTransport implements CefTransport {
                 if (!zmtpHandshaken && handshakeDeadlineNanos == 0) {
                     handshakeDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
                 }
-            } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL || event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
+            } else if (event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
                 zmtpHandshaken = true;
+                peerReady = true;
                 handshakeDeadlineNanos = 0;
+            } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL) {
+                // This is JeroMQ's failed-protocol monitor event, not a successful handshake. The ensuing disconnect
+                // is an initial-pipe recovery signal and must not be surfaced as loss of an established session.
+                zmtpHandshaken = false;
+                if (runtimeServerClient && receivedFrames == 0) {
+                    peerReady = false;
+                }
             } else if (event == ZMonitor.Event.DISCONNECTED) {
                 tcpConnected = false;
                 zmtpHandshaken = false;
                 handshakeDeadlineNanos = 0;
+                if (runtimeServerClient && receivedFrames == 0) {
+                    // JeroMQ reports a greeting timeout as CONNECTED -> DISCONNECTED -> CONNECTED without a distinct
+                    // handshake-failure event. Until the runtime client receives its first frame this is transparent
+                    // connection establishment, and CefSessionImpl will keep retransmitting SessionReady.
+                    peerReady = false;
+                    continue;
+                }
                 if (!peerReady) continue;
                 disconnected = true;
                 fireDisconnectIfReady();
@@ -305,6 +322,7 @@ public final class ZmqTransport implements CefTransport {
         while ((frame = main.recv(ZMQ.DONTWAIT)) != null) {
             receivedFrames++;
             zmtpHandshaken = true;
+            peerReady = true;
             handshakeDeadlineNanos = 0;
             if (receivedFrames == 1) LOG.debug("first frame received on {}", endpoint);
             pending.add(frame);

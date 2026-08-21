@@ -30,14 +30,16 @@ final class ZmqTransportTest extends CefTransportContractTest {
     }
 
     @Test
-    void allowsLongCiSchedulingPausesBeforeDeclaringPeerDead() {
+    void recoversInitialHandshakeBeforeRuntimeSessionReadinessExpires() {
         try (ZContext context = new ZContext();
                 ZMQ.Socket socket = context.createSocket(SocketType.DEALER)) {
             ZmqTransport.configureLiveness(socket);
 
             assertThat(socket.getHeartbeatIvl()).isEqualTo(1_000);
             assertThat(socket.getHeartbeatTimeout()).isEqualTo(360_000);
-            assertThat(socket.getHandshakeIvl()).isEqualTo(360_000);
+            assertThat(socket.getHandshakeIvl())
+                    .as("an unestablished pipe must recover before the five-minute SessionReady deadline")
+                    .isLessThan(300_000);
         }
     }
 
@@ -110,6 +112,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
         byte[] zmtpGreetingPrefix = {(byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 1, 0x7f};
         CountDownLatch firstConnection = new CountDownLatch(1);
         CountDownLatch reconnected = new CountDownLatch(1);
+        CountDownLatch disconnected = new CountDownLatch(1);
         try (ServerSocket server = new ServerSocket(0, 2, InetAddress.getLoopbackAddress())) {
             Thread peer = new Thread(
                     () -> {
@@ -128,6 +131,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
             peer.setDaemon(true);
             peer.start();
             try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort(), 1_000)) {
+                transport.onDisconnect(disconnected::countDown);
                 transport.send(ByteBuffer.wrap(new byte[] {1}));
                 assertThat(firstConnection.await(2, TimeUnit.SECONDS)).isTrue();
                 assertThat(reconnected.await(500, TimeUnit.MILLISECONDS))
@@ -136,6 +140,9 @@ final class ZmqTransportTest extends CefTransportContractTest {
                 assertThat(reconnected.await(3, TimeUnit.SECONDS))
                         .as("a permanently stalled greeting should eventually reconnect")
                         .isTrue();
+                assertThat(disconnected.await(250, TimeUnit.MILLISECONDS))
+                        .as("an incomplete initial greeting is recoverable and must not disconnect the session")
+                        .isFalse();
             }
         }
     }
