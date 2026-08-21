@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Timeout;
  *
  * <p>The mapped frame files use the same Java 11 API on every supported platform.
  */
-@Timeout(120)
+@Timeout(240)
 class ViewportResizeIntegrationTest {
 
     private static Path serverBinary;

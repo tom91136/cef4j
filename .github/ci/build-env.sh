@@ -31,6 +31,16 @@ surefire_extra_arg() {
     esac
 }
 
+spotbugs_extra_arg() {
+    case "$1" in
+        linuxarm64)
+            # SpotBugs is platform-independent and already runs throughout the native x64 matrix. Its analysis JVM
+            # can make no progress on the emulated ARM64 runners and otherwise consumes the full 30-minute timeout.
+            printf '%s\n' '-Dspotbugs.skip=true'
+            ;;
+    esac
+}
+
 xvfb_server_args() {
     # DisplayLock serialises UI classes, leaving short client-free gaps between them.
     # Do not let Xvfb reset during those gaps while the parallel reactor is still running.

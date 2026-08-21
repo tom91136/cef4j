@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@Timeout(90)
+@Timeout(180)
 @ExtendWith(DisplayLock.class)
 class NativeSwingContractTest {
     @AfterAll

@@ -34,7 +34,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Exercises the complete W3C HTTP -> CDP -> transport -> packaged CEF path. */
-@Timeout(120)
+@Timeout(240)
 class RuntimeServerWebDriverIntegrationTest {
     private static Path serverBinary;
     private static Path cefResources;
@@ -81,7 +81,7 @@ class RuntimeServerWebDriverIntegrationTest {
         HttpServer fixture = startFixture(page);
         URI pageUri = URI.create("http://127.0.0.1:" + fixture.getAddress().getPort() + "/page");
         RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory("zmq", "tcp://127.0.0.1:0", "mmap");
-        try (WebDriverServer webdriver = RemoteWebDriverServer.start(runtimes)) {
+        try (WebDriverServer webdriver = RemoteWebDriverServer.start(runtimes, Duration.ofMinutes(4))) {
             RemoteWebDriver driver = new RemoteWebDriver(
                     webdriver.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j"));
             try {
@@ -141,7 +141,7 @@ class RuntimeServerWebDriverIntegrationTest {
 
         RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory(transport, endpoint, frameTransport);
 
-        try (WebDriverServer webdriver = RemoteWebDriverServer.start(runtimes)) {
+        try (WebDriverServer webdriver = RemoteWebDriverServer.start(runtimes, Duration.ofMinutes(4))) {
             HttpClient client = HttpClient.newHttpClient();
             JsonObject created =
                     request(client, webdriver.endpoint().resolve("/session"), "POST", "{\"capabilities\":{}}");

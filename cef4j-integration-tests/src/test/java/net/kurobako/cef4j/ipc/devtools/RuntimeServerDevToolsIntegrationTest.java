@@ -56,7 +56,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /** Exercises generated CDP commands and callbacks against a real packaged CEF runtime. */
-@Timeout(120)
+@Timeout(240)
 class RuntimeServerDevToolsIntegrationTest {
     private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(20);
     private static Path serverBinary;

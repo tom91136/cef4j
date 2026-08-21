@@ -10,6 +10,10 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -37,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public final class MmapFrameTransport implements FrameTransport {
 
     private static final Logger LOG = LoggerFactory.getLogger(MmapFrameTransport.class);
+    private static final AtomicInteger INSTANCE = new AtomicInteger();
     private static final int SHM_HEADER_BYTES = Long.BYTES;
     private static final VarHandle SHM_SEQUENCE =
             MethodHandles.byteBufferViewVarHandle(long[].class, ByteOrder.nativeOrder());
@@ -47,6 +52,14 @@ public final class MmapFrameTransport implements FrameTransport {
     private final AtomicInteger sequence = new AtomicInteger();
 
     private final AtomicReference<OsrPaintEvent> pendingPaint = new AtomicReference<>();
+
+    private final AtomicBoolean deliveryScheduled = new AtomicBoolean();
+
+    private final ExecutorService deliveryExecutor = Executors.newSingleThreadExecutor(task -> {
+        Thread thread = new Thread(task, "cef4j-frame-" + INSTANCE.incrementAndGet());
+        thread.setDaemon(true);
+        return thread;
+    });
 
     @Nullable
     private volatile FrameConsumer consumer;
@@ -115,13 +128,32 @@ public final class MmapFrameTransport implements FrameTransport {
     private void onPaint(OsrPaintEvent ev) {
         if (closed) return;
         if (browser != null && ev.browser().id() != browser.id()) return;
-        FrameConsumer c = consumer;
-        if (c == null) {
-            pendingPaint.set(ev);
-            c = consumer;
-            if (c == null || !pendingPaint.compareAndSet(ev, null)) return;
+        pendingPaint.set(ev);
+        scheduleDelivery();
+    }
+
+    private void scheduleDelivery() {
+        if (closed || consumer == null || !deliveryScheduled.compareAndSet(false, true)) return;
+        try {
+            deliveryExecutor.execute(this::drainPendingPaint);
+        } catch (RejectedExecutionException closedExecutor) {
+            deliveryScheduled.set(false);
         }
-        deliver(ev, c);
+    }
+
+    private void drainPendingPaint() {
+        try {
+            while (!closed) {
+                FrameConsumer c = consumer;
+                if (c == null) return;
+                OsrPaintEvent ev = pendingPaint.getAndSet(null);
+                if (ev == null) return;
+                deliver(ev, c);
+            }
+        } finally {
+            deliveryScheduled.set(false);
+            if (!closed && consumer != null && pendingPaint.get() != null) scheduleDelivery();
+        }
     }
 
     private void deliver(OsrPaintEvent ev, FrameConsumer c) {
@@ -275,8 +307,7 @@ public final class MmapFrameTransport implements FrameTransport {
     public void onFrame(@Nullable FrameConsumer consumer) {
         this.consumer = consumer;
         if (consumer != null) {
-            OsrPaintEvent pending = pendingPaint.getAndSet(null);
-            if (pending != null && !closed) deliver(pending, consumer);
+            scheduleDelivery();
         } else {
             pendingPaint.set(null);
         }
@@ -294,5 +325,6 @@ public final class MmapFrameTransport implements FrameTransport {
                 disposeMappingLocked();
             }
         }
+        deliveryExecutor.shutdownNow();
     }
 }

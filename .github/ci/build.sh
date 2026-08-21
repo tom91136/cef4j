@@ -83,6 +83,7 @@ JAVAFX_PLATFORM=""
 [ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
 EXTRA_ARGS=$(cef_extra_args "${CEF_PLATFORM}")
 SUREFIRE_EXTRA_ARG=$(surefire_extra_arg "${CEF_PLATFORM}" "${JDK_VERSION}")
+SPOTBUGS_EXTRA_ARG=$(spotbugs_extra_arg "${CEF_PLATFORM}")
 
 retry() {
     local attempt
@@ -168,6 +169,7 @@ properties+=(
     "-Dcef4j.runtime.server.extraArgs=${EXTRA_ARGS}"
 )
 [ -z "${SUREFIRE_EXTRA_ARG}" ] || properties+=("-Dsurefire.argLine=${SUREFIRE_EXTRA_ARG}")
+[ -z "${SPOTBUGS_EXTRA_ARG}" ] || properties+=("${SPOTBUGS_EXTRA_ARG}")
 [ -z "${JAVAFX_PLATFORM:-}" ] || properties+=("-Djavafx.platform=${JAVAFX_PLATFORM}")
 
 run_reactor() {

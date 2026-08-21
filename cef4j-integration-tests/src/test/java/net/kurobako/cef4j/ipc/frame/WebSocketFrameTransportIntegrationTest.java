@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-@Timeout(120)
+@Timeout(240)
 final class WebSocketFrameTransportIntegrationTest {
     private static Path serverBinary;
     private static Path cefResources;

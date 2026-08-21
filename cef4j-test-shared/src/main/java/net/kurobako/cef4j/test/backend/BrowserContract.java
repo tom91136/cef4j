@@ -31,27 +31,28 @@ public final class BrowserContract {
         try (BrowserSession session = backend.openSession(config)) {
             assertPaint(session.awaitPaint(640, 480, timeout), 640, 480);
 
-            assertThat(session.evaluateJavascript("1 + 2 + 3").get(20, TimeUnit.SECONDS))
+            assertThat(session.evaluateJavascript("1 + 2 + 3").get(timeout.toSeconds(), TimeUnit.SECONDS))
                     .isEqualTo("6");
-            assertThat(session.evaluateJavascript("true").get(20, TimeUnit.SECONDS))
+            assertThat(session.evaluateJavascript("true").get(timeout.toSeconds(), TimeUnit.SECONDS))
                     .isEqualTo("true");
-            assertThat(session.evaluateJavascript("false").get(20, TimeUnit.SECONDS))
+            assertThat(session.evaluateJavascript("false").get(timeout.toSeconds(), TimeUnit.SECONDS))
                     .isEqualTo("false");
-            assertThat(session.evaluateJavascript("-7").get(20, TimeUnit.SECONDS))
+            assertThat(session.evaluateJavascript("-7").get(timeout.toSeconds(), TimeUnit.SECONDS))
                     .isEqualTo("-7");
-            assertThat(Double.parseDouble(session.evaluateJavascript("Math.PI").get(20, TimeUnit.SECONDS)))
+            assertThat(Double.parseDouble(
+                            session.evaluateJavascript("Math.PI").get(timeout.toSeconds(), TimeUnit.SECONDS)))
                     .isEqualTo(Math.PI);
-            assertThat(session.evaluateJavascript("'hello'").get(20, TimeUnit.SECONDS))
+            assertThat(session.evaluateJavascript("'hello'").get(timeout.toSeconds(), TimeUnit.SECONDS))
                     .isIn("hello", "\"hello\"");
             assertThat(unquote(session.evaluateJavascript("document.getElementById('marker').textContent")
-                            .get(20, TimeUnit.SECONDS)))
+                            .get(timeout.toSeconds(), TimeUnit.SECONDS)))
                     .isEqualTo("first");
 
-            session.loadUrl(site.url("/second")).get(20, TimeUnit.SECONDS);
+            session.loadUrl(site.url("/second")).get(timeout.toSeconds(), TimeUnit.SECONDS);
             assertEventuallyEquals(session, "document.getElementById('marker').textContent", "second", timeout);
 
             if (backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)) {
-                session.resizeViewport(512, 384).get(20, TimeUnit.SECONDS);
+                session.resizeViewport(512, 384).get(timeout.toSeconds(), TimeUnit.SECONDS);
                 assertPaint(session.awaitPaint(512, 384, timeout), 512, 384);
                 assertEventuallyEquals(session, "window.innerWidth + 'x' + window.innerHeight", "512x384", timeout);
             }
@@ -112,7 +113,7 @@ public final class BrowserContract {
         long deadline = System.nanoTime() + timeout.toNanos();
         String value = null;
         while (System.nanoTime() < deadline) {
-            value = unquote(session.evaluateJavascript(expression).get(20, TimeUnit.SECONDS));
+            value = unquote(session.evaluateJavascript(expression).get(timeout.toSeconds(), TimeUnit.SECONDS));
             if (expected.equals(value)) return;
             Thread.sleep(50);
         }

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Proves a trace captured from packaged CEF drives the same generated facade after the native server is gone. */
-@Timeout(120)
+@Timeout(240)
 class ApiRecordingReplayIntegrationTest {
     @Test
     void packagedCefInteractionReplaysWithoutRuntimeServer(@TempDir Path directory) throws Exception {

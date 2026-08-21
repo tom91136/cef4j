@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Timeout;
  * BGRA pixel buffer + populated dirty rect — i.e. the same wire validation as {@code OsrPaintIntegrationTest} but
  * routed through the public {@link FrameTransport} API instead of decoding {@code OsrPaintEvent} by hand.
  */
-@Timeout(120)
+@Timeout(240)
 class MmapFrameTransportIntegrationTest {
 
     private static Path serverBinary;

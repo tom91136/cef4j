@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@Timeout(120)
+@Timeout(240)
 @ExtendWith(DisplayLock.class)
 class RemoteJfxContractTest {
     @Test

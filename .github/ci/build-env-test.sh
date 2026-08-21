@@ -36,6 +36,11 @@ actual=$(surefire_extra_arg windows64 25)
 [ -z "$(surefire_extra_arg windowsarm64 21)" ] || fail "the Surefire compatibility switch is JDK 25-specific"
 [ -z "$(surefire_extra_arg linux64 25)" ] || fail "the Surefire compatibility switch is Windows-specific"
 
+actual=$(spotbugs_extra_arg linuxarm64)
+[ "${actual}" = '-Dspotbugs.skip=true' ] \
+    || fail "Linux ARM64 must reuse platform-independent SpotBugs coverage from native x64 jobs: ${actual}"
+[ -z "$(spotbugs_extra_arg linux64)" ] || fail "native x64 jobs must retain SpotBugs coverage"
+
 actual=$(xvfb_server_args)
 case " ${actual} " in
     *' -noreset '*) ;;
@@ -65,15 +70,15 @@ if grep -q -- '<argument>--without-swiftshader</argument>' "${repo_root}/cef4j-p
 fi
 grep -q -- '-Doutput="${non_javafx_file}"' "${repo_root}/.github/ci/build.sh" \
     || fail "non-JavaFX module discovery must preserve visible Maven diagnostics"
-grep -Eq 'HEARTBEAT_TIMEOUT_MS = 60_000;' \
+grep -Eq 'HEARTBEAT_TIMEOUT_MS = 120_000;' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
-    || fail "the JVM transport must tolerate a 60-second scheduler stall"
-grep -Eq 'HANDSHAKE_TIMEOUT_MS = 60_000;' \
+    || fail "the JVM transport must tolerate a 120-second scheduler stall"
+grep -Eq 'HANDSHAKE_TIMEOUT_MS = 120_000;' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/transport/ZmqTransport.java" \
-    || fail "the JVM transport must tolerate a 60-second native handshake stall"
-grep -Eq 'RUNTIME_SESSION_READY_TIMEOUT = Duration.ofSeconds\(90\);' \
+    || fail "the JVM transport must tolerate a 120-second native handshake stall"
+grep -Eq 'RUNTIME_SESSION_READY_TIMEOUT = Duration.ofMinutes\(3\);' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/session/CefSessionImpl.java" \
-    || fail "runtime readiness must have its own 90-second startup budget"
-grep -Eq 'kHeartbeatTimeoutMs = 60000;' \
+    || fail "runtime readiness must have its own 180-second startup budget"
+grep -Eq 'kHeartbeatTimeoutMs = 120000;' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/ZmqIpcServer.cpp" \
     || fail "the native transport must match the JVM heartbeat timeout"

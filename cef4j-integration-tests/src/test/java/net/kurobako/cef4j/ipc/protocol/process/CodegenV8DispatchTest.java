@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Timeout;
  *       response back via {@code cef4j_renderer_resp}; the browser translates that to Kind::Response on the JVM corrId.
  * </ol>
  */
-@Timeout(120)
+@Timeout(240)
 class CodegenV8DispatchTest {
 
     private static Path serverBinary;

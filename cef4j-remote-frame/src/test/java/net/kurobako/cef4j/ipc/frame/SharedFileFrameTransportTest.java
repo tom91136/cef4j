@@ -34,14 +34,18 @@ class SharedFileFrameTransportTest {
         Files.write(frame, contents.array());
 
         OsrPaintEvent latest = new OsrPaintEvent(new RemoteHandle(7), frame.toString(), 2L, 2, 1, 8, 0, 0, 0, 2, 1);
-        AtomicReference<byte[]> observed = new AtomicReference<>();
+        Thread caller = Thread.currentThread();
+        CompletableFuture<byte[]> observed = new CompletableFuture<>();
+        AtomicReference<Thread> callbackThread = new AtomicReference<>();
         try (FrameTransport transport = SharedFileFrameTransport.bindAll(new LatestEventSession(latest))) {
             transport.onRawFrame(value -> {
                 byte[] pixels = new byte[value.pixels().remaining()];
                 value.pixels().get(pixels);
-                observed.set(pixels);
+                callbackThread.set(Thread.currentThread());
+                observed.complete(pixels);
             });
-            assertThat(observed.get()).containsExactly(new byte[] {1, 2, 3, 4, 5, 6, 7, 8});
+            assertThat(observed.get(5, TimeUnit.SECONDS)).containsExactly(new byte[] {1, 2, 3, 4, 5, 6, 7, 8});
+            assertThat(callbackThread.get()).isNotSameAs(caller);
         } finally {
             Files.deleteIfExists(frame);
         }

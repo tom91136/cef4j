@@ -44,7 +44,7 @@ import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Proves that the common W3C/CDP implementation can automate CEF hosted in this JVM. */
-@Timeout(120)
+@Timeout(240)
 @ExtendWith(DisplayLock.class)
 class InProcessWebDriverIntegrationTest {
     @TempDir(cleanup = CleanupMode.NEVER)

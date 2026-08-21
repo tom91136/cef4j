@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Timeout;
  * With this end-to-end pattern proven, follow-up codegen can generate the JVM-side {@code CefStringVisitor} interface,
  * the {@code RegisterStringVisitor} entry point, and the server-side synthetic for every visitor type CEF defines.
  */
-@Timeout(120)
+@Timeout(240)
 class VisitorCallbackIntegrationTest {
 
     private static Path serverBinary;

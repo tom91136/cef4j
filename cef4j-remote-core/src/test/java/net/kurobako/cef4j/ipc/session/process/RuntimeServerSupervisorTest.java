@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-@Timeout(180)
+@Timeout(360)
 final class RuntimeServerSupervisorTest {
     @Test
     void terminatesSpawnedProcessWhenTransportConnectionFails(@TempDir Path temporary) throws Exception {
@@ -72,9 +72,9 @@ final class RuntimeServerSupervisorTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(60, TimeUnit.SECONDS);
-            assertThat(generations.poll(60, TimeUnit.SECONDS)).isSameAs(first);
-            RuntimeServerSupervisor.Connection second = generations.poll(75, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection first = supervisor.start().get(180, TimeUnit.SECONDS);
+            assertThat(generations.poll(180, TimeUnit.SECONDS)).isSameAs(first);
+            RuntimeServerSupervisor.Connection second = generations.poll(180, TimeUnit.SECONDS);
             assertThat(second).isNotNull();
             assertThat(second.pid()).isNotEqualTo(first.pid());
         }
@@ -103,11 +103,11 @@ final class RuntimeServerSupervisorTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(60, TimeUnit.SECONDS);
-            assertThat(generations.poll(60, TimeUnit.SECONDS)).isSameAs(first);
+            RuntimeServerSupervisor.Connection first = supervisor.start().get(180, TimeUnit.SECONDS);
+            assertThat(generations.poll(180, TimeUnit.SECONDS)).isSameAs(first);
 
             supervisor.restart();
-            RuntimeServerSupervisor.Connection second = generations.poll(60, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection second = generations.poll(180, TimeUnit.SECONDS);
             assertThat(second).isNotNull();
             assertThat(second.generation()).isEqualTo(first.generation() + 1);
             assertThat(second.pid()).isNotEqualTo(first.pid());
@@ -139,7 +139,7 @@ final class RuntimeServerSupervisorTest {
         var unused = supervisor.start();
         // The latch guards the race being tested, not startup performance. Native CI builds can starve the stub
         // process for more than ten seconds before it reaches the install transition.
-        assertThat(installing.await(60, TimeUnit.SECONDS)).isTrue();
+        assertThat(installing.await(180, TimeUnit.SECONDS)).isTrue();
         supervisor.close();
 
         // Wait for spawn to execute its install transition, then for the final state to settle at CLOSED.

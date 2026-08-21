@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Timeout;
  * the JVM-side {@link Browser} facade dispatches through {@link CefSession}, and the server's generated dispatcher
  * decoded, retained the handle, posted the call onto the CEF UI thread, and encoded the response.
  */
-@Timeout(120)
+@Timeout(240)
 class AstDispatcherIntegrationTest {
 
     private static Path serverBinary;

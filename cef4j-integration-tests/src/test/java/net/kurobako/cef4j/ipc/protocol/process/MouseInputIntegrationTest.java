@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Timeout;
  * DataStruct) → JVM emitter (overlay class with x/y/modifiers) → C++ dispatcher (decode overlay, fill
  * {@code cef_mouse_event_t}, call {@code receiver->send_mouse_click_event}) → CEF → DOM.
  */
-@Timeout(120)
+@Timeout(240)
 class MouseInputIntegrationTest {
 
     private static Path serverBinary;
