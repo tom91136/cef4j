@@ -94,6 +94,6 @@ grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
 grep -q 'on_context_initialized' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/main.cpp" \
     || fail "the runtime server must wait for CEF browser-context initialization"
-grep -q 'CEF context initialized; publishing endpoint' \
+grep -q 'initial browser created; publishing endpoint' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/main.cpp" \
-    || fail "the runtime server must publish its endpoint from the CEF context-ready callback"
+    || fail "the runtime server must not publish its endpoint before the initial browser exists"

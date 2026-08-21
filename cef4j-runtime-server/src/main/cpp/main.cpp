@@ -174,7 +174,9 @@ private:
 static IpcServer* g_ipc       = nullptr;
 static cef_client_t* g_client = nullptr;
 static std::function<void()> g_publishEndpoint;
+static std::function<bool()> g_startBootstrap;
 static bool g_contextInitialized = false;
+static bool g_bootstrapStarted = false;
 static bool g_endpointPublished = false;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
 
@@ -248,6 +250,12 @@ static void installLifeSpanHooks() {
             return;
         }
         g_forwardOnAfterCreated(self, browser);
+        // The browser callback is the first point that proves CEF can process UI tasks and create a usable browser.
+        // Only now let RuntimeServerProcess connect and begin its session-readiness budget.
+        if (g_publishEndpoint && !g_endpointPublished) {
+            g_endpointPublished = true;
+            g_publishEndpoint();
+        }
     };
     handler.do_close = [](cef_life_span_handler_t* self, cef_browser_t* browser) -> int {
         if (g_runtimeShuttingDown) return 0;
@@ -1938,11 +1946,10 @@ struct BrowserProcessHandler : cef_browser_process_handler_t {
                 reinterpret_cast<cef_base_ref_counted_t*>(this));
         on_context_initialized = [](cef_browser_process_handler_t*) {
             g_contextInitialized = true;
-            // cef_initialize normally reaches this callback before the IPC endpoint exists. If initialization is
-            // deferred until the message loop on a platform/version, publish directly from this UI-thread callback.
-            if (g_publishEndpoint && !g_endpointPublished) {
-                g_endpointPublished = true;
-                g_publishEndpoint();
+            // cef_initialize normally reaches this callback before IPC exists. If a platform/version defers it until
+            // the message loop, start the initial browser as soon as both halves of startup are ready.
+            if (g_startBootstrap && !g_startBootstrap()) {
+                std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule initial browser creation\n");
             }
         };
     }
@@ -2058,18 +2065,10 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
 
     switch (h.messageId) {
         case kMsgSessionReady: {
-            // Acknowledge every idempotent readiness probe from TID_UI; bootstrap the browser once.
-            const auto corrId = h.corrId;
-            const auto messageId = h.messageId;
-            cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, messageId]() {
-                static std::atomic<bool> bootstrapStarted{false};
-                if (!bootstrapStarted.exchange(true)) {
-                    net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings{};
-                    settings.windowlessFrameRate = 30;
-                    cef_post_task(TID_UI, new CreateBrowserTask("about:blank", std::move(settings)));
-                }
-                if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, messageId, nullptr, 0);
-            }));
+            // Endpoint publication is gated on the initial browser's on_after_created callback, so transport and UI
+            // readiness are already proven. Acknowledge the idempotent probe on the IPC worker without introducing
+            // another UI-queue barrier that Chromium startup work can starve.
+            if (g_ipc) g_ipc->send(Kind::Response, 0, h.corrId, h.messageId, nullptr, 0);
             return;
         }
         case kMsgReleaseHandle: {
@@ -2696,12 +2695,12 @@ int main(int argc, char* argv[]) {
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    // RuntimeServerProcess treats this line as the process handshake. Publish it from on_context_initialized, the
-    // documented point after which CEF guarantees TID_UI tasks will execute. An arbitrary early UI task is not a
-    // sufficient barrier: GPU/ANGLE and browser-context startup can still block subsequent tasks for minutes.
+    // RuntimeServerProcess treats this line as the process handshake. It is invoked by the initial browser's
+    // on_after_created hook, proving CEF got through context/GPU startup and processed browser creation before the
+    // client begins any readiness or request timeout.
     const std::string advertisedEndpoint = ipc->endpoint();
     g_publishEndpoint = [transportName, frameTransportName, advertisedEndpoint]() {
-        std::fprintf(stderr, "[cef4j-runtime-server] CEF context initialized; publishing endpoint\n");
+        std::fprintf(stderr, "[cef4j-runtime-server] initial browser created; publishing endpoint\n");
         std::printf(
             "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
             "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
@@ -2711,25 +2710,26 @@ int main(int argc, char* argv[]) {
             advertisedEndpoint.c_str());
         std::fflush(stdout);
     };
-    if (g_contextInitialized) {
-        // on_context_initialized ran synchronously inside cef_initialize, before the endpoint was available. Posting
-        // now creates a barrier after that callback, where CEF guarantees TID_UI task execution.
-        auto* publishEndpoint = new gendisp::LambdaTask([]() {
-            if (g_publishEndpoint && !g_endpointPublished) {
-                g_endpointPublished = true;
-                g_publishEndpoint();
-            }
-        });
-        if (!cef_post_task(TID_UI, publishEndpoint)) {
-            std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule context-ready endpoint publication\n");
-            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(publishEndpoint);
+    g_startBootstrap = []() -> bool {
+        if (g_bootstrapStarted) return true;
+        net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings{};
+        settings.windowlessFrameRate = 30;
+        auto* createBrowser = new CreateBrowserTask("about:blank", std::move(settings));
+        if (!cef_post_task(TID_UI, createBrowser)) {
+            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(createBrowser);
             base->release(base);
-            ipc->stop();
-            g_ipc = nullptr;
-            genhandlers::g_ipc = nullptr;
-            cef_shutdown();
-            return 1;
+            return false;
         }
+        g_bootstrapStarted = true;
+        return true;
+    };
+    if (g_contextInitialized && !g_startBootstrap()) {
+        std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule initial browser creation\n");
+        ipc->stop();
+        g_ipc = nullptr;
+        genhandlers::g_ipc = nullptr;
+        cef_shutdown();
+        return 1;
     }
 
     // The transport-independent parent pipe remains usable after an IPC failure.
@@ -2752,7 +2752,9 @@ int main(int argc, char* argv[]) {
     // Join the IPC worker before tearing down CEF so no worker sends on g_ipc during shutdown.
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");
     g_publishEndpoint = {};
+    g_startBootstrap = {};
     g_contextInitialized = false;
+    g_bootstrapStarted = false;
     g_endpointPublished = false;
     ipc->stop();
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: IPC transport stopped\n");
