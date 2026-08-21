@@ -2665,15 +2665,33 @@ int main(int argc, char* argv[]) {
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    // Endpoint discovery precedes the stronger TID_UI readiness barrier.
-    std::printf(
-        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
-        "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
-        CEF_API_VERSION,
-        transportName.c_str(),
-        frameTransportName.c_str(),
-        ipc->endpoint().c_str());
-    std::fflush(stdout);
+    // RuntimeServerProcess treats this line as the process handshake. Publish it from TID_UI so a client cannot
+    // begin its session-readiness timeout while CEF is still starting (GPU/ANGLE initialization can block the UI
+    // loop for minutes on hosted runners). The subsequent SessionReady task is now guaranteed to be queued behind
+    // a task that CEF actually executed rather than merely behind a successful cef_initialize call.
+    const std::string advertisedEndpoint = ipc->endpoint();
+    auto* publishEndpoint = new gendisp::LambdaTask(
+        [transportName, frameTransportName, advertisedEndpoint]() {
+            std::fprintf(stderr, "[cef4j-runtime-server] UI message loop ready; publishing endpoint\n");
+            std::printf(
+                "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
+                "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
+                CEF_API_VERSION,
+                transportName.c_str(),
+                frameTransportName.c_str(),
+                advertisedEndpoint.c_str());
+            std::fflush(stdout);
+        });
+    if (!cef_post_task(TID_UI, publishEndpoint)) {
+        std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule UI readiness barrier\n");
+        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(publishEndpoint);
+        base->release(base);
+        ipc->stop();
+        g_ipc = nullptr;
+        genhandlers::g_ipc = nullptr;
+        cef_shutdown();
+        return 1;
+    }
 
     // The transport-independent parent pipe remains usable after an IPC failure.
     std::thread([] {
