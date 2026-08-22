@@ -50,13 +50,14 @@ actual=$(spotbugs_extra_arg linuxarm64)
     || fail "Linux ARM64 must reuse platform-independent SpotBugs coverage from native x64 jobs: ${actual}"
 [ -z "$(spotbugs_extra_arg linux64)" ] || fail "native x64 jobs must retain SpotBugs coverage"
 
-actual=$(process_reaper_jvm_arg linuxarm64 aarch64 138)
-[ "${actual}" = '-Djdk.lang.processReaperUseDefaultStackSize=true' ] \
-    || fail "old-CEF Linux ARM64 builds must use a safe process-reaper stack: ${actual}"
-[ -z "$(process_reaper_jvm_arg linuxarm64 aarch64 144)" ] \
-    || fail "newer Linux ARM64 CEF builds must retain the JVM default"
-[ -z "$(process_reaper_jvm_arg linux64 x86_64 138)" ] \
-    || fail "Linux x64 builds must retain the JVM default"
+cef_java_preload_required linuxarm64 aarch64 138 \
+    || fail "old-CEF Linux ARM64 test JVMs must preload CEF before Java starts"
+if cef_java_preload_required linuxarm64 aarch64 144; then
+    fail "newer Linux ARM64 CEF builds must use the normal Java launcher"
+fi
+if cef_java_preload_required linux64 x86_64 138; then
+    fail "Linux x64 builds must use the normal Java launcher"
+fi
 
 actual=$(xvfb_server_args)
 case " ${actual} " in
@@ -64,16 +65,13 @@ case " ${actual} " in
     *) fail "Xvfb must remain alive between display-locked UI test classes: ${actual}" ;;
 esac
 
-actual=$(static_tls_reserve linuxarm64 aarch64 116)
-[ "${actual}" = 65536 ] || fail "unexpected ARM64 static TLS reserve: ${actual}"
-[ -z "$(static_tls_reserve linuxarm64 aarch64 144)" ] || fail "CEF 144 should not need an enlarged static TLS reserve"
-[ -z "$(static_tls_reserve linux64 x86_64 116)" ] || fail "x64 should not need an enlarged static TLS reserve"
-
-actual=$(printf '%s\n' \
-    'glibc.malloc.trim_threshold: 0x0 (min: 0x0, max: 0xffff)' \
-    'glibc.rtld.optional_static_tls: 0x10000 (min: 0x0, max: 0xffff)' \
-    | glibc_tunable_value glibc.rtld.optional_static_tls)
-[ "${actual}" = 0x10000 ] || fail "unexpected parsed glibc tunable: ${actual}"
+wrapper_dir=$(mktemp -d)
+trap 'rm -rf -- "${wrapper_dir}"' EXIT
+wrapper="${wrapper_dir}/java wrapper"
+write_cef_java_wrapper "${wrapper}" '/lib/loader with spaces' '/cef/libcef with spaces.so' '/jdk/bin/java with spaces'
+[ -x "${wrapper}" ] || fail "the generated CEF Java wrapper must be executable"
+grep -Fq 'exec /lib/loader\ with\ spaces --preload /cef/libcef\ with\ spaces.so /jdk/bin/java\ with\ spaces "$@"' "${wrapper}" \
+    || fail "the CEF Java wrapper must preserve launcher paths and arguments"
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 grep -q '<spotbugs.timeout>1800000</spotbugs.timeout>' "${repo_root}/pom.xml" \
@@ -108,12 +106,16 @@ grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
 grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "native CEF test modules must run serially inside each matrix job"
-grep -q 'process_reaper_arg=$(process_reaper_jvm_arg "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")' \
+grep -q 'cef_java_preload_required "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}"' \
     "${repo_root}/.github/ci/build.sh" \
-    || fail "the build must apply the architecture-specific process-reaper workaround"
-grep -q 'JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+${JAVA_TOOL_OPTIONS} }${process_reaper_arg}"' \
+    || fail "the build must identify legacy ARM64 test JVMs that need early CEF loading"
+grep -q 'test_properties+=("-Djvm=${cef_java_wrapper}")' \
     "${repo_root}/.github/ci/build.sh" \
-    || fail "the process-reaper workaround must propagate to every forked Java process"
+    || fail "Surefire must launch affected test JVMs through the scoped CEF wrapper"
+if grep -Eq '(^|[[:space:]])(export[[:space:]]+)?(LD_PRELOAD|GLIBC_TUNABLES)=|processReaperUseDefaultStackSize' \
+    "${repo_root}/.github/ci/build.sh" "${repo_root}/.github/ci/build-env.sh"; then
+    fail "legacy ARM64 CEF must not alter inherited preload, glibc TLS, or JVM stack settings"
+fi
 if grep -q 'if:.*!cancelled()' "${repo_root}/.github/workflows/main.yaml"; then
     fail "later JDK builds must not run in a workspace contaminated by an earlier failed JDK"
 fi

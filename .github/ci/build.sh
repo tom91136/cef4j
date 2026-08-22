@@ -20,11 +20,6 @@ fi
 [ -d "${JAVA_HOME}/bin" ] || { echo "invalid JAVA_HOME: ${JAVA_HOME}" >&2; exit 1; }
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
-process_reaper_arg=$(process_reaper_jvm_arg "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")
-if [ -n "${process_reaper_arg}" ]; then
-    JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+${JAVA_TOOL_OPTIONS} }${process_reaper_arg}"
-    export JAVA_TOOL_OPTIONS
-fi
 actual_jdk=$(java -XshowSettings:properties -version 2>&1 \
     | java_specification_version)
 [ "${actual_jdk}" = "${JDK_VERSION}" ] || {
@@ -42,27 +37,6 @@ esac
 DBUS_SESSION_BUS_ADDRESS=$(cef_dbus_session_bus_address "${CEF_PLATFORM}" "${DBUS_SESSION_BUS_ADDRESS:-}")
 if [ "${is_linux:-}" = 1 ]; then
     export DBUS_SESSION_BUS_ADDRESS
-fi
-
-static_tls_bytes=$(static_tls_reserve "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")
-if [ -n "${static_tls_bytes}" ]; then
-    # The reserve is fixed when glibc starts a process, so export it before
-    # launching Maven and its test JVMs. Preloading libcef breaks old CEF's
-    # subprocess ICU setup.
-    export GLIBC_TUNABLES="glibc.rtld.optional_static_tls=${static_tls_bytes}"
-
-    # Prove that this runner's loader supports the tunable and accepted the
-    # requested value. A misspelled/unsupported tunable is otherwise ignored.
-    dynamic_loader=$(LC_ALL=C readelf -l "${JAVA_HOME}/bin/java" \
-        | sed -n 's/.*interpreter: \([^]]*\)].*/\1/p')
-    [ -x "${dynamic_loader}" ] || { echo "unable to locate Java dynamic loader" >&2; exit 1; }
-    effective_static_tls=$("${dynamic_loader}" --list-tunables \
-        | glibc_tunable_value glibc.rtld.optional_static_tls)
-    [ -n "${effective_static_tls}" ] && [ "$((effective_static_tls))" -ge "${static_tls_bytes}" ] || {
-        echo "glibc did not accept optional_static_tls=${static_tls_bytes}: ${effective_static_tls:-missing}" >&2
-        exit 1
-    }
-    echo "Verified glibc optional static TLS reserve: ${effective_static_tls}"
 fi
 
 if [ "${is_linux:-}" = 1 ]; then
@@ -207,11 +181,25 @@ run_reactor ./mvnw -B clean install -DskipTests "${properties[@]}"
 verify_thin_platform_jar
 [ "${is_linux:-}" = 1 ] && verify_linux_abi
 
+test_properties=("${properties[@]}")
+if cef_java_preload_required "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}"; then
+    libcef="${repo_root}/cef4j-platform/target/reactor-runtime/cef-runtime/${CEF_PLATFORM}/libcef.so"
+    [ -f "${libcef}" ] || { echo "legacy ARM64 CEF library not found: ${libcef}" >&2; exit 1; }
+    dynamic_loader=$(LC_ALL=C readelf -Wl "${JAVA_HOME}/bin/java" \
+        | sed -n 's/.*interpreter: \([^]]*\)].*/\1/p')
+    [ -x "${dynamic_loader}" ] || { echo "unable to locate Java dynamic loader" >&2; exit 1; }
+    cef_java_wrapper="${repo_root}/target/ci-cef-preloaded-java"
+    mkdir -p "$(dirname -- "${cef_java_wrapper}")"
+    write_cef_java_wrapper "${cef_java_wrapper}" "${dynamic_loader}" "${libcef}" "${JAVA_HOME}/bin/java"
+    test_properties+=("-Djvm=${cef_java_wrapper}")
+    echo "Legacy ARM64 CEF will be loaded before the Surefire JVM: ${libcef}"
+fi
+
 # Keep dependency resolution, compilation, and the outer platform matrix parallel,
 # but do not initialize several native CEF runtimes at once inside one runner.
 # DisplayLock only coordinates annotated display tests; it cannot isolate native
 # runtime-server and in-process test modules from each other.
-run_reactor run_with_display ./mvnw -B -T1 test "${properties[@]}"
+run_reactor run_with_display ./mvnw -B -T1 test "${test_properties[@]}"
 
 if [ "${JAVA11_SMOKE:-false}" = true ]; then
     ./mvnw -B -pl cef4j-remote-core,cef4j-remote-frame,cef4j-cdp,cef4j-webdriver,cef4j-codecs-gson,cef4j-codecs-jackson,cef4j-remote-webdriver test \

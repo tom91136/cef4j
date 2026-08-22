@@ -53,29 +53,22 @@ spotbugs_extra_arg() {
     esac
 }
 
-process_reaper_jvm_arg() {
+cef_java_preload_required() {
     local platform=$1 arch=$2 cef_api=$3
-    if [ "${platform}" = linuxarm64 ] && [ "${arch}" = aarch64 ] && [ "${cef_api}" -lt 139 ]; then
-        # The old-CEF static-TLS reserve exhausts the small stack Java assigns to process-reaper threads. This must
-        # reach Maven, Exec Plugin code generation, and Surefire forks on every JDK used by the affected jobs.
-        printf '%s\n' '-Djdk.lang.processReaperUseDefaultStackSize=true'
-    fi
+    [ "${platform}" = linuxarm64 ] && [ "${arch}" = aarch64 ] && [ "${cef_api}" -lt 139 ]
+}
+
+write_cef_java_wrapper() {
+    local output=$1 dynamic_loader=$2 libcef=$3 java=$4
+    # glibc's per-executable --preload option reserves legacy CEF's initial-exec TLS before Java starts without
+    # exporting LD_PRELOAD to Chromium subprocesses. Bash %q keeps all resolved paths as single arguments.
+    printf '#!/usr/bin/env bash\nexec %q --preload %q %q "$@"\n' \
+        "${dynamic_loader}" "${libcef}" "${java}" > "${output}"
+    chmod +x "${output}"
 }
 
 xvfb_server_args() {
     # DisplayLock serialises UI classes, leaving short client-free gaps between them.
     # Do not let Xvfb reset during those gaps while the parallel reactor is still running.
     printf '%s\n' '-screen 0 1920x1080x24 -noreset'
-}
-
-static_tls_reserve() {
-    local platform=$1 arch=$2 cef_api=$3
-    if [ "${platform}" = linuxarm64 ] && [ "${arch}" = aarch64 ] && [ "${cef_api}" -lt 139 ]; then
-        printf '%s\n' 65536
-    fi
-}
-
-glibc_tunable_value() {
-    local name=$1
-    awk -v name="${name}:" '$1 == name { print $2; exit }'
 }
