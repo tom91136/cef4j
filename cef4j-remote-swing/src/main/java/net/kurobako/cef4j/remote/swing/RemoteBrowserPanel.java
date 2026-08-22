@@ -151,7 +151,13 @@ public final class RemoteBrowserPanel extends JPanel {
         if (width <= 0 || height <= 0) throw new IllegalArgumentException("viewport dimensions must be positive");
         long desired = packSize(width, height);
         desiredSize.set(desired);
-        return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, desired));
+        if (!SwingUtilities.isEventDispatchThread()) {
+            return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, desired));
+        }
+        CompletableFuture<Void> pendingComponentEvents = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> pendingComponentEvents.complete(null));
+        return pendingComponentEvents.thenCompose(
+                ignored -> browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, desired)));
     }
 
     private void onFrame(int width, int height, ByteBuffer pixels, net.kurobako.cef4j.ipc.frame.FrameMetadata meta) {

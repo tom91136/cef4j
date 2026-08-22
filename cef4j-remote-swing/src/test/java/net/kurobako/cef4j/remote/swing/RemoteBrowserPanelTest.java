@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
@@ -78,6 +80,32 @@ class RemoteBrowserPanelTest {
                 });
         session.completeLast(new SetViewportSizeResponse());
         assertThat(resized).isCompleted();
+        panel.release();
+    }
+
+    @Test
+    void explicitViewportResizeFollowsPendingComponentResize() throws Exception {
+        FakeSession session = new FakeSession();
+        RemoteBrowserPanel panel = new RemoteBrowserPanel(ignored -> new FakeFrameTransport());
+        panel.setSize(640, 480);
+        panel.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+        AtomicReference<CompletableFuture<Void>> resized = new AtomicReference<>();
+
+        SwingUtilities.invokeAndWait(() -> {
+            SwingUtilities.invokeLater(() -> panel.dispatchEvent(
+                    new java.awt.event.ComponentEvent(panel, java.awt.event.ComponentEvent.COMPONENT_RESIZED)));
+            resized.set(panel.resizeViewport(512, 384));
+        });
+        SwingUtilities.invokeAndWait(() -> {});
+
+        assertThat(session.requests.get(session.requests.size() - 1))
+                .isInstanceOfSatisfying(SetViewportSizeRequest.class, request -> {
+                    assertThat(request.width()).isEqualTo(512);
+                    assertThat(request.height()).isEqualTo(384);
+                });
+        session.completeLast(new SetViewportSizeResponse());
+        assertThat(resized.get()).isCompleted();
         panel.release();
     }
 
