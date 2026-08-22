@@ -121,19 +121,19 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
-            CompletableFuture<Void> result = new CompletableFuture<>();
+            AtomicReference<CompletableFuture<Void>> result = new AtomicReference<>();
             try {
                 onEdt(() -> {
                     panel.setPreferredSize(new Dimension(width, height));
                     frame.pack();
                     this.width = width;
                     this.height = height;
-                    result.complete(null);
+                    result.set(panel.resizeViewport(width, height));
                 });
+                return Objects.requireNonNull(result.get(), "remote Swing viewport resize");
             } catch (Exception e) {
-                result.completeExceptionally(e);
+                return CompletableFuture.failedFuture(e);
             }
-            return result;
         }
 
         @Override

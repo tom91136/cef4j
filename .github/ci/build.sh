@@ -188,7 +188,7 @@ if cef_java_preload_required "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}"; then
     dynamic_loader=$(LC_ALL=C readelf -Wl "${JAVA_HOME}/bin/java" \
         | sed -n 's/.*interpreter: \([^]]*\)].*/\1/p')
     [ -x "${dynamic_loader}" ] || { echo "unable to locate Java dynamic loader" >&2; exit 1; }
-    cef_java_wrapper="${repo_root}/target/ci-cef-preloaded-java"
+    cef_java_wrapper="${repo_root}/target/ci-cef-preloaded/bin/java"
     mkdir -p "$(dirname -- "${cef_java_wrapper}")"
     write_cef_java_wrapper "${cef_java_wrapper}" "${dynamic_loader}" "${libcef}" "${JAVA_HOME}/bin/java"
     test_properties+=("-Djvm=${cef_java_wrapper}")

@@ -67,7 +67,8 @@ esac
 
 wrapper_dir=$(mktemp -d)
 trap 'rm -rf -- "${wrapper_dir}"' EXIT
-wrapper="${wrapper_dir}/java wrapper"
+wrapper="${wrapper_dir}/bin/java"
+mkdir -p "$(dirname -- "${wrapper}")"
 write_cef_java_wrapper "${wrapper}" '/lib/loader with spaces' '/cef/libcef with spaces.so' '/jdk/bin/java with spaces'
 [ -x "${wrapper}" ] || fail "the generated CEF Java wrapper must be executable"
 grep -Fq 'exec /lib/loader\ with\ spaces --preload /cef/libcef\ with\ spaces.so /jdk/bin/java\ with\ spaces "$@"' "${wrapper}" \
@@ -112,6 +113,9 @@ grep -q 'cef_java_preload_required "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}"' \
 grep -q 'test_properties+=("-Djvm=${cef_java_wrapper}")' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "Surefire must launch affected test JVMs through the scoped CEF wrapper"
+grep -q 'cef_java_wrapper="${repo_root}/target/ci-cef-preloaded/bin/java"' \
+    "${repo_root}/.github/ci/build.sh" \
+    || fail "Surefire requires the configured JVM executable to be named java"
 if grep -Eq '(^|[[:space:]])(export[[:space:]]+)?(LD_PRELOAD|GLIBC_TUNABLES)=|processReaperUseDefaultStackSize' \
     "${repo_root}/.github/ci/build.sh" "${repo_root}/.github/ci/build-env.sh"; then
     fail "legacy ARM64 CEF must not alter inherited preload, glibc TLS, or JVM stack settings"

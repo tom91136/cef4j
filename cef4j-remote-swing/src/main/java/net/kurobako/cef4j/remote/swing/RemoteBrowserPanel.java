@@ -113,7 +113,7 @@ public final class RemoteBrowserPanel extends JPanel {
                             if (this.session == session) hostRef.set(host);
                         }),
                 "resolve BrowserHost for input forwarding");
-        observe(browserHandle.thenAccept(handle -> flushViewportSize(session, handle)), "flush initial viewport size");
+        observe(browserHandle.thenCompose(handle -> flushViewportSize(session, handle)), "flush initial viewport size");
     }
 
     @Nonnull
@@ -143,6 +143,15 @@ public final class RemoteBrowserPanel extends JPanel {
                             EvaluateJavascriptResponse.DECODER))
                     .thenApply(RemoteBrowserPanel::stringify);
         });
+    }
+
+    /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
+    @Nonnull
+    public CompletableFuture<Void> resizeViewport(int width, int height) {
+        if (width <= 0 || height <= 0) throw new IllegalArgumentException("viewport dimensions must be positive");
+        long desired = packSize(width, height);
+        desiredSize.set(desired);
+        return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, desired));
     }
 
     private void onFrame(int width, int height, ByteBuffer pixels, net.kurobako.cef4j.ipc.frame.FrameMetadata meta) {
@@ -299,22 +308,32 @@ public final class RemoteBrowserPanel extends JPanel {
         desiredSize.set(packSize(width, height));
         CefSession current = session;
         RemoteHandle handle = readyBrowser;
-        if (current != null && handle != null) flushViewportSize(current, handle);
+        if (current != null && handle != null) {
+            observe(flushViewportSize(current, handle), "resize viewport");
+        }
     }
 
-    private void flushViewportSize(CefSession expectedSession, RemoteHandle handle) {
-        if (session != expectedSession) return;
+    private CompletableFuture<Void> flushViewportSize(CefSession expectedSession, RemoteHandle handle) {
+        if (session != expectedSession) return CompletableFuture.completedFuture(null);
         long desired = desiredSize.get();
         long previous = reportedSize.getAndSet(desired);
-        if (previous == desired) return;
+        if (previous == desired) return CompletableFuture.completedFuture(null);
+        return requestViewportSize(expectedSession, handle, desired);
+    }
+
+    private CompletableFuture<Void> requestViewportSize(CefSession expectedSession, RemoteHandle handle, long desired) {
+        if (session != expectedSession) return CompletableFuture.completedFuture(null);
+        reportedSize.set(desired);
         int width = (int) (desired >>> 32);
         int height = (int) desired;
-        expectedSession
+        return expectedSession
                 .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
-                .exceptionally(failure -> {
-                    reportedSize.compareAndSet(desired, -1);
-                    LOG.debug("viewport resize to {}x{} failed: {}", width, height, failure.toString());
-                    return null;
+                .thenApply(ignored -> (Void) null)
+                .whenComplete((ignored, failure) -> {
+                    if (failure != null) {
+                        reportedSize.compareAndSet(desired, -1);
+                        LOG.debug("viewport resize to {}x{} failed: {}", width, height, failure.toString());
+                    }
                 });
     }
 

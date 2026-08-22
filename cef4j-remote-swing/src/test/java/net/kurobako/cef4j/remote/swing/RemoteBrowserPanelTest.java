@@ -12,6 +12,8 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
+import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
@@ -57,6 +59,28 @@ class RemoteBrowserPanelTest {
         panel.release();
     }
 
+    @Test
+    void explicitViewportResizeCompletesAfterRemoteAcknowledgement() {
+        FakeSession session = new FakeSession();
+        RemoteBrowserPanel panel = new RemoteBrowserPanel(ignored -> new FakeFrameTransport());
+        panel.setSize(640, 480);
+        panel.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+
+        CompletableFuture<Void> resized = panel.resizeViewport(512, 384);
+
+        assertThat(resized).isNotDone();
+        assertThat(session.requests.get(session.requests.size() - 1))
+                .isInstanceOfSatisfying(SetViewportSizeRequest.class, request -> {
+                    assertThat(request.browser()).isEqualTo(new RemoteHandle(17));
+                    assertThat(request.width()).isEqualTo(512);
+                    assertThat(request.height()).isEqualTo(384);
+                });
+        session.completeLast(new SetViewportSizeResponse());
+        assertThat(resized).isCompleted();
+        panel.release();
+    }
+
     private static final class FakeFrameTransport implements FrameTransport {
         @Nullable
         private FrameConsumer consumer;
@@ -77,12 +101,20 @@ class RemoteBrowserPanelTest {
     private static final class FakeSession implements CefSession {
         private final Map<Integer, List<Consumer<?>>> handlers = new HashMap<>();
         private final List<CefMessageEncoder> requests = new ArrayList<>();
+        private final List<CompletableFuture<?>> responses = new ArrayList<>();
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
                 CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             requests.add(request);
-            return new CompletableFuture<>();
+            CompletableFuture<R> response = new CompletableFuture<>();
+            responses.add(response);
+            return response;
+        }
+
+        @SuppressWarnings("unchecked")
+        private <R extends CefMessageView> void completeLast(R response) {
+            ((CompletableFuture<R>) responses.get(responses.size() - 1)).complete(response);
         }
 
         @Override
