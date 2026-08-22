@@ -20,6 +20,18 @@ cef_extra_args() {
     esac
 }
 
+cef_dbus_session_bus_address() {
+    local platform=$1 current=${2:-}
+    case "${platform}" in
+        linux64|linuxarm64)
+            # Chromium uses this value itself when no session bus exists. Set it in the shell before the JVM becomes
+            # multithreaded so Chromium does not have to mutate glibc's process environment during CEF startup.
+            printf '%s\n' "${current:-disabled:}"
+            ;;
+        *) printf '%s\n' "${current}" ;;
+    esac
+}
+
 surefire_extra_arg() {
     local platform=$1 jdk_version=$2
     case "${platform}:${jdk_version}" in
@@ -42,13 +54,12 @@ spotbugs_extra_arg() {
 }
 
 process_reaper_jvm_arg() {
-    case "$1:$2" in
-        aarch64:17)
-            # Parallel code generation starts many subprocesses in the Maven JVM. OpenJDK provides this switch for
-            # process-reaper stack overflows; use the normal JVM thread stack instead of its reduced reaper stack.
-            printf '%s\n' '-Djdk.lang.processReaperUseDefaultStackSize=true'
-            ;;
-    esac
+    local platform=$1 arch=$2 cef_api=$3
+    if [ "${platform}" = linuxarm64 ] && [ "${arch}" = aarch64 ] && [ "${cef_api}" -lt 139 ]; then
+        # The old-CEF static-TLS reserve exhausts the small stack Java assigns to process-reaper threads. This must
+        # reach Maven, Exec Plugin code generation, and Surefire forks on every JDK used by the affected jobs.
+        printf '%s\n' '-Djdk.lang.processReaperUseDefaultStackSize=true'
+    fi
 }
 
 xvfb_server_args() {

@@ -30,6 +30,15 @@ actual=$(cef_extra_args macosx64)
 actual=$(cef_extra_args linux64)
 [ "${actual}" = --disable-gpu ] || fail "unexpected Linux CEF arguments: ${actual}"
 
+actual=$(cef_dbus_session_bus_address linux64 '')
+[ "${actual}" = 'disabled:' ] \
+    || fail "headless Linux CEF must enter Java with D-Bus autolaunch disabled: ${actual}"
+actual=$(cef_dbus_session_bus_address linuxarm64 'unix:path=/run/user/1000/bus')
+[ "${actual}" = 'unix:path=/run/user/1000/bus' ] \
+    || fail "Linux CEF must preserve a runner-provided D-Bus address: ${actual}"
+[ -z "$(cef_dbus_session_bus_address macosarm64 '')" ] \
+    || fail "non-Linux CEF jobs must not synthesize a D-Bus address"
+
 actual=$(surefire_extra_arg windows64 25)
 [ "${actual}" = '-Djdk.net.URLClassPath.disableClassPathURLCheck=true' ] \
     || fail "JDK 25 Windows tests must allow Surefire classpaths spanning drive roots: ${actual}"
@@ -41,11 +50,13 @@ actual=$(spotbugs_extra_arg linuxarm64)
     || fail "Linux ARM64 must reuse platform-independent SpotBugs coverage from native x64 jobs: ${actual}"
 [ -z "$(spotbugs_extra_arg linux64)" ] || fail "native x64 jobs must retain SpotBugs coverage"
 
-actual=$(process_reaper_jvm_arg aarch64 17)
+actual=$(process_reaper_jvm_arg linuxarm64 aarch64 138)
 [ "${actual}" = '-Djdk.lang.processReaperUseDefaultStackSize=true' ] \
-    || fail "aarch64 JDK 17 must use a safe process-reaper stack: ${actual}"
-[ -z "$(process_reaper_jvm_arg aarch64 21)" ] || fail "newer ARM JDKs must retain their defaults"
-[ -z "$(process_reaper_jvm_arg x86_64 17)" ] || fail "x64 JDK 17 must retain its defaults"
+    || fail "old-CEF Linux ARM64 builds must use a safe process-reaper stack: ${actual}"
+[ -z "$(process_reaper_jvm_arg linuxarm64 aarch64 144)" ] \
+    || fail "newer Linux ARM64 CEF builds must retain the JVM default"
+[ -z "$(process_reaper_jvm_arg linux64 x86_64 138)" ] \
+    || fail "Linux x64 builds must retain the JVM default"
 
 actual=$(xvfb_server_args)
 case " ${actual} " in
@@ -97,9 +108,18 @@ grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
 grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "native CEF test modules must run serially inside each matrix job"
-grep -q 'process_reaper_arg=$(process_reaper_jvm_arg "${ARCH}" "${JDK_VERSION}")' \
+grep -q 'process_reaper_arg=$(process_reaper_jvm_arg "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "the build must apply the architecture-specific process-reaper workaround"
+grep -q 'JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+${JAVA_TOOL_OPTIONS} }${process_reaper_arg}"' \
+    "${repo_root}/.github/ci/build.sh" \
+    || fail "the process-reaper workaround must propagate to every forked Java process"
+if grep -q 'if:.*!cancelled()' "${repo_root}/.github/workflows/main.yaml"; then
+    fail "later JDK builds must not run in a workspace contaminated by an earlier failed JDK"
+fi
+grep -q 'DBUS_SESSION_BUS_ADDRESS=$(cef_dbus_session_bus_address "${CEF_PLATFORM}" "${DBUS_SESSION_BUS_ADDRESS:-}")' \
+    "${repo_root}/.github/ci/build.sh" \
+    || fail "the build must seed Linux D-Bus state before launching Maven"
 grep -q 'on_context_initialized' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/main.cpp" \
     || fail "the runtime server must wait for CEF browser-context initialization"

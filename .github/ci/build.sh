@@ -20,10 +20,10 @@ fi
 [ -d "${JAVA_HOME}/bin" ] || { echo "invalid JAVA_HOME: ${JAVA_HOME}" >&2; exit 1; }
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
-process_reaper_arg=$(process_reaper_jvm_arg "${ARCH}" "${JDK_VERSION}")
+process_reaper_arg=$(process_reaper_jvm_arg "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")
 if [ -n "${process_reaper_arg}" ]; then
-    MAVEN_OPTS="${MAVEN_OPTS:+${MAVEN_OPTS} }${process_reaper_arg}"
-    export MAVEN_OPTS
+    JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:+${JAVA_TOOL_OPTIONS} }${process_reaper_arg}"
+    export JAVA_TOOL_OPTIONS
 fi
 actual_jdk=$(java -XshowSettings:properties -version 2>&1 \
     | java_specification_version)
@@ -38,6 +38,11 @@ case "${CEF_PLATFORM}" in
     macosx64|macosarm64) is_macos=1 ;;
     *) echo "unknown CEF_PLATFORM: ${CEF_PLATFORM}" >&2; exit 2 ;;
 esac
+
+DBUS_SESSION_BUS_ADDRESS=$(cef_dbus_session_bus_address "${CEF_PLATFORM}" "${DBUS_SESSION_BUS_ADDRESS:-}")
+if [ "${is_linux:-}" = 1 ]; then
+    export DBUS_SESSION_BUS_ADDRESS
+fi
 
 static_tls_bytes=$(static_tls_reserve "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}")
 if [ -n "${static_tls_bytes}" ]; then
