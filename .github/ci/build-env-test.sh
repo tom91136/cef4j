@@ -41,6 +41,12 @@ actual=$(spotbugs_extra_arg linuxarm64)
     || fail "Linux ARM64 must reuse platform-independent SpotBugs coverage from native x64 jobs: ${actual}"
 [ -z "$(spotbugs_extra_arg linux64)" ] || fail "native x64 jobs must retain SpotBugs coverage"
 
+actual=$(process_reaper_jvm_arg aarch64 17)
+[ "${actual}" = '-Djdk.lang.processReaperUseDefaultStackSize=true' ] \
+    || fail "aarch64 JDK 17 must use a safe process-reaper stack: ${actual}"
+[ -z "$(process_reaper_jvm_arg aarch64 21)" ] || fail "newer ARM JDKs must retain their defaults"
+[ -z "$(process_reaper_jvm_arg x86_64 17)" ] || fail "x64 JDK 17 must retain its defaults"
+
 actual=$(xvfb_server_args)
 case " ${actual} " in
     *' -noreset '*) ;;
@@ -91,6 +97,9 @@ grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
 grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "native CEF test modules must run serially inside each matrix job"
+grep -q 'process_reaper_arg=$(process_reaper_jvm_arg "${ARCH}" "${JDK_VERSION}")' \
+    "${repo_root}/.github/ci/build.sh" \
+    || fail "the build must apply the architecture-specific process-reaper workaround"
 grep -q 'on_context_initialized' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/main.cpp" \
     || fail "the runtime server must wait for CEF browser-context initialization"

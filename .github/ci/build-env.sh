@@ -41,6 +41,16 @@ spotbugs_extra_arg() {
     esac
 }
 
+process_reaper_jvm_arg() {
+    case "$1:$2" in
+        aarch64:17)
+            # Parallel code generation starts many subprocesses in the Maven JVM. OpenJDK provides this switch for
+            # process-reaper stack overflows; use the normal JVM thread stack instead of its reduced reaper stack.
+            printf '%s\n' '-Djdk.lang.processReaperUseDefaultStackSize=true'
+            ;;
+    esac
+}
+
 xvfb_server_args() {
     # DisplayLock serialises UI classes, leaving short client-free gaps between them.
     # Do not let Xvfb reset during those gaps while the parallel reactor is still running.

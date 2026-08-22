@@ -20,6 +20,11 @@ fi
 [ -d "${JAVA_HOME}/bin" ] || { echo "invalid JAVA_HOME: ${JAVA_HOME}" >&2; exit 1; }
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
+process_reaper_arg=$(process_reaper_jvm_arg "${ARCH}" "${JDK_VERSION}")
+if [ -n "${process_reaper_arg}" ]; then
+    MAVEN_OPTS="${MAVEN_OPTS:+${MAVEN_OPTS} }${process_reaper_arg}"
+    export MAVEN_OPTS
+fi
 actual_jdk=$(java -XshowSettings:properties -version 2>&1 \
     | java_specification_version)
 [ "${actual_jdk}" = "${JDK_VERSION}" ] || {
