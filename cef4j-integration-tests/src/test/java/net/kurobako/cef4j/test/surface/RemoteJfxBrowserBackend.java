@@ -153,7 +153,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
-            CompletableFuture<Void> result = new CompletableFuture<>();
+            AtomicReference<CompletableFuture<Void>> result = new AtomicReference<>();
             try {
                 onFxThread(() -> {
                     root.setPrefSize(width, height);
@@ -161,12 +161,12 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
                     stage.setHeight(height);
                     this.width = width;
                     this.height = height;
-                    result.complete(null);
+                    result.set(view.resizeViewport(width, height));
                 });
             } catch (Exception e) {
-                result.completeExceptionally(e);
+                return CompletableFuture.failedFuture(e);
             }
-            return result;
+            return Objects.requireNonNull(result.get(), "remote JavaFX resize");
         }
 
         @Override

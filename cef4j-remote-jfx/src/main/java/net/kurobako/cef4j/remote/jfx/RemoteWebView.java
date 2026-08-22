@@ -324,6 +324,32 @@ public final class RemoteWebView extends Region {
         });
     }
 
+    /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
+    @Nonnull
+    public CompletableFuture<Void> resizeViewport(int width, int height) {
+        if (width <= 0 || height <= 0) throw new IllegalArgumentException("viewport dimensions must be positive");
+        if (!Platform.isFxApplicationThread()) {
+            return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, width, height));
+        }
+        CompletableFuture<Void> pendingFxWork = new CompletableFuture<>();
+        Platform.runLater(() -> pendingFxWork.complete(null));
+        return pendingFxWork.thenCompose(ignored ->
+                browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, width, height)));
+    }
+
+    private CompletableFuture<Void> requestViewportSize(
+            CefSession expectedSession, RemoteHandle handle, int width, int height) {
+        long desired = packSize(width, height);
+        desiredSize.set(desired);
+        reportedSize.set(desired);
+        return expectedSession
+                .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
+                .thenApply(ignored -> (Void) null)
+                .whenComplete((ignored, failure) -> {
+                    if (failure != null) reportedSize.compareAndSet(desired, -1);
+                });
+    }
+
     /**
      * Frame callback fired on the IPC session's IO thread. Copies the callback-scoped transport buffer into an owned
      * immutable snapshot, then transfers that snapshot to the JFX thread. A fresh PixelBuffer per delivered paint is
