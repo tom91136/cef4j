@@ -296,8 +296,11 @@ jobs:
           -Dcef4j.platform.artifact=cef4j-platform
           -Dcef4j.platform.classifier=linux-x86_64
           "-Dcef4j.packager.version=${PACKAGER_VERSION}"
+          -Dcef4j.embed-runtime=true
+          -Dcef4j.strip-runtime=true
+          -Dcef4j.packager.offline=true
           -Dsbt.supershell=false -Dsbt.log.noformat=true -J-Xmx2G
-          clean run package
+          clean run package cefRuntime/package
 
       - name: Verify packaged consumer runtimes
         run: |
@@ -305,7 +308,6 @@ jobs:
             examples/maven/target/cef4j-maven-consumer-1.0.0-SNAPSHOT.jar
             examples/gradle-groovy/build/libs/cef4j-gradle-groovy-consumer.jar
             examples/gradle-kotlin/build/libs/cef4j-gradle-kotlin-consumer.jar
-            examples/sbt/target/scala-*/cef4j-sbt-consumer_3-1.0.0-SNAPSHOT.jar
           )
           for artifact in "${artifacts[@]}"; do
             test -f "${artifact}"
@@ -313,3 +315,16 @@ jobs:
             jar tf "${artifact}" | grep -q '^cef-runtime/linux64/cef-runtime.properties$'
             jar tf "${artifact}" | grep -q '^cef-runtime/linux64/libcef.so$'
           done
+
+          ordinary_sbt=examples/sbt/target/scala-*/cef4j-sbt-consumer_3-1.0.0-SNAPSHOT.jar
+          runtime_sbt=examples/sbt/cef-runtime/target/cef4j-sbt-consumer-runtime-1.0.0-SNAPSHOT-linux-x86_64.jar
+          test -f ${ordinary_sbt}
+          if jar tf ${ordinary_sbt} | grep -q '^cef-runtime/'; then
+            echo "ordinary sbt artifact unexpectedly embeds a host CEF runtime" >&2
+            exit 1
+          fi
+          test -f "${runtime_sbt}"
+          jar tf "${runtime_sbt}" | grep -q '^cef-runtime/linux64/file-list.txt$'
+          jar tf "${runtime_sbt}" | grep -q '^cef-runtime/linux64/cef-runtime.properties$'
+          jar tf "${runtime_sbt}" | grep -q '^cef-runtime/linux64/libcef.so$'
+          unzip -p "${runtime_sbt}" cef-runtime/linux64/cef-runtime.properties | grep -q '^stripped=true$'

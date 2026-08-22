@@ -32,9 +32,16 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 public final class CefRuntimePackager {
     private static final String MAC_FRAMEWORK = "Chromium Embedded Framework.framework/";
     private static final long MAX_ENTRY_SIZE = 3L * 1024 * 1024 * 1024;
+    private final BinaryStripper binaryStripper;
 
     /** Creates a stateless runtime packager. */
-    public CefRuntimePackager() {}
+    public CefRuntimePackager() {
+        this(CefRuntimePackager::stripBinary);
+    }
+
+    CefRuntimePackager(BinaryStripper binaryStripper) {
+        this.binaryStripper = Objects.requireNonNull(binaryStripper, "binaryStripper");
+    }
 
     /** Returns whether an existing output is complete and was produced from the same material inputs. */
     public boolean isCurrent(Request request) throws IOException {
@@ -64,6 +71,8 @@ public final class CefRuntimePackager {
             return false;
         }
         if (!Boolean.toString(!request.withoutSwiftShader).equals(properties.getProperty("swiftshader"))) return false;
+        if (!Boolean.toString(request.strip).equals(properties.getProperty("stripped", "false"))) return false;
+        if (request.strip && !request.stripCommand.equals(properties.getProperty("strip.command"))) return false;
         for (String relative : Files.readAllLines(fileList, StandardCharsets.UTF_8)) {
             if (relative.isBlank()) return false;
             Path file = runtimeRoot.resolve(relative);
@@ -75,6 +84,9 @@ public final class CefRuntimePackager {
     /** Creates a reusable cef4j resource tree from an upstream minimal archive. */
     public Result packageArchive(Request request) throws IOException {
         Objects.requireNonNull(request, "request");
+        if (request.strip && !request.platform.isLinux()) {
+            throw new IllegalArgumentException("Stripping is currently supported only for Linux CEF runtimes");
+        }
         Path output = request.output.toAbsolutePath().normalize();
         Files.createDirectories(output);
         Path runtimeRoot = output.resolve("cef-runtime")
@@ -92,6 +104,9 @@ public final class CefRuntimePackager {
             extract(request, stagedRoot, files, matchedLocales, requestedLocales);
             verifyRequired(stagedRoot, request.platform);
             if (!requestedLocales.isEmpty()) verifyLocales(requestedLocales, matchedLocales);
+            if (request.strip) {
+                binaryStripper.strip(stagedRoot.resolve(request.platform.runtimeBinary()), request.stripCommand);
+            }
             writeMetadata(request, stagedRoot, files);
             files.add("cef-runtime.properties");
             writeFileList(stagedRoot, files);
@@ -285,6 +300,8 @@ public final class CefRuntimePackager {
             writer.write("archive.upstream-verified=" + request.upstreamVerified + "\n");
             writer.write("locales=" + String.join(",", normalizeLocales(request.locales)) + "\n");
             writer.write("swiftshader=" + !request.withoutSwiftShader + "\n");
+            writer.write("stripped=" + request.strip + "\n");
+            if (request.strip) writer.write("strip.command=" + request.stripCommand + "\n");
             writer.write("file.count=" + files.size() + "\n");
             writer.write("generated.at=" + Instant.EPOCH + "\n");
         }
@@ -295,6 +312,24 @@ public final class CefRuntimePackager {
         String majorText = dot < 0 ? cefVersion : cefVersion.substring(0, dot);
         int major = Integer.parseInt(majorText);
         return major >= 133 ? Integer.toString(major * 100) : Integer.toString(major);
+    }
+
+    private static void stripBinary(Path binary, String command) throws IOException {
+        Process process = new ProcessBuilder(command, "--strip-unneeded", binary.toString())
+                .inheritIO()
+                .start();
+        int status;
+        try {
+            status = process.waitFor();
+        } catch (InterruptedException interrupted) {
+            process.destroyForcibly();
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while stripping " + binary, interrupted);
+        }
+        if (status != 0) throw new IOException("Strip command exited with status " + status + ": " + command);
+        if (!Files.isRegularFile(binary) || Files.size(binary) == 0) {
+            throw new IOException("Strip command did not produce a usable CEF binary: " + binary);
+        }
     }
 
     private static void writeFileList(Path root, Set<String> files) throws IOException {
@@ -336,6 +371,8 @@ public final class CefRuntimePackager {
         final String archiveSha1;
         final String archiveSha256;
         final boolean upstreamVerified;
+        final boolean strip;
+        final String stripCommand;
 
         /**
          * Creates packaging inputs.
@@ -360,6 +397,33 @@ public final class CefRuntimePackager {
                 String archiveSha1,
                 String archiveSha256,
                 boolean upstreamVerified) {
+            this(
+                    cefVersion,
+                    platform,
+                    archive,
+                    output,
+                    locales,
+                    withoutSwiftShader,
+                    archiveSha1,
+                    archiveSha256,
+                    upstreamVerified,
+                    false,
+                    "strip");
+        }
+
+        /** Creates packaging inputs, optionally stripping the primary Linux CEF shared library. */
+        public Request(
+                String cefVersion,
+                CefPlatform platform,
+                Path archive,
+                Path output,
+                List<String> locales,
+                boolean withoutSwiftShader,
+                String archiveSha1,
+                String archiveSha256,
+                boolean upstreamVerified,
+                boolean strip,
+                String stripCommand) {
             this.cefVersion = Objects.requireNonNull(cefVersion, "cefVersion");
             this.platform = Objects.requireNonNull(platform, "platform");
             this.archive = Objects.requireNonNull(archive, "archive");
@@ -369,7 +433,14 @@ public final class CefRuntimePackager {
             this.archiveSha1 = Objects.requireNonNull(archiveSha1, "archiveSha1");
             this.archiveSha256 = Objects.requireNonNull(archiveSha256, "archiveSha256");
             this.upstreamVerified = upstreamVerified;
+            this.strip = strip;
+            this.stripCommand = Objects.requireNonNull(stripCommand, "stripCommand");
         }
+    }
+
+    @FunctionalInterface
+    interface BinaryStripper {
+        void strip(Path binary, String command) throws IOException;
     }
 
     /** Details of a completed packaging operation. */

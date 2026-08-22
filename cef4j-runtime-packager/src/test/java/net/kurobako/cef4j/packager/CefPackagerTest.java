@@ -53,4 +53,23 @@ class CefPackagerTest {
 
         assertThat(status).isEqualTo(CommandLine.ExitCode.USAGE);
     }
+
+    @Test
+    void acceptsHostAsAnExplicitFailFastPlatformChoice() throws Exception {
+        CefPlatform host = CefPlatform.detectHost(System.getProperty("os.name"), System.getProperty("os.arch"));
+        Path archive = TestArchives.create(temporary.resolve("host.tar.bz2"), host);
+        Path output = temporary.resolve("host-resources");
+
+        int status = new CommandLine(new CefPackager())
+                .execute(
+                        "package",
+                        "--cef-version=150.0.0+fixture",
+                        "--platform=host",
+                        "--archive=" + archive,
+                        "--output=" + output);
+
+        assertThat(status).isZero();
+        assertThat(output.resolve("cef-runtime").resolve(host.cefName()).resolve(host.runtimeBinary()))
+                .isRegularFile();
+    }
 }

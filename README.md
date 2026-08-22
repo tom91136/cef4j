@@ -77,7 +77,9 @@ CEF binaries are not published to Maven Central. Use a CEF build from the same m
 | User-managed archive | Pass `--archive` and optionally `--sha256`; add `--offline` to prohibit network access. |
 
 The packager validates official downloads, caches them under `${CEF4J_CEF_CACHE:-~/.cache/cef4j}`, supports all six
-platforms, and can retain selected locales or omit SwiftShader. Complete CI-tested build integrations:
+platforms, and can retain selected locales, omit SwiftShader, or strip the primary Linux library. Use
+`--platform=host` for strict host detection: unknown operating systems and architectures fail instead of falling back
+to Linux or x86-64. Complete CI-tested build integrations:
 
 - [Maven](examples/maven/pom.xml)
 - [Gradle Groovy](examples/gradle-groovy/build.gradle)
@@ -85,16 +87,23 @@ platforms, and can retain selected locales or omit SwiftShader. Complete CI-test
 - [sbt](examples/sbt/build.sbt)
 
 They invoke the ordinary Java 11 CLI dependency; no custom build plugin is required. CI runs each example against a
-small fixture and verifies the packaged resource layout. The CLI can also be invoked directly:
+cached official archive and verifies the packaged resource layout. The CLI can also be invoked directly:
 
 ```bash
 java -jar cef4j-runtime-packager-0.1.0.jar package \
   --cef-version=150.0.18+gdb11278+chromium-150.0.7871.213 \
-  --platform=linux-x86_64 \
+  --platform=host \
   --locales=en-US \
+  --strip \
   --without-swiftshader \
   --output=src/main/resources
 ```
+
+The sbt example keeps the ordinary application jar platform-neutral. Set `-Dcef4j.embed-runtime=true` to build its
+separate, platform-classified runtime jar; it skips acquisition when `LIBCEF_DIR` or `cef4j.libcef.dir` is set. sbt's
+offline setting is forwarded to the child packager, and `-Dcef4j.packager.offline=true` can request that behavior
+independently. Linux packaging strips by default; set `-Dcef4j.strip-runtime=false` to retain debug symbols.
+For cross-packaging a Linux runtime, pass `--strip-command` with a target-capable strip executable.
 
 ## Runtime server
 

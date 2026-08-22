@@ -46,7 +46,11 @@ public final class CefPackager implements Runnable {
         @Option(names = "--cef-version", required = true, description = "Exact upstream CEF version.")
         String cefVersion;
 
-        @Option(names = "--platform", required = true, split = ",", description = "Target platform(s), or 'all'.")
+        @Option(
+                names = "--platform",
+                required = true,
+                split = ",",
+                description = "Target platform(s), 'host', or 'all'.")
         List<String> platforms = new ArrayList<>();
 
         @Option(names = "--output", required = true, description = "Generated resources root.")
@@ -66,6 +70,15 @@ public final class CefPackager implements Runnable {
 
         @Option(names = "--without-swiftshader", description = "Remove the optional SwiftShader fallback.")
         boolean withoutSwiftShader;
+
+        @Option(names = "--strip", description = "Strip unneeded symbols from the primary Linux CEF library.")
+        boolean strip;
+
+        @Option(
+                names = "--strip-command",
+                defaultValue = "strip",
+                description = "Strip executable (use a target-specific cross-strip when cross-packaging).")
+        String stripCommand;
 
         @Option(names = "--sha256", description = "Require this archive SHA-256 (one platform only).")
         String sha256;
@@ -95,6 +108,10 @@ public final class CefPackager implements Runnable {
                 throw new CommandLine.ParameterException(
                         new CommandLine(this), "--bridge-directory requires one platform");
             }
+            if (strip && targets.stream().anyMatch(platform -> !platform.isLinux())) {
+                throw new CommandLine.ParameterException(
+                        new CommandLine(this), "--strip is currently supported only for Linux CEF runtimes");
+            }
             CefArchiveResolver resolver = new CefArchiveResolver();
             CefRuntimePackager packager = new CefRuntimePackager();
             for (CefPlatform platform : targets) {
@@ -109,7 +126,9 @@ public final class CefPackager implements Runnable {
                         withoutSwiftShader,
                         resolved.sha1,
                         resolved.sha256,
-                        resolved.upstreamVerified);
+                        resolved.upstreamVerified,
+                        strip,
+                        stripCommand);
                 if (skipIfCurrent && packager.isCurrent(request)) {
                     System.out.printf(
                             "Reusing packaged CEF %s for %s in %s%n", cefVersion, platform.externalName(), output);
@@ -157,7 +176,12 @@ public final class CefPackager implements Runnable {
 
     private static List<CefPlatform> parsePlatforms(List<String> values) {
         if (values.stream().anyMatch("all"::equalsIgnoreCase)) return List.of(CefPlatform.values());
-        return values.stream().map(CefPlatform::parse).distinct().collect(java.util.stream.Collectors.toList());
+        return values.stream()
+                .map(value -> value.equalsIgnoreCase("host")
+                        ? CefPlatform.detectHost(System.getProperty("os.name"), System.getProperty("os.arch"))
+                        : CefPlatform.parse(value))
+                .distinct()
+                .collect(java.util.stream.Collectors.toList());
     }
 
     private static Path defaultCache() {

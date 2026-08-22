@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -107,6 +109,56 @@ class CefRuntimePackagerTest {
         assertThat(packager.isCurrent(request)).isFalse();
     }
 
+    @Test
+    void optionallyStripsTheLinuxRuntimeAndTracksItAsAPackagingInput() throws Exception {
+        CefPlatform platform = CefPlatform.LINUX_X86_64;
+        Path archive = TestArchives.create(temporary.resolve("strip.tar.bz2"), platform);
+        Path output = temporary.resolve("strip-output");
+        AtomicReference<Path> stripped = new AtomicReference<>();
+        AtomicReference<String> command = new AtomicReference<>();
+        CefRuntimePackager packager = new CefRuntimePackager((binary, stripCommand) -> {
+            stripped.set(binary);
+            command.set(stripCommand);
+            Files.writeString(binary, "stripped cef");
+        });
+        CefRuntimePackager.Request request = request(archive, output, platform, List.of(), false, true, "llvm-strip");
+
+        CefRuntimePackager.Result result = packager.packageArchive(request);
+
+        assertThat(stripped.get().getFileName()).isEqualTo(Path.of("libcef.so"));
+        assertThat(command.get()).isEqualTo("llvm-strip");
+        assertThat(result.runtimeRoot().resolve("libcef.so")).hasContent("stripped cef");
+        Properties metadata = new Properties();
+        try (var reader = Files.newBufferedReader(result.runtimeRoot().resolve("cef-runtime.properties"))) {
+            metadata.load(reader);
+        }
+        assertThat(metadata.getProperty("stripped")).isEqualTo("true");
+        assertThat(metadata.getProperty("strip.command")).isEqualTo("llvm-strip");
+        assertThat(packager.isCurrent(request)).isTrue();
+        assertThat(packager.isCurrent(request(archive, output, platform, List.of(), false, true, "other-strip")))
+                .isFalse();
+        assertThat(packager.isCurrent(request(archive, output, platform, List.of(), false, false, "strip")))
+                .isFalse();
+    }
+
+    @Test
+    void rejectsStrippingNonLinuxRuntimes() throws Exception {
+        CefPlatform platform = CefPlatform.MACOS_ARM64;
+        Path archive = TestArchives.create(temporary.resolve("strip-macos.tar.bz2"), platform);
+
+        assertThatThrownBy(() -> new CefRuntimePackager()
+                        .packageArchive(request(
+                                archive,
+                                temporary.resolve("strip-macos-output"),
+                                platform,
+                                List.of(),
+                                false,
+                                true,
+                                "strip")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Linux");
+    }
+
     private CefRuntimePackager.Result packageArchive(
             Path archive, Path output, CefPlatform platform, List<String> locales, boolean withoutSwiftShader)
             throws Exception {
@@ -115,6 +167,18 @@ class CefRuntimePackagerTest {
 
     private CefRuntimePackager.Request request(
             Path archive, Path output, CefPlatform platform, List<String> locales, boolean withoutSwiftShader)
+            throws Exception {
+        return request(archive, output, platform, locales, withoutSwiftShader, false, "strip");
+    }
+
+    private CefRuntimePackager.Request request(
+            Path archive,
+            Path output,
+            CefPlatform platform,
+            List<String> locales,
+            boolean withoutSwiftShader,
+            boolean strip,
+            String stripCommand)
             throws Exception {
         return new CefRuntimePackager.Request(
                 "150.0.0+fixture",
@@ -125,6 +189,8 @@ class CefRuntimePackagerTest {
                 withoutSwiftShader,
                 Digests.digest(archive, "SHA-1"),
                 Digests.digest(archive, "SHA-256"),
-                false);
+                false,
+                strip,
+                stripCommand);
     }
 }
