@@ -35,7 +35,10 @@ public final class TestTempDirs {
 
     private static Path requireSafeTempDirectory(Path dir) {
         try {
-            Path safe = dir.toRealPath(LinkOption.NOFOLLOW_LINKS);
+            if (Files.isSymbolicLink(dir)) {
+                throw new IllegalArgumentException("cleanup target must not be a symbolic link: " + dir);
+            }
+            Path safe = dir.toRealPath();
             if (!Files.isDirectory(safe, LinkOption.NOFOLLOW_LINKS)) {
                 throw new IllegalArgumentException("cleanup target must be a directory: " + safe);
             }
