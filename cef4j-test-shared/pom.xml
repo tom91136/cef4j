@@ -12,14 +12,9 @@
 
     <artifactId>cef4j-test-shared</artifactId>
     <name>cef4j-test-shared</name>
-    <description>Cross-backend test SPI for parameterising existing CEF tests across in-process and Remote CEF backends</description>
+    <description>Cross-backend browser, session, and WebDriver test contracts</description>
 
     <dependencies>
-        <!-- This module is a test-support library: classes are placed in `main` scope (not `test`) so consumer
-             modules can depend on it via plain `<dependency><scope>test</scope></dependency>`. The runtime deps
-             below intentionally pull JUnit/AssertJ at compile time so the SPI can ship JUnit-aware base classes
-             later. Versions sourced from the parent's <properties>; we don't redeclare in dependencyManagement
-             with test scope here because we need them at compile time. -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
@@ -40,6 +35,10 @@
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-code-policy</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-support</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>

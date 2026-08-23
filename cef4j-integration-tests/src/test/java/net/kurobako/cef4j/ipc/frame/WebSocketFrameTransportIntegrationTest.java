@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.frame;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -16,21 +15,12 @@ import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(600)
 final class WebSocketFrameTransportIntegrationTest {
-    private static Path serverBinary;
-    private static Path cefResources;
-
-    @BeforeAll
-    static void locateServer() {
-        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        serverBinary = environment.binary();
-        cefResources = environment.resources();
-    }
+    private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     @Test
     void realRuntimeServerPublishesInlinePixelsOverWebSocket() throws Exception {
@@ -65,12 +55,6 @@ final class WebSocketFrameTransportIntegrationTest {
     }
 
     private static RuntimeServerProcess spawnServer() throws IOException {
-        return RuntimeServerProcess.spawn(
-                serverBinary,
-                "websocket",
-                "ws://127.0.0.1:0/cef4j",
-                "inline",
-                Duration.ofSeconds(30),
-                RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
+        return RUNTIME.spawn("websocket", "ws://127.0.0.1:0/cef4j", "inline", Duration.ofSeconds(30));
     }
 }

@@ -11,8 +11,9 @@ import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import net.kurobako.cef4j.codegen.FileSystem
+import net.kurobako.cef4j.codegen.TempDirectorySuite
 
-class IpcEmitterRoundtripSpec extends munit.FunSuite {
+class IpcEmitterRoundtripSpec extends TempDirectorySuite {
 
   test("emitter produces a class that round-trips a mix of field types") {
     val spec = MessageSpec(
@@ -293,7 +294,7 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
       .toList
       .asJava
 
-    val output = Files.createTempDirectory("cef4j-codegen-javac-")
+    val output = tempDirectory("cef4j-codegen-javac-")
     try {
       val fileManager = javac.getStandardFileManager(null, null, null)
       val options     = List("-Xlint:none", "-d", output.toString).asJava

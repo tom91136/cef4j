@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.UserPrincipal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -355,13 +356,12 @@ public final class SystemBootstrap {
                 computeExtractionCacheKey(platform, libName, resourceBase, libcefDir, packagedRuntimeAvailable));
     }
 
-    private static void createPrivateDirectory(Path directory) throws IOException {
+    static void createPrivateDirectory(Path directory) throws IOException {
         Files.createDirectories(directory);
         if (Files.isSymbolicLink(directory) || !Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
             throw new IOException("Native cache is not a real directory: " + directory);
         }
-        Path home = Paths.get(System.getProperty("user.home"));
-        if (!Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS).equals(Files.getOwner(home))) {
+        if (!isOwnedByCurrentUser(directory)) {
             throw new IOException("Native cache is not owned by the current user: " + directory);
         }
         try {
@@ -373,6 +373,16 @@ public final class SystemBootstrap {
                             PosixFilePermission.OWNER_EXECUTE));
         } catch (UnsupportedOperationException e) {
             log.trace("POSIX permissions are unavailable for {}: {}", directory, e.toString());
+        }
+    }
+
+    static boolean isOwnedByCurrentUser(Path directory) throws IOException {
+        UserPrincipal owner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
+        Path probe = Files.createTempFile("cef4j-owner-", ".tmp");
+        try {
+            return owner.equals(Files.getOwner(probe, LinkOption.NOFOLLOW_LINKS));
+        } finally {
+            Files.deleteIfExists(probe);
         }
     }
 

@@ -25,8 +25,9 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 object SchemaFetcher {
   final case class Schema(browser: Path, javascript: Path, metadata: Path)
 
-  private val V8Revision = """'v8_revision':\s*'([^']+)'""".r
-  private val client     = HttpClient.newBuilder()
+  private val V8Revision  = """'v8_revision':\s*'([^']+)'""".r
+  private val RetryDelays = List(1L, 2L, 4L, 8L, 16L, 30L).map(Duration.ofSeconds)
+  private val client      = HttpClient.newBuilder()
     .connectTimeout(Duration.ofSeconds(30))
     .followRedirects(HttpClient.Redirect.ALWAYS)
     .build()
@@ -114,10 +115,9 @@ object SchemaFetcher {
     } finally tar.close()
   }
 
-  private def fetch(url: String): Array[Byte] = {
-    @tailrec
-    def attempt(number: Int): Array[Byte] = {
-      val result =
+  private def fetch(url: String): Array[Byte] =
+    retry(
+      () =>
         try {
           val request  = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofMinutes(2)).GET().build()
           val response = client.send(request, HttpResponse.BodyHandlers.ofByteArray())
@@ -126,18 +126,34 @@ object SchemaFetcher {
         } catch {
           case error: IOException          => Left(error)
           case error: InterruptedException => Thread.currentThread().interrupt(); throw error
-        }
-      result match {
-        case Right(body)                => body
-        case Left(error) if number >= 5 => throw error
-        case Left(_)                    =>
-          Thread.sleep(number * 1000L)
-          attempt(number + 1)
-      }
-    }
+        },
+      sleep
+    )
 
-    attempt(1)
+  private[cdp] def retry[A](operation: () => Either[IOException, A], pause: Duration => Unit): A = {
+    @tailrec
+    def attempt(delays: List[Duration]): A =
+      operation() match {
+        case Right(value) => value
+        case Left(error)  =>
+          delays match {
+            case Nil                => throw error
+            case delay :: remaining =>
+              pause(delay)
+              attempt(remaining)
+          }
+      }
+
+    attempt(RetryDelays)
   }
+
+  private def sleep(delay: Duration): Unit =
+    try Thread.sleep(delay.toMillis)
+    catch {
+      case error: InterruptedException =>
+        Thread.currentThread().interrupt()
+        throw error
+    }
 
   private def publish(work: Path, destination: Path): Unit =
     try { val _ = Files.move(work, destination, StandardCopyOption.ATOMIC_MOVE) }

@@ -1,6 +1,6 @@
 package net.kurobako.cef4j.codegen
 
-class CodeGenOutputSpec extends munit.FunSuite {
+class CodeGenOutputSpec extends TempDirectorySuite {
 
   test("CLI rejects unknown arguments before generating output") {
     intercept[IllegalArgumentException](Main.main(Array("--not-a-real-option=true")))
@@ -170,7 +170,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
       "cef_resource_type_t",
       List(("RT_MAIN_FRAME", 0L, "0"), ("RT_SUB_FRAME", 1L, "1"), ("RT_FLAG", 8L, "1 << 3"))
     )
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-test")
+    val tmpDir = tempDirectory("cef4j-test")
     JavaEnumCodeGen.emit(decl, tmpDir)
     val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceType.java"))
     assert(
@@ -199,7 +199,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
       "cef_drag_operations_mask_t",
       List(("DRAG_OPERATION_EVERY", 4294967295L, "(2147483647 *2U +1U)"))
     )
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-enum-canonical")
+    val tmpDir = tempDirectory("cef4j-enum-canonical")
     JavaEnumCodeGen.emit(decl, tmpDir)
     val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefDragOperationsMask.java"))
     assert(
@@ -356,7 +356,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     given docContext: DocComments.Context = DocComments.baseContext(146, 0)
 
-    val tmpDir: java.nio.file.Path              = java.nio.file.Files.createTempDirectory("cef4j-doc-test")
+    val tmpDir: java.nio.file.Path              = tempDirectory("cef4j-doc-test")
     val objectDecl: CefDecl.ObjectStruct        = CefDecl.ObjectStruct("cef_shared_process_message_builder_t", Nil)
     val freeMethods: List[CefDecl.FreeFunction] = List(
       CefDecl.FreeFunction(
@@ -402,7 +402,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     given docContext: DocComments.Context = DocComments.baseContext(146, 0)
 
-    val tmpDir: java.nio.file.Path              = java.nio.file.Files.createTempDirectory("cef4j-doc-test")
+    val tmpDir: java.nio.file.Path              = tempDirectory("cef4j-doc-test")
     val objectDecl: CefDecl.ObjectStruct        = CefDecl.ObjectStruct("cef_scroll_view_t", Nil)
     val freeMethods: List[CefDecl.FreeFunction] = List(
       CefDecl.FreeFunction(
@@ -540,7 +540,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     given docContext: DocComments.Context = DocComments.Context.empty
 
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-subpkg")
+    val tmpDir = tempDirectory("cef4j-record-subpkg")
     JavaRecordCodeGen.emit(
       CefDecl.DataStruct(
         "cef_window_info_t",
@@ -558,7 +558,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     given namingContext: Naming.Context   = Naming.Context.empty
     given docContext: DocComments.Context = DocComments.Context.empty
 
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-pointer")
+    val tmpDir = tempDirectory("cef4j-record-pointer")
     JavaRecordCodeGen.emit(
       CefDecl.DataStruct("cef_string_utf16_t", List(Field("str", CType.Ptr("char16_t")))),
       tmpDir
@@ -578,7 +578,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     given docContext: DocComments.Context = DocComments.Context.empty
 
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-platform-interface")
+    val tmpDir = tempDirectory("cef4j-record-platform-interface")
     JavaRecordCodeGen.emit(
       CefDecl.DataStruct(
         "cef_accelerated_paint_info_t",
@@ -618,7 +618,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     given docContext: DocComments.Context = DocComments.Context.empty
 
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-platform-impl")
+    val tmpDir = tempDirectory("cef4j-record-platform-impl")
     JavaRecordCodeGen.emit(
       CefDecl.DataStruct(
         "cef_accelerated_paint_info_t",
@@ -645,7 +645,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     given docContext: DocComments.Context = DocComments.Context.empty
 
-    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-enum-subpkg")
+    val tmpDir = tempDirectory("cef4j-enum-subpkg")
     JavaEnumCodeGen.emit(
       CefDecl.Enum(
         "cef_platform_mode_t",
@@ -883,7 +883,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
 
     given namingContext: Naming.Context   = Naming.Context.empty
     given docContext: DocComments.Context = DocComments.Context.empty
-    val tmpDir                            = java.nio.file.Files.createTempDirectory("codegen-test")
+    val tmpDir                            = tempDirectory("codegen-test")
     JavaInterfaceCodeGen.emitHandler(handlerDecl, tmpDir)
     val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceBundleHandler.java"))
     assert(

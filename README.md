@@ -178,7 +178,8 @@ The platform build caches the matching Chromium/V8 PDL sources beside CEF and re
 | `cef4j-codecs-{gson,jackson}` | CDP, recording/replay, and WebDriver codecs |
 | `cef4j-webdriver`, `cef4j-{inprocess,remote}-webdriver` | W3C endpoint and hosting adapters |
 | `cef4j-runtime-packager` | independently versioned CEF acquisition and packaging CLI |
-| `cef4j-integration-tests`, `cef4j-test-shared`, `cef4j-sample` | integration contracts and examples |
+| `cef4j-test-support`, `cef4j-test-shared`, `cef4j-integration-tests` | reusable test infrastructure and cross-backend contracts |
+| `cef4j-sample` | Swing and JavaFX examples |
 
 ## Build and test
 

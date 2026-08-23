@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** Shared hosted-test launch argument handling for native GUI backends. */
 public final class CefTestLaunch {
     @Nonnull
     public static List<String> extraArgs() {

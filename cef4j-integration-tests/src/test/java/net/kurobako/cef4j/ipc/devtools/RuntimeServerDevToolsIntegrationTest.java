@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
@@ -50,7 +49,6 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -59,15 +57,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @Timeout(600)
 class RuntimeServerDevToolsIntegrationTest {
     private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(20);
-    private static Path serverBinary;
-    private static Path cefResources;
-
-    @BeforeAll
-    static void resolveBinary() {
-        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        serverBinary = environment.binary();
-        cefResources = environment.resources();
-    }
+    private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     static List<RuntimeCase> transports() {
         return List.of(
@@ -361,13 +351,7 @@ class RuntimeServerDevToolsIntegrationTest {
     }
 
     private static RuntimeServerProcess startServer(RuntimeCase runtime) throws IOException {
-        return RuntimeServerProcess.spawn(
-                serverBinary,
-                runtime.transport,
-                runtime.endpoint,
-                runtime.frameTransport,
-                Duration.ofSeconds(30),
-                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
+        return RUNTIME.spawn(runtime.transport, runtime.endpoint, runtime.frameTransport, Duration.ofSeconds(30));
     }
 
     private static String localEndpoint() {

@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 import net.kurobako.cef4j.remote.RuntimeServerBrowserRuntimeFactory;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -36,15 +35,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 /** Exercises the complete W3C HTTP -> CDP -> transport -> packaged CEF path. */
 @Timeout(600)
 class RuntimeServerWebDriverIntegrationTest {
-    private static Path serverBinary;
-    private static Path cefResources;
-
-    @BeforeAll
-    static void resolveDistribution() {
-        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        serverBinary = environment.binary();
-        cefResources = environment.resources();
-    }
+    private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     @Test
     void servesM1CommandsOverZmq() throws Exception {
@@ -182,12 +173,12 @@ class RuntimeServerWebDriverIntegrationTest {
     private static RuntimeServerBrowserRuntimeFactory runtimeFactory(
             String transport, String endpoint, String frameTransport) {
         return new RuntimeServerBrowserRuntimeFactory(
-                serverBinary,
+                RUNTIME.binary(),
                 transport,
                 endpoint,
                 frameTransport,
                 Duration.ofSeconds(30),
-                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
+                RUNTIME.processEnvironment());
     }
 
     private static HttpServer startFixture(byte[] page) throws Exception {

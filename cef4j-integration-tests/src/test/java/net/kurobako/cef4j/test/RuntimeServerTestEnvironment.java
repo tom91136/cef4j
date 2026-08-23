@@ -1,7 +1,12 @@
 package net.kurobako.cef4j.test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Map;
+import net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend;
+import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 
 public final class RuntimeServerTestEnvironment {
     private final Path binary;
@@ -38,5 +43,18 @@ public final class RuntimeServerTestEnvironment {
 
     public Path resources() {
         return resources;
+    }
+
+    public Map<String, String> processEnvironment() {
+        return RemoteCefBrowserBackend.runtimeEnvironment(resources);
+    }
+
+    public RuntimeServerProcess spawn() throws IOException {
+        return spawn("zmq", "tcp://127.0.0.1:0", "shared-file", Duration.ofSeconds(30));
+    }
+
+    public RuntimeServerProcess spawn(String transport, String endpoint, String frameTransport, Duration timeout)
+            throws IOException {
+        return RuntimeServerProcess.spawn(binary, transport, endpoint, frameTransport, timeout, processEnvironment());
     }
 }

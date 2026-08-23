@@ -3,7 +3,9 @@ package net.kurobako.cef4j.codegen.ipc
 import java.nio.file.Files
 import scala.concurrent.duration.*
 
-class CppEmitterSpec extends munit.FunSuite {
+import net.kurobako.cef4j.codegen.TempDirectorySuite
+
+class CppEmitterSpec extends TempDirectorySuite {
 
   // Hosted Windows compiler startup can consume most of two minutes before compiling this smoke program.
   override val munitTimeout = 5.minutes
@@ -83,7 +85,7 @@ class CppEmitterSpec extends munit.FunSuite {
   test("emitted header compiles via a system C++17 compiler") {
     val cxx = locateCxx().getOrElse(fail("no g++/clang++ on PATH"))
 
-    val tmp    = Files.createTempDirectory("cef4j-cppgen-")
+    val tmp    = tempDirectory("cef4j-cppgen-")
     val header = tmp.resolve("LoadUrlRequest.h")
     val source = tmp.resolve("smoketest.cpp")
     val outBin = tmp.resolve("smoketest")

@@ -3,10 +3,13 @@ package net.kurobako.cef4j.codegen.cdp
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Duration
+import scala.collection.mutable.ListBuffer
 
 import net.kurobako.cef4j.codegen.FileSystem
+import net.kurobako.cef4j.codegen.TempDirectorySuite
 
-class CdpCodegenSpec extends munit.FunSuite {
+class CdpCodegenSpec extends TempDirectorySuite {
   test("parses the PDL fixture into the expected AST") {
     val pdl = PdlParser.parse(resourcePath("browser_protocol.pdl"))
     assertEquals(
@@ -58,7 +61,7 @@ class CdpCodegenSpec extends munit.FunSuite {
   }
 
   test("parses relative includes") {
-    val root = Files.createTempDirectory("cef4j-pdl-include-")
+    val root = tempDirectory("cef4j-pdl-include-")
     try {
       val _ = Files.writeString(root.resolve("included.pdl"), "domain Included\n")
       val _ = Files.writeString(root.resolve("root.pdl"), "include included.pdl\n")
@@ -67,7 +70,7 @@ class CdpCodegenSpec extends munit.FunSuite {
   }
 
   test("rejects recursive includes") {
-    val root = Files.createTempDirectory("cef4j-pdl-recursive-")
+    val root = tempDirectory("cef4j-pdl-recursive-")
     try {
       val schema = root.resolve("schema.pdl")
       val _      = Files.writeString(schema, "include schema.pdl\n")
@@ -83,8 +86,24 @@ class CdpCodegenSpec extends munit.FunSuite {
     intercept[IllegalArgumentException](SchemaFetcher.chromiumVersionOf("150.0.18+gdb11278"))
   }
 
+  test("retries five consecutive transient download failures") {
+    var attempts = 0
+    val delays   = ListBuffer.empty[Duration]
+    val result   = SchemaFetcher.retry(
+      () => {
+        attempts += 1
+        if (attempts <= 5) Left(IOException("transient")) else Right("schema")
+      },
+      delay => delays += delay
+    )
+
+    assertEquals(result, "schema")
+    assertEquals(attempts, 6)
+    assertEquals(delays.toList, List(1L, 2L, 4L, 8L, 16L).map(Duration.ofSeconds))
+  }
+
   test("uses a complete cached schema without network access") {
-    val root      = Files.createTempDirectory("cef4j-cdp-cache-")
+    val root      = tempDirectory("cef4j-cdp-cache-")
     val schemaDir = root.resolve("cache/cdp-pdl-150.0.0.0")
     try {
       Files.createDirectories(schemaDir)
@@ -105,7 +124,7 @@ class CdpCodegenSpec extends munit.FunSuite {
   }
 
   test("generates deterministic Java and schema resources from local schemas") {
-    val root = Files.createTempDirectory("cef4j-cdp-codegen-")
+    val root = tempDirectory("cef4j-cdp-codegen-")
     try {
       Main.main(Array(
         s"--browser-schema=${resourcePath("browser_protocol.pdl")}",

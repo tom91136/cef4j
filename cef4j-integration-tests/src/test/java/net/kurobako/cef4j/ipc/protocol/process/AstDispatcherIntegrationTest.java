@@ -2,8 +2,6 @@ package net.kurobako.cef4j.ipc.protocol.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,7 +19,6 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -38,29 +35,11 @@ import org.junit.jupiter.api.Timeout;
 @Timeout(600)
 class AstDispatcherIntegrationTest {
 
-    private static Path serverBinary;
-    private static Path cefResources;
-
-    @BeforeAll
-    static void resolveBinary() {
-        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        serverBinary = environment.binary();
-        cefResources = environment.resources();
-    }
-
-    private static RuntimeServerProcess spawnServerWithEnv() throws IOException {
-        return RuntimeServerProcess.spawn(
-                serverBinary,
-                "zmq",
-                "tcp://127.0.0.1:0",
-                "shared-file",
-                Duration.ofSeconds(30),
-                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
-    }
+    private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     @Test
     void browserIsValidThroughAstDispatcher() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
@@ -83,7 +62,7 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void cefLifeSpanHandlerOnAfterCreatedFires() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
@@ -106,7 +85,7 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void facadeCloseReleasesRuntimeServerHandle() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
@@ -143,7 +122,7 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void browserGetMainFrameReturnsTypedFrameFacade() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
@@ -166,7 +145,7 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void frameLoadUrlAndGetUrlRoundTrip() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
@@ -198,7 +177,7 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void twoConcurrentBrowsersHaveIndependentState() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
@@ -251,7 +230,7 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void createBrowserMintsAdditionalHandle() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 

@@ -12,14 +12,6 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-/**
- * Serialises display-bound test classes across surefire forks.
- *
- * <p>GUI tests (JavaFX/Swing windows, synthetic input, the system clipboard) break when two forks drive them against
- * the same X display. The reactor runs modules in parallel, so display-bound classes take an interprocess lock in
- * {@code beforeAll} and release it in {@code afterAll}: at most one such class runs at a time while every other module
- * proceeds in parallel. Apply with {@code @ExtendWith(DisplayLock.class)} on the display-bound base class.
- */
 public final class DisplayLock implements BeforeAllCallback, AfterAllCallback {
     private static final String LOCK_PATH = System.getProperty(
             "cef4j.test.displayLockPath",
@@ -45,7 +37,6 @@ public final class DisplayLock implements BeforeAllCallback, AfterAllCallback {
                     return;
                 }
             } catch (OverlappingFileLockException sameJvm) {
-                // Per-class forks mean a same-JVM overlap is a leak in the caller, not contention.
                 throw new IllegalStateException("display lock already held by this JVM: " + LOCK_PATH, sameJvm);
             }
             if (System.nanoTime() > deadline) {

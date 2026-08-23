@@ -81,6 +81,16 @@ class SystemBootstrapTest {
     }
 
     @Test
+    void createsPrivateCacheDirectoryForCurrentUser() throws Exception {
+        Path directory = tempDir.resolve("native-cache");
+
+        SystemBootstrap.createPrivateDirectory(directory);
+
+        assertThat(directory).isDirectory();
+        assertThat(SystemBootstrap.isOwnedByCurrentUser(directory)).isTrue();
+    }
+
+    @Test
     void externalRuntimeIncludesCefResourcesAndLauncherDependencies() throws Exception {
         Path release = Files.createDirectories(tempDir.resolve("cef/Release"));
         Path runtime = Files.createDirectories(tempDir.resolve("reactor"));

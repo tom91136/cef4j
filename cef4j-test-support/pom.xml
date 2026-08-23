@@ -10,22 +10,19 @@
         <version>150.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>cef4j-remote-swing</artifactId>
-    <name>cef4j-remote-swing</name>
-    <description>Swing browser panel backed by a Remote CEF runtime server</description>
+    <artifactId>cef4j-test-support</artifactId>
+    <name>cef4j-test-support</name>
+    <description>Dependency-light test lifecycle support</description>
 
     <dependencies>
         <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-frame</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
@@ -33,27 +30,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-test-support</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

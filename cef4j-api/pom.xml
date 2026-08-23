@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-test-shared</artifactId>
+            <artifactId>cef4j-test-support</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

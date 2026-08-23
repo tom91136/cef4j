@@ -36,7 +36,6 @@ import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
@@ -48,15 +47,7 @@ import org.zeromq.ZMQ;
 @Timeout(600)
 class RuntimeServerIntegrationTest {
 
-    private static Path serverBinary;
-    private static Path cefResources;
-
-    @BeforeAll
-    static void resolveBinary() {
-        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        serverBinary = environment.binary();
-        cefResources = environment.resources();
-    }
+    private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     private static HttpServer startFixture() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
@@ -79,13 +70,7 @@ class RuntimeServerIntegrationTest {
     }
 
     private static RuntimeServerProcess startServerWithEnv(String transport, String endpoint) throws IOException {
-        return RuntimeServerProcess.spawn(
-                serverBinary,
-                transport,
-                endpoint,
-                "shared-file",
-                Duration.ofSeconds(30),
-                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
+        return RUNTIME.spawn(transport, endpoint, "shared-file", Duration.ofSeconds(30));
     }
 
     private static boolean isWindows() {

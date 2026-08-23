@@ -2,10 +2,8 @@ package net.kurobako.cef4j.ipc.protocol.process;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.TriggerInterceptRequest;
@@ -17,7 +15,6 @@ import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -43,29 +40,11 @@ class InterceptWireIntegrationTest {
     /** Picked arbitrarily, well above the AST messageId range. */
     private static final int ECHO_MESSAGE_ID = 99001;
 
-    private static Path serverBinary;
-    private static Path cefResources;
-
-    @BeforeAll
-    static void resolveBinary() {
-        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        serverBinary = environment.binary();
-        cefResources = environment.resources();
-    }
-
-    private static RuntimeServerProcess spawnServerWithEnv() throws IOException {
-        return RuntimeServerProcess.spawn(
-                serverBinary,
-                "zmq",
-                "tcp://127.0.0.1:0",
-                "shared-file",
-                Duration.ofSeconds(30),
-                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
-    }
+    private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     @Test
     void interceptHandlerReturnIsRoutedBackToRuntimeServer() throws Exception {
-        try (RuntimeServerProcess server = spawnServerWithEnv();
+        try (RuntimeServerProcess server = RUNTIME.spawn();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 

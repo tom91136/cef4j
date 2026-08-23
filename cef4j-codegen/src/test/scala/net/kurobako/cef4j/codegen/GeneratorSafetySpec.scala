@@ -5,7 +5,7 @@ import java.nio.file.Path
 
 import net.kurobako.cef4j.codegen.passes.CleanOutputDirs
 
-class GeneratorSafetySpec extends munit.FunSuite {
+class GeneratorSafetySpec extends TempDirectorySuite {
   test("generation requires explicit input and outputs") {
     interceptMessage[IllegalArgumentException]("requirement failed: Missing required argument: --cef-include") {
       Main.parseArgs(Nil)
@@ -25,7 +25,7 @@ class GeneratorSafetySpec extends munit.FunSuite {
   }
 
   test("cleanup preserves handwritten files") {
-    val output    = Files.createTempDirectory("cef4j-generator-safety")
+    val output    = tempDirectory("cef4j-generator-safety")
     val generated = output.resolve("generated.cpp")
     val manual    = output.resolve("manual.cpp")
     Files.writeString(generated, "// GENERATED - do not edit. Regenerate via: test\n")

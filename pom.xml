@@ -117,6 +117,7 @@
         <module>cef4j-webdriver</module>
         <module>cef4j-remote-webdriver</module>
         <module>cef4j-inprocess-webdriver</module>
+        <module>cef4j-test-support</module>
         <module>cef4j-test-shared</module>
         <module>cef4j-integration-tests</module>
         <module>cef4j-sample</module>
@@ -369,6 +370,11 @@
             </dependency>
             <dependency>
                 <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-test-support</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
                 <artifactId>cef4j-test-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -429,6 +435,7 @@
                                 <excludeArtifact>cef4j-codegen</excludeArtifact>
                                 <excludeArtifact>cef4j-platform</excludeArtifact>
                                 <excludeArtifact>cef4j-runtime-server</excludeArtifact>
+                                <excludeArtifact>cef4j-test-support</excludeArtifact>
                                 <excludeArtifact>cef4j-test-shared</excludeArtifact>
                                 <excludeArtifact>cef4j-integration-tests</excludeArtifact>
                                 <excludeArtifact>cef4j-sample</excludeArtifact>
