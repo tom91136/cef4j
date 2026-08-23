@@ -126,8 +126,12 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
 
             WebHistory history =
                     Objects.requireNonNull(onFxThread(() -> view.getEngine().getHistory()), "history");
+            assertThat(waitUntilOnFx(() -> history.getEntries().size() >= 2 && history.getCurrentIndex() >= 1, 3_000))
+                    .isTrue();
             onFxThread(() -> history.go(-1));
             assertThat(waitUntilOnFx(() -> "one".equals(view.getEngine().getTitle()), 3_000))
+                    .isTrue();
+            assertThat(waitUntilOnFx(() -> history.getCurrentIndex() == 0, 3_000))
                     .isTrue();
 
             onFxThread(() -> history.go(1));
