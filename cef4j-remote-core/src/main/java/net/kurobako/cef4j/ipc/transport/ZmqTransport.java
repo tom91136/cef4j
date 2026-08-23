@@ -45,8 +45,8 @@ public final class ZmqTransport implements CefTransport {
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
     /**
-     * JeroMQ recommends one context per process. Each worker owns a shadow so its socket lifecycle remains isolated,
-     * while rapid transport restart does not repeatedly create and tear down JeroMQ's I/O infrastructure.
+     * JeroMQ recommends one context per process. Workers close their own sockets and pollers without tearing down
+     * shadow contexts while the shared I/O infrastructure is processing socket termination.
      */
     private static final class SharedContext {
         private static final ZContext INSTANCE = new ZContext(1);
@@ -118,7 +118,7 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
-        ZContext ctx = SharedContext.INSTANCE.shadow();
+        ZContext ctx = SharedContext.INSTANCE;
         ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
         try {
             configureLiveness(main, handshakeTimeoutMs);
@@ -140,7 +140,7 @@ public final class ZmqTransport implements CefTransport {
             }
         } catch (RuntimeException e) {
             setup.completeExceptionally(e);
-            ctx.close();
+            main.close();
             return;
         }
         ZMQ.Poller poller = ctx.createPoller(1);
@@ -170,11 +170,6 @@ public final class ZmqTransport implements CefTransport {
                 main.close();
             } catch (RuntimeException e) {
                 LOG.debug("socket close on {} threw {}", endpoint, e.toString());
-            }
-            try {
-                ctx.close();
-            } catch (RuntimeException e) {
-                LOG.debug("ctx close on {} threw {}", endpoint, e.toString());
             }
             LOG.debug(
                     "worker on {} stopped (closed={}, disconnected={}, sent={}, received={})",
