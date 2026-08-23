@@ -31,6 +31,11 @@ public final class StubSupervisedServerMain {
             // response preserves corrId=0/messageId=0 from the validated request.
             readyResponse[4] = 2;
             socket.send(readyResponse);
+            String exit = System.getenv("CEF4J_STUB_EXIT_AFTER_MS");
+            if (exit != null) {
+                Thread.sleep(Long.parseLong(exit));
+                return;
+            }
             String drop = System.getenv("CEF4J_STUB_DROP_AFTER_MS");
             if (drop != null) {
                 // Start the fault timer only after the client has completed the explicit

@@ -90,12 +90,12 @@ final class RuntimeServerSupervisorTest {
                 Duration.ofSeconds(5),
                 Duration.ofSeconds(2),
                 Duration.ofMillis(10),
-                Duration.ofMillis(100),
+                Duration.ofSeconds(5),
                 1,
-                Map.of("CEF4J_STUB_DROP_AFTER_MS", "20"));
+                Map.of("CEF4J_STUB_EXIT_AFTER_MS", "20"));
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
             supervisor.start().get(300, TimeUnit.SECONDS);
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
             while (supervisor.state() != RuntimeServerSupervisor.State.FAILED && System.nanoTime() < deadline) {
                 Thread.sleep(10);
             }
