@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class CookieManagerDeleteCookiesRequest implements CefMessageView, CefMessageEncoder {
@@ -79,16 +80,19 @@ public final class CookieManagerDeleteCookiesRequest implements CefMessageView, 
     public static final CefMessageDecoder<CookieManagerDeleteCookiesRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int urlLen = __buf.getInt();
+        int urlLen = WireDecoder.length(__buf, "url");
         byte[] urlBuf = new byte[urlLen];
         __buf.get(urlBuf);
         String url = new String(urlBuf, StandardCharsets.UTF_8);
-        int cookieNameLen = __buf.getInt();
+        int cookieNameLen = WireDecoder.length(__buf, "cookieName");
         byte[] cookieNameBuf = new byte[cookieNameLen];
         __buf.get(cookieNameBuf);
         String cookieName = new String(cookieNameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "CookieManagerDeleteCookiesRequest");
         return new CookieManagerDeleteCookiesRequest(self, url, cookieName, callback);
     };
 }

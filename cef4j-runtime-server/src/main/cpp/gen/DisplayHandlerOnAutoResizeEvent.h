@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct DisplayHandlerOnAutoResizeEvent {
     static constexpr int32_t kMessageId = 1745044920;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t browser = 0;
     Size newSize;
@@ -51,6 +53,8 @@ struct DisplayHandlerOnAutoResizeEvent {
         out.newSize = Size::decode(src + pos, len - pos);
         requireAvailable(out.newSize.encodedSize());
         pos += out.newSize.encodedSize();
+        if (pos != len)
+            throw std::invalid_argument("trailing DisplayHandlerOnAutoResizeEvent payload");
         return out;
     }
 };

@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct WindowSetFullscreenResponse {
     static constexpr int32_t kMessageId = 1639571342;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct WindowSetFullscreenResponse {
                 throw std::invalid_argument("truncated WindowSetFullscreenResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing WindowSetFullscreenResponse payload");
         return out;
     }
 };

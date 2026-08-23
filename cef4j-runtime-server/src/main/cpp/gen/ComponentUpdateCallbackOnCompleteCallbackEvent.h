@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct ComponentUpdateCallbackOnCompleteCallbackEvent {
     static constexpr int32_t kMessageId = 347199445;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t callbackId = 0;
     std::string componentId;
@@ -70,6 +72,7 @@ struct ComponentUpdateCallbackOnCompleteCallbackEvent {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for componentId");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for componentId");
             requireAvailable(static_cast<std::size_t>(n));
             out.componentId.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -77,6 +80,8 @@ struct ComponentUpdateCallbackOnCompleteCallbackEvent {
         requireAvailable(4);
         out.error = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+        if (pos != len)
+            throw std::invalid_argument("trailing ComponentUpdateCallbackOnCompleteCallbackEvent payload");
         return out;
     }
 };

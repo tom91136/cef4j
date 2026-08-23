@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class CompletionCallbackOnCompleteCallbackEvent implements CefMessageView, CefMessageEncoder {
 
@@ -46,7 +47,9 @@ public final class CompletionCallbackOnCompleteCallbackEvent implements CefMessa
     public static final CefMessageDecoder<CompletionCallbackOnCompleteCallbackEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
         int callbackId = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "CompletionCallbackOnCompleteCallbackEvent");
         return new CompletionCallbackOnCompleteCallbackEvent(callbackId);
     };
 }

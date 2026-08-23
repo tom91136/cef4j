@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_accelerated_paint_native_pixmap_plane_t}. Fields are immutable; pass instances
@@ -64,9 +65,13 @@ public final class AcceleratedPaintNativePixmapPlane {
       * configured the buffer.
       */
     public static AcceleratedPaintNativePixmapPlane decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "stride");
         int stride = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "offset");
         long offset = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "fd");
         int fd = __buf.getInt();
         return new AcceleratedPaintNativePixmapPlane(stride, offset, size, fd);
     }

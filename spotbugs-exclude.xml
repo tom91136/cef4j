@@ -2,38 +2,31 @@
 <FindBugsFilter xmlns="https://github.com/spotbugs/filter/3.0.0"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/etc/findbugsfilter.xsd">
-    <!-- Generated per-platform classes intentionally mirror their interface names under the gen.linux/mac/win
-         sub-packages. The shadowing is load-bearing: it lets the codegen pick the right overlay per OS without
-         touching call sites. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.gen\.(linux|mac|win)\..*"/>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
     </Match>
-    <!-- NativePointer$Managed extends NativePointer and intentionally inherits equals/hashCode from its
-         identity-based parent. The generated base class cannot emit an override in the nested type. -->
     <Match>
         <Class name="net.kurobako.cef4j.gen.NativePointer$Managed"/>
         <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
     </Match>
-    <!-- Dirty-region accumulation is producer-confined to CEF's onPaint thread. The only cross-thread
-         fields are ready/frontImage, which are volatile and provide the intended hand-off. -->
     <Match>
         <Class name="net.kurobako.cef4j.CefFrameBuffer"/>
         <Bug pattern="AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
     </Match>
-    <!-- CefBrowserPanel validates CEF is initialised before proceeding. The IllegalStateException is the
-         intended contract; a finalizer-attack mitigation would require a factory method and break the public API. -->
+    <Match>
+        <Class name="net.kurobako.cef4j.Cef$LaunchArgs"/>
+        <Method name="args"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
     <Match>
         <Class name="net.kurobako.cef4j.osr.swing.CefBrowserPanel"/>
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
-    <!-- CefWebView validates CEF is initialised; same constructor contract as CefBrowserPanel. -->
     <Match>
         <Class name="net.kurobako.cef4j.osr.jfx.CefWebView"/>
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
-    <!-- URLConnection's contract requires getOutputStream() to return the connection-owned request stream.
-         The response sink likewise retains the exact IOException so a waiting caller can observe it. -->
     <Match>
         <Class name="net.kurobako.cef4j.http.CefHttpURLConnection"/>
         <Method name="getOutputStream"/>
@@ -44,57 +37,39 @@
         <Method name="onError"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
-    <!-- The JFX WebView/WebEngine API exposes JavaFX Property objects by design; binding is the intended use. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.osr\.jfx\..*"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
-    <!-- framesPainted is a coarse paint-counter for tests; exact count under races doesn't matter, only >0. -->
     <Match>
         <Class name="net.kurobako.cef4j.osr.jfx.CefWebView$2"/>
         <Method name="onPaint"/>
         <Bug pattern="VO_VOLATILE_INCREMENT"/>
     </Match>
-    <!-- Anonymous client handlers override varargs/multi-arg CEF callback methods; SpotBugs mis-identifies
-         these as uncallable because it doesn't recognise the interface-level dispatch. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.osr\.jfx\.CefWebViewClient\$.*"/>
         <Bug pattern="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
     </Match>
-    <!-- Sample apps define v117+ and v144+ overloads of CEF callbacks; SpotBugs sees only the
-         currently-selected overload as callable. Both must be defined to support multi-version. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.sample\..*"/>
         <Bug pattern="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
     </Match>
-    <!-- SigintHelper uses reflection to register a signal handler on best-effort; any exception
-         from absent sun.misc.Signal (e.g. non-HotSpot JVM) is intentionally swallowed. -->
     <Match>
         <Class name="net.kurobako.cef4j.sample.SigintHelper"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
-    <!-- RecordingTransport takes ownership of the MessageLog.Writer passed to it; the constructor
-         contract is "this transport now owns and closes the writer". Intentional reference-store. -->
     <Match>
         <Class name="net.kurobako.cef4j.ipc.transport.RecordingTransport"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
-    <!-- Generated facades mirror CEF struct names verbatim (e.g. cef_v8_exception_t -> CefV8Exception); they
-         describe a CEF-side condition, not a Java throwable. SpotBugs flags the suffix mismatch but renaming
-         them would diverge from the CEF API surface. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.ipc\.protocol\.gen\..*"/>
         <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
     </Match>
-    <!-- Generated wire messages deliberately retain and expose byte[] / String[] payloads. Defensive copies would
-         add two full payload copies (constructor + accessor) to the IPC path; callers treat these message views as
-         immutable for their short dispatch lifetime. Keep the exemption scoped to generated protocol classes. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.ipc\.protocol\.gen\..*"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
-    <!-- CdpObject retains a mutable wire map; exposing it is its codec boundary. CdpDomains likewise returns
-         immutable, stateless command clients owned for the facade lifetime. -->
     <Match>
         <Class name="net.kurobako.cef4j.cdp.CdpObject"/>
         <Method name="toMap"/>
@@ -104,7 +79,6 @@
         <Class name="net.kurobako.cef4j.cdp.generated.CdpDomains"/>
         <Bug pattern="EI_EXPOSE_REP"/>
     </Match>
-    <!-- Generated tagged value classes reject null wire scalars in their constructors. -->
     <Match>
         <Class name="~net\.kurobako\.cef4j\.cdp\.generated\..*"/>
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>

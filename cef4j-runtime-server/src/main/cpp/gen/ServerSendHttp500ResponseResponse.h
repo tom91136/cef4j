@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct ServerSendHttp500ResponseResponse {
     static constexpr int32_t kMessageId = 1411982646;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct ServerSendHttp500ResponseResponse {
                 throw std::invalid_argument("truncated ServerSendHttp500ResponseResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing ServerSendHttp500ResponseResponse payload");
         return out;
     }
 };

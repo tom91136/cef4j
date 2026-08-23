@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct RequestSetHeaderByNameRequest {
     static constexpr int32_t kMessageId = 147412152;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     std::string name;
@@ -81,6 +83,7 @@ struct RequestSetHeaderByNameRequest {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for name");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for name");
             requireAvailable(static_cast<std::size_t>(n));
             out.name.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -90,6 +93,7 @@ struct RequestSetHeaderByNameRequest {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for value");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for value");
             requireAvailable(static_cast<std::size_t>(n));
             out.value.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -97,6 +101,8 @@ struct RequestSetHeaderByNameRequest {
         requireAvailable(4);
         out.overwrite = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+        if (pos != len)
+            throw std::invalid_argument("trailing RequestSetHeaderByNameRequest payload");
         return out;
     }
 };

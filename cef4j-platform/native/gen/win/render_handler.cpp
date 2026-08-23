@@ -8,7 +8,6 @@
 
 #include <atomic>
 #include <vector>
-#include "jni_util.h"
 
 extern "C" cef_accessibility_handler_t* Create_JniCefAccessibilityHandler(JNIEnv* env, jobject handler);
 

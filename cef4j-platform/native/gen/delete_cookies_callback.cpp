@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefDeleteCookiesCallback : public cef_delete_cookies_callback_t {
     JavaVM* jvm;

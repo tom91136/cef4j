@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DragDataSetLinkMetadataRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class DragDataSetLinkMetadataRequest implements CefMessageView, Cef
     public static final CefMessageDecoder<DragDataSetLinkMetadataRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int dataLen = __buf.getInt();
+        int dataLen = WireDecoder.length(__buf, "data");
         byte[] dataBuf = new byte[dataLen];
         __buf.get(dataBuf);
         String data = new String(dataBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DragDataSetLinkMetadataRequest");
         return new DragDataSetLinkMetadataRequest(self, data);
     };
 }

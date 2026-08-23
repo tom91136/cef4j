@@ -104,9 +104,6 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void shutdownCefHarness() {
-        // JUnit still invokes @AfterAll when @BeforeAll aborts an unsupported
-        // headless run. Do not turn that intentional test abort into a teardown
-        // error by attempting to start JavaFX from the shutdown path.
         if (!started) return;
         try {
             if (isCefCompatHarness()) {
@@ -156,8 +153,7 @@ final class FxWebViewRuntimeTestSupport {
 
     private static void initialiseCef() {
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        // A shared fallback cache dir would collide with concurrent forks over the CEF profile singleton lock.
-        // Callers must set a per-class temp dir before ensureStarted().
+        launch.settings().noSandbox = 1;
         Path cacheDir = cefCachePath;
         if (cacheDir == null) {
             throw new IllegalStateException(
@@ -166,7 +162,7 @@ final class FxWebViewRuntimeTestSupport {
         try {
             Files.createDirectories(cacheDir);
         } catch (IOException e) {
-            // Best-effort; CEF will fail loudly later if the cache dir is unusable.
+            throw new IllegalStateException("Failed to create CEF test cache directory", e);
         }
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
         launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();
@@ -244,18 +240,17 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void closeStages() throws Exception {
-        // Relinquish any native clipboard selection while the CEF browser that owns it is still
-        // alive. Older Chromium versions can otherwise dispatch a late X11 selection callback
-        // through an already-closed browser while JavaFX takes ownership below.
+        // XXX: Chromium 150 can dispatch an X11 selection callback through a closed browser if JavaFX takes clipboard
+        // ownership later; remove this handoff when the minimum Chromium version passes clipboard teardown without it.
         onFxThread(() -> {
             ClipboardContent content = new ClipboardContent();
             content.putString("");
             Clipboard.getSystemClipboard().setContent(content);
         });
         if (isCefCompatHarness()) {
-            // Popup views are appended after their opener. Close in reverse creation order so a
-            // slow native popup cannot still be inside CefBrowserHost::CreateBrowser while its
-            // opener is being destroyed (CEF 144+ can otherwise crash in CreateInternal).
+            // XXX: CEF 144-150 can destroy an opener while its appended popup is still in CreateBrowser; remove reverse
+            // closure when the minimum CEF is above 150 and the multi-popup teardown regression passes in creation
+            // order.
             List<WebView> closing = new ArrayList<>(VIEWS);
             Collections.reverse(closing);
             for (WebView view : closing) {
@@ -432,9 +427,6 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void fireScroll(WebView view, double x, double y, double deltaX, double deltaY) {
-        // A newly shown hosted window does not necessarily own native focus by the time its first synthetic event is
-        // fired. Chromium may discard wheel input for that unfocused OSR host, so establish the same focus precondition
-        // used by the keyboard and pointer helpers before dispatching the JavaFX event.
         focusView(view);
         view.fireEvent(new ScrollEvent(
                 ScrollEvent.SCROLL,

@@ -8,12 +8,12 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpException;
+import net.kurobako.cef4j.cdp.CdpRequestTracker;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
@@ -42,11 +42,9 @@ public final class DevToolsSession implements CdpTransport {
     private final RemoteHandle browser;
     private final BrowserHost host;
     private final CdpCodec codec;
-    private final AtomicInteger nextMessageId = new AtomicInteger();
     private final AtomicBoolean open = new AtomicBoolean(true);
     private final Object closeLock = new Object();
-    private final ConcurrentHashMap<Integer, CompletableFuture<Map<String, Object>>> pending =
-            new ConcurrentHashMap<>();
+    private final CdpRequestTracker<Map<String, Object>> requests = new CdpRequestTracker<>();
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<Map<String, Object>>>> eventHandlers =
             new ConcurrentHashMap<>();
     private final CefSession.HandlerRegistration messageRegistration;
@@ -99,17 +97,16 @@ public final class DevToolsSession implements CdpTransport {
         Objects.requireNonNull(method, "method");
         if (!open.get()) return failedFuture(new IllegalStateException("DevTools session is closed"));
 
-        int id = nextMessageId.updateAndGet(previous -> previous == Integer.MAX_VALUE ? 1 : previous + 1);
+        CdpRequestTracker.Request<Map<String, Object>> request = requests.register();
+        int id = request.id();
         Map<String, Object> command = new java.util.HashMap<>();
         command.put("id", id);
         command.put("method", method);
         if (params != null) command.put("params", params);
 
-        CompletableFuture<Map<String, Object>> result = new CompletableFuture<>();
-        pending.put(id, result);
-        if (!open.get() && pending.remove(id, result)) {
-            result.completeExceptionally(new IllegalStateException("DevTools session is closed"));
-            return result;
+        if (!open.get()) {
+            requests.fail(id, new IllegalStateException("DevTools session is closed"));
+            return request;
         }
         host.sendDevToolsMessage(codec.encode(command)).whenComplete((accepted, failure) -> {
             if (failure != null) {
@@ -118,12 +115,13 @@ public final class DevToolsSession implements CdpTransport {
                 completeSendFailure(id, new IllegalStateException("CEF rejected DevTools message " + id));
             }
         });
-        return result;
+        return request;
     }
 
     /** Raw codec-neutral entry point used by the typed {@code cef4j-cdp} facade. */
     @Override
     @Nonnull
+    @SuppressWarnings("FutureReturnValueIgnored")
     public CompletableFuture<byte[]> execute(@Nonnull String method, @Nullable byte[] params) {
         Map<String, Object> object = null;
         if (params != null) {
@@ -131,7 +129,25 @@ public final class DevToolsSession implements CdpTransport {
             if (!(decoded instanceof Map)) throw new IllegalArgumentException("CDP params must be a JSON object");
             object = asMap(decoded);
         }
-        return send(method, object).thenApply(codec::encode);
+        CompletableFuture<Map<String, Object>> source = send(method, object);
+        CompletableFuture<byte[]> result = new CompletableFuture<>();
+        source.whenComplete((value, failure) -> {
+            try {
+                if (failure != null) result.completeExceptionally(failure);
+                else result.complete(codec.encode(value));
+            } catch (Throwable encodeFailure) {
+                result.completeExceptionally(encodeFailure);
+            }
+        });
+        result.whenComplete((ignored, failure) -> {
+            if (result.isCancelled()) source.cancel(false);
+        });
+        return result;
+    }
+
+    @Override
+    public void cancelPending(@Nonnull Throwable failure) {
+        requests.failAll(failure);
     }
 
     /** Raw codec-neutral event entry point used by the typed {@code cef4j-cdp} facade. */
@@ -167,7 +183,7 @@ public final class DevToolsSession implements CdpTransport {
             messageRegistration.unregister();
             detachedRegistration.unregister();
             unregisterClose();
-            failPending(new IllegalStateException("DevTools session is closed"));
+            requests.failAll(new IllegalStateException("DevTools session is closed"));
             eventHandlers.clear();
             closeFuture = session.request(new DevToolsDetachRequest(browser), DevToolsDetachResponse.DECODER)
                     .handle((ignored, failure) -> {
@@ -199,8 +215,6 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     private void completeResult(int id, Map<String, Object> message) {
-        CompletableFuture<Map<String, Object>> future = pending.remove(id);
-        if (future == null) return;
         Object error = message.get("error");
         if (error instanceof Map) {
             Map<String, Object> errorMap = asMap(error);
@@ -208,9 +222,9 @@ public final class DevToolsSession implements CdpTransport {
             int code = codeValue instanceof Number ? ((Number) codeValue).intValue() : -1;
             Object messageValue = errorMap.get("message");
             String text = messageValue instanceof String ? (String) messageValue : "CDP command failed";
-            future.completeExceptionally(new CdpException(code, text, errorMap.get("data")));
+            requests.fail(id, new CdpException(code, text, errorMap.get("data")));
         } else {
-            future.complete(objectOrEmpty(message.get("result")));
+            requests.complete(id, objectOrEmpty(message.get("result")));
         }
     }
 
@@ -236,8 +250,7 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     private void completeSendFailure(int id, Throwable failure) {
-        CompletableFuture<Map<String, Object>> future = pending.remove(id);
-        if (future != null) future.completeExceptionally(failure);
+        requests.fail(id, failure);
     }
 
     private void failAndClose(Throwable failure) {
@@ -247,17 +260,12 @@ public final class DevToolsSession implements CdpTransport {
             unregisterClose();
             eventHandlers.clear();
         }
-        failPending(failure);
-    }
-
-    private void failPending(Throwable failure) {
-        pending.forEach((id, future) -> {
-            if (pending.remove(id, future)) future.completeExceptionally(failure);
-        });
+        requests.failAll(failure);
     }
 
     private void unregisterClose() {
         CefSession.HandlerRegistration current = closeRegistration;
+        closeRegistration = null;
         if (current != null) current.unregister();
     }
 

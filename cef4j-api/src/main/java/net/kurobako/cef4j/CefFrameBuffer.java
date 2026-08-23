@@ -18,7 +18,7 @@ import net.kurobako.cef4j.gen.CefRect;
  *   <li>Pre-allocated {@code int[]} pixel buffer sized to max monitor dimensions - no GC churn on resize.
  *   <li>Back-pressure: the producer skips work when the consumer hasn't consumed the last frame. CEF's {@code onPaint}
  *       is demand-driven (only fires on dirty regions), so a dropped frame means no repaint until the next interaction
- *       unless {@code invalidate()} is called.
+ *       unless {@link #resetBackPressure()} is called.
  *   <li>Thread-safe image handoff via volatile reference. The volatile write of the image reference <em>after</em>
  *       pixel stamping creates the happens-before edge.
  *   <li>Generic over image type {@code I} - provide an {@link ImageWriter} for your toolkit.
@@ -45,6 +45,8 @@ import net.kurobako.cef4j.gen.CefRect;
 @SuppressWarnings("unused")
 public final class CefFrameBuffer<I> {
 
+    static final int MAX_PIXEL_COUNT = 7_680 * 4_320;
+
     /**
      * Strategy for creating/reusing a toolkit image and stamping pixel data into it.
      *
@@ -70,7 +72,6 @@ public final class CefFrameBuffer<I> {
          * @param dirtyRects regions that changed, or {@code null} for a full-frame update
          * @return the image containing the stamped pixels (may be {@code prev} reused, or a new instance)
          */
-        // null dirtyRects means a full-frame update
         @SuppressWarnings("NullableForbidden")
         I stamp(Optional<I> prev, int[] pixels, int width, int height, @Nullable CefRect[] dirtyRects);
     }
@@ -78,24 +79,14 @@ public final class CefFrameBuffer<I> {
     private int[] pixelBuffer;
     private final ImageWriter<I> writer;
 
-    // Track last frame dimensions to detect resizes requiring full copies.
     private int lastWidth;
     private int lastHeight;
 
-    // Back-pressure: producer (onPaint) skips work if consumer hasn't consumed.
-    // Starts true so the first frame is never dropped.
     private volatile boolean ready = true;
 
-    // Accumulated bounding rect of dirty regions from dropped frames.
-    // Carried forward and merged into the next successful paint so we
-    // don't need a full-frame copy after a drop.
     private int pendingX1, pendingY1, pendingX2, pendingY2;
     private boolean hasPending;
 
-    // Double-buffered images. The producer (onPaint) writes into backImage
-    // while the consumer (EDT) reads from frontImage. After stamping,
-    // backImage is published as frontImage and the old front becomes the
-    // new back buffer for the next frame.
     private volatile @Nullable I frontImage;
     private @Nullable I backImage;
 
@@ -113,7 +104,7 @@ public final class CefFrameBuffer<I> {
         if (writer == null) {
             throw new IllegalArgumentException("writer must not be null");
         }
-        this.pixelBuffer = new int[maxWidth * maxHeight];
+        this.pixelBuffer = new int[checkedPixelCount(maxWidth, maxHeight)];
         this.writer = writer;
     }
 
@@ -136,6 +127,21 @@ public final class CefFrameBuffer<I> {
         return onPaint(buffer, width, height, null);
     }
 
+    /** Copies a complete validated CEF BGRA frame, or returns empty for invalid dimensions or truncated input. */
+    public static Optional<int[]> copyBgraPixels(ByteBuffer buffer, int width, int height) {
+        if (buffer == null || width <= 0 || height <= 0) return Optional.empty();
+        int pixelCount;
+        try {
+            pixelCount = checkedPixelCount(width, height);
+        } catch (IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
+        if (buffer.remaining() < (long) pixelCount * Integer.BYTES) return Optional.empty();
+        int[] pixels = new int[pixelCount];
+        buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(pixels);
+        return Optional.of(pixels);
+    }
+
     /**
      * Called from CEF's {@code onPaint} callback (CEF UI thread).
      *
@@ -149,62 +155,63 @@ public final class CefFrameBuffer<I> {
      * @param dirtyRects array of dirty rectangles, or {@code null} for a full-frame copy
      * @return the stamped image, or empty if the frame was skipped
      */
-    // null dirtyRects means a full-frame update
     @SuppressWarnings("NullableForbidden")
     public Optional<I> onPaint(ByteBuffer buffer, int width, int height, @Nullable CefRect[] dirtyRects) {
         if (width <= 0 || height <= 0 || buffer == null) return Optional.empty();
 
-        // Back-pressure: skip if consumer hasn't consumed the last frame.
-        // Accumulate dirty rects so the next successful paint covers them.
+        int pixelCount;
+        try {
+            pixelCount = checkedPixelCount(width, height);
+        } catch (IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
+        long requiredBytes = (long) pixelCount * Integer.BYTES;
+        if (buffer.remaining() < requiredBytes) return Optional.empty();
+
         if (!ready) {
             accumulateRects(dirtyRects);
             return Optional.empty();
         }
         ready = false;
 
-        int pixelCount = width * height;
-        if (pixelCount > pixelBuffer.length) {
-            pixelBuffer = new int[pixelCount];
-        }
+        try {
+            if (pixelCount > pixelBuffer.length) pixelBuffer = new int[pixelCount];
+            java.nio.IntBuffer src = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+            CefRect[] stampRects = null;
 
-        // BGRA bytes read as little-endian int gives
-        // bits [0:7]=B, [8:15]=G, [16:23]=R, [24:31]=A - exactly TYPE_INT_ARGB layout.
-        java.nio.IntBuffer src = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
-
-        CefRect[] stampRects = null;
-
-        if (dirtyRects == null
-                || dirtyRects.length == 0
-                || backImage == null
-                || lastWidth != width
-                || lastHeight != height) {
-            hasPending = false;
-            src.get(pixelBuffer, 0, pixelCount);
-        } else {
-            for (CefRect r : dirtyRects) {
-                copyRect(src, r, width, height);
-            }
-            if (hasPending) {
-                CefRect pending = new CefRect(pendingX1, pendingY1, pendingX2 - pendingX1, pendingY2 - pendingY1);
+            if (dirtyRects == null
+                    || dirtyRects.length == 0
+                    || backImage == null
+                    || lastWidth != width
+                    || lastHeight != height) {
                 hasPending = false;
-                copyRect(src, pending, width, height);
-                CefRect[] merged = new CefRect[dirtyRects.length + 1];
-                System.arraycopy(dirtyRects, 0, merged, 0, dirtyRects.length);
-                merged[dirtyRects.length] = pending;
-                stampRects = merged;
+                src.get(pixelBuffer, 0, pixelCount);
             } else {
-                stampRects = dirtyRects;
+                for (CefRect rect : dirtyRects) copyRect(src, rect, width, height);
+                if (hasPending) {
+                    CefRect pending = new CefRect(pendingX1, pendingY1, pendingX2 - pendingX1, pendingY2 - pendingY1);
+                    hasPending = false;
+                    copyRect(src, pending, width, height);
+                    CefRect[] merged = new CefRect[dirtyRects.length + 1];
+                    System.arraycopy(dirtyRects, 0, merged, 0, dirtyRects.length);
+                    merged[dirtyRects.length] = pending;
+                    stampRects = merged;
+                } else {
+                    stampRects = dirtyRects;
+                }
             }
+
+            lastWidth = width;
+            lastHeight = height;
+
+            I image = writer.stamp(Optional.ofNullable(backImage), pixelBuffer, width, height, stampRects);
+            backImage = frontImage;
+            frontImage = image;
+            return Optional.of(image);
+        } catch (RuntimeException | Error failure) {
+            ready = true;
+            throw failure;
         }
-
-        lastWidth = width;
-        lastHeight = height;
-
-        // Stamp into the back buffer, then swap: volatile write creates happens-before edge.
-        I img = writer.stamp(Optional.ofNullable(backImage), pixelBuffer, width, height, stampRects);
-        backImage = frontImage;
-        frontImage = img;
-        return Optional.of(img);
     }
 
     /**
@@ -227,6 +234,14 @@ public final class CefFrameBuffer<I> {
      */
     public void resetBackPressure() {
         ready = true;
+    }
+
+    private static int checkedPixelCount(int width, int height) {
+        long count = (long) width * height;
+        if (count <= 0 || count > MAX_PIXEL_COUNT) {
+            throw new IllegalArgumentException("pixel count exceeds supported maximum: " + count);
+        }
+        return (int) count;
     }
 
     private void accumulateRects(@Nullable CefRect[] rects) {

@@ -12,7 +12,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -36,10 +35,7 @@ public final class CefSessionImpl implements CefSession {
     private final ScheduledExecutorService timer;
     private final boolean ownTimer;
 
-    // corrId 0 belongs to the runtime-session-ready handshake. Application
-    // requests start at 1 so a delayed bootstrap acknowledgement can never
-    // complete an unrelated request.
-    private final AtomicInteger nextCorrId = new AtomicInteger(1);
+    private final IntIdAllocator correlationIds = new IntIdAllocator();
     private final AtomicLong nextEventSequence = new AtomicLong(0);
     private final ConcurrentHashMap<Integer, Pending<?>> pending = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, CopyOnWriteArrayList<EventBinding<?>>> eventHandlers =
@@ -134,26 +130,37 @@ public final class CefSessionImpl implements CefSession {
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
         }
-        int corrId = allocateCorrId();
         Pending<R> p = new Pending<>(future, dec);
-        pending.put(corrId, p);
-        // Race guard: if close() set the flag between our check and the put, fail fast.
+        int corrId = correlationIds.allocate(candidate -> pending.putIfAbsent(candidate, p) == null);
         if (closed) {
-            pending.remove(corrId);
+            pending.remove(corrId, p);
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
         }
-        ScheduledFuture<?> timeoutTask = timer.schedule(
-                () -> {
-                    Pending<?> popped = pending.remove(corrId);
-                    if (popped != null) {
-                        popped.future.completeExceptionally(new TimeoutException("request msgId=" + enc.messageId()
-                                + " corrId=" + corrId + " timed out after " + defaultTimeout));
-                    }
-                },
-                defaultTimeout.toMillis(),
-                TimeUnit.MILLISECONDS);
-        p.timeoutTask = timeoutTask;
+        ScheduledFuture<?> timeoutTask;
+        try {
+            timeoutTask = timer.schedule(
+                    () -> {
+                        Pending<?> popped = pending.remove(corrId);
+                        if (popped != null) {
+                            popped.future.completeExceptionally(new TimeoutException("request msgId=" + enc.messageId()
+                                    + " corrId=" + corrId + " timed out after " + defaultTimeout));
+                        }
+                    },
+                    defaultTimeout.toMillis(),
+                    TimeUnit.MILLISECONDS);
+            p.timeoutTask = timeoutTask;
+        } catch (RuntimeException schedulingFailure) {
+            pending.remove(corrId, p);
+            future.completeExceptionally(schedulingFailure);
+            return future;
+        }
+        if (closed) {
+            pending.remove(corrId, p);
+            timeoutTask.cancel(false);
+            future.completeExceptionally(new CefTransportException("session closed"));
+            return future;
+        }
 
         try {
             ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize())
@@ -184,7 +191,7 @@ public final class CefSessionImpl implements CefSession {
                 .add(binding);
         return () -> {
             CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(messageId);
-            if (list != null) list.remove(binding);
+            if (list != null && list.remove(binding) && list.isEmpty()) eventHandlers.remove(messageId, list);
         };
     }
 
@@ -200,7 +207,7 @@ public final class CefSessionImpl implements CefSession {
         if (latest != null) binding.dispatch(latest.sequence, latest.payload());
         return () -> {
             CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(messageId);
-            if (list != null) list.remove(binding);
+            if (list != null && list.remove(binding) && list.isEmpty()) eventHandlers.remove(messageId, list);
         };
     }
 
@@ -239,12 +246,6 @@ public final class CefSessionImpl implements CefSession {
         latestEvents.clear();
         transport.close();
         if (ownTimer) timer.shutdownNow();
-    }
-
-    private int allocateCorrId() {
-        int v = nextCorrId.getAndIncrement();
-        if (v == Envelope.NO_CORR_ID) v = nextCorrId.getAndIncrement();
-        return v;
     }
 
     private void failAllPending(Throwable cause) {
@@ -303,18 +304,19 @@ public final class CefSessionImpl implements CefSession {
             return;
         }
         cancelQuietly(raw.timeoutTask);
-        ByteBuffer p = payload.duplicate().order(ByteOrder.LITTLE_ENDIAN);
-        int code = p.remaining() >= 4 ? p.getInt() : 0;
-        String msg = "";
-        if (p.remaining() >= 4) {
-            int len = p.getInt();
-            if (len > 0 && p.remaining() >= len) {
-                byte[] bytes = new byte[len];
-                p.get(bytes);
-                msg = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
-            }
+        try {
+            ByteBuffer source = payload.duplicate().order(ByteOrder.LITTLE_ENDIAN);
+            WireDecoder.requireRemaining(source, Integer.BYTES, "error.code");
+            int code = source.getInt();
+            int messageLength = WireDecoder.length(source, "error.message");
+            byte[] message = new byte[messageLength];
+            source.get(message);
+            WireDecoder.requireFullyConsumed(source, "structured error");
+            raw.future.completeExceptionally(
+                    new CefRemoteException(code, new String(message, java.nio.charset.StandardCharsets.UTF_8)));
+        } catch (RuntimeException malformed) {
+            raw.future.completeExceptionally(malformed);
         }
-        raw.future.completeExceptionally(new CefRemoteException(code, msg));
     }
 
     @SuppressWarnings("unchecked")

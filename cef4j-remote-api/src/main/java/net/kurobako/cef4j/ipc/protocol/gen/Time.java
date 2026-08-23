@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_time_t}. Fields are immutable; pass instances
@@ -92,13 +93,21 @@ public final class Time {
       * configured the buffer.
       */
     public static Time decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "year");
         int year = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "month");
         int month = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dayOfWeek");
         int dayOfWeek = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dayOfMonth");
         int dayOfMonth = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "hour");
         int hour = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "minute");
         int minute = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "second");
         int second = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "millisecond");
         int millisecond = __buf.getInt();
         return new Time(year, month, dayOfWeek, dayOfMonth, hour, minute, second, millisecond);
     }

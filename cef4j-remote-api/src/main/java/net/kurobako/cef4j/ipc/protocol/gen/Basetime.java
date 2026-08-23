@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_basetime_t}. Fields are immutable; pass instances
@@ -43,6 +44,7 @@ public final class Basetime {
       * configured the buffer.
       */
     public static Basetime decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "val");
         long val = __buf.getLong();
         return new Basetime(val);
     }

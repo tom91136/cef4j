@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.TestTempDirs;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -41,8 +40,6 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(60)
 class CefDaemonRenderTest {
 
-    // CEF deliberately remains alive until this dedicated test fork exits, so its cache cannot be removed by
-    // JUnit's before-exit cleanup on every platform/JDK combination.
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
@@ -56,6 +53,7 @@ class CefDaemonRenderTest {
         TestTempDirs.cleanupAtExit(tempDir);
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.rootCachePath = cacheDir.toAbsolutePath().toString();
         settings.windowlessRenderingEnabled = 1;
@@ -63,13 +61,6 @@ class CefDaemonRenderTest {
         settings.multiThreadedMessageLoop = 0;
 
         Cef.INSTANCE.initialise(settings, CefTestLaunch.extraArgs());
-    }
-
-    @AfterAll
-    static void shutdownCef() {
-        // Don't call Cef.INSTANCE.terminate() here — this test runs in its own surefire fork,
-        // and process exit handles cleanup. Calling terminate() can hang if browsers haven't
-        // fully closed yet.
     }
 
     @Test
@@ -169,8 +160,6 @@ class CefDaemonRenderTest {
         CefBrowser browser = browserReady.get(10, TimeUnit.SECONDS);
         pageReady.get(10, TimeUnit.SECONDS);
 
-        // onAfterCreated does not imply that the initial document has loaded. Wait for main-frame onLoadEnd before
-        // mutating about:blank, otherwise the pending navigation can replace the document and discard this script.
         browser.getMainFrame()
                 .ifPresent(frame -> frame.executeJavaScript(
                         "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0));
@@ -181,7 +170,6 @@ class CefDaemonRenderTest {
 
         assertThat(pixels.length).isEqualTo(viewWidth * viewHeight * 4);
 
-        // Sample center pixel — BGRA format: expect red = [B=0, G=0, R=255, A=255]
         int centerOffset = ((viewHeight / 2) * viewWidth + (viewWidth / 2)) * 4;
         int b = pixels[centerOffset] & 0xFF;
         int g = pixels[centerOffset + 1] & 0xFF;
@@ -208,9 +196,12 @@ class CefDaemonRenderTest {
         CompletableFuture<Void> redPageReady = new CompletableFuture<>();
         CompletableFuture<Void> bluePageReady = new CompletableFuture<>();
 
-        // BGRA offset: red channel = +2, blue channel = +0
-        CefClient redClient = makeColorClient(viewSize, viewSize, 2, redPaint, redBrowserReady, redPageReady);
-        CefClient blueClient = makeColorClient(viewSize, viewSize, 0, bluePaint, blueBrowserReady, bluePageReady);
+        int redChannelOffset = 2;
+        int blueChannelOffset = 0;
+        CefClient redClient =
+                makeColorClient(viewSize, viewSize, redChannelOffset, redPaint, redBrowserReady, redPageReady);
+        CefClient blueClient =
+                makeColorClient(viewSize, viewSize, blueChannelOffset, bluePaint, blueBrowserReady, bluePageReady);
 
         CefBrowserSettings.Mutable bs = new CefBrowserSettings.Mutable();
         bs.windowlessFrameRate = 60;
@@ -234,7 +225,6 @@ class CefDaemonRenderTest {
         redPageReady.get(10, TimeUnit.SECONDS);
         bluePageReady.get(10, TimeUnit.SECONDS);
 
-        // Set colors via JS after browsers are created
         redBrowser
                 .getMainFrame()
                 .ifPresent(frame -> frame.executeJavaScript(
@@ -268,13 +258,11 @@ class CefDaemonRenderTest {
         byte[] bluePixels = bluePaint.get(15, TimeUnit.SECONDS);
         poller.shutdownNow();
 
-        // Verify red browser center pixel
         int center = ((viewSize / 2) * viewSize + (viewSize / 2)) * 4;
         assertThat(redPixels[center + 2] & 0xFF).as("red browser R").isEqualTo(255);
         assertThat(redPixels[center + 1] & 0xFF).as("red browser G").isEqualTo(0);
         assertThat(redPixels[center] & 0xFF).as("red browser B").isEqualTo(0);
 
-        // Verify blue browser center pixel
         assertThat(bluePixels[center + 2] & 0xFF).as("blue browser R").isEqualTo(0);
         assertThat(bluePixels[center + 1] & 0xFF).as("blue browser G").isEqualTo(0);
         assertThat(bluePixels[center] & 0xFF).as("blue browser B").isEqualTo(255);
@@ -283,7 +271,6 @@ class CefDaemonRenderTest {
         blueBrowser.getHost().ifPresent(host -> host.closeBrowser(true));
     }
 
-    /** Starts a poller that calls {@code invalidate()} every 100ms to drive frame production. */
     private static ScheduledExecutorService startInvalidatePoller(CefBrowser browser, CompletableFuture<?> doneFuture) {
         ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor();
         java.util.concurrent.Future<?> unused = poller.scheduleAtFixedRate(
@@ -300,10 +287,6 @@ class CefDaemonRenderTest {
         return poller;
     }
 
-    /**
-     * Creates a client that waits for a paint where the center pixel's BGRA channel at {@code expectedChannelOffset}
-     * exceeds 200.
-     */
     private static CefClient makeColorClient(
             int viewWidth,
             int viewHeight,

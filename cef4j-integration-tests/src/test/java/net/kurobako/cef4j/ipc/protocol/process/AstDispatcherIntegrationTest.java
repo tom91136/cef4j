@@ -75,9 +75,6 @@ class AstDispatcherIntegrationTest {
 
             Browser browser = new Browser(session, handle);
 
-            // is_valid() returns int (non-zero == valid). The whole call path is generated: facade method →
-            // BrowserIsValidRequest encoder → wire → server's Dispatcher.h case → cef_browser_t->is_valid →
-            // BrowserIsValidResponse encoder → JVM decoder.
             Integer valid = browser.isValid().get(5, TimeUnit.SECONDS);
             assertThat(valid).isNotNull();
             assertThat(valid).isNotZero();
@@ -86,10 +83,6 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void cefLifeSpanHandlerOnAfterCreatedFires() throws Exception {
-        // Validates the typed CefLifeSpanHandler interface end-to-end: the typed handler delivery and a raw
-        // session.onLatest subscription on the same AST event class both receive the same handle. Browser creation
-        // is a state announcement that may race session construction, so both subscriptions must use latest-event
-        // replay rather than depending on process startup timing.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -113,10 +106,6 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void facadeCloseReleasesRuntimeServerHandle() throws Exception {
-        // Validates the refcount lifecycle: Browser.getMainFrame() mints a frame handle, the JVM closes it
-        // via Frame.close() which sends ReleaseHandleRequest{handle, kind="cef_frame_t"}. After the close
-        // future completes the server has dropped its retain; calling Frame.getUrl() afterwards no longer
-        // finds a receiver and the response comes back empty (default-decoded "").
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -133,13 +122,9 @@ class AstDispatcherIntegrationTest {
                     browser.getMainFrame().get(5, TimeUnit.SECONDS);
             assertThat(frame.handle().id()).isPositive();
 
-            // Before release: isValid() finds the receiver in tables::frame and returns the CEF non-zero result.
             int validBefore = frame.isValid().get(5, TimeUnit.SECONDS);
             assertThat(validBefore).isNotZero();
 
-            // After releaseHandle: server has dropped the table entry. Dispatcher's null-receiver path now
-            // sends Kind::Error(ReceiverGone), which the session translates into CefRemoteException — the
-            // call fails fast instead of decoding a zero-default response.
             frame.releaseHandle().get(5, TimeUnit.SECONDS);
             try {
                 frame.isValid().get(5, TimeUnit.SECONDS);
@@ -158,9 +143,6 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void browserGetMainFrameReturnsTypedFrameFacade() throws Exception {
-        // Exercises both the RemoteHandle-return dispatcher path AND the typed-wrapper return story:
-        // `Browser.getMainFrame()` returns `CompletableFuture<Frame>`, not bare `RemoteHandle`. The wrapper
-        // carries the same session so chained calls (e.g. `frame.getUrl()`) work without manual rewrapping.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -184,9 +166,6 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void frameLoadUrlAndGetUrlRoundTrip() throws Exception {
-        // Exercises the dispatcher's string-param path (loadUrl(url)) plus the string-return path (getUrl())
-        // through real CEF. Uses a data: URI so loading is deterministic and offline. CefLoadHandler.onLoadEnd
-        // signals when CEF has finished navigating; getUrl() afterward is expected to match what we asked for.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -205,9 +184,6 @@ class AstDispatcherIntegrationTest {
 
             frame.loadUrl(dataUrl).get(5, TimeUnit.SECONDS);
 
-            // The bootstrap's about:blank onLoadEnd races our data: load, so don't gate on the first event.
-            // CEF can replace the main frame across navigations (cross-origin reuses the host but mints a new
-            // frame), so re-fetch on each iteration rather than caching the frame from before loadUrl.
             String url = "";
             long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
             while (System.nanoTime() < deadline) {
@@ -222,9 +198,6 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void twoConcurrentBrowsersHaveIndependentState() throws Exception {
-        // Two live browsers in one server, each navigated to a distinct data: URL. Validates that
-        // tables::browser dedupes by pointer (each receives a unique handle id) and that subsequent dispatch
-        // calls route to the right receiver — getUrl() on browser A returns A's URL, not B's.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -235,8 +208,6 @@ class AstDispatcherIntegrationTest {
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> handles.offer(ev.browser()));
 
-            // Drain the bootstrap browser before issuing our two CreateBrowsers so we're matching events to
-            // requests deterministically.
             RemoteHandle bootstrap = handles.poll(20, TimeUnit.SECONDS);
             assertThat(bootstrap).isNotNull();
 
@@ -257,12 +228,10 @@ class AstDispatcherIntegrationTest {
             Browser browserA = new Browser(session, handleA);
             Browser browserB = new Browser(session, handleB);
 
-            // Poll each browser independently until its main frame's URL reflects what we asked for.
             String urlOnA = pollFrameUrl(browserA, "data:text/html,<html><body>A");
             String urlOnB = pollFrameUrl(browserB, "data:text/html,<html><body>B");
             assertThat(urlOnA).contains("A</body></html>");
             assertThat(urlOnB).contains("B</body></html>");
-            // Cross-check: each browser saw its own URL, not the other's.
             assertThat(urlOnA).doesNotContain("B</body>");
             assertThat(urlOnB).doesNotContain("A</body>");
         }
@@ -282,9 +251,6 @@ class AstDispatcherIntegrationTest {
 
     @Test
     void createBrowserMintsAdditionalHandle() throws Exception {
-        // Validates JVM-triggered browser creation: send a CreateBrowserRequest, expect a second
-        // LifeSpanHandlerOnAfterCreatedEvent (the first is the server's bootstrap about:blank). The new
-        // browser's handle differs from the bootstrap's, proving the server minted a fresh table entry.
         try (RuntimeServerProcess server = spawnServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -298,9 +264,6 @@ class AstDispatcherIntegrationTest {
             RemoteHandle bootstrap = handles.poll(20, TimeUnit.SECONDS);
             assertThat(bootstrap).isNotNull();
 
-            // Build a BrowserSettings via the generated builder (28-arg ctor would be unreadable). Sets a
-            // non-default frame rate to prove the data struct rides through the wire — server-side decode →
-            // cef_browser_settings_t.windowless_frame_rate.
             BrowserSettings settings = BrowserSettings.builder()
                     .windowlessFrameRate(60)
                     .defaultEncoding("UTF-8")

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class UrlrequestClientOnUploadProgressEvent implements CefMessageView, CefMessageEncoder {
@@ -62,9 +63,13 @@ public final class UrlrequestClientOnUploadProgressEvent implements CefMessageVi
     public static final CefMessageDecoder<UrlrequestClientOnUploadProgressEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "request");
         RemoteHandle request = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "current");
         long current = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "total");
         long total = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "UrlrequestClientOnUploadProgressEvent");
         return new UrlrequestClientOnUploadProgressEvent(request, current, total);
     };
 }

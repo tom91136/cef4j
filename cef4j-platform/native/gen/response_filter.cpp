@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefResponseFilter : public cef_response_filter_t {
     JavaVM* jvm;

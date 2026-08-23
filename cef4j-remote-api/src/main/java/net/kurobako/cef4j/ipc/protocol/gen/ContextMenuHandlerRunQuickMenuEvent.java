@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ContextMenuHandlerRunQuickMenuEvent implements CefMessageView, CefMessageEncoder {
@@ -87,12 +88,17 @@ public final class ContextMenuHandlerRunQuickMenuEvent implements CefMessageView
     public static final CefMessageDecoder<ContextMenuHandlerRunQuickMenuEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
         Point location = Point.decode(__buf);
         Size size = Size.decode(__buf);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "editStateFlags");
         int editStateFlags = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "ContextMenuHandlerRunQuickMenuEvent");
         return new ContextMenuHandlerRunQuickMenuEvent(browser, frame, location, size, editStateFlags, callback);
     };
 }

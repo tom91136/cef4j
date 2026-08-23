@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct PostDataElementSetToEmptyResponse {
     static constexpr int32_t kMessageId = 15756099;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct PostDataElementSetToEmptyResponse {
                 throw std::invalid_argument("truncated PostDataElementSetToEmptyResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing PostDataElementSetToEmptyResponse payload");
         return out;
     }
 };

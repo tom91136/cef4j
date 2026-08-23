@@ -1,7 +1,7 @@
 package net.kurobako.cef4j.ipc.frame;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -29,8 +29,8 @@ public final class FrameMetadata {
         this.sequenceId = sequenceId;
         this.sourceSequence = sourceSequence;
         this.timestampNanos = timestampNanos;
-        this.format = format;
-        this.dirtyRects = Collections.unmodifiableList(dirtyRects);
+        this.format = Objects.requireNonNull(format, "format");
+        this.dirtyRects = List.copyOf(Objects.requireNonNull(dirtyRects, "dirtyRects"));
     }
 
     public int sequenceId() {

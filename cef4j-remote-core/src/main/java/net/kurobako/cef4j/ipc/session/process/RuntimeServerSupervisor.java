@@ -52,7 +52,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
     private final AtomicReference<Connection> current = new AtomicReference<>();
     private final AtomicReference<State> state = new AtomicReference<>(State.NEW);
     private final AtomicLong generations = new AtomicLong();
-    private final CopyOnWriteArrayList<ConnectionListener> listeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<ListenerRegistration> listeners = new CopyOnWriteArrayList<>();
     private final CompletableFuture<Connection> firstConnection = new CompletableFuture<>();
     private volatile boolean closed;
     private int consecutiveFailures;
@@ -82,10 +82,11 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
     /** Receives every new generation, including the current one when already connected. */
     @Nonnull
     public AutoCloseable onConnection(@Nonnull ConnectionListener listener) {
-        listeners.add(Objects.requireNonNull(listener, "listener"));
+        ListenerRegistration registration = new ListenerRegistration(Objects.requireNonNull(listener, "listener"));
+        listeners.add(registration);
         Connection connected = current.get();
-        if (connected != null) listener.onConnection(connected);
-        return () -> listeners.remove(listener);
+        if (connected != null) registration.deliver(connected);
+        return () -> listeners.remove(registration);
     }
 
     @Nonnull
@@ -145,7 +146,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
             connection.closeRegistration = connection.session.onClose(
                     () -> executor.execute(() -> generationUnavailable(
                             connection, new IOException("runtime server control transport disconnected"))));
-            consecutiveFailures = 0;
             state.set(State.RUNNING);
             if (closed) {
                 // close() raced the install; release the connection and leave the supervisor closed.
@@ -155,9 +155,9 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                 return;
             }
             firstConnection.complete(connection);
-            for (ConnectionListener listener : listeners) {
+            for (ListenerRegistration listener : listeners) {
                 try {
-                    listener.onConnection(connection);
+                    listener.deliver(connection);
                 } catch (RuntimeException failure) {
                     LOG.warn(
                             "runtime-server connection listener threw for generation={}",
@@ -170,6 +170,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     .onExit()
                     .whenComplete((exitCode, failure) ->
                             executor.execute(() -> generationExited(connection, exitCode, failure)));
+            scheduleStabilityReset(connection);
         } catch (IOException | RuntimeException failure) {
             if (installed != null) {
                 current.compareAndSet(installed, null);
@@ -179,6 +180,27 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
             if (connectedTransport != null) connectedTransport.close();
             if (spawned != null) spawned.close();
             scheduleRetry(failure);
+        }
+    }
+
+    private static final class ListenerRegistration {
+        private final ConnectionListener listener;
+        private final AtomicLong deliveredGeneration = new AtomicLong();
+
+        private ListenerRegistration(ConnectionListener listener) {
+            this.listener = listener;
+        }
+
+        private void deliver(Connection connection) {
+            long generation = connection.generation;
+            while (true) {
+                long delivered = deliveredGeneration.get();
+                if (delivered >= generation) return;
+                if (deliveredGeneration.compareAndSet(delivered, generation)) {
+                    listener.onConnection(connection);
+                    return;
+                }
+            }
         }
     }
 
@@ -212,6 +234,16 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         LOG.warn("runtime server unavailable; retrying in {} ms: {}", delayMillis, failure.toString());
         LOG.debug("runtime server recovery failure", failure);
         executor.schedule(this::spawnGeneration, delayMillis, TimeUnit.MILLISECONDS);
+    }
+
+    /** Resets crash-loop accounting only after one generation survives the configured maximum backoff interval. */
+    private void scheduleStabilityReset(Connection connection) {
+        executor.schedule(
+                () -> {
+                    if (!closed && current.get() == connection) consecutiveFailures = 0;
+                },
+                configuration.maxRestartDelay.toNanos(),
+                TimeUnit.NANOSECONDS);
     }
 
     @Override

@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct V8GetKeysResponse {
     static constexpr int32_t kMessageId = 21;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     bool ok = false;
     std::vector<std::string> keys;
@@ -65,6 +67,7 @@ struct V8GetKeysResponse {
             std::int32_t cnt = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (cnt < 0) throw std::invalid_argument("negative count for keys");
+            if (static_cast<std::size_t>(cnt) > kMaxCollectionItems) throw std::invalid_argument("oversized count for keys");
             if (static_cast<std::size_t>(cnt) > (len - pos) / 4) throw std::invalid_argument("invalid count for keys");
             out.keys.reserve(static_cast<std::size_t>(cnt));
             for (std::int32_t __i = 0; __i < cnt; ++__i) {
@@ -72,11 +75,14 @@ struct V8GetKeysResponse {
                 std::int32_t slen = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
                 pos += 4;
                 if (slen < 0) throw std::invalid_argument("negative string length for keys");
+                if (static_cast<std::size_t>(slen) > kMaxFieldBytes) throw std::invalid_argument("oversized string length for keys");
                 requireAvailable(static_cast<std::size_t>(slen));
                 out.keys.emplace_back(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(slen));
                 pos += static_cast<std::size_t>(slen);
             }
         }
+        if (pos != len)
+            throw std::invalid_argument("trailing V8GetKeysResponse payload");
         return out;
     }
 };

@@ -33,14 +33,20 @@ public final class CefRuntimePackager {
     private static final String MAC_FRAMEWORK = "Chromium Embedded Framework.framework/";
     private static final long MAX_ENTRY_SIZE = 3L * 1024 * 1024 * 1024;
     private final BinaryStripper binaryStripper;
+    private final RuntimeMover runtimeMover;
 
     /** Creates a stateless runtime packager. */
     public CefRuntimePackager() {
-        this(CefRuntimePackager::stripBinary);
+        this(CefRuntimePackager::stripBinary, CefRuntimePackager::moveRuntime);
     }
 
     CefRuntimePackager(BinaryStripper binaryStripper) {
+        this(binaryStripper, CefRuntimePackager::moveRuntime);
+    }
+
+    CefRuntimePackager(BinaryStripper binaryStripper, RuntimeMover runtimeMover) {
         this.binaryStripper = Objects.requireNonNull(binaryStripper, "binaryStripper");
+        this.runtimeMover = Objects.requireNonNull(runtimeMover, "runtimeMover");
     }
 
     /** Returns whether an existing output is complete and was produced from the same material inputs. */
@@ -54,6 +60,7 @@ public final class CefRuntimePackager {
         Path metadata = runtimeRoot.resolve("cef-runtime.properties");
         Path fileList = runtimeRoot.resolve("file-list.txt");
         if (!Files.isRegularFile(metadata) || !Files.isRegularFile(fileList)) return false;
+        if (!CefRuntimeVerifier.verifyRuntime(runtimeRoot, request.platform).isEmpty()) return false;
 
         Properties properties = new Properties();
         try (var reader = Files.newBufferedReader(metadata, StandardCharsets.UTF_8)) {
@@ -62,7 +69,6 @@ public final class CefRuntimePackager {
         if (!request.cefVersion.equals(properties.getProperty("cef.version"))) return false;
         if (!request.platform.cefName().equals(properties.getProperty("cef.platform"))) return false;
         if (!request.archiveSha256.equalsIgnoreCase(properties.getProperty("archive.sha256", ""))) return false;
-        // A verified archive must never be satisfied by a cached tree built from an unverified (offline) archive.
         if (request.upstreamVerified
                 && !"true".equalsIgnoreCase(properties.getProperty("archive.upstream-verified", "false"))) {
             return false;
@@ -73,11 +79,6 @@ public final class CefRuntimePackager {
         if (!Boolean.toString(!request.withoutSwiftShader).equals(properties.getProperty("swiftshader"))) return false;
         if (!Boolean.toString(request.strip).equals(properties.getProperty("stripped", "false"))) return false;
         if (request.strip && !request.stripCommand.equals(properties.getProperty("strip.command"))) return false;
-        for (String relative : Files.readAllLines(fileList, StandardCharsets.UTF_8)) {
-            if (relative.isBlank()) return false;
-            Path file = runtimeRoot.resolve(relative);
-            if (!Files.isRegularFile(file) || Files.size(file) == 0) return false;
-        }
         return true;
     }
 
@@ -111,13 +112,8 @@ public final class CefRuntimePackager {
             files.add("cef-runtime.properties");
             writeFileList(stagedRoot, files);
 
-            deleteTree(runtimeRoot);
             Files.createDirectories(runtimeRoot.getParent());
-            try {
-                Files.move(stagedRoot, runtimeRoot, StandardCopyOption.ATOMIC_MOVE);
-            } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
-                Files.move(stagedRoot, runtimeRoot);
-            }
+            replaceRuntime(stagedRoot, runtimeRoot);
             return new Result(runtimeRoot, List.copyOf(files), matchedLocales);
         } finally {
             deleteTree(temporary);
@@ -163,11 +159,11 @@ public final class CefRuntimePackager {
                 Files.copy(tarInput, target, StandardCopyOption.REPLACE_EXISTING);
                 files.add(relative.replace('\\', '/'));
             }
-            // The bzip decompressor may not consume the archive to EOF; drain so the digest covers every byte.
+            // XXX: The archive digest must cover source EOF; remove this drain only when extraction independently
+            // hashes the complete source or the decompressor guarantees full source consumption.
             byte[] drain = new byte[8192];
             while (fileInput.read(drain) >= 0) {}
         }
-        // Re-verify the bytes actually extracted, closing the digest-then-reopen window on the archive.
         String actual = hex(sha256.digest());
         if (!request.archiveSha256.equalsIgnoreCase(actual)) {
             throw new IOException(
@@ -263,10 +259,10 @@ public final class CefRuntimePackager {
         if (!missing.isEmpty()) throw new IOException("Requested CEF locales were not found: " + missing);
     }
 
-    private static void verifyRequired(Path root, CefPlatform platform) throws IOException {
+    static List<String> missingRequired(Path root, CefPlatform platform) throws IOException {
         List<String> required = new ArrayList<>();
         required.add(platform.runtimeBinary());
-        if (platform.isMacOS()) {
+        if (platform.isMacOS() && Files.isDirectory(root.resolve(MAC_FRAMEWORK + "Resources"))) {
             required.add(MAC_FRAMEWORK + "Resources/icudtl.dat");
         } else {
             required.add("icudtl.dat");
@@ -285,6 +281,11 @@ public final class CefRuntimePackager {
             }
             if (!snapshot) missing.add(MAC_FRAMEWORK + "Resources/v8_context_snapshot.*.bin");
         }
+        return missing;
+    }
+
+    private static void verifyRequired(Path root, CefPlatform platform) throws IOException {
+        List<String> missing = missingRequired(root, platform);
         if (!missing.isEmpty()) throw new IOException("CEF runtime is missing required files: " + missing);
     }
 
@@ -358,6 +359,40 @@ public final class CefRuntimePackager {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    private void replaceRuntime(Path stagedRoot, Path runtimeRoot) throws IOException {
+        Path backup = runtimeRoot.resolveSibling(runtimeRoot.getFileName() + ".cef4j-backup");
+        if (Files.exists(backup)) {
+            if (Files.exists(runtimeRoot)) deleteTree(backup);
+            else runtimeMover.move(backup, runtimeRoot);
+        }
+        boolean backedUp = false;
+        if (Files.exists(runtimeRoot)) {
+            runtimeMover.move(runtimeRoot, backup);
+            backedUp = true;
+        }
+        try {
+            runtimeMover.move(stagedRoot, runtimeRoot);
+        } catch (IOException failure) {
+            if (Files.exists(runtimeRoot)) deleteTree(runtimeRoot);
+            if (backedUp && Files.exists(backup)) runtimeMover.move(backup, runtimeRoot);
+            throw failure;
+        }
+        if (backedUp) deleteTree(backup);
+    }
+
+    private static void moveRuntime(Path source, Path target) throws IOException {
+        try {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
+            Files.move(source, target);
+        }
+    }
+
+    @FunctionalInterface
+    interface RuntimeMover {
+        void move(Path source, Path target) throws IOException;
     }
 
     /** Immutable inputs for one archive packaging operation. */

@@ -135,7 +135,7 @@ final class WebDriverServerTest {
             Response response =
                     request(server, "POST", "/session/" + sessionId + "/url", "{\"url\":\"https://slow.test\"}");
             assertError(response, 500, "timeout");
-            // A command timeout must not destroy the session or close the backend.
+            assertThat(backend.cancelledCommands).hasValue(1);
             assertThat(backend.closed).isFalse();
             assertThat(request(server, "GET", "/session/" + sessionId + "/timeouts", null).status)
                     .isEqualTo(200);
@@ -193,6 +193,23 @@ final class WebDriverServerTest {
         }
     }
 
+    @Test
+    void maximumImplicitWaitDoesNotOverflowDeadline() throws Exception {
+        FakeBackend backend = new FakeBackend();
+        backend.emptySearches.set(1);
+        try (WebDriverServer server = WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend))) {
+            String sessionId = createSession(server);
+            request(server, "POST", "/session/" + sessionId + "/timeouts", "{\"implicit\":9223372036854775807}");
+            Response found = request(
+                    server,
+                    "POST",
+                    "/session/" + sessionId + "/element",
+                    "{\"using\":\"css selector\",\"value\":\"#eventual\"}");
+            assertThat(found.status).isEqualTo(200);
+            assertThat(backend.searches).hasValue(2);
+        }
+    }
+
     private String createSession(WebDriverServer server) throws Exception {
         Response response = request(server, "POST", "/session", "{\"capabilities\":{}}");
         assertThat(response.status).isEqualTo(200);
@@ -235,6 +252,7 @@ final class WebDriverServerTest {
 
     private static final class FakeBackend implements AutomationBackend {
         private final AtomicBoolean closed = new AtomicBoolean();
+        private final AtomicInteger cancelledCommands = new AtomicInteger();
         private String url = "about:blank";
         private String lastScript = "";
         private CompletableFuture<Void> navigation = CompletableFuture.completedFuture(null);
@@ -290,6 +308,11 @@ final class WebDriverServerTest {
             searches.incrementAndGet();
             if (emptySearches.getAndDecrement() > 0) return CompletableFuture.completedFuture(java.util.List.of());
             return CompletableFuture.completedFuture(java.util.List.of("element-1"));
+        }
+
+        @Override
+        public void cancelPendingCommands(Throwable failure) {
+            cancelledCommands.incrementAndGet();
         }
 
         @Override

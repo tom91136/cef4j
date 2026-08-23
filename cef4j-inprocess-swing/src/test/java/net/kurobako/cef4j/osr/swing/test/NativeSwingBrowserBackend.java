@@ -41,7 +41,6 @@ import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/** Shared-contract adapter for the real in-process Swing browser component. */
 final class NativeSwingBrowserBackend implements BrowserBackend {
     @Override
     @Nonnull
@@ -51,7 +50,6 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
     @Override
     public boolean isAvailable() {
-        // XXX: CEF 109/116 macOS Swing contract has no root-caused hosted-runner failure.
         if (OS.isMacOS() && cefApiVersion() <= 116) return false;
         String os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT);
         return !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
@@ -78,6 +76,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             Path tmp = Files.createTempDirectory("cef4j-native-swing-contract");
             TestTempDirs.cleanupAtExit(tmp);
             CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.noSandbox = 1;
             settings.cachePath = tmp.toAbsolutePath().toString();
             settings.rootCachePath = tmp.toAbsolutePath().toString();
             CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
@@ -133,7 +132,6 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             @Override
                             public void onAfterCreated(@Nullable CefBrowser created) {
                                 if (created == null) return;
-                                // Publish the browser and initial viewport atomically on the EDT.
                                 SwingUtilities.invokeLater(() -> {
                                     browser.set(created);
                                     nextPanel.browser(created);
@@ -216,9 +214,6 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             long deadline = System.nanoTime() + timeout.toNanos();
             PaintInfo last = null;
             while (System.nanoTime() < deadline) {
-                // A hosted macOS renderer can become ready after the one-shot invalidation performed while the
-                // browser is attached. Republish the current viewport while waiting so that losing that early
-                // invalidation does not turn a healthy OSR browser into a forty-second test timeout.
                 CefBrowser current = browser.get();
                 if (current != null) {
                     SwingUtilities.invokeLater(() -> {
@@ -281,8 +276,6 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
         @Override
         protected float getEffectiveScaleFactor() {
-            // The cross-backend contract compares logical viewport and buffer dimensions. Production panels retain
-            // the real display scale (and therefore HiDPI physical buffers); normalize only this contract probe.
             return 1f;
         }
 

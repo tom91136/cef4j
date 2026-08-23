@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefTask : public cef_task_t {
     JavaVM* jvm;

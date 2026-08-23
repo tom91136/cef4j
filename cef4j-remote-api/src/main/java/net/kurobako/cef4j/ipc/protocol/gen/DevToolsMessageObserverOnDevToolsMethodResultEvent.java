@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DevToolsMessageObserverOnDevToolsMethodResultEvent implements CefMessageView, CefMessageEncoder {
@@ -71,12 +72,16 @@ public final class DevToolsMessageObserverOnDevToolsMethodResultEvent implements
     public static final CefMessageDecoder<DevToolsMessageObserverOnDevToolsMethodResultEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "messageId_");
         int messageId_ = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "success");
         int success = __buf.getInt();
-        int resultLen = __buf.getInt();
+        int resultLen = WireDecoder.length(__buf, "result");
         byte[] result = new byte[resultLen];
         __buf.get(result);
+        WireDecoder.requireFullyConsumed(__buf, "DevToolsMessageObserverOnDevToolsMethodResultEvent");
         return new DevToolsMessageObserverOnDevToolsMethodResultEvent(browser, messageId_, success, result);
     };
 }

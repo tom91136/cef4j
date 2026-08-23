@@ -6,11 +6,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -19,43 +24,62 @@ final class CefHttpURLConnection extends HttpURLConnection {
     private static final byte[] EOF = new byte[0];
     private static final int MAX_REDIRECTS = 20;
     private static final int DEFAULT_MAX_REQUEST_BODY = 128 * 1024 * 1024;
+    private static final int DEFAULT_MAX_BUFFERED_RESPONSE_BODY = 16 * 1024 * 1024;
+    private static final int DEFAULT_MAX_BUFFERED_RESPONSE_CHUNKS = 256;
 
     private final CefHttpEngine engine;
     private final int maxRequestBodyBytes;
+    private final int maxBufferedResponseBytes;
+    private final int maxBufferedResponseChunks;
     private final ByteArrayOutputStream reqBody = new ByteArrayOutputStream();
-    private volatile CountDownLatch responseLatch = new CountDownLatch(1);
-    private final LinkedBlockingQueue<byte[]> chunks = new LinkedBlockingQueue<>();
-
-    private volatile int statusCode = -1;
-    private volatile String statusText = "";
-    private volatile Map<String, List<String>> responseHeaders = Map.of();
+    private volatile Attempt attempt;
 
     @Nullable
-    private volatile IOException error;
-
-    @Nullable
-    private CefHttpEngine.Cancellation cancellation;
+    private volatile CefHttpEngine.Cancellation cancellation;
 
     private Map<String, List<String>> requestHeaders = Map.of();
     private String requestMethod = "GET";
     private byte[] requestBody = new byte[0];
 
     CefHttpURLConnection(@Nonnull URL url, @Nonnull CefHttpEngine engine) {
-        this(url, engine, DEFAULT_MAX_REQUEST_BODY);
+        this(
+                url,
+                engine,
+                DEFAULT_MAX_REQUEST_BODY,
+                DEFAULT_MAX_BUFFERED_RESPONSE_BODY,
+                DEFAULT_MAX_BUFFERED_RESPONSE_CHUNKS);
     }
 
     CefHttpURLConnection(@Nonnull URL url, @Nonnull CefHttpEngine engine, int maxRequestBodyBytes) {
+        this(
+                url,
+                engine,
+                maxRequestBodyBytes,
+                DEFAULT_MAX_BUFFERED_RESPONSE_BODY,
+                DEFAULT_MAX_BUFFERED_RESPONSE_CHUNKS);
+    }
+
+    CefHttpURLConnection(
+            @Nonnull URL url,
+            @Nonnull CefHttpEngine engine,
+            int maxRequestBodyBytes,
+            int maxBufferedResponseBytes,
+            int maxBufferedResponseChunks) {
         super(url);
         this.engine = engine;
+        if (maxRequestBodyBytes <= 0 || maxBufferedResponseBytes <= 0 || maxBufferedResponseChunks <= 0) {
+            throw new IllegalArgumentException("body and chunk limits must be positive");
+        }
         this.maxRequestBodyBytes = maxRequestBodyBytes;
+        this.maxBufferedResponseBytes = maxBufferedResponseBytes;
+        this.maxBufferedResponseChunks = maxBufferedResponseChunks;
+        attempt = new Attempt(maxBufferedResponseBytes, maxBufferedResponseChunks);
     }
 
     @Override
     public synchronized void connect() throws IOException {
         if (connected) return;
-        // Snapshot request headers before flipping connected; URLConnection.getRequestProperties()
-        // throws IllegalStateException once connected=true.
-        requestHeaders = getRequestProperties();
+        requestHeaders = redirectHeaders(getRequestProperties(), false);
         requestMethod = method;
         requestBody = reqBody.toByteArray();
         connected = true;
@@ -63,44 +87,62 @@ final class CefHttpURLConnection extends HttpURLConnection {
     }
 
     private void reissue() {
+        Attempt next = new Attempt(maxBufferedResponseBytes, maxBufferedResponseChunks);
+        attempt = next;
         CefHttpEngine.RequestSpec spec =
                 new CefHttpEngine.RequestSpec(url.toString(), requestMethod, requestHeaders, requestBody);
-        cancellation = engine.send(spec, new Sink());
+        CefHttpEngine.Cancellation nextCancellation = engine.send(spec, new Sink(next));
+        cancellation = nextCancellation;
+        if (next.cancelRequested()) nextCancellation.cancel();
     }
 
     private synchronized void awaitResponse() throws IOException {
         connect();
+        int timeout = getConnectTimeout();
+        long deadline = timeout > 0 ? System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout) : 0;
         for (int redirects = 0; ; redirects++) {
+            Attempt current = attempt;
             try {
-                responseLatch.await();
+                if (timeout > 0) {
+                    long remaining = deadline - System.nanoTime();
+                    if (remaining <= 0 || !current.responseLatch.await(remaining, TimeUnit.NANOSECONDS)) {
+                        throw new SocketTimeoutException("timed out awaiting response headers");
+                    }
+                }
+                if (timeout == 0) current.responseLatch.await();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IOException("interrupted while awaiting response", e);
             }
-            IOException err = error;
+            IOException err = current.error;
             if (err != null) throw err;
-            String location = redirectLocation(redirects);
+            String location = redirectLocation(current, redirects);
             if (location == null) return;
-            if (statusCode == 301 || statusCode == 302 || statusCode == 303) {
+            if (current.statusCode == 301 || current.statusCode == 302 || current.statusCode == 303) {
                 requestMethod = "GET";
                 requestBody = new byte[0];
             }
-            chunks.clear();
-            error = null;
-            statusCode = -1;
-            responseLatch = new CountDownLatch(1);
-            url = new URL(url, location);
+            CefHttpEngine.Cancellation previous = cancellation;
+            if (previous != null) previous.cancel();
+            URL previousUrl = url;
+            URL nextUrl = new URL(previousUrl, location);
+            requestHeaders = redirectHeaders(requestHeaders, !sameOrigin(previousUrl, nextUrl));
+            url = nextUrl;
             reissue();
         }
     }
 
     @Nullable
-    private String redirectLocation(int redirects) {
+    private String redirectLocation(Attempt current, int redirects) {
         if (redirects >= MAX_REDIRECTS || !instanceFollowRedirects) return null;
-        if (statusCode != 301 && statusCode != 302 && statusCode != 303 && statusCode != 307 && statusCode != 308) {
+        if (current.statusCode != 301
+                && current.statusCode != 302
+                && current.statusCode != 303
+                && current.statusCode != 307
+                && current.statusCode != 308) {
             return null;
         }
-        for (Map.Entry<String, List<String>> e : responseHeaders.entrySet()) {
+        for (Map.Entry<String, List<String>> e : current.responseHeaders.entrySet()) {
             if (e.getKey().equalsIgnoreCase("location")) {
                 List<String> values = e.getValue();
                 if (!values.isEmpty()) return values.get(0);
@@ -109,19 +151,50 @@ final class CefHttpURLConnection extends HttpURLConnection {
         return null;
     }
 
-    @Override
-    public int getResponseCode() throws IOException {
-        awaitResponse();
-        return statusCode;
+    private static boolean sameOrigin(URL left, URL right) {
+        return left.getProtocol().equalsIgnoreCase(right.getProtocol())
+                && left.getHost().equalsIgnoreCase(right.getHost())
+                && effectivePort(left) == effectivePort(right);
+    }
+
+    private static int effectivePort(URL value) {
+        return value.getPort() >= 0 ? value.getPort() : value.getDefaultPort();
+    }
+
+    private static Map<String, List<String>> redirectHeaders(Map<String, List<String>> source, boolean crossOrigin) {
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        for (Map.Entry<String, List<String>> entry : source.entrySet()) {
+            String name = entry.getKey().toLowerCase(Locale.ROOT);
+            if (name.equals("host")
+                    || name.equals("connection")
+                    || name.equals("keep-alive")
+                    || name.equals("proxy-authenticate")
+                    || name.equals("te")
+                    || name.equals("trailer")
+                    || name.equals("transfer-encoding")
+                    || name.equals("upgrade")) continue;
+            if (crossOrigin
+                    && (name.equals("authorization")
+                            || name.equals("proxy-authorization")
+                            || name.equals("cookie")
+                            || name.equals("cookie2"))) continue;
+            result.put(entry.getKey(), List.copyOf(entry.getValue()));
+        }
+        return Map.copyOf(result);
     }
 
     @Override
-    // JDK contract: null when no status text / header present
+    public int getResponseCode() throws IOException {
+        awaitResponse();
+        return attempt.statusCode;
+    }
+
+    @Override
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public String getResponseMessage() throws IOException {
         awaitResponse();
-        return statusText;
+        return attempt.statusText;
     }
 
     @Override
@@ -131,11 +204,10 @@ final class CefHttpURLConnection extends HttpURLConnection {
         } catch (IOException e) {
             return Map.of();
         }
-        return responseHeaders;
+        return attempt.responseHeaders;
     }
 
     @Override
-    // JDK contract: null name/return
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public String getHeaderField(@Nullable String name) {
@@ -145,7 +217,7 @@ final class CefHttpURLConnection extends HttpURLConnection {
         } catch (IOException e) {
             return null;
         }
-        for (Map.Entry<String, List<String>> e : responseHeaders.entrySet()) {
+        for (Map.Entry<String, List<String>> e : attempt.responseHeaders.entrySet()) {
             if (name.equalsIgnoreCase(e.getKey())) {
                 List<String> vs = e.getValue();
                 if (!vs.isEmpty()) return vs.get(0);
@@ -166,14 +238,14 @@ final class CefHttpURLConnection extends HttpURLConnection {
     @Nonnull
     public InputStream getInputStream() throws IOException {
         awaitResponse();
-        if (statusCode >= 400) {
-            throw new IOException("Server returned HTTP response code " + statusCode + " for URL: " + url);
+        Attempt current = attempt;
+        if (current.statusCode >= 400) {
+            throw new IOException("Server returned HTTP response code " + current.statusCode + " for URL: " + url);
         }
-        return new ChunkInputStream();
+        return new ChunkInputStream(current);
     }
 
     @Override
-    // JDK contract: null when there is no error body
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public InputStream getErrorStream() {
@@ -182,12 +254,14 @@ final class CefHttpURLConnection extends HttpURLConnection {
         } catch (IOException e) {
             return null;
         }
-        if (statusCode < 400) return null;
-        return new ChunkInputStream();
+        Attempt current = attempt;
+        if (current.statusCode < 400) return null;
+        return new ChunkInputStream(current);
     }
 
     @Override
     public void disconnect() {
+        attempt.fail(new IOException("connection disconnected"));
         CefHttpEngine.Cancellation c = cancellation;
         if (c != null) c.cancel();
     }
@@ -197,30 +271,119 @@ final class CefHttpURLConnection extends HttpURLConnection {
         return false;
     }
 
+    private static final class Attempt {
+        private final CountDownLatch responseLatch = new CountDownLatch(1);
+        private final BlockingQueue<byte[]> chunks;
+        private final int maxBufferedBytes;
+        private final int maxBufferedChunks;
+        private int bufferedBytes;
+        private int bufferedChunks;
+        private boolean terminal;
+        private boolean cancelRequested;
+        private volatile int statusCode = -1;
+        private volatile String statusText = "";
+        private volatile Map<String, List<String>> responseHeaders = Map.of();
+
+        @Nullable
+        private volatile IOException error;
+
+        private Attempt(int maxBufferedBytes, int maxBufferedChunks) {
+            this.maxBufferedBytes = maxBufferedBytes;
+            this.maxBufferedChunks = maxBufferedChunks;
+            chunks = new ArrayBlockingQueue<>(maxBufferedChunks + 1);
+        }
+
+        private synchronized boolean offer(byte[] chunk) {
+            if (terminal) return true;
+            if (bufferedChunks >= maxBufferedChunks || chunk.length > maxBufferedBytes - bufferedBytes) {
+                fail(new IOException("response body buffer limit exceeded"), true);
+                return false;
+            }
+            if (!chunks.offer(chunk)) {
+                fail(new IOException("response body chunk buffer limit exceeded"), true);
+                return false;
+            }
+            bufferedBytes += chunk.length;
+            bufferedChunks++;
+            return true;
+        }
+
+        private byte[] take(int timeoutMillis) throws InterruptedException {
+            byte[] chunk = timeoutMillis > 0 ? chunks.poll(timeoutMillis, TimeUnit.MILLISECONDS) : chunks.take();
+            if (chunk != null && chunk != EOF) {
+                synchronized (this) {
+                    bufferedBytes -= chunk.length;
+                    bufferedChunks--;
+                }
+            }
+            return chunk;
+        }
+
+        private synchronized void complete() {
+            if (terminal) return;
+            terminal = true;
+            chunks.add(EOF);
+        }
+
+        private synchronized void fail(IOException failure) {
+            fail(failure, false);
+        }
+
+        private synchronized void fail(IOException failure, boolean cancel) {
+            if (terminal) return;
+            if (error == null) error = failure;
+            terminal = true;
+            cancelRequested = cancel;
+            bufferedBytes = 0;
+            bufferedChunks = 0;
+            chunks.clear();
+            chunks.add(EOF);
+            responseLatch.countDown();
+        }
+
+        private synchronized boolean closeBody() {
+            boolean cancel = !terminal;
+            terminal = true;
+            bufferedBytes = 0;
+            bufferedChunks = 0;
+            chunks.clear();
+            chunks.add(EOF);
+            return cancel;
+        }
+
+        private synchronized boolean cancelRequested() {
+            return cancelRequested;
+        }
+    }
+
     private final class Sink implements CefHttpEngine.ResponseSink {
+        private final Attempt target;
+
+        private Sink(Attempt target) {
+            this.target = target;
+        }
+
         @Override
         public void onResponse(int status, @Nonnull String statusText0, @Nonnull Map<String, List<String>> headers) {
-            statusCode = status;
-            statusText = statusText0;
-            responseHeaders = Map.copyOf(headers);
-            responseLatch.countDown();
+            target.statusCode = status;
+            target.statusText = statusText0;
+            target.responseHeaders = Map.copyOf(headers);
+            target.responseLatch.countDown();
         }
 
         @Override
         public void onData(@Nonnull byte[] chunk) {
-            if (chunk.length > 0) chunks.offer(chunk);
+            if (chunk.length > 0 && !target.offer(chunk)) cancel(target);
         }
 
         @Override
         public void onComplete() {
-            chunks.offer(EOF);
+            target.complete();
         }
 
         @Override
         public void onError(@Nonnull IOException err) {
-            error = err;
-            chunks.offer(EOF);
-            responseLatch.countDown();
+            target.fail(err);
         }
     }
 
@@ -238,16 +401,22 @@ final class CefHttpURLConnection extends HttpURLConnection {
         }
 
         private void checkCapacity(int additional) throws IOException {
-            if (reqBody.size() + additional > maxRequestBodyBytes) {
+            if (additional > maxRequestBodyBytes - reqBody.size()) {
                 throw new IOException("request body exceeds maximum of " + maxRequestBodyBytes + " bytes");
             }
         }
     }
 
     private final class ChunkInputStream extends InputStream {
+        private final Attempt source;
         private byte[] current = EOF;
         private int pos = 0;
         private boolean eof = false;
+        private boolean closed;
+
+        private ChunkInputStream(Attempt source) {
+            this.source = source;
+        }
 
         @Override
         public int read() throws IOException {
@@ -258,18 +427,26 @@ final class CefHttpURLConnection extends HttpURLConnection {
 
         @Override
         public int read(@Nonnull byte[] b, int off, int len) throws IOException {
+            if (closed) throw new IOException("response body stream is closed");
             if (len == 0) return 0;
             if (eof) return -1;
             while (pos >= current.length) {
                 try {
-                    current = chunks.take();
+                    int timeout = getReadTimeout();
+                    current = source.take(timeout);
+                    if (current == null) {
+                        SocketTimeoutException failure = new SocketTimeoutException("timed out reading response body");
+                        source.fail(failure, true);
+                        cancel(source);
+                        throw failure;
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new IOException("interrupted while reading body", e);
                 }
                 if (current == EOF) {
                     eof = true;
-                    IOException failure = error;
+                    IOException failure = source.error;
                     if (failure != null) throw failure;
                     return -1;
                 }
@@ -280,5 +457,21 @@ final class CefHttpURLConnection extends HttpURLConnection {
             pos += n;
             return n;
         }
+
+        @Override
+        public void close() {
+            if (closed) return;
+            closed = true;
+            current = EOF;
+            pos = 0;
+            eof = true;
+            if (source.closeBody()) cancel(source);
+        }
+    }
+
+    private void cancel(Attempt target) {
+        if (attempt != target) return;
+        CefHttpEngine.Cancellation current = cancellation;
+        if (current != null) current.cancel();
     }
 }

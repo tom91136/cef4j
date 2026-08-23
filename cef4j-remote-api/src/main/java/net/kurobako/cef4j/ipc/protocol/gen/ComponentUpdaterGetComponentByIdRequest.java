@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ComponentUpdaterGetComponentByIdRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class ComponentUpdaterGetComponentByIdRequest implements CefMessage
     public static final CefMessageDecoder<ComponentUpdaterGetComponentByIdRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int componentIdLen = __buf.getInt();
+        int componentIdLen = WireDecoder.length(__buf, "componentId");
         byte[] componentIdBuf = new byte[componentIdLen];
         __buf.get(componentIdBuf);
         String componentId = new String(componentIdBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ComponentUpdaterGetComponentByIdRequest");
         return new ComponentUpdaterGetComponentByIdRequest(self, componentId);
     };
 }

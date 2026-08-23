@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_range_t}. Fields are immutable; pass instances
@@ -50,7 +51,9 @@ public final class Range {
       * configured the buffer.
       */
     public static Range decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "from");
         int from = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "to");
         int to = __buf.getInt();
         return new Range(from, to);
     }

@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefNavigationEntryVisitor : public cef_navigation_entry_visitor_t {
     JavaVM* jvm;

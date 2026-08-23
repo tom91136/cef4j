@@ -38,8 +38,9 @@ import org.junit.jupiter.api.io.TempDir;
 @ExtendWith(DisplayLock.class)
 class CefWebViewSchemeTest {
 
-    // macOS intentionally skips cef_shutdown(), so its CEF cache can remain mapped until process
-    // exit and must not be owned by JUnit's eager TempDir cleanup; TestTempDirs deletes it at exit.
+    // XXX: CEF 150 keeps macOS cache files mapped until process exit; restore eager TempDir cleanup when the minimum
+    // CEF
+    // major is above 150 and the macOS scheme-test fork deletes its cache after normal cef_shutdown.
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path cacheRoot;
@@ -104,6 +105,7 @@ class CefWebViewSchemeTest {
         });
 
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().noSandbox = 1;
         launch.settings().cachePath = cacheRoot.toAbsolutePath().toString();
         launch.settings().rootCachePath = cacheRoot.toAbsolutePath().toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());

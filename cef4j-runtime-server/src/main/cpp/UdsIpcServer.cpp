@@ -15,8 +15,6 @@ namespace cef4j {
 namespace ipc {
 
 namespace {
-constexpr std::uint32_t kMaxFrameSize = 64U * 1024U * 1024U;
-
 std::string socketPath(const std::string& addr) {
     constexpr const char* prefix = "unix://";
     return addr.compare(0, std::strlen(prefix), prefix) == 0 ? addr.substr(std::strlen(prefix)) : addr;
@@ -125,6 +123,11 @@ bool UdsIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId, std:
     if (payload && payloadLen > 0) std::memcpy(frame.data() + kHeaderSize, payload, payloadLen);
     {
         std::lock_guard<std::mutex> lock(outboundMu_);
+        if (queuedBytes_ > kMaxQueuedBytes || frame.size() > kMaxQueuedBytes - queuedBytes_) {
+            stop_ = true;
+            return false;
+        }
+        queuedBytes_ += frame.size();
         outbound_.push_back(std::move(frame));
     }
     const std::uint8_t wake = 1;
@@ -144,6 +147,13 @@ bool UdsIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t corrId
         std::lock_guard<std::mutex> lock(outboundMu_);
         auto it = std::find_if(latest_.begin(), latest_.end(),
                                [streamId](const auto& item) { return item.first == streamId; });
+        std::size_t replacedBytes = it == latest_.end() ? 0 : it->second.size();
+        std::size_t retainedBytes = queuedBytes_ - replacedBytes;
+        if (retainedBytes > kMaxQueuedBytes || frame.size() > kMaxQueuedBytes - retainedBytes) {
+            stop_ = true;
+            return false;
+        }
+        queuedBytes_ = retainedBytes + frame.size();
         if (it == latest_.end()) latest_.emplace_back(streamId, std::move(frame));
         else it->second = std::move(frame);
     }
@@ -212,6 +222,7 @@ bool UdsIpcServer::drainOutbound() {
         batch.swap(outbound_);
         for (auto& item : latest_) batch.push_back(std::move(item.second));
         latest_.clear();
+        queuedBytes_ = 0;
     }
     for (const auto& frame : batch) {
         std::uint32_t length = htonl(static_cast<std::uint32_t>(frame.size()));

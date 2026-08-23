@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ResourceBundleGetDataResourceForScaleRequest implements CefMessageView, CefMessageEncoder {
@@ -62,9 +63,13 @@ public final class ResourceBundleGetDataResourceForScaleRequest implements CefMe
     public static final CefMessageDecoder<ResourceBundleGetDataResourceForScaleRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "resourceId");
         int resourceId = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "scaleFactor");
         int scaleFactor = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "ResourceBundleGetDataResourceForScaleRequest");
         return new ResourceBundleGetDataResourceForScaleRequest(self, resourceId, scaleFactor);
     };
 }

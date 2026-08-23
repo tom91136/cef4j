@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct FramePasteAndMatchStyleResponse {
     static constexpr int32_t kMessageId = 409754410;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct FramePasteAndMatchStyleResponse {
                 throw std::invalid_argument("truncated FramePasteAndMatchStyleResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing FramePasteAndMatchStyleResponse payload");
         return out;
     }
 };

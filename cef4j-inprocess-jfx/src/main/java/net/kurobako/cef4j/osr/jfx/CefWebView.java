@@ -90,7 +90,10 @@ public class CefWebView extends Region {
         }
         onWindowChanged(newWindow);
     };
-    private final ChangeListener<Number> windowBoundsListener = (obs, oldValue, newValue) -> requestViewRefresh(true);
+    private final ChangeListener<Number> windowBoundsListener = (obs, oldValue, newValue) -> {
+        refreshViewportSnapshot();
+        requestViewRefresh(true);
+    };
     private final ChangeListener<Boolean> windowFocusedListener = (obs, wasFocused, isFocused) -> {
         if (!isFocused) {
             hidePopupOverlay();
@@ -131,6 +134,7 @@ public class CefWebView extends Region {
     private volatile boolean browserCreationPosted;
     private volatile boolean browserCreated;
     volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
+    private volatile ViewportSnapshot viewportSnapshot = ViewportSnapshot.detached();
     private final Queue<Consumer<BrowserHandle>> pendingBrowserActions = new ConcurrentLinkedQueue<>();
 
     /** Number of view (non-popup) paints delivered to this view; package-private for tests. */
@@ -158,10 +162,11 @@ public class CefWebView extends Region {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
-            // Do not implicitly start JavaFX here. Toolkit ownership belongs to Application.launch(), and on macOS the
-            // caller must establish Glass/AppKit before CEF enters its managed application message loop.
+            // XXX: Application.launch owns JavaFX startup, and macOS requires Glass/AppKit before CEF enters its
+            // managed
+            // loop; remove this caller-owned ordering only if JavaFX exposes a supported non-Application startup
+            // bridge.
             if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
-                // Already up - just validate it's configured for OSR.
                 requireOsrInitialised();
                 return;
             }
@@ -218,16 +223,14 @@ public class CefWebView extends Region {
             if (ph > maxH) maxH = ph;
         }
         frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
-            // The producer owns `pixels` and may overwrite it on the next paint after consume() re-arms
-            // back-pressure. Copy into a stable back buffer so the FX thread never reads a torn frame.
+            // XXX: CefFrameBuffer reuses pixels after consume re-arms production; remove this copy only when the image
+            // handoff transfers immutable pixel ownership to the JavaFX application thread.
             int[] image = prev.filter(p -> p.length >= w * h).orElseGet(() -> new int[w * h]);
             System.arraycopy(pixels, 0, image, 0, w * h);
             return image;
         });
 
         getChildren().add(imageView);
-        // The image is the view's paint surface, not layout content. Keeping it managed lets the dimensions of the
-        // last frame become this Region's computed minimum size, which can prevent a parent window from shrinking.
         imageView.setManaged(false);
         imageView.setPreserveRatio(false);
         imageView.setSmooth(false);
@@ -248,12 +251,12 @@ public class CefWebView extends Region {
             if (is) {
                 ifHostPresent(h -> h.setFocus(true));
             } else {
-                // Let window focus loss drive host focus changes; doing it here closes compositor popups too early.
                 popupSurface.hide();
             }
         });
         widthProperty().addListener((obs, oldV, newV) -> onResize());
         heightProperty().addListener((obs, oldV, newV) -> onResize());
+        localToSceneTransformProperty().addListener((obs, oldTransform, newTransform) -> refreshViewportSnapshot());
         sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (oldScene != null) {
                 oldScene.windowProperty().removeListener(sceneWindowListener);
@@ -280,7 +283,6 @@ public class CefWebView extends Region {
     }
 
     /** Returns the underlying browser instance, or {@code null} if it does not exist yet. */
-    // null until the browser is created
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowser getBrowser() {
@@ -289,7 +291,6 @@ public class CefWebView extends Region {
     }
 
     /** Returns the underlying browser host, or {@code null} if it does not exist yet. */
-    // null until the browser is created
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowserHost getBrowserHost() {
@@ -319,7 +320,6 @@ public class CefWebView extends Region {
         return getScriptEngine();
     }
 
-    // null until the browser is created
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowser browser() {
@@ -348,8 +348,6 @@ public class CefWebView extends Region {
     public void load(String url) {
         engine.updateLocation(url);
         runWithBrowser(false, current -> {
-            // loadUrl replaces any in-flight navigation itself. Calling stopLoad first can race the
-            // first renderer commit on older CEF releases and leave the replacement queued forever.
             current.getMainFrame().ifPresent(frame -> frame.loadUrl(engine.getLocation()));
             requestViewRefresh(false);
         });
@@ -442,6 +440,7 @@ public class CefWebView extends Region {
     protected void layoutChildren() {
         imageView.setFitWidth(getWidth());
         imageView.setFitHeight(getHeight());
+        refreshViewportSnapshot();
     }
 
     /** Creates the render handler used by the default client. */
@@ -449,10 +448,7 @@ public class CefWebView extends Region {
         return new CefRenderHandler() {
             @Override
             public boolean getRootScreenRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
-                Bounds bounds = localToScreen(getBoundsInLocal());
-                Rectangle2D resolved = bounds != null
-                        ? new Rectangle2D(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())
-                        : detachedBounds;
+                Rectangle2D resolved = viewportSnapshot.rootBounds;
                 rect.x = (int) Math.round(resolved.getMinX());
                 rect.y = (int) Math.round(resolved.getMinY());
                 rect.width = Math.max(1, (int) Math.round(resolved.getWidth()));
@@ -462,46 +458,29 @@ public class CefWebView extends Region {
 
             @Override
             public void getViewRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
-                Rectangle2D bounds = detachedBounds;
+                ViewportSnapshot snapshot = viewportSnapshot;
                 rect.x = 0;
                 rect.y = 0;
-                rect.width = Math.max(1, (int) Math.round(getWidth() > 0 ? getWidth() : bounds.getWidth()));
-                rect.height = Math.max(1, (int) Math.round(getHeight() > 0 ? getHeight() : bounds.getHeight()));
+                rect.width = snapshot.viewWidth;
+                rect.height = snapshot.viewHeight;
             }
 
             @Override
             public boolean getScreenInfo(@Nullable CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
-                Screen screen = currentScreen();
-                var scale = currentScaleFactor(screen);
-                screenInfo.deviceScaleFactor = (float) scale;
+                ViewportSnapshot snapshot = viewportSnapshot;
+                screenInfo.deviceScaleFactor = (float) snapshot.scale;
                 screenInfo.depth = 32;
                 screenInfo.depthPerComponent = 8;
-                Rectangle2D bounds = screen.getBounds();
-                Rectangle2D available = screen.getVisualBounds();
-                screenInfo.rect = new CefRect(
-                        (int) Math.round(bounds.getMinX() * scale),
-                        (int) Math.round(bounds.getMinY() * scale),
-                        Math.max(1, (int) Math.round(bounds.getWidth() * scale)),
-                        Math.max(1, (int) Math.round(bounds.getHeight() * scale)));
-                screenInfo.availableRect = new CefRect(
-                        (int) Math.round(available.getMinX() * scale),
-                        (int) Math.round(available.getMinY() * scale),
-                        Math.max(1, (int) Math.round(available.getWidth() * scale)),
-                        Math.max(1, (int) Math.round(available.getHeight() * scale)));
+                screenInfo.rect = snapshot.screenBounds;
+                screenInfo.availableRect = snapshot.availableBounds;
                 return true;
             }
 
             @Override
             public boolean getScreenPoint(@Nullable CefBrowser b, int viewX, int viewY, int[] screenX, int[] screenY) {
-                javafx.geometry.Point2D point = localToScreen(viewX, viewY);
-                if (point != null) {
-                    screenX[0] = (int) Math.round(point.getX());
-                    screenY[0] = (int) Math.round(point.getY());
-                    return true;
-                }
-                Rectangle2D fallback = detachedBounds;
-                screenX[0] = (int) Math.round(fallback.getMinX() + viewX);
-                screenY[0] = (int) Math.round(fallback.getMinY() + viewY);
+                ViewportSnapshot snapshot = viewportSnapshot;
+                screenX[0] = (int) Math.round(snapshot.originX + snapshot.xx * viewX + snapshot.xy * viewY);
+                screenY[0] = (int) Math.round(snapshot.originY + snapshot.yx * viewX + snapshot.yy * viewY);
                 return true;
             }
 
@@ -532,12 +511,8 @@ public class CefWebView extends Region {
                     int height) {
                 boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
                 if (isPopup) {
-                    int pixelCount = width * height;
-                    int[] px = new int[pixelCount];
-                    java.nio.IntBuffer src =
-                            buffer.order(java.nio.ByteOrder.LITTLE_ENDIAN).asIntBuffer();
-                    src.get(px, 0, pixelCount);
-                    Platform.runLater(() -> popupSurface.blit(px, width, height));
+                    CefFrameBuffer.copyBgraPixels(buffer, width, height)
+                            .ifPresent(px -> Platform.runLater(() -> popupSurface.blit(px, width, height)));
                 } else {
                     if (frameBuffer.onPaint(buffer, width, height, dirtyRects).isPresent()) {
                         framesPainted.increment();
@@ -585,7 +560,6 @@ public class CefWebView extends Region {
                     new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            // Create without an initial URL so queued load/loadContent actions define the first committed page.
             int result =
                     CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
             if (result == 0) {
@@ -636,6 +610,7 @@ public class CefWebView extends Region {
     private void onResize() {
         Rectangle2D current = detachedBounds;
         detachedBounds = new Rectangle2D(current.getMinX(), current.getMinY(), getWidth(), getHeight());
+        refreshViewportSnapshot();
         frameBuffer.resetBackPressure();
         Platform.runLater(() -> engine.fireResized(new Rectangle2D(0, 0, getWidth(), getHeight())));
         requestViewRefresh(true);
@@ -649,6 +624,7 @@ public class CefWebView extends Region {
                 requestViewRefresh(true);
             }
         }
+        refreshViewportSnapshot();
     }
 
     private void attachWindowListeners(Window window) {
@@ -704,6 +680,7 @@ public class CefWebView extends Region {
     void updateDetachedBounds(@Nullable CefRect bounds, boolean notify) {
         if (bounds == null) return;
         detachedBounds = new Rectangle2D(bounds.x, bounds.y, Math.max(1, bounds.width), Math.max(1, bounds.height));
+        refreshViewportSnapshot();
         if (notify) {
             Platform.runLater(() ->
                     engine.fireResized(new Rectangle2D(0, 0, Math.max(1, bounds.width), Math.max(1, bounds.height))));
@@ -791,6 +768,97 @@ public class CefWebView extends Region {
         }
     }
 
+    private void refreshViewportSnapshot() {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::refreshViewportSnapshot);
+            return;
+        }
+        Rectangle2D fallback = detachedBounds;
+        Bounds bounds = localToScreen(getBoundsInLocal());
+        Rectangle2D root = bounds == null
+                ? fallback
+                : new Rectangle2D(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+        javafx.geometry.Point2D origin = localToScreen(0, 0);
+        javafx.geometry.Point2D xUnit = localToScreen(1, 0);
+        javafx.geometry.Point2D yUnit = localToScreen(0, 1);
+        if (origin == null || xUnit == null || yUnit == null) {
+            origin = new javafx.geometry.Point2D(fallback.getMinX(), fallback.getMinY());
+            xUnit = origin.add(1, 0);
+            yUnit = origin.add(0, 1);
+        }
+        Screen screen = currentScreen();
+        double scale = currentScaleFactor(screen);
+        viewportSnapshot = new ViewportSnapshot(
+                root,
+                Math.max(1, (int) Math.round(getWidth() > 0 ? getWidth() : fallback.getWidth())),
+                Math.max(1, (int) Math.round(getHeight() > 0 ? getHeight() : fallback.getHeight())),
+                origin.getX(),
+                origin.getY(),
+                xUnit.getX() - origin.getX(),
+                yUnit.getX() - origin.getX(),
+                xUnit.getY() - origin.getY(),
+                yUnit.getY() - origin.getY(),
+                scale,
+                scaledRect(screen.getBounds(), scale),
+                scaledRect(screen.getVisualBounds(), scale));
+    }
+
+    private static CefRect scaledRect(Rectangle2D bounds, double scale) {
+        return new CefRect(
+                (int) Math.round(bounds.getMinX() * scale),
+                (int) Math.round(bounds.getMinY() * scale),
+                Math.max(1, (int) Math.round(bounds.getWidth() * scale)),
+                Math.max(1, (int) Math.round(bounds.getHeight() * scale)));
+    }
+
+    private static final class ViewportSnapshot {
+        private final Rectangle2D rootBounds;
+        private final int viewWidth;
+        private final int viewHeight;
+        private final double originX;
+        private final double originY;
+        private final double xx;
+        private final double xy;
+        private final double yx;
+        private final double yy;
+        private final double scale;
+        private final CefRect screenBounds;
+        private final CefRect availableBounds;
+
+        private ViewportSnapshot(
+                Rectangle2D rootBounds,
+                int viewWidth,
+                int viewHeight,
+                double originX,
+                double originY,
+                double xx,
+                double xy,
+                double yx,
+                double yy,
+                double scale,
+                CefRect screenBounds,
+                CefRect availableBounds) {
+            this.rootBounds = rootBounds;
+            this.viewWidth = viewWidth;
+            this.viewHeight = viewHeight;
+            this.originX = originX;
+            this.originY = originY;
+            this.xx = xx;
+            this.xy = xy;
+            this.yx = yx;
+            this.yy = yy;
+            this.scale = scale;
+            this.screenBounds = screenBounds;
+            this.availableBounds = availableBounds;
+        }
+
+        private static ViewportSnapshot detached() {
+            Rectangle2D unit = new Rectangle2D(0, 0, 1, 1);
+            CefRect rect = new CefRect(0, 0, 1, 1);
+            return new ViewportSnapshot(unit, 1, 1, 0, 0, 1, 0, 0, 1, 1, rect, rect);
+        }
+    }
+
     private void handleMouseClick(MouseEvent e, boolean mouseUp) {
         if (!mouseUp) {
             hideContextMenu();
@@ -835,9 +903,6 @@ public class CefWebView extends Region {
                     (int) e.getX(),
                     (int) e.getY(),
                     baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown()));
-            // JavaFX may synthesize or route a scroll without first emitting MOUSE_MOVED (notably after a newly shown
-            // window gains focus). Keep Chromium's OSR pointer target in sync so the wheel reaches the frame beneath
-            // the JavaFX event coordinates instead of being discarded against stale pointer state.
             host.sendMouseMoveEvent(mouse, false);
             host.sendMouseWheelEvent(mouse, (int) e.getDeltaX(), (int) e.getDeltaY());
         });
@@ -898,9 +963,8 @@ public class CefWebView extends Region {
         }
         if (!browserCreated) {
             pendingBrowserActions.add(action);
-            // onBrowserCreated publishes browser before draining this queue. If it completed its drain between the
-            // null check above and this insertion, claim and run the newly queued action here. If the callback already
-            // claimed it, remove returns false and exactly one side executes it.
+            // XXX: The publication/queue-drain race requires this remove claim for exactly-once execution; remove it
+            // only when browser publication and action enqueue share one atomic handoff.
             current = browser;
             if (current != null && pendingBrowserActions.remove(action)) action.accept(current);
         }
@@ -954,11 +1018,9 @@ public class CefWebView extends Region {
         if (browser == null) return;
         BrowserHandle created = new BrowserHandle(browser);
         if (releaseRequested) {
-            // A popup can be released after onBeforePopup returns but before CEF finishes CreateInternal. Closing it
-            // synchronously from onAfterCreated clears CEF's platform delegate before CreateInternal subsequently
-            // calls NotifyBrowserCreated, causing a native null dereference on CEF 144+. Defer the close until this
-            // callback has unwound; closeBrowser is safe to invoke from the JavaFX thread and posts to CEF's UI
-            // thread when required.
+            // XXX: CEF 144-150 CreateInternal dereferences a cleared popup delegate if close runs inside
+            // onAfterCreated; remove this deferral when the minimum supported CEF is above 150 and the popup-close
+            // regression passes with synchronous close in this callback.
             Platform.runLater(() -> created.close(true));
             return;
         }
@@ -991,9 +1053,6 @@ public class CefWebView extends Region {
         runOnFxAndWait(() -> {
             CefWebEngine created = handler.call(new CefPopupFeatures(false, false, false, true));
             if (created != null) {
-                // CEF, rather than maybeCreateBrowser(), owns popup creation. Record the in-flight browser before
-                // returning from the user callback: observers may react to the callback immediately and release the
-                // view, which must then wait for CEF's onAfterCreated/onBeforeClose lifecycle.
                 created.getView().browserCreationPosted = true;
             }
             popupEngine.set(created);

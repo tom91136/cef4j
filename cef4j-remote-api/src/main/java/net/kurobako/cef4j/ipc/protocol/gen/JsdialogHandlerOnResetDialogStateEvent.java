@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class JsdialogHandlerOnResetDialogStateEvent implements CefMessageView, CefMessageEncoder {
@@ -48,7 +49,9 @@ public final class JsdialogHandlerOnResetDialogStateEvent implements CefMessageV
     public static final CefMessageDecoder<JsdialogHandlerOnResetDialogStateEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "JsdialogHandlerOnResetDialogStateEvent");
         return new JsdialogHandlerOnResetDialogStateEvent(browser);
     };
 }

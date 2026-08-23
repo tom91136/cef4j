@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct NavigateResult {
     static constexpr int32_t kMessageId = 101;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t browserId = 0;
     std::int32_t httpStatus = 0;
@@ -82,6 +84,7 @@ struct NavigateResult {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for finalUrl");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for finalUrl");
             requireAvailable(static_cast<std::size_t>(n));
             out.finalUrl.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -92,6 +95,8 @@ struct NavigateResult {
         requireAvailable(1);
         out.ok = src[pos] != 0;
         pos += 1;
+        if (pos != len)
+            throw std::invalid_argument("trailing NavigateResult payload");
         return out;
     }
 };

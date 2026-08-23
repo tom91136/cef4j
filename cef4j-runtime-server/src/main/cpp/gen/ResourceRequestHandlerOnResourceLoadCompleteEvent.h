@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct ResourceRequestHandlerOnResourceLoadCompleteEvent {
     static constexpr int32_t kMessageId = 881652238;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t browser = 0;
     std::int32_t frame = 0;
@@ -102,6 +104,8 @@ struct ResourceRequestHandlerOnResourceLoadCompleteEvent {
         requireAvailable(8);
         out.receivedContentLength = static_cast<std::int64_t>(static_cast<std::uint64_t>(src[pos]) | (static_cast<std::uint64_t>(src[pos + 1]) << 8) | (static_cast<std::uint64_t>(src[pos + 2]) << 16) | (static_cast<std::uint64_t>(src[pos + 3]) << 24) | (static_cast<std::uint64_t>(src[pos + 4]) << 32) | (static_cast<std::uint64_t>(src[pos + 5]) << 40) | (static_cast<std::uint64_t>(src[pos + 6]) << 48) | (static_cast<std::uint64_t>(src[pos + 7]) << 56));
         pos += 8;
+        if (pos != len)
+            throw std::invalid_argument("trailing ResourceRequestHandlerOnResourceLoadCompleteEvent payload");
         return out;
     }
 };

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
@@ -123,20 +124,31 @@ public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
     public static final CefMessageDecoder<OsrPaintEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int shmNameLen = __buf.getInt();
+        int shmNameLen = WireDecoder.length(__buf, "shmName");
         byte[] shmNameBuf = new byte[shmNameLen];
         __buf.get(shmNameBuf);
         String shmName = new String(shmNameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "frameSequence");
         long frameSequence = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
         int width = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
         int height = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "byteCount");
         int byteCount = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "paintType");
         int paintType = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyX");
         int dirtyX = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyY");
         int dirtyY = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyWidth");
         int dirtyWidth = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyHeight");
         int dirtyHeight = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "OsrPaintEvent");
         return new OsrPaintEvent(browser, shmName, frameSequence, width, height, byteCount, paintType, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
     };
 }

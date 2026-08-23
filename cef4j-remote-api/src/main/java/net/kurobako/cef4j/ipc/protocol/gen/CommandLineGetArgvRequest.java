@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class CommandLineGetArgvRequest implements CefMessageView, CefMessageEncoder {
@@ -62,15 +63,17 @@ public final class CommandLineGetArgvRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<CommandLineGetArgvRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int argvCount = __buf.getInt();
+        int argvCount = WireDecoder.count(__buf, "argv");
         String[] argv = new String[argvCount];
         for (int __i = 0; __i < argvCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "argv[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             argv[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "CommandLineGetArgvRequest");
         return new CommandLineGetArgvRequest(self, argv);
     };
 }

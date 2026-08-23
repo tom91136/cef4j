@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserGetFrameNamesRequest implements CefMessageView, CefMessageEncoder {
@@ -62,15 +63,17 @@ public final class BrowserGetFrameNamesRequest implements CefMessageView, CefMes
     public static final CefMessageDecoder<BrowserGetFrameNamesRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int namesCount = __buf.getInt();
+        int namesCount = WireDecoder.count(__buf, "names");
         String[] names = new String[namesCount];
         for (int __i = 0; __i < namesCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "names[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             names[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "BrowserGetFrameNamesRequest");
         return new BrowserGetFrameNamesRequest(self, names);
     };
 }

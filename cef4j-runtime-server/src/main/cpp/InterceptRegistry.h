@@ -17,7 +17,6 @@
 // timeout — without one, an unresponsive JVM would deadlock the runtime server.
 #pragma once
 
-#include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
@@ -25,6 +24,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include "IntIdAllocator.h"
 
 namespace cef4j {
 namespace ipc {
@@ -38,16 +39,10 @@ public:
     // Reserves a fresh corrId for a pending intercept. Must be paired with awaitResponse on
     // the same thread, or the runtime server leaks an entry until shutdown.
     std::int32_t allocateCorrId() {
-        std::int32_t id = nextCorrId_.fetch_add(1, std::memory_order_relaxed);
-        // corrId is signed int32 on the wire; avoid wrapping into negative space (we use -1 as
-        // the kNoCorrId sentinel elsewhere). Wrap back to 1 well before INT32_MAX.
-        if (id <= 0) {
-            nextCorrId_.store(2, std::memory_order_relaxed);
-            id = 1;
-        }
-        // try_emplace default-constructs Slot in place; std::condition_variable inside is non-movable so
-        // we can't pass a `Slot{}` rvalue here.
         std::lock_guard<std::mutex> g(mu_);
+        std::int32_t id = ids_.allocate([this](std::int32_t candidate) {
+            return waiters_.find(candidate) != waiters_.end();
+        });
         waiters_.try_emplace(id);
         return id;
     }
@@ -87,8 +82,7 @@ private:
 
     std::mutex mu_;
     std::unordered_map<std::int32_t, Slot> waiters_;
-    // corrId 0 is reserved as "no correlation"; start at 1.
-    std::atomic<std::int32_t> nextCorrId_{1};
+    IntIdAllocator ids_;
 };
 
 /** Process-wide singleton accessor — main.cpp's hand-written code, generated handler forwarders, and any

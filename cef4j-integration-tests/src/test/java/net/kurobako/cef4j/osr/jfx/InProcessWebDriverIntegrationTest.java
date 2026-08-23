@@ -57,6 +57,7 @@ class InProcessWebDriverIntegrationTest {
         startJavaFx();
         TestTempDirs.cleanupAtExit(tempDir);
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.rootCachePath = cacheDir.toAbsolutePath().toString();

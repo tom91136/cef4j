@@ -75,6 +75,15 @@ grep -Fq 'exec /lib/loader\ with\ spaces --preload /cef/libcef\ with\ spaces.so 
     || fail "the CEF Java wrapper must preserve launcher paths and arguments"
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
+sed -n '/id: jdk21/,/cache-dependency-path/p' "${repo_root}/.github/workflows/release.yaml" \
+    | grep -q "java-version: '21'" \
+    || fail "release platform jobs must install the JDK 21 version exported to build.sh"
+publisher_classes="${wrapper_dir}/cef-cache-publisher-classes"
+mkdir -p "${publisher_classes}"
+javac -d "${publisher_classes}" \
+    "${repo_root}/cef4j-cef-dist/src/main/java/net/kurobako/cef4j/cache/CefCachePublisher.java" \
+    "${repo_root}/cef4j-cef-dist/src/test/java/net/kurobako/cef4j/cache/CefCachePublisherTest.java"
+java -cp "${publisher_classes}" net.kurobako.cef4j.cache.CefCachePublisherTest
 grep -q '<spotbugs.timeout>1800000</spotbugs.timeout>' "${repo_root}/pom.xml" \
     || fail "SpotBugs must allow slower ARM64 analysis to run for 30 minutes"
 grep -q 'archive}.sha1" skipexisting="true"' "${repo_root}/cef4j-cef-dist/pom.xml" \
@@ -94,7 +103,7 @@ grep -Eq 'HANDSHAKE_TIMEOUT_MS = 30_000;' \
     || fail "the JVM transport must recover an initial handshake before session readiness expires"
 grep -Eq 'RUNTIME_SESSION_READY_TIMEOUT = Duration.ofMinutes\(5\);' \
     "${repo_root}/cef4j-remote-core/src/main/java/net/kurobako/cef4j/ipc/session/CefSessionImpl.java" \
-    || fail "runtime readiness must have its own 180-second startup budget"
+    || fail "runtime readiness must have its own five-minute startup budget"
 grep -Eq 'kHeartbeatTimeoutMs = 360000;' \
     "${repo_root}/cef4j-runtime-server/src/main/cpp/ZmqIpcServer.cpp" \
     || fail "the native transport must match the JVM heartbeat timeout"

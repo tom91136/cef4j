@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefEndTracingCallback : public cef_end_tracing_callback_t {
     JavaVM* jvm;

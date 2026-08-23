@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefRunFileDialogCallback : public cef_run_file_dialog_callback_t {
     JavaVM* jvm;

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ZipReaderReadFileRequest implements CefMessageView, CefMessageEncoder {
@@ -57,10 +58,12 @@ public final class ZipReaderReadFileRequest implements CefMessageView, CefMessag
     public static final CefMessageDecoder<ZipReaderReadFileRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int bufferLen = __buf.getInt();
+        int bufferLen = WireDecoder.length(__buf, "buffer");
         byte[] buffer = new byte[bufferLen];
         __buf.get(buffer);
+        WireDecoder.requireFullyConsumed(__buf, "ZipReaderReadFileRequest");
         return new ZipReaderReadFileRequest(self, buffer);
     };
 }

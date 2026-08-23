@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ContextMenuParamsGetDictionarySuggestionsRequest implements CefMessageView, CefMessageEncoder {
@@ -62,15 +63,17 @@ public final class ContextMenuParamsGetDictionarySuggestionsRequest implements C
     public static final CefMessageDecoder<ContextMenuParamsGetDictionarySuggestionsRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int suggestionsCount = __buf.getInt();
+        int suggestionsCount = WireDecoder.count(__buf, "suggestions");
         String[] suggestions = new String[suggestionsCount];
         for (int __i = 0; __i < suggestionsCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "suggestions[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             suggestions[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "ContextMenuParamsGetDictionarySuggestionsRequest");
         return new ContextMenuParamsGetDictionarySuggestionsRequest(self, suggestions);
     };
 }

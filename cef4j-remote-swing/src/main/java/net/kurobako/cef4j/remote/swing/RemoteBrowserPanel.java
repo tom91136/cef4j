@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,6 +37,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.remote.RemoteViewportConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,7 @@ public final class RemoteBrowserPanel extends JPanel {
     private static final int KEYEVENT_KEYUP = 2;
     private static final int KEYEVENT_CHAR = 3;
 
-    private final CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
+    private volatile CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
     private final AtomicReference<BrowserHost> hostRef = new AtomicReference<>();
     private final AtomicLong desiredSize = new AtomicLong(packSize(1, 1));
     private final AtomicLong reportedSize = new AtomicLong(-1);
@@ -68,12 +70,15 @@ public final class RemoteBrowserPanel extends JPanel {
     private HandlerRegistration lifecycleRegistration;
 
     @Nullable
+    private RuntimeException setupFailure;
+
+    @Nullable
     private BufferedImage image;
 
     private boolean attachedOnce;
 
     public RemoteBrowserPanel() {
-        this(SharedFileFrameTransport::bindAll);
+        this(SharedFileFrameTransport::bind);
     }
 
     public RemoteBrowserPanel(@Nonnull FrameTransportFactory frameTransportFactory) {
@@ -94,18 +99,30 @@ public final class RemoteBrowserPanel extends JPanel {
             if (this.session == session) return;
             throw new IllegalStateException("RemoteBrowserPanel instances cannot be attached to more than one session");
         }
-        attachedOnce = true;
+        Objects.requireNonNull(session, "session");
+        if (browserHandle.isCompletedExceptionally()) browserHandle = new CompletableFuture<>();
         this.session = session;
+        setupFailure = null;
         desiredSize.set(packSize(Math.max(1, getWidth()), Math.max(1, getHeight())));
-        frameTransport = frameTransportFactory.bind(session);
-        frameTransport.onFrame(this::onFrame);
-        lifecycleRegistration = session.onLatest(
-                LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, event -> {
-                    if (!browserHandle.isDone()) {
-                        readyBrowser = event.browser();
-                        browserHandle.complete(event.browser());
-                    }
-                });
+        HandlerRegistration registration;
+        try {
+            registration = session.onLatest(
+                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
+                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    event -> installBrowser(session, event.browser()));
+        } catch (RuntimeException failure) {
+            this.session = null;
+            throw failure;
+        }
+        if (setupFailure != null || this.session != session) {
+            registration.unregister();
+            RuntimeException failure = setupFailure;
+            setupFailure = null;
+            this.session = null;
+            throw Objects.requireNonNull(failure, "frame transport setup failure");
+        }
+        lifecycleRegistration = registration;
+        attachedOnce = true;
         observe(
                 browserHandle
                         .thenCompose(handle -> new Browser(session, handle).getHost())
@@ -114,6 +131,36 @@ public final class RemoteBrowserPanel extends JPanel {
                         }),
                 "resolve BrowserHost for input forwarding");
         observe(browserHandle.thenCompose(handle -> flushViewportSize(session, handle)), "flush initial viewport size");
+    }
+
+    private synchronized void installBrowser(CefSession expectedSession, RemoteHandle browser) {
+        CompletableFuture<RemoteHandle> pendingBrowser = browserHandle;
+        if (session != expectedSession || pendingBrowser.isDone()) return;
+        FrameTransport created = null;
+        try {
+            created = frameTransportFactory.bind(expectedSession, browser);
+            created.onFrame(this::onFrame);
+            frameTransport = created;
+            readyBrowser = browser;
+            pendingBrowser.complete(browser);
+        } catch (RuntimeException failure) {
+            if (created != null) {
+                try {
+                    created.close();
+                } catch (RuntimeException closeFailure) {
+                    failure.addSuppressed(closeFailure);
+                }
+            }
+            frameTransport = null;
+            readyBrowser = null;
+            setupFailure = failure;
+            HandlerRegistration registration = lifecycleRegistration;
+            lifecycleRegistration = null;
+            session = null;
+            attachedOnce = false;
+            if (registration != null) registration.unregister();
+            pendingBrowser.completeExceptionally(failure);
+        }
     }
 
     @Nonnull
@@ -148,7 +195,7 @@ public final class RemoteBrowserPanel extends JPanel {
     /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
     @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
-        if (width <= 0 || height <= 0) throw new IllegalArgumentException("viewport dimensions must be positive");
+        RemoteViewportConstraints.validate(width, height);
         long desired = packSize(width, height);
         desiredSize.set(desired);
         if (!SwingUtilities.isEventDispatchThread()) {
@@ -329,9 +376,16 @@ public final class RemoteBrowserPanel extends JPanel {
 
     private CompletableFuture<Void> requestViewportSize(CefSession expectedSession, RemoteHandle handle, long desired) {
         if (session != expectedSession) return CompletableFuture.completedFuture(null);
-        reportedSize.set(desired);
         int width = (int) (desired >>> 32);
         int height = (int) desired;
+        try {
+            RemoteViewportConstraints.validate(width, height);
+        } catch (IllegalArgumentException invalidSize) {
+            CompletableFuture<Void> failure = new CompletableFuture<>();
+            failure.completeExceptionally(invalidSize);
+            return failure;
+        }
+        reportedSize.set(desired);
         return expectedSession
                 .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
                 .thenApply(ignored -> (Void) null)
@@ -394,6 +448,6 @@ public final class RemoteBrowserPanel extends JPanel {
     @FunctionalInterface
     public interface FrameTransportFactory {
         @Nonnull
-        FrameTransport bind(@Nonnull CefSession session);
+        FrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser);
     }
 }

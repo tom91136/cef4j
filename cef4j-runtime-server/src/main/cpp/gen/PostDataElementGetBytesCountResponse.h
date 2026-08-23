@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct PostDataElementGetBytesCountResponse {
     static constexpr int32_t kMessageId = 509077289;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int64_t result = 0;
 
@@ -42,6 +44,8 @@ struct PostDataElementGetBytesCountResponse {
         requireAvailable(8);
         out.result = static_cast<std::int64_t>(static_cast<std::uint64_t>(src[pos]) | (static_cast<std::uint64_t>(src[pos + 1]) << 8) | (static_cast<std::uint64_t>(src[pos + 2]) << 16) | (static_cast<std::uint64_t>(src[pos + 3]) << 24) | (static_cast<std::uint64_t>(src[pos + 4]) << 32) | (static_cast<std::uint64_t>(src[pos + 5]) << 40) | (static_cast<std::uint64_t>(src[pos + 6]) << 48) | (static_cast<std::uint64_t>(src[pos + 7]) << 56));
         pos += 8;
+        if (pos != len)
+            throw std::invalid_argument("trailing PostDataElementGetBytesCountResponse payload");
         return out;
     }
 };

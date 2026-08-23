@@ -6,7 +6,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefPrintHandler : public cef_print_handler_t {
     JavaVM* jvm;

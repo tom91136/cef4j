@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_key_event_t}. Fields are immutable; pass instances
@@ -99,14 +100,23 @@ public final class KeyEvent {
       * configured the buffer.
       */
     public static KeyEvent decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "type");
         int type = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "modifiers");
         int modifiers = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "windowsKeyCode");
         int windowsKeyCode = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "nativeKeyCode");
         int nativeKeyCode = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isSystemKey");
         int isSystemKey = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "character");
         int character = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "unmodifiedCharacter");
         int unmodifiedCharacter = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "focusOnEditableField");
         int focusOnEditableField = __buf.getInt();
         return new KeyEvent(size, type, modifiers, windowsKeyCode, nativeKeyCode, isSystemKey, character, unmodifiedCharacter, focusOnEditableField);
     }

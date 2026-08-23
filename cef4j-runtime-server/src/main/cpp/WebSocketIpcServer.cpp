@@ -3,6 +3,7 @@
 #include <array>
 #include <cctype>
 #include <cerrno>
+#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <map>
@@ -21,8 +22,8 @@ namespace cef4j {
 namespace ipc {
 
 namespace {
-constexpr std::uint64_t kMaxFrameSize = 64ULL * 1024ULL * 1024ULL;
 constexpr std::size_t kMaxHandshakeSize = 16U * 1024U;
+constexpr int kReadDeadlineMs = 5000;
 constexpr const char* kWebSocketGuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 #ifdef _WIN32
 constexpr short kReadable = POLLRDNORM;
@@ -82,9 +83,21 @@ void closeSocket(SocketHandle socket) {
 #endif
 }
 
+bool waitReadable(SocketHandle fd, int timeoutMs) {
+#ifdef _WIN32
+    WSAPOLLFD descriptor{fd, POLLRDNORM, 0};
+    int result = ::WSAPoll(&descriptor, 1, timeoutMs);
+#else
+    pollfd descriptor{fd, POLLIN, 0};
+    int result = ::poll(&descriptor, 1, timeoutMs);
+#endif
+    return result > 0 && (descriptor.revents & (kReadable | POLLHUP | POLLERR));
+}
+
 bool readAll(SocketHandle fd, void* output, std::size_t length) {
     auto* cursor = static_cast<std::uint8_t*>(output);
     while (length > 0) {
+        if (!waitReadable(fd, kReadDeadlineMs)) return false;
         int n = ::recv(fd, reinterpret_cast<char*>(cursor), static_cast<int>(length), 0);
         if (n == 0) return false;
         if (n < 0) {
@@ -306,9 +319,15 @@ void WebSocketIpcServer::stop() {
 bool WebSocketIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId, std::int32_t messageId,
                               const std::uint8_t* payload, std::size_t payloadLen) {
     if (!running_ || payloadLen > kMaxFrameSize - kHeaderSize) return false;
+    auto frame = envelope(kind, flags, corrId, messageId, payload, payloadLen);
     {
         std::lock_guard<std::mutex> lock(outboundMu_);
-        outbound_.push_back({envelope(kind, flags, corrId, messageId, payload, payloadLen), false, 0});
+        if (queuedBytes_ > kMaxQueuedBytes || frame.size() > kMaxQueuedBytes - queuedBytes_) {
+            stop_ = true;
+            return false;
+        }
+        queuedBytes_ += frame.size();
+        outbound_.push_back({std::move(frame), false, 0});
     }
 #ifdef _WIN32
     return true;
@@ -330,12 +349,25 @@ bool WebSocketIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t 
         bool replaced = false;
         for (auto it = outbound_.rbegin(); it != outbound_.rend(); ++it) {
             if (it->replaceable && it->streamId == streamId) {
+                std::size_t retainedBytes = queuedBytes_ - it->bytes.size();
+                if (retainedBytes > kMaxQueuedBytes || latest.bytes.size() > kMaxQueuedBytes - retainedBytes) {
+                    stop_ = true;
+                    return false;
+                }
+                queuedBytes_ = retainedBytes + latest.bytes.size();
                 *it = std::move(latest);
                 replaced = true;
                 break;
             }
         }
-        if (!replaced) outbound_.push_back(std::move(latest));
+        if (!replaced) {
+            if (queuedBytes_ > kMaxQueuedBytes || latest.bytes.size() > kMaxQueuedBytes - queuedBytes_) {
+                stop_ = true;
+                return false;
+            }
+            queuedBytes_ += latest.bytes.size();
+            outbound_.push_back(std::move(latest));
+        }
     }
 #ifdef _WIN32
     return true;
@@ -397,7 +429,11 @@ void WebSocketIpcServer::workerLoop() {
 bool WebSocketIpcServer::handshake(SocketHandle fd) {
     std::string request;
     std::array<char, 1024> buffer{};
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(kReadDeadlineMs);
     while (request.find("\r\n\r\n") == std::string::npos && request.size() < kMaxHandshakeSize) {
+        auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(
+                deadline - std::chrono::steady_clock::now()).count();
+        if (remaining <= 0 || !waitReadable(fd, static_cast<int>(remaining))) return false;
         int n = ::recv(fd, buffer.data(), static_cast<int>(buffer.size()), 0);
         if (n < 0 && interrupted(socketError())) continue;
         if (n <= 0) return false;
@@ -497,6 +533,7 @@ bool WebSocketIpcServer::drainOutbound() {
     {
         std::lock_guard<std::mutex> lock(outboundMu_);
         batch.swap(outbound_);
+        queuedBytes_ = 0;
     }
     for (const auto& frame : batch) {
         if (!sendWebSocketFrame(0x2U, frame.bytes.data(), frame.bytes.size())) return false;

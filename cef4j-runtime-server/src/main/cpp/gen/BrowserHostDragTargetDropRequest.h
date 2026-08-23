@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct BrowserHostDragTargetDropRequest {
     static constexpr int32_t kMessageId = 2008080596;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     MouseEvent event;
@@ -51,6 +53,8 @@ struct BrowserHostDragTargetDropRequest {
         out.event = MouseEvent::decode(src + pos, len - pos);
         requireAvailable(out.event.encodedSize());
         pos += out.event.encodedSize();
+        if (pos != len)
+            throw std::invalid_argument("trailing BrowserHostDragTargetDropRequest payload");
         return out;
     }
 };

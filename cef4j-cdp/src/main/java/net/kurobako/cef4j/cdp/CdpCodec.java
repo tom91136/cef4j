@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 public interface CdpCodec {
     byte[] encode(Object value);
 
-    // JSON-null documents decode to null
     @SuppressWarnings("NullableForbidden")
     @Nullable
     Object decode(byte[] json);

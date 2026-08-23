@@ -28,10 +28,7 @@ if(DEFINED CEF4J_API_VERSION_RAW AND NOT CEF4J_API_VERSION_RAW STREQUAL "")
     message(STATUS "cef4j-runtime-server: CEF_API_VERSION=${CEF4J_CEF_API_VERSION}")
 endif()
 
-# ----- libzmq via FetchContent ---------------------------------------------------
-# libzmq 4.3.5 still declares compatibility with pre-3.5 CMake. CMake 4 removed
-# that compatibility mode, so give dependencies the policy floor CMake itself
-# recommends while keeping this project's own 3.20 minimum unchanged.
+# XXX: libzmq 4.3.5 declares a pre-3.5 policy floor rejected by CMake 4; remove when libzmq is upgraded past 4.3.5.
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 include(FetchContent)
 set(BUILD_SHARED OFF CACHE BOOL "" FORCE)
@@ -44,18 +41,15 @@ set(WITH_DOCS OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     libzmq
     URL      https://github.com/zeromq/libzmq/releases/download/v4.3.5/zeromq-4.3.5.tar.gz
-    URL_HASH SHA1=bdbf686c8a40ba638e21cf74e34dbb425e108500
+    URL_HASH SHA256=6653ef5910f17954861fe72332e68b03ca6e4d9c7160eb3a8de5a5a913bfab43
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(libzmq)
-# libzmq exposes its object library on Unix builds, but not in every Windows
-# configuration. Keep the Clang warning suppression local to that dependency
-# without making the optional internal target a configure-time requirement.
 if(TARGET objects)
     target_compile_options(objects PRIVATE
         $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-braces -Wno-missing-field-initializers>)
 endif()
 
-# ----- CEF runtime server --------------------------------------------------------
 set(CEF4J_RUNTIME_SERVER_SOURCES
     src/main/cpp/main.cpp
     src/main/cpp/Envelope.cpp
@@ -117,8 +111,6 @@ if(UNIX AND NOT APPLE)
     target_link_options(cef4j-runtime-server PRIVATE -static-libstdc++ -static-libgcc)
 elseif(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "")
-    # CEF derives macOS process identity and Mach rendezvous names from the top-level application bundle. A bare
-    # executable can compile and load the framework but stalls during cef_initialize on current CEF releases.
     set_target_properties(cef4j-runtime-server PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_BUNDLE_NAME "cef4j-runtime-server"
@@ -132,15 +124,13 @@ elseif(MSVC)
         ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}")
 endif()
 
-# Assemble the thin runtime-server bridge. A complete CEF runtime is supplied by
-# the application or materialized by cef4j-runtime-packager.
 set(CEF4J_RUNTIME_DIST "${CMAKE_BINARY_DIR}/runtime-server")
 add_custom_command(TARGET cef4j-runtime-server POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:cef4j-runtime-server>" "${CEF4J_RUNTIME_DIST}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CEF_ROOT}/LICENSE.txt" "${CEF4J_RUNTIME_DIST}/CEF-LICENSE.txt")
 
-# Older minimal CEF distributions (including 109) do not ship CREDITS.html.
+# XXX: CEF 109 minimal distributions omit CREDITS.html; remove the conditional when every supported CEF ships it.
 if(EXISTS "${CEF_ROOT}/CREDITS.html")
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -148,10 +138,6 @@ if(EXISTS "${CEF_ROOT}/CREDITS.html")
 endif()
 
 if(APPLE)
-    # Chromium selects a role-specific helper bundle for some subprocess types. A generic helper alone may appear to
-    # work until the GPU or renderer process is launched, then fail with PROCESS_LAUNCH_FAILED (1003). All five CEF
-    # bundle identities intentionally contain the same executable: main() routes --type= subprocesses through
-    # cef_execute_process before starting browser-process services.
     set(CEF4J_RUNTIME_HELPER_ROLES default alerts gpu plugin renderer)
     foreach(helper_role IN LISTS CEF4J_RUNTIME_HELPER_ROLES)
         if(helper_role STREQUAL "default")
@@ -192,15 +178,11 @@ if(APPLE)
             VERBATIM)
     endforeach()
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        # Sign the bridge and its helper identities before packaging. The CEF
-        # framework is deliberately external and selected with CEF_FRAMEWORK_DIR.
         COMMAND /usr/bin/codesign --force --deep --sign - "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
         COMMAND /usr/bin/codesign --verify --deep --strict "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
             "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server.app"
-        # Do not leave a tempting bare copy on macOS: it can load CEF but lacks the application-bundle identity CEF
-        # requires during initialization. Consumers must launch the executable inside the packaged .app.
         COMMAND ${CMAKE_COMMAND} -E rm -f "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server"
         VERBATIM)
 endif()

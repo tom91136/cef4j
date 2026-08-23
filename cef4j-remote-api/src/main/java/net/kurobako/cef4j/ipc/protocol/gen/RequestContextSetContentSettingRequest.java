@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestContextSetContentSettingRequest implements CefMessageView, CefMessageEncoder {
@@ -85,17 +86,21 @@ public final class RequestContextSetContentSettingRequest implements CefMessageV
     public static final CefMessageDecoder<RequestContextSetContentSettingRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int requestingUrlLen = __buf.getInt();
+        int requestingUrlLen = WireDecoder.length(__buf, "requestingUrl");
         byte[] requestingUrlBuf = new byte[requestingUrlLen];
         __buf.get(requestingUrlBuf);
         String requestingUrl = new String(requestingUrlBuf, StandardCharsets.UTF_8);
-        int topLevelUrlLen = __buf.getInt();
+        int topLevelUrlLen = WireDecoder.length(__buf, "topLevelUrl");
         byte[] topLevelUrlBuf = new byte[topLevelUrlLen];
         __buf.get(topLevelUrlBuf);
         String topLevelUrl = new String(topLevelUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "contentType");
         int contentType = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "value");
         int value = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RequestContextSetContentSettingRequest");
         return new RequestContextSetContentSettingRequest(self, requestingUrl, topLevelUrl, contentType, value);
     };
 }

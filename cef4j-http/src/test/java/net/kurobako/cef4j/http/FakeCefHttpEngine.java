@@ -6,19 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
-/**
- * Test double for {@link CefHttpEngine}. Two modes of use:
- *
- * <ul>
- *   <li><b>Staged</b>: call {@link #stage(int, Map, byte[])} before the connection fires; {@link #send} dispatches all
- *       callbacks synchronously in-thread.
- *   <li><b>Manual</b>: leave unstaged, grab {@link #capturedSink()} after {@code send} returns, drive
- *       {@code onResponse}/{@code onData}/{@code onComplete}/{@code onError} from the test at whatever timing is needed
- *       (including from another thread).
- * </ul>
- */
 final class FakeCefHttpEngine implements CefHttpEngine {
 
     static FakeCefHttpEngine empty() {
@@ -42,7 +32,7 @@ final class FakeCefHttpEngine implements CefHttpEngine {
     @Nullable
     private IOException stagedError;
 
-    private int sendCount = 0;
+    private final AtomicInteger sendCount = new AtomicInteger();
 
     FakeCefHttpEngine stage(int status, Map<String, List<String>> headers, byte[] body) {
         this.stagedStatus = status;
@@ -60,7 +50,7 @@ final class FakeCefHttpEngine implements CefHttpEngine {
     }
 
     int sendCount() {
-        return sendCount;
+        return sendCount.get();
     }
 
     RequestSpec capturedSpec() {
@@ -76,7 +66,7 @@ final class FakeCefHttpEngine implements CefHttpEngine {
         this.lastSpec = spec;
         this.lastSink = sink;
         this.allSpecs.add(spec);
-        this.sendCount++;
+        this.sendCount.incrementAndGet();
         IOException err = this.stagedError;
         if (err != null) {
             sink.onError(err);

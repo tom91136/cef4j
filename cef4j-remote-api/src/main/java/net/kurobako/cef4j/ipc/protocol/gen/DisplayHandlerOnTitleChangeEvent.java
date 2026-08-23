@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DisplayHandlerOnTitleChangeEvent implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class DisplayHandlerOnTitleChangeEvent implements CefMessageView, C
     public static final CefMessageDecoder<DisplayHandlerOnTitleChangeEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int titleLen = __buf.getInt();
+        int titleLen = WireDecoder.length(__buf, "title");
         byte[] titleBuf = new byte[titleLen];
         __buf.get(titleBuf);
         String title = new String(titleBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DisplayHandlerOnTitleChangeEvent");
         return new DisplayHandlerOnTitleChangeEvent(browser, title);
     };
 }

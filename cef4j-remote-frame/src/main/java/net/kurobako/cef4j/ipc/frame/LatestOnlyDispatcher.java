@@ -25,7 +25,13 @@ public final class LatestOnlyDispatcher<T> {
     }
 
     private void schedule() {
-        if (scheduled.compareAndSet(false, true)) executor.execute(this::dispatch);
+        if (!scheduled.compareAndSet(false, true)) return;
+        try {
+            executor.execute(this::dispatch);
+        } catch (RuntimeException rejection) {
+            scheduled.set(false);
+            throw rejection;
+        }
     }
 
     private void dispatch() {

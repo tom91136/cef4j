@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestContextResolveHostRequest implements CefMessageView, CefMessageEncoder {
@@ -68,12 +69,15 @@ public final class RequestContextResolveHostRequest implements CefMessageView, C
     public static final CefMessageDecoder<RequestContextResolveHostRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int originLen = __buf.getInt();
+        int originLen = WireDecoder.length(__buf, "origin");
         byte[] originBuf = new byte[originLen];
         __buf.get(originBuf);
         String origin = new String(originBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "RequestContextResolveHostRequest");
         return new RequestContextResolveHostRequest(self, origin, callback);
     };
 }

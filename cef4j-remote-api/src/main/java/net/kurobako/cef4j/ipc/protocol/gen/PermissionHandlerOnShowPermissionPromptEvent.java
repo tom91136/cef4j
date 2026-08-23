@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class PermissionHandlerOnShowPermissionPromptEvent implements CefMessageView, CefMessageEncoder {
@@ -82,14 +83,19 @@ public final class PermissionHandlerOnShowPermissionPromptEvent implements CefMe
     public static final CefMessageDecoder<PermissionHandlerOnShowPermissionPromptEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "promptId");
         long promptId = __buf.getLong();
-        int requestingOriginLen = __buf.getInt();
+        int requestingOriginLen = WireDecoder.length(__buf, "requestingOrigin");
         byte[] requestingOriginBuf = new byte[requestingOriginLen];
         __buf.get(requestingOriginBuf);
         String requestingOrigin = new String(requestingOriginBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "requestedPermissions");
         int requestedPermissions = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "PermissionHandlerOnShowPermissionPromptEvent");
         return new PermissionHandlerOnShowPermissionPromptEvent(browser, promptId, requestingOrigin, requestedPermissions, callback);
     };
 }

@@ -47,6 +47,7 @@ class CefScriptEngineMultiThreadedTest {
 
         if (Cef.INSTANCE.state() == Cef.State.UNINITIALISED) {
             CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.noSandbox = 1;
             settings.cachePath = cacheDir.toAbsolutePath().toString();
             settings.rootCachePath = cacheDir.toAbsolutePath().toString();
             settings.windowlessRenderingEnabled = 1;
@@ -104,7 +105,8 @@ class CefScriptEngineMultiThreadedTest {
         // Serialize browser destruction on legacy multi-threaded CEF.
         closeBrowser(browserA, closedA);
         closeBrowser(browserB, closedB);
-        // XXX: CEF 116 Windows crashes in cef_shutdown after both onBeforeClose callbacks.
+        // XXX: CEF 116.0.27 on Windows crashes in cef_shutdown after both onBeforeClose callbacks; remove when the
+        // CEF 116 compatibility lane is dropped.
         if (!OS.isWindows() && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             Cef.INSTANCE.terminate();
         }

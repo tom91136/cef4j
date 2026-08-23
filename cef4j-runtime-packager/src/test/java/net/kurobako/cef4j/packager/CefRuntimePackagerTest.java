@@ -159,6 +159,64 @@ class CefRuntimePackagerTest {
                 .hasMessageContaining("Linux");
     }
 
+    @Test
+    void restoresPreviousRuntimeWhenStagedCommitFails() throws Exception {
+        CefPlatform platform = CefPlatform.LINUX_X86_64;
+        Path archive = TestArchives.create(temporary.resolve("rollback.tar.bz2"), platform);
+        Path output = temporary.resolve("rollback-output");
+        CefRuntimePackager.Request request = request(archive, output, platform, List.of(), false);
+        CefRuntimePackager.Result initial = new CefRuntimePackager().packageArchive(request);
+        Path marker = initial.runtimeRoot().resolve("last-known-good");
+        Files.writeString(marker, "preserve me");
+
+        CefRuntimePackager failing = new CefRuntimePackager((binary, command) -> {}, (source, target) -> {
+            if (source.startsWith(output.resolve(".cef4j-runtime-"))
+                    || source.getParent().getFileName().toString().startsWith(".cef4j-runtime-")) {
+                throw new java.io.IOException("injected staged move failure");
+            }
+            Files.move(source, target);
+        });
+
+        assertThatThrownBy(() -> failing.packageArchive(request))
+                .isInstanceOf(java.io.IOException.class)
+                .hasMessageContaining("injected");
+        assertThat(marker).hasContent("preserve me");
+        assertThat(initial.runtimeRoot().resolve(platform.runtimeBinary())).isRegularFile();
+        assertThat(initial.runtimeRoot().resolveSibling(platform.cefName() + ".cef4j-backup"))
+                .doesNotExist();
+    }
+
+    @Test
+    void verifierRejectsManifestDriftAndCorruption() throws Exception {
+        CefPlatform platform = CefPlatform.LINUX_X86_64;
+        Path archive = TestArchives.create(temporary.resolve("verify-corrupt.tar.bz2"), platform);
+        Path output = temporary.resolve("verify-corrupt-output");
+        CefRuntimePackager.Result result = packageArchive(archive, output, platform, List.of(), false);
+        Path runtime = result.runtimeRoot();
+
+        Files.writeString(runtime.resolve("unexpected.bin"), "unexpected");
+        assertThat(new CefRuntimeVerifier().verify(output, platform))
+                .anyMatch(problem -> problem.contains("unlisted runtime file"));
+        Files.delete(runtime.resolve("unexpected.bin"));
+
+        Files.writeString(runtime.resolve("file-list.txt"), "../escape\n", java.nio.file.StandardOpenOption.APPEND);
+        assertThat(new CefRuntimeVerifier().verify(output, platform))
+                .anyMatch(problem -> problem.contains("escapes runtime"));
+
+        Properties metadata = new Properties();
+        try (var reader = Files.newBufferedReader(runtime.resolve("cef-runtime.properties"))) {
+            metadata.load(reader);
+        }
+        metadata.setProperty("cef.platform", "wrong");
+        metadata.setProperty("file.count", "999");
+        try (var writer = Files.newBufferedWriter(runtime.resolve("cef-runtime.properties"))) {
+            metadata.store(writer, null);
+        }
+        assertThat(new CefRuntimeVerifier().verify(output, platform))
+                .anyMatch(problem -> problem.contains("cef.platform"))
+                .anyMatch(problem -> problem.contains("file.count"));
+    }
+
     private CefRuntimePackager.Result packageArchive(
             Path archive, Path output, CefPlatform platform, List<String> locales, boolean withoutSwiftShader)
             throws Exception {

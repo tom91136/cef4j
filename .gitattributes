@@ -1,9 +1,5 @@
-# Normalize all text files to LF on commit and checkout.
-# This prevents CRLF-contaminated string literals in Scala source from
-# bleeding into generated C++ / Java output.
 * text=auto eol=lf
 
-# Explicit text types
 *.java    text eol=lf
 *.scala   text eol=lf
 *.cpp     text eol=lf
@@ -21,12 +17,10 @@
 Makefile  text eol=lf
 mvnw      text eol=lf
 
-# Windows scripts must keep CRLF
 *.bat     text eol=crlf
 *.cmd     text eol=crlf
 mvnw.cmd  text eol=crlf
 
-# Binary — never touch line endings
 *.jar     binary
 *.dll     binary
 *.so      binary

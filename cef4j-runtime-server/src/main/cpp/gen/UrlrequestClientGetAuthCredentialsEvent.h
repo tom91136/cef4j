@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct UrlrequestClientGetAuthCredentialsEvent {
     static constexpr int32_t kMessageId = 579318505;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t isProxy = 0;
     std::string host;
@@ -101,6 +103,7 @@ struct UrlrequestClientGetAuthCredentialsEvent {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for host");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for host");
             requireAvailable(static_cast<std::size_t>(n));
             out.host.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -113,6 +116,7 @@ struct UrlrequestClientGetAuthCredentialsEvent {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for realm");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for realm");
             requireAvailable(static_cast<std::size_t>(n));
             out.realm.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -122,6 +126,7 @@ struct UrlrequestClientGetAuthCredentialsEvent {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for scheme");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for scheme");
             requireAvailable(static_cast<std::size_t>(n));
             out.scheme.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -129,6 +134,8 @@ struct UrlrequestClientGetAuthCredentialsEvent {
         requireAvailable(4);
         out.callback = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+        if (pos != len)
+            throw std::invalid_argument("trailing UrlrequestClientGetAuthCredentialsEvent payload");
         return out;
     }
 };

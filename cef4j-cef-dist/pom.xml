@@ -41,6 +41,9 @@
                                         <local name="cef.actual.sha1.2"/>
                                         <local name="cef.sha.ok2"/>
                                         <local name="cef.extracted"/>
+                                        <local name="cef.complete.marker"/>
+                                        <local name="cef.extract.tmp"/>
+                                        <local name="cef.dist.name"/>
                                         <get src="@{url}.sha1" dest="@{archive}.sha1" skipexisting="true"/>
                                         <loadfile property="cef.expected.sha1" srcFile="@{archive}.sha1">
                                             <filterchain>
@@ -59,10 +62,38 @@
                                         </condition>
                                         <delete file="@{archive}" unless:set="cef.sha.ok2"/>
                                         <fail unless:set="cef.sha.ok2" message="CEF archive SHA-1 mismatch: @{archive}"/>
+                                        <property name="cef.complete.marker" value="@{distdir}/.cef4j-complete-${cef.expected.sha1}"/>
                                         <condition property="cef.extracted">
-                                            <available file="@{distdir}/include/cef_version.h"/>
+                                            <and>
+                                                <available file="${cef.complete.marker}"/>
+                                                <available file="@{distdir}/include/cef_version.h"/>
+                                                <available file="@{distdir}/Release" type="dir"/>
+                                            </and>
                                         </condition>
-                                        <untar src="@{archive}" dest="${cef.dist.cache}" compression="bzip2" unless:set="cef.extracted"/>
+                                        <sequential unless:set="cef.extracted">
+                                            <tempfile property="cef.extract.tmp" destdir="${cef.dist.cache}" prefix=".cef-extract-"/>
+                                            <mkdir dir="${cef.extract.tmp}"/>
+                                            <untar src="@{archive}" dest="${cef.extract.tmp}" compression="bzip2"/>
+                                            <basename property="cef.dist.name" file="@{distdir}"/>
+                                            <fail message="Incomplete CEF extraction: @{archive}">
+                                                <condition>
+                                                    <not>
+                                                        <and>
+                                                            <available file="${cef.extract.tmp}/${cef.dist.name}/include/cef_version.h"/>
+                                                            <available file="${cef.extract.tmp}/${cef.dist.name}/Release" type="dir"/>
+                                                        </and>
+                                                    </not>
+                                                </condition>
+                                            </fail>
+                                            <touch file="${cef.extract.tmp}/${cef.dist.name}/.cef4j-complete-${cef.expected.sha1}"/>
+                                            <exec executable="${java.home}/bin/java" failonerror="true">
+                                                <arg value="${maven.multiModuleProjectDirectory}/cef4j-cef-dist/src/main/java/net/kurobako/cef4j/cache/CefCachePublisher.java"/>
+                                                <arg value="${cef.extract.tmp}/${cef.dist.name}"/>
+                                                <arg value="@{distdir}"/>
+                                                <arg value=".cef4j-complete-${cef.expected.sha1}"/>
+                                            </exec>
+                                            <delete dir="${cef.extract.tmp}"/>
+                                        </sequential>
                                     </sequential>
                                 </macrodef>
                                 <provision-cef url="${cef.dist.url}"

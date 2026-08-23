@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class WindowSendMouseEventsRequest implements CefMessageView, CefMessageEncoder {
@@ -69,10 +70,15 @@ public final class WindowSendMouseEventsRequest implements CefMessageView, CefMe
     public static final CefMessageDecoder<WindowSendMouseEventsRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "button");
         int button = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "mouseDown");
         int mouseDown = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "mouseUp");
         int mouseUp = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "WindowSendMouseEventsRequest");
         return new WindowSendMouseEventsRequest(self, button, mouseDown, mouseUp);
     };
 }

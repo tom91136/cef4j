@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <type_traits>
 
 #include "include/cef_api_hash.h"
@@ -37,10 +38,15 @@ inline cef4j_v8_value_t* cef4j_v8_create_undefined() {
 }
 #endif
 
-inline void cef4j_verify_api_hash() {
+inline const char* cef4j_runtime_api_hash() {
 #if CEF_VERSION_MAJOR < 133
-    (void)cef_api_hash(0);
+    return cef_api_hash(0);
 #else
-    (void)cef_api_hash(CEF_API_VERSION, 0);
+    return cef_api_hash(CEF_API_VERSION, 0);
 #endif
+}
+
+inline bool cef4j_verify_api_hash() {
+    const char* actual = cef4j_runtime_api_hash();
+    return actual && std::strcmp(actual, CEF_API_HASH_PLATFORM) == 0;
 }

@@ -63,6 +63,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
         Path tmp = Files.createTempDirectory("cef4j-native-backend-cache");
         TestTempDirs.cleanupAtExit(tmp);
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         settings.cachePath = tmp.toAbsolutePath().toString();
         settings.rootCachePath = tmp.toAbsolutePath().toString();
         CefWebView.initialise(settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), Optional.empty());

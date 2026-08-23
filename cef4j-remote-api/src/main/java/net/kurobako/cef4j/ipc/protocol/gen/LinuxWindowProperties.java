@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_linux_window_properties_t}. Fields are immutable; pass instances
@@ -83,20 +84,21 @@ public final class LinuxWindowProperties {
       * configured the buffer.
       */
     public static LinuxWindowProperties decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
-        int waylandAppIdLen = __buf.getInt();
+        int waylandAppIdLen = WireDecoder.length(__buf, "waylandAppId");
         byte[] waylandAppIdBuf = new byte[waylandAppIdLen];
         __buf.get(waylandAppIdBuf);
         String waylandAppId = new String(waylandAppIdBuf, StandardCharsets.UTF_8);
-        int wmClassClassLen = __buf.getInt();
+        int wmClassClassLen = WireDecoder.length(__buf, "wmClassClass");
         byte[] wmClassClassBuf = new byte[wmClassClassLen];
         __buf.get(wmClassClassBuf);
         String wmClassClass = new String(wmClassClassBuf, StandardCharsets.UTF_8);
-        int wmClassNameLen = __buf.getInt();
+        int wmClassNameLen = WireDecoder.length(__buf, "wmClassName");
         byte[] wmClassNameBuf = new byte[wmClassNameLen];
         __buf.get(wmClassNameBuf);
         String wmClassName = new String(wmClassNameBuf, StandardCharsets.UTF_8);
-        int wmRoleNameLen = __buf.getInt();
+        int wmRoleNameLen = WireDecoder.length(__buf, "wmRoleName");
         byte[] wmRoleNameBuf = new byte[wmRoleNameLen];
         __buf.get(wmRoleNameBuf);
         String wmRoleName = new String(wmRoleNameBuf, StandardCharsets.UTF_8);

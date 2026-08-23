@@ -25,7 +25,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_audio_handler_t* Create_JniCefAudioHandler(JNIEnv* env, jobject handler);
 extern "C" cef_command_handler_t* Create_JniCefCommandHandler(JNIEnv* env, jobject handler);

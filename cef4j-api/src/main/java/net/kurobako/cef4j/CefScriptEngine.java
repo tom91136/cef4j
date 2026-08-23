@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -43,7 +44,6 @@ public final class CefScriptEngine {
 
     private static final Logger log = LoggerFactory.getLogger(CefScriptEngine.class);
 
-    // IPC message names - must match subprocess_main.cpp
     private static final String MSG_EVAL = "cef4j:eval";
     private static final String MSG_GET = "cef4j:get";
     private static final String MSG_SET = "cef4j:set";
@@ -54,13 +54,11 @@ public final class CefScriptEngine {
     private static final String MSG_RESULT = "cef4j:result";
     private static final String MSG_CALLBACK = "cef4j:cb";
 
-    // Result type constants - must match subprocess_main.cpp
     private static final int TYPE_JSON = 0;
     private static final int TYPE_HANDLE = 1;
     private static final int TYPE_VOID = 2;
     private static final int TYPE_ERROR = 3;
 
-    // Eval mode constants
     private static final int MODE_JSON = 0;
     private static final int MODE_HANDLE = 1;
 
@@ -194,7 +192,7 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<String> evaluate(@Nonnull String expression) {
         Objects.requireNonNull(expression, "expression");
-        return sendEval(frame(), expression, MODE_JSON).thenApply(result -> {
+        return transform(sendEval(frame(), expression, MODE_JSON), result -> {
             if (result.isError()) throw new CefScriptException(result.error().orElse(null));
             if (result.isJson()) return result.json().orElse(null);
             if (result.isVoid()) return null;
@@ -212,7 +210,7 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<Integer> evaluateHandle(@Nonnull String expression) {
         Objects.requireNonNull(expression, "expression");
-        return sendEval(frame(), expression, MODE_HANDLE).thenApply(result -> {
+        return transform(sendEval(frame(), expression, MODE_HANDLE), result -> {
             if (result.isError()) throw new CefScriptException(result.error().orElse(null));
             if (result.isHandle()) return result.handle();
             throw new IllegalStateException("Unexpected result type for handle eval: " + result);
@@ -250,13 +248,14 @@ public final class CefScriptEngine {
     public CompletableFuture<Void> setProperty(int handleId, @Nonnull String key, @Nonnull String valueJson) {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(valueJson, "valueJson");
-        return sendRequest(frame(), MSG_SET, 4, null, (args, reqId) -> {
+        return transform(
+                sendRequest(frame(), MSG_SET, 4, null, (args, reqId) -> {
                     args.setInt(0, reqId);
                     args.setInt(1, handleId);
                     args.setString(2, key);
                     args.setString(3, valueJson);
-                })
-                .thenApply(result -> {
+                }),
+                result -> {
                     if (result.isError())
                         throw new CefScriptException(result.error().orElse(null));
                     return null;
@@ -312,7 +311,7 @@ public final class CefScriptEngine {
      */
     public void release(int handleId) {
         CefFrame f = frameSupplier.get();
-        if (f == null) return; // browser closing, handles will be cleaned up
+        if (f == null) return;
         CefProcessMessage msg = CefProcessMessage.create(MSG_RELEASE).orElse(null);
         if (msg == null) {
             log.warn("Failed to create CefProcessMessage for release");
@@ -341,23 +340,29 @@ public final class CefScriptEngine {
      * @return future completing with the V8 handle ID of the JS function
      */
     @Nonnull
+    @SuppressWarnings("FutureReturnValueIgnored")
     public CompletableFuture<Integer> createCallback(@Nonnull CallbackHandler handler) {
         Objects.requireNonNull(handler, "handler");
         int callbackId = nextCallbackId.getAndIncrement();
         callbacks.put(callbackId, handler);
-        return sendRequest(frame(), MSG_CREATE_CALLBACK, 2, () -> callbacks.remove(callbackId), (args, reqId) -> {
+        CompletableFuture<Integer> result = transform(
+                sendRequest(frame(), MSG_CREATE_CALLBACK, 2, () -> callbacks.remove(callbackId), (args, reqId) -> {
                     args.setInt(0, reqId);
                     args.setInt(1, callbackId);
-                })
-                .thenApply(result -> {
-                    if (result.isError()) {
+                }),
+                reply -> {
+                    if (reply.isError()) {
                         callbacks.remove(callbackId);
-                        throw new CefScriptException(result.error().orElse(null));
+                        throw new CefScriptException(reply.error().orElse(null));
                     }
-                    if (result.isHandle()) return result.handle();
+                    if (reply.isHandle()) return reply.handle();
                     callbacks.remove(callbackId);
-                    throw new IllegalStateException("Unexpected result type for createCallback: " + result);
+                    throw new IllegalStateException("Unexpected result type for createCallback: " + reply);
                 });
+        result.whenComplete((ignored, error) -> {
+            if (error != null) callbacks.remove(callbackId);
+        });
+        return result;
     }
 
     /**
@@ -365,7 +370,6 @@ public final class CefScriptEngine {
      *
      * @return true if the message was handled
      */
-    // CEF passes null for absent process-message args
     @SuppressWarnings("NullableForbidden")
     public boolean handleMessage(
             @Nullable CefBrowser browser,
@@ -408,7 +412,6 @@ public final class CefScriptEngine {
         boolean ok = args.getBool(1);
         int type = args.getInt(2);
 
-        // Payload is at index 3 - could be string or int depending on type
         String stringPayload = null;
         int intPayload = 0;
         if (type == TYPE_JSON || type == TYPE_ERROR) {
@@ -473,6 +476,7 @@ public final class CefScriptEngine {
         });
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     private CompletableFuture<Result> sendRequest(
             CefFrame frame,
             String messageName,
@@ -487,6 +491,7 @@ public final class CefScriptEngine {
             int reqId = nextId.getAndIncrement();
             CompletableFuture<Result> future = new CompletableFuture<>();
             pending.put(reqId, future);
+            future.whenComplete((ignored, error) -> pending.remove(reqId, future));
 
             CefProcessMessage message = CefProcessMessage.create(messageName).orElse(null);
             if (message == null) {
@@ -501,6 +506,23 @@ public final class CefScriptEngine {
             frame.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), message);
             return future;
         }
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    private static <T> CompletableFuture<T> transform(CompletableFuture<Result> source, Function<Result, T> mapper) {
+        CompletableFuture<T> transformed = source.thenApply(mapper);
+        transformed.whenComplete((ignored, error) -> {
+            if (error != null) source.completeExceptionally(error);
+        });
+        return transformed;
+    }
+
+    int pendingRequestCount() {
+        return pending.size();
+    }
+
+    int callbackCount() {
+        return callbacks.size();
     }
 
     private CompletableFuture<Result> failRequest(

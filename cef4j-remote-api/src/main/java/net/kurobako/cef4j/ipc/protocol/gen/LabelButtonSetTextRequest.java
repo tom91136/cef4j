@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class LabelButtonSetTextRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class LabelButtonSetTextRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<LabelButtonSetTextRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int textLen = __buf.getInt();
+        int textLen = WireDecoder.length(__buf, "text");
         byte[] textBuf = new byte[textLen];
         __buf.get(textBuf);
         String text = new String(textBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "LabelButtonSetTextRequest");
         return new LabelButtonSetTextRequest(self, text);
     };
 }

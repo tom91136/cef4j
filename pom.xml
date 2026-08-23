@@ -49,7 +49,7 @@
         <junit.jupiter.version>5.14.4</junit.jupiter.version>
         <assertj.version>3.27.7</assertj.version>
         <mockito.version>5.23.0</mockito.version>
-        <javafx.version>11.0.2</javafx.version>
+        <javafx.version>13.0.2</javafx.version>
         <flatlaf.version>3.7.2</flatlaf.version>
         <palantir.java.format.version>2.97.0</palantir.java.format.version>
         <errorprone.version>2.42.0</errorprone.version>
@@ -944,7 +944,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <!-- XXX: 3.2.0 warns for every property exported by compatibility-test bucketing. -->
                     <version>3.1.0</version>
                 </plugin>
                 <plugin>

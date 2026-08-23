@@ -28,7 +28,6 @@ public final class WebDriverCdpCodec implements CdpCodec {
         return fromJsonElement(delegate.decode(json));
     }
 
-    // JSON-null nodes become JsonNull and vice versa
     @SuppressWarnings("NullableForbidden")
     @Nonnull
     static JsonElement toJsonElement(@Nullable Object value) {

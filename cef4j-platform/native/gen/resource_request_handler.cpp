@@ -11,7 +11,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_cookie_access_filter_t* Create_JniCefCookieAccessFilter(JNIEnv* env, jobject handler);
 extern "C" cef_resource_handler_t* Create_JniCefResourceHandler(JNIEnv* env, jobject handler);

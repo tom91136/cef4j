@@ -37,9 +37,9 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(60)
 class CefHttpIntegrationTest {
 
-    // CEF owns files in this cache until the isolated fork exits. JUnit's default cleanup runs
-    // before process exit and races Chromium recreating SingletonSocket, so TestTempDirs deletes
-    // it from a JVM-exit hook instead.
+    // XXX: CEF 150 can recreate SingletonSocket until its isolated JVM exits; restore eager TempDir cleanup when every
+    // supported CEF/platform pair releases the cache before JUnit teardown and the real-CEF fork test verifies
+    // deletion.
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
@@ -56,6 +56,7 @@ class CefHttpIntegrationTest {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
             TestTempDirs.cleanupAtExit(tempDir);
             CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.noSandbox = 1;
             settings.cachePath = cacheDir.toAbsolutePath().toString();
             settings.rootCachePath = cacheDir.toAbsolutePath().toString();
             settings.windowlessRenderingEnabled = 1;
@@ -82,7 +83,6 @@ class CefHttpIntegrationTest {
     @AfterAll
     static void teardown() {
         if (server != null) server.stop(0);
-        // Don't terminate CEF; isolated fork handles cleanup at process exit.
     }
 
     private static void respond(HttpExchange ex, int status, String body) throws IOException {

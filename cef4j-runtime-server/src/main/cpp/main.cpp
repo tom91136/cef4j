@@ -1,4 +1,3 @@
-// Transport-selectable CEF host; CEF re-executes this binary for its subprocesses.
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -178,7 +177,6 @@ static bool g_contextInitialized = false;
 static bool g_endpointPublished = false;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
 
-// Track browser ownership independently of client-released facade handles.
 static std::unordered_map<int, cef_browser_t*> g_liveBrowsers;
 static bool g_runtimeShuttingDown = false;
 static bool g_runtimeQuitPosted = false;
@@ -202,6 +200,7 @@ static bool untrackBrowser(cef_browser_t* browser) {
 }
 
 static void releaseAllDevToolsRegistrations();
+static void releaseBrowserState(cef_browser_t* browser);
 static void finishRuntimeShutdown();
 
 static void closeTrackedBrowsers() {
@@ -255,11 +254,11 @@ static void installLifeSpanHooks() {
     };
     handler.on_before_close = [](cef_life_span_handler_t* self, cef_browser_t* browser) {
         if (!g_runtimeShuttingDown) g_forwardOnBeforeClose(self, browser);
+        releaseBrowserState(browser);
         bool removed = untrackBrowser(browser);
         if (g_runtimeShuttingDown && removed && g_liveBrowsers.empty() && !g_runtimeQuitPosted) {
             g_runtimeQuitPosted = true;
             std::fprintf(stderr, "[cef4j-runtime-server] shutdown: final browser closed\n");
-            // Quit directly from the final TID_UI callback; a posted task may never run.
             finishRuntimeShutdown();
         }
     };
@@ -269,40 +268,18 @@ static void releaseTrackedBrowsers() {
     g_liveBrowsers.clear();
 }
 
-// Per-type handle registries live in the codegen'd dispatcher namespace (`gendisp::tables::browser`,
-// `gendisp::tables::frame`, etc.). The server registers handles it mints itself (currently the initial
-// browser); the dispatcher's generated cases handle every other insert/retain/release.
+static constexpr int kMaxViewportDimension = 8192;
+static constexpr std::int64_t kMaxViewportPixels = 3840LL * 2160LL;
+static constexpr std::size_t kMaxOsrBytes = static_cast<std::size_t>(kMaxViewportPixels) * 4;
 
-// ---------------------------------------------------------------------------
-// CefRenderHandler stub — required for windowless mode but we don't paint.
-// ---------------------------------------------------------------------------
-
-// Hard ceiling on OSR bitmap size. 4K BGRA = 33 MB. Bigger paints get clamped — CEF won't normally hand us
-// anything larger than the requested viewport, so this is a safety net rather than the working budget.
-static constexpr std::size_t kMaxOsrBytes = 3840 * 2160 * 4;
-
-// Shrink-to-fit hysteresis: if the current mapping is more than this multiple of the actual paint size, we
-// reallocate down. Picked at 4x to absorb common resize oscillations (e.g. 800x600 ↔ 1024x768 = 1.6x area
-// difference) without rotating the shared-file path on every layout pass. Combined with a minimum size below this
-// covers the "resize from huge to tiny" case without creating a shrink loop.
 static constexpr std::size_t kOsrShrinkRatio = 4;
-// Floor on mapping size to avoid micro-allocations when the viewport is briefly 1x1 during layout. 256x256 BGRA
-// = 256 KB; smaller paints just leave the tail unused like before.
 static constexpr std::size_t kOsrMinBytes = 256 * 256 * 4;
 
-// Per-browser OSR mapping. Keyed by cef_browser_t* identity so the server can find the right buffer in on_paint
-// (CEF supplies us the browser pointer). Lazy-allocated on first paint.
 static std::mutex g_osrBuffersMu;
-static std::unordered_map<cef_browser_t*, std::unique_ptr<cef4j::ipc::OsrPaintBuffer>> g_osrBuffers;
+static std::unordered_map<int, std::unique_ptr<cef4j::ipc::OsrPaintBuffer>> g_osrBuffers;
 static std::atomic<std::int64_t> g_inlineFrameSequence{0};
 static bool g_useInlineFrames = false;
 
-// Per-browser viewport size, set by SetViewportSizeRequest from the JVM. The render handler's get_view_rect
-// looks the browser up here on each call; absence means "use the default 800x600". KEYED BY browser
-// identifier (an int) rather than `cef_browser_t*` because CEF passes different `cef_browser_t*` shim
-// instances to different callbacks for the same logical browser — the identifier is the only stable
-// cross-callback identity. (g_osrBuffers above doesn't hit this because on_paint always lands on the same
-// callback wrapper instance, but get_view_rect's wrapper is a different one set by CEF internally.)
 struct Viewport {
     int width;
     int height;
@@ -314,6 +291,7 @@ static std::unordered_map<int, Viewport> g_viewports;
 // Releasing a cef_registration_t unregisters the observer. All mutations happen on CEF's UI thread.
 struct DevToolsRegistration {
     cef_registration_t* registration;
+    int browserIdentifier;
 };
 static std::unordered_map<std::int32_t, DevToolsRegistration> g_devToolsRegistrations;
 
@@ -340,7 +318,6 @@ struct DevToolsObserver : cef_dev_tools_message_observer_t {
                 g_ipc->send(Kind::Event, 0, kNoCorrId, event.kMessageId,
                             wire.data(), wire.size());
             }
-            // Consume the raw message; CEF need not parse and dispatch it a second time.
             return 1;
         };
         // CEF's C-to-C++ wrapper invokes every callback slot without a null check. Raw messages above are consumed,
@@ -380,6 +357,28 @@ static void releaseAllDevToolsRegistrations() {
     g_devToolsRegistrations.clear();
 }
 
+static void releaseBrowserState(cef_browser_t* browser) {
+    if (!browser) return;
+    int identifier = browser->get_identifier(browser);
+    {
+        std::lock_guard<std::mutex> lock(g_osrBuffersMu);
+        g_osrBuffers.erase(identifier);
+    }
+    {
+        std::lock_guard<std::mutex> lock(g_viewportsMu);
+        g_viewports.erase(identifier);
+    }
+    for (auto it = g_devToolsRegistrations.begin(); it != g_devToolsRegistrations.end();) {
+        if (it->second.browserIdentifier != identifier) {
+            ++it;
+            continue;
+        }
+        auto* registrationBase = reinterpret_cast<cef_base_ref_counted_t*>(it->second.registration);
+        registrationBase->release(registrationBase);
+        it = g_devToolsRegistrations.erase(it);
+    }
+}
+
 struct RenderHandler : cef_render_handler_t {
     std::atomic<int> refCount{1};
 
@@ -403,13 +402,8 @@ struct RenderHandler : cef_render_handler_t {
                       cef_paint_element_type_t type, size_t dirtyCount, cef_rect_t const* dirty,
                       const void* buffer, int width, int height) {
             if (!browser || !buffer || width <= 0 || height <= 0) return;
+            int browserIdentifier = browser->get_identifier(browser);
             std::size_t byteCount = static_cast<std::size_t>(width) * height * 4;
-            // Lazy-allocate per-browser shared files. Server-side handle lookup: tables::browser stores +1 retains, so
-            // we reverse-search by raw pointer (the table is small — at most a handful of browsers).
-            // OSR's first paint can fire before on_after_created completes — CEF dispatches both on the UI
-            // thread but the browser-internal sequencing isn't strict. `insert` dedupes by pointer, so calling
-            // it here either returns the existing id (set by on_after_created) or mints one we can use until
-            // the lifespan forwarder catches up.
             std::int32_t handleId = gendisp::tables::browser.insert(browser);
             if (handleId == 0) return;
             if (g_ipc && g_useInlineFrames) {
@@ -435,19 +429,13 @@ struct RenderHandler : cef_render_handler_t {
                                   wire.data(), wire.size(), handleId);
                 return;
             }
-            // Pick the mapped-file size we want for this paint: enough to hold byteCount, never below kOsrMinBytes,
-            // never above kMaxOsrBytes. Reusing the existing buffer is the steady state; we only allocate when
-            // either (a) there is no buffer yet, (b) the existing one is too small, or (c) the existing one is
-            // wastefully large per the kOsrShrinkRatio hysteresis. Each (re)allocation bumps the generation so
-            // the JVM-side shared-file transport sees a new path and re-maps; without the bump the JVM would
-            // keep its old mapping pointed at an unlinked file.
             std::size_t targetBytes = byteCount;
             if (targetBytes < kOsrMinBytes) targetBytes = kOsrMinBytes;
             if (targetBytes > kMaxOsrBytes) targetBytes = kMaxOsrBytes;
             cef4j::ipc::OsrPaintBuffer* buf = nullptr;
             {
                 std::lock_guard<std::mutex> g(g_osrBuffersMu);
-                auto it = g_osrBuffers.find(browser);
+                auto it = g_osrBuffers.find(browserIdentifier);
                 bool needRealloc = false;
                 std::uint32_t nextGen = 0;
                 if (it == g_osrBuffers.end()) {
@@ -465,7 +453,7 @@ struct RenderHandler : cef_render_handler_t {
                     auto fresh = std::make_unique<cef4j::ipc::OsrPaintBuffer>(handleId, targetBytes, nextGen);
                     if (!fresh->ok()) return;
                     if (it == g_osrBuffers.end()) {
-                        auto [inserted, _] = g_osrBuffers.emplace(browser, std::move(fresh));
+                        auto [inserted, _] = g_osrBuffers.emplace(browserIdentifier, std::move(fresh));
                         buf = inserted->second.get();
                     } else {
                         it->second = std::move(fresh);
@@ -494,20 +482,14 @@ struct RenderHandler : cef_render_handler_t {
             std::vector<std::uint8_t> wire(ev.encodedSize());
             ev.encodeInto(wire.data());
             if (g_ipc) {
-                g_ipc->send(Kind::Event, 0, kNoCorrId,
-                            net_kurobako_cef4j_ipc_protocol_gen::OsrPaintEvent::kMessageId,
-                            wire.data(), wire.size());
+                g_ipc->sendLatest(Kind::Event, 0, kNoCorrId,
+                                  net_kurobako_cef4j_ipc_protocol_gen::OsrPaintEvent::kMessageId,
+                                  wire.data(), wire.size(), handleId);
             }
         };
     }
 };
 
-// ---------------------------------------------------------------------------
-// CefClient — generated wireClient binds every forwarder we have for cef_client_t::get_X_handler. The
-// LifeSpanHandlerForwarder seeds tables::browser via on_after_created and emits the AST event, replacing the
-// hand-written LifeSpanHandler that used to live here. RenderHandler stays hand-written because its
-// view-rect/paint callbacks aren't event-shaped.
-// ---------------------------------------------------------------------------
 
 struct Client : cef_client_t {
     std::atomic<int> refCount{1};
@@ -522,9 +504,6 @@ struct Client : cef_client_t {
             base->add_ref(base);
             return c->renderHandler;
         };
-        // Receives messages the renderer subprocess sends via cef_frame_t::send_process_message. We translate
-        // the well-known names ("v8ctx_created" so far) into IPC events for the JVM. Unknown names return 0
-        // so CEF treats them as unhandled and any future client can take a turn.
         on_process_message_received = [](cef_client_t* /*self*/, cef_browser_t* browser,
                                          cef_frame_t* /*frame*/, cef_process_id_t /*src*/,
                                          cef_process_message_t* msg) -> int {
@@ -539,7 +518,6 @@ struct Client : cef_client_t {
                 cef_string_userfree_free(nameUF);
             }
             if (name == "v8ctx_created") {
-                // Resolve the browser handle id by reverse-lookup; renderer→browser→JVM hop preserves identity.
                 std::int32_t handleId = gendisp::tables::browser.insert(browser);
                 if (handleId == 0) return 1;
                 std::string url;
@@ -568,10 +546,6 @@ struct Client : cef_client_t {
                 }
                 return 1;
             }
-            // V8 response process_messages from the renderer share the JsResult-shaped wire layout (see
-            // writeJsResultArgs in renderer code): [corrId, valueKind, boolValue, intValue, dblLow,
-            // dblHigh, stringValue, errorMessage, valueHandle]. The browser-side Kind::Response repackages
-            // them with the matching codegen'd Response class, addressed by the original JVM corrId.
             if (name == "v8_eval_resp" || name == "v8_get_property_resp"
                 || name == "v8_execute_function_resp" || name == "v8_get_value_by_index_resp") {
                 auto* args = msg->get_argument_list(msg);
@@ -863,16 +837,8 @@ struct Client : cef_client_t {
                 }
                 return 1;
             }
-            // Codegen-driven renderer dispatch reply. The renderer subprocess invoked a V8/DOM method via
-            // genrender::dispatch and is now shipping the encoded Response payload back. Translate to the
-            // JVM-facing Kind::Response on the original corrId. The "_err" variant signals the renderer
-            // detected a missing receiver / V8 context — translate to Kind::Error so the JVM future fails
-            // with CefRemoteException.
             if (name == "cef4j_renderer_resp" || name == "cef4j_renderer_err") {
                 Kind kind = name == "cef4j_renderer_err" ? Kind::Error : Kind::Response;
-                // Empty-payload responses (e.g. RendererReleaseHandleResponse) skip the binary slot since
-                // cef_binary_value_create(_, 0) returns null. Accept lists of size 2 (corrId, messageId)
-                // and treat the missing arg[2] as a zero-byte payload.
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 2) {
                     if (args) {
@@ -902,7 +868,6 @@ struct Client : cef_client_t {
                 return 1;
             }
             if (name == "js_register_func_resp") {
-                // Renderer's ack of a global JS-function install. Relay as Kind::Response to JVM.
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 1) {
                     if (args) {
@@ -922,8 +887,6 @@ struct Client : cef_client_t {
                 return 1;
             }
             if (name == "js_function_call") {
-                // JS in the page called a JVM-registered global function. Relay as Kind::Event so the
-                // JVM's JsFunctionCallEvent subscriber routes by callbackId. Fire-and-forget for v1.
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 2) {
                     if (args) {
@@ -973,26 +936,6 @@ static void finishRuntimeShutdown() {
 #endif
 }
 
-// ---------------------------------------------------------------------------
-// Renderer-process surface. The same binary is re-execed for renderer subprocesses; cef_execute_process
-// routes them. Inside the renderer we expose a render_process_handler whose on_context_created callback
-// fires every time CEF mints a V8 context for a frame. We send a process message back to the browser
-// process; the browser-side on_process_message_received translates it into a Kind::Event for the JVM.
-//
-// Process messages are CEF's built-in cross-process mechanism (built on Mojo internally). This is the
-// foundation for full V8 RMI: future codegen will encode V8 method calls as process messages with a richer
-// name+arg shape and route the JVM handler the same way.
-// ---------------------------------------------------------------------------
-
-// Renderer-side V8 value table reuses the dispatcher's `tables::v8Value` HandleTable<cef_v8_value_t>. The
-// runtime server binary is also used for browser and renderer subprocesses; address spaces are independent
-// so each process holds its own table state. Hand-written V8 helpers (eval, getProperty, executeFunction)
-// and the codegen-generated RendererDispatcher both look up handles in this single table — when the JVM
-// gets a V8 handle from EvaluateJavascript, codegen V8Value methods can retrieve it transparently.
-
-// Pack a V8 retval into the wire response slots. If retainHandle is set and the value is complex (object/
-// array/function), inserts into gendisp::tables::v8Value and writes the handle id; otherwise primitives go into their
-// matching slot. Returns the kind so caller can also fill the kind field.
 struct V8WireResult {
     std::int32_t valueKind = 0;
     int boolValue = 0;
@@ -1036,8 +979,6 @@ static V8WireResult packV8Retval(cef_v8_value_t* retval, bool retainHandle) {
         }
         return r;
     }
-    // Complex: object, array, function. Either retain via handle table or JSON.stringify into the string
-    // slot (the pre-handle behaviour).
     if (retainHandle) {
         r.valueKind = 4; // still kind=4 for a complex value; caller distinguishes via valueHandle != 0
         r.valueHandle = gendisp::tables::v8Value.insert(retval);
@@ -1048,7 +989,6 @@ static V8WireResult packV8Retval(cef_v8_value_t* retval, bool retainHandle) {
     return r;
 }
 
-// ---- V8 process-message helpers (renderer side) ------------------------------------------------
 
 static std::string readMessageName(cef_process_message_t* msg) {
     cef_string_userfree_t nameUF = msg->get_name(msg);
@@ -1083,9 +1023,6 @@ static void writeListString(cef_list_value_t* list, std::size_t idx, const std::
     cef_string_clear(&cs);
 }
 
-// Pack (corrId, V8WireResult) into the args of a "v8_*_resp" process_message. Args layout used by
-// EvaluateJavascriptResponse / V8GetPropertyResponse — both have the same wire shape so they share this
-// packer. The browser-process Client::on_process_message_received expects this layout.
 static void writeJsResultArgs(cef_list_value_t* args, std::int32_t corrId, const V8WireResult& r,
                               const std::string& errorMessage) {
     args->set_int(args, 0, corrId);
@@ -1143,8 +1080,6 @@ static void handleV8EvalReq(cef_frame_t* frame, cef_process_message_t* msg) {
         cb->release(cb);
         ctx = nullptr;
     } else {
-        // For retainHandle=true, leave complex values as the live V8 object so the table can hold a ref.
-        // For retainHandle=false, JSON.stringify complex values into the string slot (legacy ergonomics).
         std::string wrappedCode;
         if (retainHandle) {
             wrappedCode = "(function(){return (" + code + ");})()";
@@ -1214,8 +1149,6 @@ static void handleV8GetStringReq(cef_frame_t* frame, cef_process_message_t* msg)
     std::string strVal;
     cef_v8_value_t* v = gendisp::tables::v8Value.find(v8Handle);
     if (v) {
-        // Operate inside the frame's V8 context (retained values are live cross-context but accessor
-        // calls expect to be in a context).
         auto* ctx = frame->get_v8_context(frame);
         if (ctx && ctx->enter(ctx)) {
             if (v->is_string(v)) {
@@ -1299,9 +1232,6 @@ static void handleV8GetPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
     });
 }
 
-// Execute a V8 function handle with args supplied as a JSON array string. We JSON.parse the args inside
-// the V8 context so each arg becomes a real V8 value (number, string, bool, object). Then call
-// execute_function. Return value goes through packV8Retval — same JsResult layout as eval/getProperty.
 static void handleV8ExecuteFunctionReq(cef_frame_t* frame, cef_process_message_t* msg) {
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
@@ -1333,8 +1263,6 @@ static void handleV8ExecuteFunctionReq(cef_frame_t* frame, cef_process_message_t
             errorMessage = "v8 handle is not a function";
             ctx->exit(ctx);
         } else {
-            // Parse argsJson into a V8 array via the context's JSON.parse. Empty or "[]" gives an empty
-            // call; missing parens behave the same as no args.
             std::vector<cef_v8_value_t*> v8Args;
             if (!argsJson.empty() && argsJson != "[]") {
                 auto* global = ctx->get_global(ctx);
@@ -1385,8 +1313,6 @@ static void handleV8ExecuteFunctionReq(cef_frame_t* frame, cef_process_message_t
     });
 }
 
-// Materialise a JsValue payload (kind + matching slot) into a real cef_v8_value_t. Caller must be inside
-// the V8 context. Used by setProperty's valueKind handling. Returns nullptr if kind/handle unrecognised.
 static cef_v8_value_t* materialiseV8Value(std::int32_t valueKind, int boolValue, std::int32_t intValue,
                                           std::int64_t doubleBits, const std::string& stringValue,
                                           std::int32_t valueHandle) {
@@ -1400,7 +1326,6 @@ static cef_v8_value_t* materialiseV8Value(std::int32_t valueKind, int boolValue,
             return cef_v8_value_create_double(d);
         }
         case 4: {
-            // A kind-4 value with a non-zero handle is a retained object, not a string.
             if (valueHandle != 0) return gendisp::tables::v8Value.find(valueHandle);
             cef_string_t cs{};
             if (!stringValue.empty()) cef_string_utf8_to_utf16(stringValue.data(), stringValue.size(), &cs);
@@ -1409,7 +1334,6 @@ static cef_v8_value_t* materialiseV8Value(std::int32_t valueKind, int boolValue,
             return v;
         }
         default:
-            // Existing V8 handle from the renderer-side table.
             if (valueHandle != 0) return gendisp::tables::v8Value.find(valueHandle);
             return nullptr;
     }
@@ -1417,7 +1341,6 @@ static cef_v8_value_t* materialiseV8Value(std::int32_t valueKind, int boolValue,
 
 static void handleV8SetPropertyReq(cef_frame_t* frame, cef_process_message_t* msg) {
     auto* args = msg->get_argument_list(msg);
-    // [corrId, v8Handle, name, valueKind, bool, int, dblLow, dblHigh, stringValue, valueHandle]
     if (!args || args->get_size(args) < 10) {
         if (args) {
             auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
@@ -1651,14 +1574,6 @@ static void handleV8ReleaseHandleReq(cef_frame_t* frame, cef_process_message_t* 
                    [&](cef_list_value_t* a) { a->set_int(a, 0, corrId); });
 }
 
-// ---- JVM-implemented JS function (renderer side) -----------------------------------------------
-//
-// JvmJsHandler: a cef_v8_handler_t synthetic that, when JS calls the registered global function, encodes
-// the args as JSON via the V8 context's JSON.stringify and ships them to the browser process as a
-// "js_function_call" process_message. Browser-side relays as Kind::Event(JsFunctionCallEvent) to JVM.
-//
-// Fire-and-forget for v1 — JS sees `undefined` returned. Sync return would block the renderer's V8 thread
-// waiting for an InterceptResponse; deferred until a real use case demands it.
 struct JvmJsHandler : cef_v8_handler_t {
     std::atomic<int> refCount{1};
     std::int32_t callbackId;
@@ -1688,7 +1603,6 @@ struct JvmJsHandler : cef_v8_handler_t {
                      cef_v8_value_t* const* arguments, cef_v8_value_t** retval,
                      cef_string_t* /*exception*/) -> int {
             auto* self = reinterpret_cast<JvmJsHandler*>(selfPtr);
-            // XXX: releasing V8 temporaries in this callback deadlocks; renderer exit owns them.
             std::string argsJson;
             auto* ctx = cef_v8_context_get_current_context();
             if (ctx) {
@@ -1727,8 +1641,6 @@ struct JvmJsHandler : cef_v8_handler_t {
                         }
                     }
                 }
-                // Send process_message to PID_BROWSER. We need a frame to send via — use the context's
-                // frame.
                 cef_frame_t* frame = ctx->get_frame(ctx);
                 if (frame) {
                     cef_string_t mname{};
@@ -1751,7 +1663,6 @@ struct JvmJsHandler : cef_v8_handler_t {
                     }
                 }
             }
-            // Fire-and-forget: return undefined to JS.
             *retval = cef_v8_value_create_undefined();
             return 1;
         };
@@ -1785,7 +1696,6 @@ static void handleJsRegisterFuncReq(cef_frame_t* frame, cef_process_message_t* m
             global->set_value_bykey(global, &cefFnName, fnVal,
                                     static_cast<cef_v8_propertyattribute_t>(0));
             cef_string_clear(&cefFnName);
-            // XXX: retained V8 C-API references live until renderer exit; releasing them here deadlocks.
         }
         ctx->exit(ctx);
     }
@@ -1825,9 +1735,6 @@ struct RenderProcessHandler : cef_render_process_handler_t {
             // and corrupt the IPC bus.
             frame->send_process_message(frame, PID_BROWSER, msg);
         };
-        // Renderer-side handler dispatches by message name. All V8 ops follow the same shape:
-        // [corrId at args[0], request-specific args, ...] and respond with a per-name response message
-        // whose first arg is the corrId for the browser-process to relay back to the JVM.
         on_process_message_received = [](cef_render_process_handler_t* /*self*/, cef_browser_t* /*browser*/,
                                          cef_frame_t* frame, cef_process_id_t /*src*/,
                                          cef_process_message_t* msg) -> int {
@@ -1877,10 +1784,6 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                 handleJsRegisterFuncReq(frame, msg);
                 return 1;
             }
-            // Codegen-driven renderer dispatch. The browser-side relayToRenderer packages the original
-            // wire payload in args[2] (binary). Decode the envelope, hand the bytes to genrender::dispatch
-            // which invokes the V8/DOM method inside the right context and ships back a "cef4j_renderer_resp"
-            // (or "cef4j_renderer_err" on lookup failure).
             if (name == "cef4j_renderer_req") {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 3) {
@@ -1903,9 +1806,6 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                 }
                 auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
                 ab->release(ab);
-                // Hand-written renderer-relay messages get dispatched here before the codegen renderer
-                // dispatcher sees them. Currently just RendererReleaseHandleRequest, which routes to
-                // gendisp::dispatchRelease against the renderer subprocess's own table state.
                 if (messageId == net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::kMessageId) {
                     auto req = net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::decode(
                             payload.data(), payload.size());
@@ -1914,8 +1814,6 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                     genrender::sendResponseEnvelope(
                             frame, "cef4j_renderer_resp", corrId, messageId, empty.data(), empty.size());
                 } else if (!genrender::dispatch(frame, corrId, messageId, payload)) {
-                    // Unknown messageId — codegen renderer didn't claim it. Send an error response so the
-                    // JVM-side future fails fast instead of hanging on a never-arriving response.
                     genrender::sendReceiverGone(frame, corrId, messageId);
                 }
                 return 1;
@@ -1925,10 +1823,6 @@ struct RenderProcessHandler : cef_render_process_handler_t {
     }
 };
 
-// ---------------------------------------------------------------------------
-// CefApp. Browser-process and renderer-subprocess share the struct. The browser-process callback is also the
-// runtime's startup barrier: CEF only guarantees execution of TID_UI tasks after on_context_initialized.
-// ---------------------------------------------------------------------------
 
 struct BrowserProcessHandler : cef_browser_process_handler_t {
     std::atomic<int> refCount{1};
@@ -1938,8 +1832,6 @@ struct BrowserProcessHandler : cef_browser_process_handler_t {
                 reinterpret_cast<cef_base_ref_counted_t*>(this));
         on_context_initialized = [](cef_browser_process_handler_t*) {
             g_contextInitialized = true;
-            // cef_initialize normally reaches this callback before the IPC endpoint exists. If initialization is
-            // deferred until the message loop on a platform/version, publish directly from this UI-thread callback.
             if (g_publishEndpoint && !g_endpointPublished) {
                 g_endpointPublished = true;
                 g_publishEndpoint();
@@ -1969,7 +1861,6 @@ struct App : cef_app_t {
             return a->renderProcessHandler;
         };
 #if defined(__APPLE__) && CEF_VERSION_MAJOR <= 109
-        // XXX: CEF 109 GPU subprocess stalls on headless Apple Silicon.
         on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
             ScopedCefString disableGpu("disable-gpu");
             commandLine->append_switch(commandLine, disableGpu.get());
@@ -1978,12 +1869,6 @@ struct App : cef_app_t {
     }
 };
 
-// ---------------------------------------------------------------------------
-// CreateBrowserTask — posts cef_browser_host_create_browser onto the UI thread with default settings.
-// The new browser arrives via on_after_created (handled by the generated LifeSpanHandlerForwarder), which
-// inserts it into tables::browser and emits LifeSpanHandlerOnAfterCreatedEvent. The JVM caller learns the
-// new browser's handle by subscribing to that event.
-// ---------------------------------------------------------------------------
 
 struct CreateBrowserTask : cef_task_t {
     std::atomic<int> refCount{1};
@@ -1995,7 +1880,6 @@ struct CreateBrowserTask : cef_task_t {
         initRef<CreateBrowserTask, cef_task_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         execute = [](cef_task_t* self) {
             auto* t = reinterpret_cast<CreateBrowserTask*>(self);
-            // Reject browser creation once UI-thread shutdown begins.
             if (!g_client || g_runtimeShuttingDown) return;
 
             cef_window_info_t windowInfo{};
@@ -2008,9 +1892,6 @@ struct CreateBrowserTask : cef_task_t {
             windowInfo.bounds.width               = 800;
             windowInfo.bounds.height              = 600;
 
-            // Copy decoded BrowserSettings overlay into the native cef_browser_settings_t. We zero-init
-            // first so any field the overlay doesn't carry stays at CEF's default. `decltype`-cast handles
-            // both same-type ints and enum-typed fields (cef_state_t, cef_color_t etc.) uniformly.
             cef_browser_settings_t native{};
             native.size                  = sizeof(native);
             native.windowless_frame_rate = static_cast<int>(t->settings.windowlessFrameRate);
@@ -2022,7 +1903,6 @@ struct CreateBrowserTask : cef_task_t {
             native.webgl                 = static_cast<cef_state_t>(t->settings.webgl);
             native.default_font_size     = static_cast<int>(t->settings.defaultFontSize);
             native.minimum_font_size     = static_cast<int>(t->settings.minimumFontSize);
-            // Strings (when non-empty): convert UTF-8 → UTF-16 into the cef_string_t fields.
             if (!t->settings.standardFontFamily.empty()) {
                 cef_string_utf8_to_utf16(t->settings.standardFontFamily.data(),
                         t->settings.standardFontFamily.size(), &native.standard_font_family);
@@ -2040,16 +1920,10 @@ struct CreateBrowserTask : cef_task_t {
     }
 };
 
-// ---------------------------------------------------------------------------
-// IPC -> CEF dispatch.
-// ---------------------------------------------------------------------------
 
 static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& payload) {
     namespace gen = net_kurobako_cef4j_ipc_protocol_gen;
 
-    // Client intercept responses wake up via Kind::InterceptResponse on the IpcServer worker thread; we hand
-    // the payload straight to the registry, which signals whichever waiter (CEF UI thread, typically) is
-    // blocked on this corrId. Drop everything else with a non-Request kind.
     if (h.kind == Kind::InterceptResponse) {
         g_intercepts.deliverResponse(h.corrId, std::move(payload));
         return;
@@ -2058,7 +1932,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
 
     switch (h.messageId) {
         case kMsgSessionReady: {
-            // Acknowledge every idempotent readiness probe from TID_UI; bootstrap the browser once.
             const auto corrId = h.corrId;
             const auto messageId = h.messageId;
             cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, messageId]() {
@@ -2073,30 +1946,18 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             return;
         }
         case kMsgReleaseHandle: {
-            // Drops the server-side retain for `kind=cef_X_t`'s `handle`. The dispatcher's generated switch
-            // knows every facade's table; unknown kinds are silently ignored. Ack regardless so the JVM
-            // future always completes.
             auto req = gen::ReleaseHandleRequest::decode(payload.data(), payload.size());
             (void)gendisp::dispatchRelease(req.kind, req.handle);
             if (g_ipc) g_ipc->send(Kind::Response, 0, h.corrId, h.messageId, nullptr, 0);
             return;
         }
         case kMsgCreateBrowser: {
-            // The decoded request now carries a BrowserSettings overlay; CreateBrowserTask copies its fields
-            // into a native cef_browser_settings_t before invoking CEF. The new browser arrives via the
-            // LifeSpanHandlerForwarder path so the JVM learns its handle from
-            // LifeSpanHandlerOnAfterCreatedEvent. Ack immediately so the request future completes.
             auto req = gen::CreateBrowserRequest::decode(payload.data(), payload.size());
             cef_post_task(TID_UI, new CreateBrowserTask(std::move(req.url), std::move(req.settings)));
             if (g_ipc) g_ipc->send(Kind::Response, 0, h.corrId, h.messageId, nullptr, 0);
             return;
         }
         case kMsgTriggerIntercept: {
-            // Test-only fixture for the Kind::Intercept wire. Decode the request, hand it to a detached
-            // worker thread so we don't block the IpcServer's single worker (which also delivers the
-            // InterceptResponse — blocking here would deadlock). The worker fires the Intercept, blocks on
-            // the registry, then sends back the response. Real handler-return callbacks fire on the CEF UI
-            // thread, where this worker-thread workaround isn't needed.
             auto req = gen::TriggerInterceptRequest::decode(payload.data(), payload.size());
             std::int32_t origCorrId = h.corrId;
             std::int32_t origMsgId = h.messageId;
@@ -2121,15 +1982,16 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             return;
         }
         case kMsgSetViewportSize: {
-            // Update per-browser viewport size and call cef_browser_host_t::was_resized so CEF re-queries
-            // get_view_rect (which now reads from g_viewports) and emits a fresh paint at the new size.
-            // The was_resized call must run on the CEF UI thread; post a task. Ack the JVM immediately so
-            // the layout caller doesn't have to wait for the repaint round-trip.
             auto req = gen::SetViewportSizeRequest::decode(payload.data(), payload.size());
             std::int32_t corrId = h.corrId;
             std::int32_t msgId = h.messageId;
-            int width = std::max(1, static_cast<int>(req.width));
-            int height = std::max(1, static_cast<int>(req.height));
+            int width = static_cast<int>(req.width);
+            int height = static_cast<int>(req.height);
+            std::int64_t pixels = static_cast<std::int64_t>(width) * height;
+            if (width <= 0 || height <= 0 || width > kMaxViewportDimension || height > kMaxViewportDimension
+                    || pixels > kMaxViewportPixels) {
+                throw std::invalid_argument("viewport dimensions exceed runtime limits");
+            }
             cef_browser_t* browser = gendisp::tables::browser.retain(req.browser);
             if (!browser) {
                 static const std::uint8_t kReceiverGonePayload[8] = {
@@ -2146,10 +2008,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             cef_post_task(TID_UI, new gendisp::LambdaTask([browser]() {
                 auto* host = browser->get_host(browser);
                 if (host) {
-                    // Mirrors cef4j-inprocess-jfx's requestViewRefresh: notify_screen_info_changed forces CEF to
-                    // re-query get_screen_info, was_resized re-queries get_view_rect, invalidate forces a
-                    // fresh on_paint even if the page didn't change. About:blank wouldn't otherwise repaint
-                    // just because the viewport grew.
                     host->notify_screen_info_changed(host);
                     host->was_resized(host);
                     host->invalidate(host, PET_VIEW);
@@ -2176,10 +2034,10 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 return;
             }
             cef_post_task(TID_UI, new gendisp::LambdaTask([browser, browserHandle, corrId, msgId]() {
+                int browserIdentifier = browser->get_identifier(browser);
                 auto* host = browser->get_host(browser);
                 cef_registration_t* registration = nullptr;
                 if (host) {
-                    // The returned registration owns the observer reference.
                     auto* observer = new DevToolsObserver(browserHandle);
                     registration = host->add_dev_tools_message_observer(host, observer);
                     auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
@@ -2196,7 +2054,8 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     return;
                 }
                 releaseDevToolsRegistration(browserHandle);
-                g_devToolsRegistrations.emplace(browserHandle, DevToolsRegistration{registration});
+                g_devToolsRegistrations.emplace(
+                        browserHandle, DevToolsRegistration{registration, browserIdentifier});
                 if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
             }));
             return;
@@ -2208,7 +2067,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             std::int32_t msgId = h.messageId;
             cef_post_task(TID_UI, new gendisp::LambdaTask([browserHandle, corrId, msgId]() {
                 releaseDevToolsRegistration(browserHandle);
-                // Acknowledge after Chromium's queued observer cleanup.
                 cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, msgId]() {
                     if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
                 }));
@@ -2216,9 +2074,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             return;
         }
         default: {
-            // EvaluateJavascript is hand-routed because it relays through the renderer process via a CEF
-            // process_message. The JVM corrId is preserved end-to-end: dispatcher → process_message arg →
-            // renderer eval → process_message response → Client::on_process_message_received → Kind::Response.
             if (h.messageId == gen::EvaluateJavascriptRequest::kMessageId) {
                 auto req = gen::EvaluateJavascriptRequest::decode(payload.data(), payload.size());
                 std::int32_t corrId = h.corrId;
@@ -2257,8 +2112,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 }));
                 return;
             }
-            // V8 method dispatch — relay to renderer via process_message. Same shape as Eval but the
-            // request type tells us which renderer-side handler will run.
             auto relayV8Method = [&](const char* msgName, std::size_t msgNameLen,
                                      std::int32_t frameHandle,
                                      std::function<void(cef_list_value_t*)> packArgs) {
@@ -2430,9 +2283,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                               });
                 return;
             }
-            // Hand off to the generated dispatcher (covers ~685 AST-derived methods). Tables live as static
-            // globals in `gendisp::tables`; the server only seeds `tables::browser` after the initial browser
-            // is created.
             gendisp::DispatcherContext ctx;
             ctx.ipc = g_ipc;
             (void)gendisp::dispatch(ctx, h, std::move(payload));
@@ -2465,9 +2315,6 @@ static void onIpcFrame(const Header& h, std::vector<std::uint8_t>&& payload) {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Entry point.
-// ---------------------------------------------------------------------------
 
 static std::string parseOption(int argc, char* argv[], const char* option, const std::string& fallback) {
     for (int i = 1; i + 1 < argc; ++i) {
@@ -2513,7 +2360,6 @@ int main(int argc, char* argv[]) {
     if (frameworkDirectory.empty()) {
         const std::filesystem::path executableDirectory = std::filesystem::absolute(argv[0]).parent_path();
         const auto frameworkName = std::filesystem::path("Chromium Embedded Framework.framework");
-        // Resolve CEF from either the browser app or its nested helper app.
         const auto browserFramework = executableDirectory.parent_path() / "Frameworks" / frameworkName;
         if (std::filesystem::exists(browserFramework)) {
             frameworkDirectory = browserFramework.string();
@@ -2558,7 +2404,6 @@ int main(int argc, char* argv[]) {
     cefArguments.reserve(cefArgumentStorage.size());
     for (auto& argument : cefArgumentStorage) cefArguments.push_back(argument.data());
 #endif
-    // Register the API version we were compiled against. CEF's CToCpp wrappers reject calls otherwise.
     cef4j_verify_api_hash();
 
     cef_main_args_t args{};
@@ -2574,8 +2419,6 @@ int main(int argc, char* argv[]) {
 #endif
 #endif
 
-    // Subprocess gate: if cef_execute_process returns >= 0, we were a renderer/gpu/utility
-    // subprocess and should exit. The same binary is re-execed for these.
     auto* subprocessApp = new App();
     int rc = cef_execute_process(&args, subprocessApp, nullptr);
     if (rc >= 0) return rc;
@@ -2590,8 +2433,7 @@ int main(int argc, char* argv[]) {
 #ifdef _WIN32
     std::string defaultLocal = "pipe://cef4j-runtime-server-" + std::to_string(processId());
 #else
-    // Java 11 has no standard UDS API. Loopback ZMQ keeps the portable local client pure Java; callers that accept
-    // junixsocket's native shim can explicitly bind local/uds to unix:// instead.
+    // XXX: Java 11 has no standard UDS API; keep loopback ZMQ as the portable local default until Java 11 support ends.
     std::string defaultLocal = "tcp://127.0.0.1:0";
 #endif
     std::string defaultBind = transportName == "uds"
@@ -2609,11 +2451,6 @@ int main(int argc, char* argv[]) {
     settings.external_message_pump = 0;
     settings.log_severity = LOGSEVERITY_WARNING;
 
-    // Force a unique per-process cache directory. CEF defaults to a shared user-config dir
-    // (~/.config/cef_user_data on Linux); without overriding, two server instances racing for
-    // browser creation can deadlock on the singleton lock. Each test spawns a fresh server, so
-    // a per-pid temp dir gives every instance its own state. Caller can override via
-    // CEF4J_RUNTIME_SERVER_CACHE_DIR if they want persistent caches.
     {
         std::string cacheDir;
         if (const char* override = std::getenv("CEF4J_RUNTIME_SERVER_CACHE_DIR")) {
@@ -2626,8 +2463,6 @@ int main(int argc, char* argv[]) {
         cef_string_set(cachePath.get()->str, cachePath.get()->length, &settings.root_cache_path, 1);
     }
 
-    // CEF needs to find its pak files / locales. The integration test points us at the
-    // cef-dist Release directory via env; otherwise CEF defaults to argv[0]'s directory.
     std::string resourceDirectory;
     if (const char* configured = std::getenv("CEF_RESOURCES_DIR")) {
         resourceDirectory = configured;
@@ -2643,7 +2478,6 @@ int main(int argc, char* argv[]) {
         ScopedCefString locPath(localesPath);
         cef_string_set(locPath.get()->str, locPath.get()->length, &settings.locales_dir_path, 1);
     }
-    // macOS subprocesses require the packaged helper-app identity.
     {
         std::filesystem::path subprocessPath = std::filesystem::absolute(argv[0]);
 #ifdef __APPLE__
@@ -2690,15 +2524,11 @@ int main(int argc, char* argv[]) {
     g_ipc                 = ipc.get();
     genhandlers::g_ipc    = ipc.get(); // Generated forwarders fire events through this pointer.
 
-    // Publish the CEF client before SessionReady can reach the IPC worker.
     installLifeSpanHooks();
     auto* client = new Client();
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    // RuntimeServerProcess treats this line as the process handshake. Publish it from on_context_initialized, the
-    // documented point after which CEF guarantees TID_UI tasks will execute. An arbitrary early UI task is not a
-    // sufficient barrier: GPU/ANGLE and browser-context startup can still block subsequent tasks for minutes.
     const std::string advertisedEndpoint = ipc->endpoint();
     g_publishEndpoint = [transportName, frameTransportName, advertisedEndpoint]() {
         std::fprintf(stderr, "[cef4j-runtime-server] CEF context initialized; publishing endpoint\n");
@@ -2712,8 +2542,6 @@ int main(int argc, char* argv[]) {
         std::fflush(stdout);
     };
     if (g_contextInitialized) {
-        // on_context_initialized ran synchronously inside cef_initialize, before the endpoint was available. Posting
-        // now creates a barrier after that callback, where CEF guarantees TID_UI task execution.
         auto* publishEndpoint = new gendisp::LambdaTask([]() {
             if (g_publishEndpoint && !g_endpointPublished) {
                 g_endpointPublished = true;
@@ -2732,7 +2560,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // The transport-independent parent pipe remains usable after an IPC failure.
     std::thread([] {
         std::string command;
         if (std::getline(std::cin, command) && command == "CEF4J_SHUTDOWN") {
@@ -2749,7 +2576,6 @@ int main(int argc, char* argv[]) {
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: CEF message loop returned\n");
     releaseAllDevToolsRegistrations();
     releaseTrackedBrowsers();
-    // Join the IPC worker before tearing down CEF so no worker sends on g_ipc during shutdown.
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");
     g_publishEndpoint = {};
     g_contextInitialized = false;

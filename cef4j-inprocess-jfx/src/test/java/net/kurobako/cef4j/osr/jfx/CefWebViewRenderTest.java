@@ -16,6 +16,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefRenderHandler;
+import net.kurobako.cef4j.gen.CefScreenInfo;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.DisplayLock;
@@ -63,6 +66,7 @@ class CefWebViewRenderTest {
         assumeDisplayServer();
         startJavaFx();
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.rootCachePath = cacheDir.toAbsolutePath().toString();
@@ -78,6 +82,19 @@ class CefWebViewRenderTest {
                     }),
                     "view");
             try {
+                CefRenderHandler renderHandler = onFxThread(view::createRenderHandler);
+                CompletableFuture.runAsync(() -> {
+                            CefRect.Mutable root = new CefRect.Mutable();
+                            CefRect.Mutable viewport = new CefRect.Mutable();
+                            CefScreenInfo.Mutable screen = new CefScreenInfo.Mutable();
+                            int[] x = {0};
+                            int[] y = {0};
+                            Objects.requireNonNull(renderHandler).getRootScreenRect(null, root);
+                            renderHandler.getViewRect(null, viewport);
+                            renderHandler.getScreenInfo(null, screen);
+                            renderHandler.getScreenPoint(null, 1, 1, x, y);
+                        })
+                        .get(2, TimeUnit.SECONDS);
                 onFxThread(() -> view.getEngine()
                         .loadContent(
                                 "<html><body style='margin:0;height:100vh;background:#ff0000'>hello</body></html>"));
@@ -111,13 +128,10 @@ class CefWebViewRenderTest {
     }
 
     @BeforeAll
-    static void startupSanity() {
-        // No-op: each test is self-contained w.r.t. CEF state.
-    }
+    static void startupSanity() {}
 
     @AfterAll
     static void shutdownSanity() throws Exception {
-        // Ensure CEF is terminated even if the second test fails mid-flight.
         closeAllWindows();
         drainJavaFx();
         if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {

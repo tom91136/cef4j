@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct BrowserSettings {
     static constexpr int32_t kMessageId = 0;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int64_t size = 0;
     std::int32_t windowlessFrameRate = 0;
@@ -307,6 +309,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for standardFontFamily");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for standardFontFamily");
             requireAvailable(static_cast<std::size_t>(n));
             out.standardFontFamily.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -316,6 +319,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for fixedFontFamily");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for fixedFontFamily");
             requireAvailable(static_cast<std::size_t>(n));
             out.fixedFontFamily.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -325,6 +329,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for serifFontFamily");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for serifFontFamily");
             requireAvailable(static_cast<std::size_t>(n));
             out.serifFontFamily.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -334,6 +339,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for sansSerifFontFamily");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for sansSerifFontFamily");
             requireAvailable(static_cast<std::size_t>(n));
             out.sansSerifFontFamily.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -343,6 +349,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for cursiveFontFamily");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for cursiveFontFamily");
             requireAvailable(static_cast<std::size_t>(n));
             out.cursiveFontFamily.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -352,6 +359,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for fantasyFontFamily");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for fantasyFontFamily");
             requireAvailable(static_cast<std::size_t>(n));
             out.fantasyFontFamily.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -373,6 +381,7 @@ struct BrowserSettings {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for defaultEncoding");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for defaultEncoding");
             requireAvailable(static_cast<std::size_t>(n));
             out.defaultEncoding.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -422,6 +431,7 @@ struct BrowserSettings {
         requireAvailable(4);
         out.chromeZoomBubble = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+
         return out;
     }
 };

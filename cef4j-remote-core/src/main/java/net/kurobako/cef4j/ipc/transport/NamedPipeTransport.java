@@ -123,9 +123,8 @@ public final class NamedPipeTransport implements CefTransport {
     public void close() {
         if (closed) return;
         closed = true;
-        // RandomAccessFile.close() can wait indefinitely behind a synchronous ReadFile on Windows. Closing must not
-        // strand the owner before it gets a chance to stop the runtime server (which disconnects the pipe and releases
-        // that read), so perform the native handle close on a daemon thread.
+        // XXX: A synchronous Windows ReadFile can block close on the same handle; remove when this transport uses
+        // overlapped I/O or separate read/write handles.
         closeAsync(endpoint, pipe);
     }
 
@@ -150,8 +149,7 @@ public final class NamedPipeTransport implements CefTransport {
         try {
             while (!closed) {
                 byte[] frame = null;
-                // A pending synchronous ReadFile prevents WriteFile on the same Windows named-pipe handle. Poll like
-                // the native server does, then serialize only the brief operation that consumes an available frame.
+                // XXX: Windows serializes synchronous ReadFile and WriteFile on one handle; remove with overlapped I/O.
                 synchronized (ioLock) {
                     if (input.available() >= Integer.BYTES) {
                         int length = input.readInt();

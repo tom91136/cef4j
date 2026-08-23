@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefFocusHandler : public cef_focus_handler_t {
     JavaVM* jvm;

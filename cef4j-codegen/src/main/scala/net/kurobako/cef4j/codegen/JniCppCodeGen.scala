@@ -201,7 +201,6 @@ struct Jni$javaName : public ${decl.name} {
     renderGeneratedCpp(
       s"""$includes
 #include <atomic>$vectorInclude
-#include "jni_util.h"
 """,
       s"""$forwardDeclBlock$structDef
 $trampolines

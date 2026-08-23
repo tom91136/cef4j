@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ButtonSetTooltipTextRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class ButtonSetTooltipTextRequest implements CefMessageView, CefMes
     public static final CefMessageDecoder<ButtonSetTooltipTextRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int tooltipTextLen = __buf.getInt();
+        int tooltipTextLen = WireDecoder.length(__buf, "tooltipText");
         byte[] tooltipTextBuf = new byte[tooltipTextLen];
         __buf.get(tooltipTextBuf);
         String tooltipText = new String(tooltipTextBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ButtonSetTooltipTextRequest");
         return new ButtonSetTooltipTextRequest(self, tooltipText);
     };
 }

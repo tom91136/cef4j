@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct TextfieldApplyTextStyleRequest {
     static constexpr int32_t kMessageId = 1785709106;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     std::int32_t style = 0;
@@ -75,6 +77,8 @@ struct TextfieldApplyTextStyleRequest {
         out.range = Range::decode(src + pos, len - pos);
         requireAvailable(out.range.encodedSize());
         pos += out.range.encodedSize();
+        if (pos != len)
+            throw std::invalid_argument("trailing TextfieldApplyTextStyleRequest payload");
         return out;
     }
 };

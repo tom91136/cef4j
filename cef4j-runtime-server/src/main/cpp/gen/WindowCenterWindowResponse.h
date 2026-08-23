@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct WindowCenterWindowResponse {
     static constexpr int32_t kMessageId = 1052481908;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct WindowCenterWindowResponse {
                 throw std::invalid_argument("truncated WindowCenterWindowResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing WindowCenterWindowResponse payload");
         return out;
     }
 };

@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefDownloadImageCallback : public cef_download_image_callback_t {
     JavaVM* jvm;

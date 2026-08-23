@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class WindowAddOverlayViewRequest implements CefMessageView, CefMessageEncoder {
@@ -70,10 +71,15 @@ public final class WindowAddOverlayViewRequest implements CefMessageView, CefMes
     public static final CefMessageDecoder<WindowAddOverlayViewRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "view");
         RemoteHandle view = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dockingMode");
         int dockingMode = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "canActivate");
         int canActivate = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "WindowAddOverlayViewRequest");
         return new WindowAddOverlayViewRequest(self, view, dockingMode, canActivate);
     };
 }

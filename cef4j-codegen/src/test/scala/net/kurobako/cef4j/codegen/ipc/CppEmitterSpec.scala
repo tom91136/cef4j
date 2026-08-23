@@ -37,6 +37,21 @@ class CppEmitterSpec extends munit.FunSuite {
     assert(src.contains("void encodeInto(std::uint8_t* dst) const noexcept"))
     assert(src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len)"))
     assert(!src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len) noexcept"))
+    assert(src.contains("if (pos != len)"))
+  }
+
+  test("message and nested-data decoders have distinct exhaustion contracts") {
+    val data = MessageSpec(
+      className = "Label",
+      packageName = sampleSpec.packageName,
+      messageId = 0,
+      fields = List(FieldSpec("text", FieldType.Utf8String))
+    )
+    val exact  = CppEmitter.emit(data)
+    val nested = CppEmitter.emit(data, exactPayload = false)
+    assert(exact.contains("if (pos != len)"))
+    assert(!nested.contains("if (pos != len)"))
+    assert(exact.contains("kMaxFieldBytes"))
   }
 
   test("encodedSize for fixed+variable mix sums fixed bytes plus variable .size() expressions") {

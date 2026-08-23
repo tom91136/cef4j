@@ -56,13 +56,15 @@ public final class RawFrameCodecProvider implements FrameCodecProvider {
             @Override
             @Nonnull
             public RawFrame decode(@Nonnull EncodedFrame frame) {
+                long stride = (long) frame.width() * 4L;
+                if (stride > Integer.MAX_VALUE) throw new IllegalArgumentException("raw frame stride is too large");
                 FrameMetadata metadata = new FrameMetadata(
                         delivered.incrementAndGet(),
                         frame.sequence(),
                         System.nanoTime(),
                         PixelFormat.BGRA,
                         Collections.singletonList(new Rect(0, 0, frame.width(), frame.height())));
-                return new RawFrame(frame.width(), frame.height(), frame.width() * 4, frame.payload(), metadata);
+                return new RawFrame(frame.width(), frame.height(), (int) stride, frame.payload(), metadata);
             }
         };
     }

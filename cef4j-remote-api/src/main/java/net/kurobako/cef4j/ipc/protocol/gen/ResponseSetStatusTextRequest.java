@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ResponseSetStatusTextRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class ResponseSetStatusTextRequest implements CefMessageView, CefMe
     public static final CefMessageDecoder<ResponseSetStatusTextRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int statusTextLen = __buf.getInt();
+        int statusTextLen = WireDecoder.length(__buf, "statusText");
         byte[] statusTextBuf = new byte[statusTextLen];
         __buf.get(statusTextBuf);
         String statusText = new String(statusTextBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ResponseSetStatusTextRequest");
         return new ResponseSetStatusTextRequest(self, statusText);
     };
 }

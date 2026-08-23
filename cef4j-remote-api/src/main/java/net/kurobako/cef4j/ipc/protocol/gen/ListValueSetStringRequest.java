@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ListValueSetStringRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class ListValueSetStringRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<ListValueSetStringRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "index");
         long index = __buf.getLong();
-        int valueLen = __buf.getInt();
+        int valueLen = WireDecoder.length(__buf, "value");
         byte[] valueBuf = new byte[valueLen];
         __buf.get(valueBuf);
         String value = new String(valueBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ListValueSetStringRequest");
         return new ListValueSetStringRequest(self, index, value);
     };
 }

@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefAudioHandler : public cef_audio_handler_t {
     JavaVM* jvm;

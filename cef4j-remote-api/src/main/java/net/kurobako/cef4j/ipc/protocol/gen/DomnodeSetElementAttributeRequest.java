@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DomnodeSetElementAttributeRequest implements CefMessageView, CefMessageEncoder {
@@ -79,16 +80,19 @@ public final class DomnodeSetElementAttributeRequest implements CefMessageView, 
     public static final CefMessageDecoder<DomnodeSetElementAttributeRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int attrNameLen = __buf.getInt();
+        int attrNameLen = WireDecoder.length(__buf, "attrName");
         byte[] attrNameBuf = new byte[attrNameLen];
         __buf.get(attrNameBuf);
         String attrName = new String(attrNameBuf, StandardCharsets.UTF_8);
-        int valueLen = __buf.getInt();
+        int valueLen = WireDecoder.length(__buf, "value");
         byte[] valueBuf = new byte[valueLen];
         __buf.get(valueBuf);
         String value = new String(valueBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DomnodeSetElementAttributeRequest");
         return new DomnodeSetElementAttributeRequest(frame, self, attrName, value);
     };
 }

@@ -15,14 +15,14 @@ public final class CdpDomains {
     private final BackgroundService.Client backgroundService;
     private final BluetoothEmulation.Client bluetoothEmulation;
     private final Browser.Client browser;
-    private final CSS.Client cSS;
+    private final CSS.Client css;
     private final CacheStorage.Client cacheStorage;
     private final Cast.Client cast;
     private final CrashReportContext.Client crashReportContext;
-    private final DOM.Client dOM;
-    private final DOMDebugger.Client dOMDebugger;
-    private final DOMSnapshot.Client dOMSnapshot;
-    private final DOMStorage.Client dOMStorage;
+    private final DOM.Client dom;
+    private final DOMDebugger.Client domDebugger;
+    private final DOMSnapshot.Client domSnapshot;
+    private final DOMStorage.Client domStorage;
     private final DeviceAccess.Client deviceAccess;
     private final DeviceOrientation.Client deviceOrientation;
     private final Emulation.Client emulation;
@@ -32,7 +32,7 @@ public final class CdpDomains {
     private final Fetch.Client fetch;
     private final FileSystem.Client fileSystem;
     private final HeadlessExperimental.Client headlessExperimental;
-    private final IO.Client iO;
+    private final IO.Client io;
     private final IndexedDB.Client indexedDB;
     private final Input.Client input;
     private final Inspector.Client inspector;
@@ -42,7 +42,7 @@ public final class CdpDomains {
     private final Memory.Client memory;
     private final Network.Client network;
     private final Overlay.Client overlay;
-    private final PWA.Client pWA;
+    private final PWA.Client pwa;
     private final Page.Client page;
     private final Performance.Client performance;
     private final PerformanceTimeline.Client performanceTimeline;
@@ -73,14 +73,14 @@ public final class CdpDomains {
         backgroundService = new BackgroundService.Client(client);
         bluetoothEmulation = new BluetoothEmulation.Client(client);
         browser = new Browser.Client(client);
-        cSS = new CSS.Client(client);
+        css = new CSS.Client(client);
         cacheStorage = new CacheStorage.Client(client);
         cast = new Cast.Client(client);
         crashReportContext = new CrashReportContext.Client(client);
-        dOM = new DOM.Client(client);
-        dOMDebugger = new DOMDebugger.Client(client);
-        dOMSnapshot = new DOMSnapshot.Client(client);
-        dOMStorage = new DOMStorage.Client(client);
+        dom = new DOM.Client(client);
+        domDebugger = new DOMDebugger.Client(client);
+        domSnapshot = new DOMSnapshot.Client(client);
+        domStorage = new DOMStorage.Client(client);
         deviceAccess = new DeviceAccess.Client(client);
         deviceOrientation = new DeviceOrientation.Client(client);
         emulation = new Emulation.Client(client);
@@ -90,7 +90,7 @@ public final class CdpDomains {
         fetch = new Fetch.Client(client);
         fileSystem = new FileSystem.Client(client);
         headlessExperimental = new HeadlessExperimental.Client(client);
-        iO = new IO.Client(client);
+        io = new IO.Client(client);
         indexedDB = new IndexedDB.Client(client);
         input = new Input.Client(client);
         inspector = new Inspector.Client(client);
@@ -100,7 +100,7 @@ public final class CdpDomains {
         memory = new Memory.Client(client);
         network = new Network.Client(client);
         overlay = new Overlay.Client(client);
-        pWA = new PWA.Client(client);
+        pwa = new PWA.Client(client);
         page = new Page.Client(client);
         performance = new Performance.Client(client);
         performanceTimeline = new PerformanceTimeline.Client(client);
@@ -131,14 +131,14 @@ public final class CdpDomains {
     public BackgroundService.Client backgroundService() { return backgroundService; }
     public BluetoothEmulation.Client bluetoothEmulation() { return bluetoothEmulation; }
     public Browser.Client browser() { return browser; }
-    public CSS.Client cSS() { return cSS; }
+    public CSS.Client css() { return css; }
     public CacheStorage.Client cacheStorage() { return cacheStorage; }
     public Cast.Client cast() { return cast; }
     public CrashReportContext.Client crashReportContext() { return crashReportContext; }
-    public DOM.Client dOM() { return dOM; }
-    public DOMDebugger.Client dOMDebugger() { return dOMDebugger; }
-    public DOMSnapshot.Client dOMSnapshot() { return dOMSnapshot; }
-    public DOMStorage.Client dOMStorage() { return dOMStorage; }
+    public DOM.Client dom() { return dom; }
+    public DOMDebugger.Client domDebugger() { return domDebugger; }
+    public DOMSnapshot.Client domSnapshot() { return domSnapshot; }
+    public DOMStorage.Client domStorage() { return domStorage; }
     public DeviceAccess.Client deviceAccess() { return deviceAccess; }
     public DeviceOrientation.Client deviceOrientation() { return deviceOrientation; }
     public Emulation.Client emulation() { return emulation; }
@@ -148,7 +148,7 @@ public final class CdpDomains {
     public Fetch.Client fetch() { return fetch; }
     public FileSystem.Client fileSystem() { return fileSystem; }
     public HeadlessExperimental.Client headlessExperimental() { return headlessExperimental; }
-    public IO.Client iO() { return iO; }
+    public IO.Client io() { return io; }
     public IndexedDB.Client indexedDB() { return indexedDB; }
     public Input.Client input() { return input; }
     public Inspector.Client inspector() { return inspector; }
@@ -158,7 +158,7 @@ public final class CdpDomains {
     public Memory.Client memory() { return memory; }
     public Network.Client network() { return network; }
     public Overlay.Client overlay() { return overlay; }
-    public PWA.Client pWA() { return pWA; }
+    public PWA.Client pwa() { return pwa; }
     public Page.Client page() { return page; }
     public Performance.Client performance() { return performance; }
     public PerformanceTimeline.Client performanceTimeline() { return performanceTimeline; }
@@ -180,4 +180,11 @@ public final class CdpDomains {
     public Profiler.Client profiler() { return profiler; }
     public Runtime.Client runtime() { return runtime; }
     public Schema.Client schema() { return schema; }
+    @Deprecated public CSS.Client cSS() { return css(); }
+    @Deprecated public DOM.Client dOM() { return dom(); }
+    @Deprecated public DOMDebugger.Client dOMDebugger() { return domDebugger(); }
+    @Deprecated public DOMSnapshot.Client dOMSnapshot() { return domSnapshot(); }
+    @Deprecated public DOMStorage.Client dOMStorage() { return domStorage(); }
+    @Deprecated public IO.Client iO() { return io(); }
+    @Deprecated public PWA.Client pWA() { return pwa(); }
 }

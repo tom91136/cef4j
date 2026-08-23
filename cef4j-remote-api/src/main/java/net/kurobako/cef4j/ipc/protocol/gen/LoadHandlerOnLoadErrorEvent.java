@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class LoadHandlerOnLoadErrorEvent implements CefMessageView, CefMessageEncoder {
@@ -86,17 +87,21 @@ public final class LoadHandlerOnLoadErrorEvent implements CefMessageView, CefMes
     public static final CefMessageDecoder<LoadHandlerOnLoadErrorEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "errorCode");
         int errorCode = __buf.getInt();
-        int errorTextLen = __buf.getInt();
+        int errorTextLen = WireDecoder.length(__buf, "errorText");
         byte[] errorTextBuf = new byte[errorTextLen];
         __buf.get(errorTextBuf);
         String errorText = new String(errorTextBuf, StandardCharsets.UTF_8);
-        int failedUrlLen = __buf.getInt();
+        int failedUrlLen = WireDecoder.length(__buf, "failedUrl");
         byte[] failedUrlBuf = new byte[failedUrlLen];
         __buf.get(failedUrlBuf);
         String failedUrl = new String(failedUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "LoadHandlerOnLoadErrorEvent");
         return new LoadHandlerOnLoadErrorEvent(browser, frame, errorCode, errorText, failedUrl);
     };
 }

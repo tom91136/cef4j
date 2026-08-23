@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class JsdialogCallbackContRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class JsdialogCallbackContRequest implements CefMessageView, CefMes
     public static final CefMessageDecoder<JsdialogCallbackContRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "success");
         int success = __buf.getInt();
-        int userInputLen = __buf.getInt();
+        int userInputLen = WireDecoder.length(__buf, "userInput");
         byte[] userInputBuf = new byte[userInputLen];
         __buf.get(userInputBuf);
         String userInput = new String(userInputBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "JsdialogCallbackContRequest");
         return new JsdialogCallbackContRequest(self, success, userInput);
     };
 }

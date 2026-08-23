@@ -93,9 +93,6 @@ final class CefWebViewClient implements CefClient {
                 refreshHistoryFromBrowser(browser);
             }
 
-            // Two onBeforePopup overloads: v117+ takes popupId, older builds don't. The
-            // @Override would match in one API generation and fail to compile in the other;
-            // drop it and silence Error Prone's MissingOverride.
             @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
             public boolean onBeforePopup(
                     @Nullable CefBrowser browser,
@@ -220,7 +217,6 @@ final class CefWebViewClient implements CefClient {
                 return false;
             }
 
-            // v117+-only handler; absent in older CEF generations.
             @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
             public boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
                 view.updateDetachedBounds(newBounds, true);
@@ -228,8 +224,6 @@ final class CefWebViewClient implements CefClient {
                 return true;
             }
 
-            // Two onCursorChange overloads: the cursor handle is int on some CEF generations
-            // and long on others. Drop @Override and silence Error Prone.
             @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
             public boolean onCursorChange(
                     @Nullable CefBrowser browser,
@@ -250,8 +244,9 @@ final class CefWebViewClient implements CefClient {
 
             private boolean updateCursor(@Nonnull CefCursorType type) {
                 Cursor jfxCursor = view.mapCursor(type);
-                if (view.getCursor() == jfxCursor) return true;
-                Platform.runLater(() -> view.setCursor(jfxCursor));
+                Platform.runLater(() -> {
+                    if (view.getCursor() != jfxCursor) view.setCursor(jfxCursor);
+                });
                 return true;
             }
         });
@@ -420,7 +415,6 @@ final class CefWebViewClient implements CefClient {
         return items;
     }
 
-    // CEF uses '&' as a mnemonic marker; unescape '&&' to '&' and drop single '&'.
     private static String stripMnemonic(String label) {
         if (label.indexOf('&') < 0) return label;
         StringBuilder sb = new StringBuilder(label.length());
@@ -444,8 +438,6 @@ final class CefWebViewClient implements CefClient {
         return frame != null && frame.isMain();
     }
 
-    // EntrySnapshot mirrors javafx.scene.web.WebHistory.Entry.getLastVisitedDate() which
-    // exposes java.util.Date; keep the type to preserve drop-in compatibility.
     @SuppressWarnings("JavaUtilDate")
     private void refreshHistoryFromBrowser(@Nullable CefBrowser browser) {
         if (view.engine.shouldSuppressNavigationHistory()) {
@@ -466,7 +458,8 @@ final class CefWebViewClient implements CefClient {
                     public boolean visit(@Nullable CefNavigationEntry entry, boolean current, int index, int total) {
                         String url = entry != null ? entry.getUrl().orElse("") : "";
                         String title = entry != null ? entry.getTitle().orElse("") : "";
-                        snapshots.add(new CefWebHistory.EntrySnapshot(url, title, new Date()));
+                        snapshots.add(new CefWebHistory.EntrySnapshot(
+                                url, title, completionDate(entry != null ? entry.getCompletionTime().val : 0)));
                         fingerprint.append(url).append('\u0001').append(title).append('\u0002');
                         if (current) currentIndex[0] = index;
                         if (index + 1 == total) {
@@ -480,5 +473,11 @@ final class CefWebViewClient implements CefClient {
                     }
                 },
                 false);
+    }
+
+    @SuppressWarnings("JavaUtilDate")
+    static Date completionDate(long cefMicroseconds) {
+        if (cefMicroseconds == 0) return new Date(0);
+        return new Date(Math.floorDiv(cefMicroseconds - 11_644_473_600_000_000L, 1_000L));
     }
 }

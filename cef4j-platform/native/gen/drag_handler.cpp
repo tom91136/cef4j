@@ -8,7 +8,6 @@
 
 #include <atomic>
 #include <vector>
-#include "jni_util.h"
 
 struct JniCefDragHandler : public cef_drag_handler_t {
     JavaVM* jvm;

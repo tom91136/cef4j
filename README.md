@@ -50,10 +50,12 @@ Add a UI artifact and the thin bridge for the target platform:
 Bridge coordinates are `cef4j-platform-{linux,windows,macos}` with an `x86_64` or `arm64` classifier.
 `cef4j-platform-all` includes every bridge.
 
-Initialize JavaFX CEF from `Application.start(...)`:
+Initialize JavaFX CEF from `Application.start(...)`. The direct-launch distribution cannot initialize CEF's
+supported sandbox, so `noSandbox=1` is a required, explicit acceptance of unsandboxed child processes:
 
 ```java
 CefSettings.Mutable settings = new CefSettings.Mutable();
+settings.noSandbox = 1;
 settings.cachePath = Files.createTempDirectory("cef4j-").toAbsolutePath().toString();
 CefWebView.initialise(settings, List.of(), null);
 

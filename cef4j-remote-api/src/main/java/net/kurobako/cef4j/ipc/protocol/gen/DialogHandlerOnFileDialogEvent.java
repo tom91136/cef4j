@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DialogHandlerOnFileDialogEvent implements CefMessageView, CefMessageEncoder {
@@ -125,41 +126,45 @@ public final class DialogHandlerOnFileDialogEvent implements CefMessageView, Cef
     public static final CefMessageDecoder<DialogHandlerOnFileDialogEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "mode");
         int mode = __buf.getInt();
-        int titleLen = __buf.getInt();
+        int titleLen = WireDecoder.length(__buf, "title");
         byte[] titleBuf = new byte[titleLen];
         __buf.get(titleBuf);
         String title = new String(titleBuf, StandardCharsets.UTF_8);
-        int defaultFilePathLen = __buf.getInt();
+        int defaultFilePathLen = WireDecoder.length(__buf, "defaultFilePath");
         byte[] defaultFilePathBuf = new byte[defaultFilePathLen];
         __buf.get(defaultFilePathBuf);
         String defaultFilePath = new String(defaultFilePathBuf, StandardCharsets.UTF_8);
-        int acceptFiltersCount = __buf.getInt();
+        int acceptFiltersCount = WireDecoder.count(__buf, "acceptFilters");
         String[] acceptFilters = new String[acceptFiltersCount];
         for (int __i = 0; __i < acceptFiltersCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "acceptFilters[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             acceptFilters[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
-        int acceptExtensionsCount = __buf.getInt();
+        int acceptExtensionsCount = WireDecoder.count(__buf, "acceptExtensions");
         String[] acceptExtensions = new String[acceptExtensionsCount];
         for (int __i = 0; __i < acceptExtensionsCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "acceptExtensions[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             acceptExtensions[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
-        int acceptDescriptionsCount = __buf.getInt();
+        int acceptDescriptionsCount = WireDecoder.count(__buf, "acceptDescriptions");
         String[] acceptDescriptions = new String[acceptDescriptionsCount];
         for (int __i = 0; __i < acceptDescriptionsCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "acceptDescriptions[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             acceptDescriptions[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "DialogHandlerOnFileDialogEvent");
         return new DialogHandlerOnFileDialogEvent(browser, mode, title, defaultFilePath, acceptFilters, acceptExtensions, acceptDescriptions, callback);
     };
 }

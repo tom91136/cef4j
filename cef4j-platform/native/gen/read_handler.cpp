@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefReadHandler : public cef_read_handler_t {
     JavaVM* jvm;

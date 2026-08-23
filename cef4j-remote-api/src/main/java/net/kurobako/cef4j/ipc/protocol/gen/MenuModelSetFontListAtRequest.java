@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class MenuModelSetFontListAtRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class MenuModelSetFontListAtRequest implements CefMessageView, CefM
     public static final CefMessageDecoder<MenuModelSetFontListAtRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "index");
         int index = __buf.getInt();
-        int fontListLen = __buf.getInt();
+        int fontListLen = WireDecoder.length(__buf, "fontList");
         byte[] fontListBuf = new byte[fontListLen];
         __buf.get(fontListBuf);
         String fontList = new String(fontListBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "MenuModelSetFontListAtRequest");
         return new MenuModelSetFontListAtRequest(self, index, fontList);
     };
 }

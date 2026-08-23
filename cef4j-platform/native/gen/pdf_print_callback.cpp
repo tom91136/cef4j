@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefPdfPrintCallback : public cef_pdf_print_callback_t {
     JavaVM* jvm;

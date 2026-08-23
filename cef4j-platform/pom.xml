@@ -40,7 +40,6 @@
                 </executions>
             </plugin>
 
-            <!-- Step 2: Invoke codegen -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>

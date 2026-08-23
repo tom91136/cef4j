@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefDialogHandler : public cef_dialog_handler_t {
     JavaVM* jvm;

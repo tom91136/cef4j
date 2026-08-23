@@ -118,7 +118,7 @@ object Main {
       }
       astDataStructs.foreach { ds =>
         val asMessage = MessageSpec(ds.className, ds.packageName, 0, ds.fields)
-        write(outCpp.resolve(s"${ds.className}.h"), CppEmitter.emit(asMessage))
+        write(outCpp.resolve(s"${ds.className}.h"), CppEmitter.emit(asMessage, exactPayload = false))
       }
       if (facades.nonEmpty) {
         val capiHeaders = cfg.cefInclude.toList.flatMap { inc =>

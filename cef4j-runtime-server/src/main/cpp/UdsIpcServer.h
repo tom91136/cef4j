@@ -40,6 +40,7 @@ private:
     std::mutex outboundMu_;
     std::deque<std::vector<std::uint8_t>> outbound_;
     std::deque<std::pair<std::int64_t, std::vector<std::uint8_t>>> latest_;
+    std::size_t queuedBytes_ = 0;
     std::mutex clientMu_;
 };
 

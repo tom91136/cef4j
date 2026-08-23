@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserHostAddWordToDictionaryRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class BrowserHostAddWordToDictionaryRequest implements CefMessageVi
     public static final CefMessageDecoder<BrowserHostAddWordToDictionaryRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int wordLen = __buf.getInt();
+        int wordLen = WireDecoder.length(__buf, "word");
         byte[] wordBuf = new byte[wordLen];
         __buf.get(wordBuf);
         String word = new String(wordBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "BrowserHostAddWordToDictionaryRequest");
         return new BrowserHostAddWordToDictionaryRequest(self, word);
     };
 }

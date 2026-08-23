@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefMediaSinkDeviceInfoCallback : public cef_media_sink_device_info_callback_t {
     JavaVM* jvm;

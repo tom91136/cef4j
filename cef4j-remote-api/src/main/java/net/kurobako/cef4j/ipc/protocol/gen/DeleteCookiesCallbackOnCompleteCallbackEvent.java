@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class DeleteCookiesCallbackOnCompleteCallbackEvent implements CefMessageView, CefMessageEncoder {
 
@@ -53,8 +54,11 @@ public final class DeleteCookiesCallbackOnCompleteCallbackEvent implements CefMe
     public static final CefMessageDecoder<DeleteCookiesCallbackOnCompleteCallbackEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
         int callbackId = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "numDeleted");
         int numDeleted = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "DeleteCookiesCallbackOnCompleteCallbackEvent");
         return new DeleteCookiesCallbackOnCompleteCallbackEvent(callbackId, numDeleted);
     };
 }

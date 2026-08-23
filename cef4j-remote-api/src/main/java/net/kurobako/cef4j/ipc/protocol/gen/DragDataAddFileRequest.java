@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DragDataAddFileRequest implements CefMessageView, CefMessageEncoder {
@@ -71,15 +72,17 @@ public final class DragDataAddFileRequest implements CefMessageView, CefMessageE
     public static final CefMessageDecoder<DragDataAddFileRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int pathLen = __buf.getInt();
+        int pathLen = WireDecoder.length(__buf, "path");
         byte[] pathBuf = new byte[pathLen];
         __buf.get(pathBuf);
         String path = new String(pathBuf, StandardCharsets.UTF_8);
-        int displayNameLen = __buf.getInt();
+        int displayNameLen = WireDecoder.length(__buf, "displayName");
         byte[] displayNameBuf = new byte[displayNameLen];
         __buf.get(displayNameBuf);
         String displayName = new String(displayNameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DragDataAddFileRequest");
         return new DragDataAddFileRequest(self, path, displayName);
     };
 }

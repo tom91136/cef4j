@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefResourceBundleHandler : public cef_resource_bundle_handler_t {
     JavaVM* jvm;

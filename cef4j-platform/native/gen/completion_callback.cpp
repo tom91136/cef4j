@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefCompletionCallback : public cef_completion_callback_t {
     JavaVM* jvm;

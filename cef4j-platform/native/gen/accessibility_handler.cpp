@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefAccessibilityHandler : public cef_accessibility_handler_t {
     JavaVM* jvm;

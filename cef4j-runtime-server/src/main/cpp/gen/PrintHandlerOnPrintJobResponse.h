@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct PrintHandlerOnPrintJobResponse {
     static constexpr int32_t kMessageId = 1120625571;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     bool result = false;
 
@@ -39,6 +41,8 @@ struct PrintHandlerOnPrintJobResponse {
         requireAvailable(1);
         out.result = src[pos] != 0;
         pos += 1;
+        if (pos != len)
+            throw std::invalid_argument("trailing PrintHandlerOnPrintJobResponse payload");
         return out;
     }
 };

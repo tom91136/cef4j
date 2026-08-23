@@ -28,9 +28,23 @@ public final class UrlResourceHandler implements CefResourceHandler {
     private @Nullable InputStream inputStream;
     private boolean failed;
 
+    private final ConnectionFactory connectionFactory;
+
+    public UrlResourceHandler() {
+        this(url -> new URL(url).openConnection());
+    }
+
+    UrlResourceHandler(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
     @Override
     public boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
-        handleRequest[0] = 1; // synchronous
+        closeStream();
+        failed = false;
+        mimeType = null;
+        contentLength = -1;
+        handleRequest[0] = 1;
         if (request == null) {
             failed = true;
             return true;
@@ -41,7 +55,7 @@ public final class UrlResourceHandler implements CefResourceHandler {
             return true;
         }
         try {
-            URLConnection conn = new URL(url).openConnection();
+            URLConnection conn = connectionFactory.open(url);
             conn.connect();
             mimeType = stripMimeParams(conn.getContentType());
             if (mimeType == null || mimeType.isEmpty() || "content/unknown".equals(mimeType)) {
@@ -89,6 +103,7 @@ public final class UrlResourceHandler implements CefResourceHandler {
             int n = inputStream.read(buf);
             if (n <= 0) {
                 bytesRead[0] = 0;
+                closeStream();
                 return false;
             }
             dataOut.clear();
@@ -98,6 +113,7 @@ public final class UrlResourceHandler implements CefResourceHandler {
         } catch (IOException e) {
             log.debug("Error reading stream", e);
             bytesRead[0] = 0;
+            closeStream();
             return false;
         }
     }
@@ -112,13 +128,12 @@ public final class UrlResourceHandler implements CefResourceHandler {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                // Stream is being abandoned; close failure doesn't change observable behaviour.
+                log.debug("Failed to close URL resource stream", e);
             }
             inputStream = null;
         }
     }
 
-    /** Strip parameters (e.g. {@code ; charset=UTF-8}) - CEF's setMimeType expects just the MIME type. */
     private static @Nullable String stripMimeParams(@Nullable String contentType) {
         if (contentType == null) return null;
         int semi = contentType.indexOf(';');
@@ -142,5 +157,10 @@ public final class UrlResourceHandler implements CefResourceHandler {
         if (lower.endsWith(".xml")) return "application/xml";
         if (lower.endsWith(".txt")) return "text/plain";
         return "application/octet-stream";
+    }
+
+    @FunctionalInterface
+    interface ConnectionFactory {
+        URLConnection open(String url) throws IOException;
     }
 }

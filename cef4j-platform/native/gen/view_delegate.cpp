@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefViewDelegate : public cef_view_delegate_t {
     JavaVM* jvm;

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class DownloadItemGetUrlResponse implements CefMessageView, CefMessageEncoder {
 
@@ -51,10 +52,11 @@ public final class DownloadItemGetUrlResponse implements CefMessageView, CefMess
     public static final CefMessageDecoder<DownloadItemGetUrlResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int resultLen = __buf.getInt();
+        int resultLen = WireDecoder.length(__buf, "result");
         byte[] resultBuf = new byte[resultLen];
         __buf.get(resultBuf);
         String result = new String(resultBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DownloadItemGetUrlResponse");
         return new DownloadItemGetUrlResponse(result);
     };
 }

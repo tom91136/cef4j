@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class V8BackingStoreByteLengthResponse implements CefMessageView, CefMessageEncoder {
 
@@ -46,7 +47,9 @@ public final class V8BackingStoreByteLengthResponse implements CefMessageView, C
     public static final CefMessageDecoder<V8BackingStoreByteLengthResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "result");
         long result = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "V8BackingStoreByteLengthResponse");
         return new V8BackingStoreByteLengthResponse(result);
     };
 }

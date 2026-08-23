@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class V8GetKeysResponse implements CefMessageView, CefMessageEncoder {
 
@@ -60,15 +61,17 @@ public final class V8GetKeysResponse implements CefMessageView, CefMessageEncode
     public static final CefMessageDecoder<V8GetKeysResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, 1, "ok");
         boolean ok = __buf.get() != 0;
-        int keysCount = __buf.getInt();
+        int keysCount = WireDecoder.count(__buf, "keys");
         String[] keys = new String[keysCount];
         for (int __i = 0; __i < keysCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "keys[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             keys[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "V8GetKeysResponse");
         return new V8GetKeysResponse(ok, keys);
     };
 }

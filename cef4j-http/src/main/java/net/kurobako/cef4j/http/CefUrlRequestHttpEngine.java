@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefErrorCode;
@@ -44,7 +45,6 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
         if (CefGlobals.currentlyOn(UI) != 0) return sendOnUi(spec, sink);
         AtomicReference<Cancellation> handle = new AtomicReference<>();
         AtomicBoolean cancelled = new AtomicBoolean(false);
-        // CefTask has a default execute() (not a SAM); use an anonymous class.
         boolean posted = CefGlobals.postTask(UI, new CefTask() {
             @Override
             public void execute() {
@@ -72,7 +72,14 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
             sink.onError(new IOException("CefRequest.create() returned empty - is CEF initialised?"));
             return () -> {};
         }
-        req.set(spec.url, spec.method, buildPostData(spec.body), spec.headers);
+        CefPostData postData;
+        try {
+            postData = buildPostData(spec.body);
+        } catch (IOException failure) {
+            sink.onError(failure);
+            return () -> {};
+        }
+        req.set(spec.url, spec.method, postData, spec.headers);
 
         AtomicBoolean responseFired = new AtomicBoolean(false);
         CefUrlRequestClient client = new CefUrlRequestClient() {
@@ -86,7 +93,8 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
                 fireResponseIfReady(request);
                 int n = data.remaining();
                 if (n == 0) return;
-                // ByteBuffer is scoped to the callback; copy before returning.
+                // XXX: CEF owns this callback buffer only until onDownloadData returns; remove the copy only if the CEF
+                // API contract changes to transfer buffer ownership to the client.
                 byte[] copy = new byte[n];
                 data.get(copy);
                 sink.onData(copy);
@@ -114,7 +122,6 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
                 if (!responseFired.compareAndSet(false, true)) return;
                 Optional<CefResponse> resp = request.getResponse();
                 if (!resp.isPresent()) {
-                    // Headers not yet materialised; rewind and try later.
                     responseFired.set(false);
                     return;
                 }
@@ -137,7 +144,8 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
         if (CefGlobals.currentlyOn(UI) != 0) {
             handle.cancel();
         } else {
-            // CefUrlRequest.cancel() is only legal on the CEF UI thread; the Cancellation may fire anywhere.
+            // XXX: CEF requires CefUrlRequest.cancel on TID_UI; remove dispatch only when the API permits cancellation
+            // from arbitrary threads.
             CefGlobals.postTask(UI, new CefTask() {
                 @Override
                 public void execute() {
@@ -148,11 +156,23 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
     }
 
     @Nullable
-    private static CefPostData buildPostData(@Nonnull byte[] body) {
+    private static CefPostData buildPostData(@Nonnull byte[] body) throws IOException {
+        return buildPostData(body, CefPostDataElement::create, CefPostData::create);
+    }
+
+    @Nullable
+    static CefPostData buildPostData(
+            @Nonnull byte[] body,
+            @Nonnull Supplier<Optional<CefPostDataElement>> elementFactory,
+            @Nonnull Supplier<Optional<CefPostData>> postDataFactory)
+            throws IOException {
         if (body.length == 0) return null;
-        CefPostDataElement el = CefPostDataElement.create().orElse(null);
-        CefPostData pd = CefPostData.create().orElse(null);
-        if (el == null || pd == null) return null;
+        CefPostDataElement el = elementFactory
+                .get()
+                .orElseThrow(() -> new IOException("CefPostDataElement.create() returned empty - is CEF initialised?"));
+        CefPostData pd = postDataFactory
+                .get()
+                .orElseThrow(() -> new IOException("CefPostData.create() returned empty - is CEF initialised?"));
         ByteBuffer buf = ByteBuffer.allocateDirect(body.length);
         buf.put(body);
         buf.flip();

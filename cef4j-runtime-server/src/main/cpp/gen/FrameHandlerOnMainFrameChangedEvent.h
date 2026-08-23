@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct FrameHandlerOnMainFrameChangedEvent {
     static constexpr int32_t kMessageId = 397724186;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t browser = 0;
     std::int32_t oldFrame = 0;
@@ -69,6 +71,8 @@ struct FrameHandlerOnMainFrameChangedEvent {
         requireAvailable(4);
         out.newFrame = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+        if (pos != len)
+            throw std::invalid_argument("trailing FrameHandlerOnMainFrameChangedEvent payload");
         return out;
     }
 };

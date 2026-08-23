@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_media_sink_device_info_t}. Fields are immutable; pass instances
@@ -70,13 +71,15 @@ public final class MediaSinkDeviceInfo {
       * configured the buffer.
       */
     public static MediaSinkDeviceInfo decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
-        int ipAddressLen = __buf.getInt();
+        int ipAddressLen = WireDecoder.length(__buf, "ipAddress");
         byte[] ipAddressBuf = new byte[ipAddressLen];
         __buf.get(ipAddressBuf);
         String ipAddress = new String(ipAddressBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "port");
         int port = __buf.getInt();
-        int modelNameLen = __buf.getInt();
+        int modelNameLen = WireDecoder.length(__buf, "modelName");
         byte[] modelNameBuf = new byte[modelNameLen];
         __buf.get(modelNameBuf);
         String modelName = new String(modelNameBuf, StandardCharsets.UTF_8);

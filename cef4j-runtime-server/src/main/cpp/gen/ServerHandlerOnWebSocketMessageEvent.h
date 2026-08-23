@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct ServerHandlerOnWebSocketMessageEvent {
     static constexpr int32_t kMessageId = 1552918378;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t server = 0;
     std::int32_t connectionId = 0;
@@ -73,10 +75,13 @@ struct ServerHandlerOnWebSocketMessageEvent {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for data");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for data");
             requireAvailable(static_cast<std::size_t>(n));
             out.data.assign(src + pos, src + pos + n);
             pos += static_cast<std::size_t>(n);
         }
+        if (pos != len)
+            throw std::invalid_argument("trailing ServerHandlerOnWebSocketMessageEvent payload");
         return out;
     }
 };

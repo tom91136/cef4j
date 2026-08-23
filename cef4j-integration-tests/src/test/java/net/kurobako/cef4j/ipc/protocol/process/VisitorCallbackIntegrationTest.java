@@ -72,8 +72,6 @@ class VisitorCallbackIntegrationTest {
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
-            // Wire visitor routing once per session via the codegen-emitted server. CefStringVisitor.route()
-            // subscribes the matching XxxCallbackEvent and dispatches by callbackId into the supplied table.
             JvmCallbackTable<CefStringVisitor> visitors = new JvmCallbackTable<>();
             CefStringVisitor.route(session, visitors);
 
@@ -86,14 +84,10 @@ class VisitorCallbackIntegrationTest {
             RemoteHandle browserHandle = handleFuture.get(20, TimeUnit.SECONDS);
             Browser browser = new Browser(session, browserHandle);
 
-            // Navigate to a deterministic page so getSource returns predictable HTML.
             String dataUrl = "data:text/html,<html><body>RMI-callback-marker-9341</body></html>";
             Frame mainFrame = browser.getMainFrame().get(5, TimeUnit.SECONDS);
             mainFrame.loadUrl(dataUrl).get(5, TimeUnit.SECONDS);
 
-            // CEF can expose the target URL before its renderer has committed the document. Windows CI
-            // reliably observed an empty first source in that window, so retry the complete visitor
-            // round-trip rather than treating URL visibility as document readiness.
             String observed = "";
             long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
             while (System.nanoTime() < deadline && !observed.contains("RMI-callback-marker-9341")) {
@@ -111,8 +105,6 @@ class VisitorCallbackIntegrationTest {
                         observed = "";
                     }
                 } finally {
-                    // Belt-and-braces: in real code the visitor's first call would auto-release; tests cleanup
-                    // explicitly to keep the table tidy regardless of whether visit() fired.
                     visitors.release(callbackId);
                 }
                 if (!observed.contains("RMI-callback-marker-9341")) Thread.sleep(100);

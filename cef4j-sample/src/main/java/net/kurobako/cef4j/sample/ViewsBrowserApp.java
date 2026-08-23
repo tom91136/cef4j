@@ -68,7 +68,6 @@ public final class ViewsBrowserApp {
     private static final Logger log = LoggerFactory.getLogger(ViewsBrowserApp.class);
     private static final String DEFAULT_URL = "https://microsoft.github.io/monaco-editor/";
 
-    // Accelerator command IDs registered on the CefWindow
     private static final int CMD_NEW_TAB = 1001;
     private static final int CMD_CLOSE_TAB = 1002;
     private static final int CMD_RELOAD = 1003;
@@ -77,7 +76,6 @@ public final class ViewsBrowserApp {
     private static final int CMD_FORWARD = 1006;
     private static final int CMD_FOCUS_URL = 1007;
 
-    // Virtual key codes
     private static final int VK_F5 = 0x74;
     private static final int VK_F12 = 0x7B;
     private static final int VK_LEFT = 0x25;
@@ -87,15 +85,12 @@ public final class ViewsBrowserApp {
     private static final int VK_L = 0x4C;
     private static final int VK_RETURN = 0x0D;
 
-    // Horizontal box layout settings (shared, immutable after construction)
     private static final CefBoxLayoutSettings HBOX = new CefBoxLayoutSettings(1, 0, 0, null, 4, null, null, 0, 0);
 
-    // Vertical box layout settings (default axis alignment)
     private static final CefBoxLayoutSettings VBOX = new CefBoxLayoutSettings(0, 0, 0, null, 0, null, null, 0, 0);
 
     private static final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
-    // All mutable state is accessed only on the CEF UI thread (the daemon message-loop thread)
     private CefWindow window;
     private CefPanel mainPanel;
     private CefPanel tabBar;
@@ -124,16 +119,11 @@ public final class ViewsBrowserApp {
         }
     }
 
-    // ---- Tab management ----
-
-    // Returns index of the given entry in tabs, or -1 if not found
     private int indexOfTab(TabEntry entry) {
         return tabs.indexOf(entry);
     }
 
     private void openNewTab(String url) {
-        // Use a single-element array so the tab button delegate and client can reference the entry
-        // once it is created (entry is set before the button is pressed for the first time).
         TabEntry[] entryHolder = {null};
 
         CefLabelButton tabButton = CefLabelButton.create(
@@ -159,7 +149,6 @@ public final class ViewsBrowserApp {
                             @Override
                             public boolean onPopupBrowserViewCreated(
                                     @Nullable CefBrowserView bv, @Nullable CefBrowserView popup, boolean isDevtools) {
-                                // Open popup in a new tab instead of a new window
                                 if (popup != null && !isDevtools) {
                                     popup.getBrowser()
                                             .flatMap(CefBrowser::getMainFrame)
@@ -176,7 +165,6 @@ public final class ViewsBrowserApp {
         int insertIndex = tabs.size();
         tabs.add(entry);
 
-        // Insert tab button before the "+" button (last child of tabBar)
         tabBar.addChildViewAt(tabButton, insertIndex);
 
         switchToTab(insertIndex);
@@ -193,7 +181,6 @@ public final class ViewsBrowserApp {
                         if (entry == null) return;
                         String displayTitle = (title == null || title.isEmpty()) ? "New Tab" : title;
                         entry.currentTitle = displayTitle;
-                        // Truncate long titles for tab button
                         String tabLabel =
                                 displayTitle.length() > 25 ? displayTitle.substring(0, 22) + "..." : displayTitle;
                         int idx = indexOfTab(entry);
@@ -246,11 +233,9 @@ public final class ViewsBrowserApp {
     private void switchToTab(int index) {
         if (index < 0 || index >= tabs.size()) return;
 
-        // Deactivate current
         if (activeTabIndex >= 0 && activeTabIndex < tabs.size()) {
             TabEntry prev = tabs.get(activeTabIndex);
             contentPanel.removeChildView(prev.browserView);
-            // Visual hint: dim inactive tab button text
             prev.tabButton.setText(trimTitle(prev.currentTitle));
         }
 
@@ -259,7 +244,6 @@ public final class ViewsBrowserApp {
 
         contentPanel.addChildView(entry.browserView);
 
-        // Update nav bar state
         urlBar.setText(entry.currentUrl);
         reloadButton.setText(entry.isLoading ? "X" : "R");
         entry.browserView.getBrowser().ifPresent(b -> {
@@ -267,12 +251,10 @@ public final class ViewsBrowserApp {
             forwardButton.setEnabled(b.canGoForward());
         });
 
-        // Update window title
         if (window != null && !entry.currentTitle.isEmpty()) {
             window.setTitle(entry.currentTitle + " - cef4j (Views)");
         }
 
-        // Bold/highlight active tab label
         entry.tabButton.setText("[ " + trimTitle(entry.currentTitle) + " ]");
     }
 
@@ -284,7 +266,6 @@ public final class ViewsBrowserApp {
     private void closeActiveTab() {
         if (tabs.isEmpty()) return;
         if (tabs.size() == 1) {
-            // Last tab: close window
             if (window != null) window.cefClose();
             return;
         }
@@ -294,7 +275,7 @@ public final class ViewsBrowserApp {
         tabBar.removeChildView(entry.tabButton);
 
         int nextIndex = Math.min(activeTabIndex, tabs.size() - 1);
-        activeTabIndex = -1; // reset so switchToTab triggers full init
+        activeTabIndex = -1;
         switchToTab(nextIndex);
     }
 
@@ -323,18 +304,14 @@ public final class ViewsBrowserApp {
                 });
     }
 
-    // ---- UI construction ----
-
     private void buildUi(CefWindow win) {
         this.window = win;
 
-        // Main panel: vertical box layout, fills the window
         mainPanel = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create mainPanel"));
         CefBoxLayout mainLayout = mainPanel
                 .setToBoxLayout(VBOX)
                 .orElseThrow(() -> new RuntimeException("Failed to set mainPanel box layout"));
 
-        // Tab bar
         tabBar = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create tabBar"));
         tabBar.setToBoxLayout(HBOX);
 
@@ -349,7 +326,6 @@ public final class ViewsBrowserApp {
                 .orElseThrow(() -> new RuntimeException("Failed to create addTabButton"));
         tabBar.addChildView(addTabButton);
 
-        // Navigation bar
         navBar = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create navBar"));
         CefBoxLayout navLayout =
                 navBar.setToBoxLayout(HBOX).orElseThrow(() -> new RuntimeException("Failed to set navBar box layout"));
@@ -416,10 +392,8 @@ public final class ViewsBrowserApp {
         navBar.addChildView(urlBar);
         navBar.addChildView(devtoolsButton);
 
-        // URL bar stretches to fill remaining space
         navLayout.setFlexForView(urlBar, 1);
 
-        // Content panel: fills remaining vertical space
         contentPanel = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create contentPanel"));
         contentPanel.setToFillLayout();
 
@@ -427,25 +401,21 @@ public final class ViewsBrowserApp {
         mainPanel.addChildView(navBar);
         mainPanel.addChildView(contentPanel);
 
-        // Content panel expands vertically
         mainLayout.setFlexForView(contentPanel, 1);
 
-        // Register keyboard accelerators
-        setAcceleratorCompat(win, CMD_NEW_TAB, VK_T, false, true, false, true); // Ctrl+T
-        setAcceleratorCompat(win, CMD_CLOSE_TAB, VK_W, false, true, false, true); // Ctrl+W
-        setAcceleratorCompat(win, CMD_RELOAD, VK_F5, false, false, false, true); // F5
-        setAcceleratorCompat(win, CMD_DEVTOOLS, VK_F12, false, false, false, true); // F12
-        setAcceleratorCompat(win, CMD_BACK, VK_LEFT, false, false, true, true); // Alt+Left
-        setAcceleratorCompat(win, CMD_FORWARD, VK_RIGHT, false, false, true, true); // Alt+Right
-        setAcceleratorCompat(win, CMD_FOCUS_URL, VK_L, false, true, false, true); // Ctrl+L
+        setAcceleratorCompat(win, CMD_NEW_TAB, VK_T, false, true, false, true);
+        setAcceleratorCompat(win, CMD_CLOSE_TAB, VK_W, false, true, false, true);
+        setAcceleratorCompat(win, CMD_RELOAD, VK_F5, false, false, false, true);
+        setAcceleratorCompat(win, CMD_DEVTOOLS, VK_F12, false, false, false, true);
+        setAcceleratorCompat(win, CMD_BACK, VK_LEFT, false, false, true, true);
+        setAcceleratorCompat(win, CMD_FORWARD, VK_RIGHT, false, false, true, true);
+        setAcceleratorCompat(win, CMD_FOCUS_URL, VK_L, false, true, false, true);
 
-        // Add main panel to window
         win.setToFillLayout();
         win.addChildView(mainPanel);
         win.setTitle("cef4j Browser (Views)");
         win.centerWindow(new CefSize(1280, 800));
 
-        // Open initial tab
         openNewTab(DEFAULT_URL);
 
         win.show();
@@ -459,8 +429,9 @@ public final class ViewsBrowserApp {
             boolean ctrlPressed,
             boolean altPressed,
             boolean highPriority) {
+        java.lang.reflect.Method accelerator = null;
         try {
-            win.getClass()
+            accelerator = win.getClass()
                     .getMethod(
                             "setAccelerator",
                             int.class,
@@ -468,13 +439,17 @@ public final class ViewsBrowserApp {
                             boolean.class,
                             boolean.class,
                             boolean.class,
-                            boolean.class)
-                    .invoke(win, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority);
-            return;
+                            boolean.class);
         } catch (NoSuchMethodException ignored) {
-            // Pre-133 CEF exposes the older 5-argument variant without the high-priority flag.
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to invoke CefWindow#setAccelerator", e);
+            accelerator = null;
+        }
+        if (accelerator != null) {
+            try {
+                accelerator.invoke(win, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority);
+                return;
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to invoke CefWindow#setAccelerator", e);
+            }
         }
 
         try {
@@ -485,8 +460,6 @@ public final class ViewsBrowserApp {
             throw new RuntimeException("Failed to invoke legacy CefWindow#setAccelerator", e);
         }
     }
-
-    // ---- Navigation helpers ----
 
     private void goBack() {
         if (activeTabIndex < 0 || activeTabIndex >= tabs.size()) return;
@@ -509,8 +482,6 @@ public final class ViewsBrowserApp {
         });
     }
 
-    // ---- Entry point ----
-
     public static void main(String[] args) throws Exception {
         log.info("cef4j Views browser starting");
 
@@ -518,6 +489,7 @@ public final class ViewsBrowserApp {
         cacheDir.toFile().deleteOnExit();
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.windowlessRenderingEnabled = 0;
         settings.multiThreadedMessageLoop = 0;
@@ -536,9 +508,6 @@ public final class ViewsBrowserApp {
         CefWindowDelegate windowDelegate = new CefWindowDelegate() {
             @Override
             public CefRect getInitialBounds(@Nullable CefWindow window) {
-                // Provide explicit initial size so CEF does not fall back to preferred size
-                // of an empty window (which would be near-zero). The window will be re-centered
-                // by centerWindow() inside buildUi().
                 return new CefRect(0, 0, 1280, 800);
             }
 
@@ -618,7 +587,6 @@ public final class ViewsBrowserApp {
         log.info("Shutting down CEF");
         Cef.INSTANCE.terminate();
         log.info("Exiting");
-        // halt() instead of exit(): see Cef.terminate() javadoc for macOS rationale.
-        Runtime.getRuntime().halt(0);
+        SampleShutdown.afterCefTermination();
     }
 }

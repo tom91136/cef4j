@@ -1089,23 +1089,38 @@ object Main {
       )
       val fields = domains.map { domain =>
         val name  = domain.name
-        val field = ident(name.head.toLower +: name.tail)
+        val field = ident(domainField(name))
         s"    private final $name.Client $field;"
       }
       val initializers = domains.map { domain =>
         val name  = domain.name
-        val field = ident(name.head.toLower +: name.tail)
+        val field = ident(domainField(name))
         s"        $field = new $name.Client(client);"
       }
       val accessors = domains.map { domain =>
         val name  = domain.name
-        val field = ident(name.head.toLower +: name.tail)
+        val field = ident(domainField(name))
         s"    public $name.Client $field() { return $field; }"
+      }
+      val compatibilityAccessors = domains.flatMap { domain =>
+        val name      = domain.name
+        val canonical = ident(domainField(name))
+        val legacy    = ident(name.head.toLower +: name.tail)
+        Option.when(canonical != legacy)(
+          s"    @Deprecated public $name.Client $legacy() { return $canonical(); }"
+        )
       }
       (
         header ++ fields ++ List("    public CdpDomains(CdpClient client) {") ++ initializers ++ List("    }") ++
-          accessors ++ List("}", "")
+          accessors ++ compatibilityAccessors ++ List("}", "")
       ).mkString("\n")
+    }
+
+    private def domainField(name: String): String = {
+      val leadingUpper = name.takeWhile(_.isUpper).length
+      if (leadingUpper == name.length) name.toLowerCase
+      else if (leadingUpper > 1) name.take(leadingUpper - 1).toLowerCase + name.drop(leadingUpper - 1)
+      else name.head.toLower +: name.tail
     }
   }
 

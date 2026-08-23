@@ -39,8 +39,6 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 360_000;
-    // SessionReady has a five-minute deadline. Recover an incomplete initial ZMTP greeting well before that deadline
-    // while retaining the longer heartbeat tolerance once a peer has actually exchanged traffic.
     private static final int HANDSHAKE_TIMEOUT_MS = 30_000;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
@@ -76,8 +74,6 @@ public final class ZmqTransport implements CefTransport {
     private boolean zmtpHandshaken = false;
     private long handshakeDeadlineNanos = 0;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
-    // Worker-owned diagnostics; only emitted at DEBUG and useful for distinguishing an established-but-stalled pipe
-    // from a worker/socket failure.
     private int sentFrames = 0;
     private int receivedFrames = 0;
     private boolean sendBlocked = false;
@@ -122,8 +118,6 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
-        // Create, use and close both the context shadow and socket on this thread. JeroMQ sockets are thread-confined,
-        // so the transport never hands a live socket between its construction and worker threads.
         ZContext ctx = SharedContext.INSTANCE.shadow();
         ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
         try {
@@ -134,8 +128,6 @@ public final class ZmqTransport implements CefTransport {
                     | ZMQ.EVENT_DISCONNECTED
                     | ZMQ.EVENT_HANDSHAKE_PROTOCOL
                     | ZMQ.HANDSHAKE_SUCCEEDED;
-            // The event callback runs on JeroMQ's I/O thread. It only transfers immutable event values to the socket
-            // owner; application callbacks and socket operations stay on this worker.
             if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
                 throw new IllegalStateException("Unable to monitor ZeroMQ transport " + requestedEndpoint);
             }
@@ -162,8 +154,6 @@ public final class ZmqTransport implements CefTransport {
                 if (poller.pollin(0)) drainIncoming(main);
                 if (drainMonitor()) break;
                 restartStalledHandshake(main);
-                // Only this worker touches the socket. send() callers may run on arbitrary
-                // application threads and communicate solely through the thread-safe queue.
                 if (!outbound.isEmpty()) drainOutbound(main);
                 dispatchPendingIfReady();
             }
@@ -171,14 +161,10 @@ public final class ZmqTransport implements CefTransport {
             LOG.debug("worker on {} exiting due to {}", endpoint, e.toString());
         } finally {
             if (!closed) {
-                // The worker died without a DISCONNECTED monitor event (fatal poll/socket error). Surface the
-                // disconnect so pending sessions fail instead of hanging on a dead pipe.
                 disconnected = true;
                 fireDisconnectIfReady();
             }
             poller.close();
-            // ZeroMQ sockets are thread-confined. The worker is the sole socket owner, so it explicitly closes the
-            // socket before closing the context.
             try {
                 main.setLinger(0);
                 main.close();
@@ -207,14 +193,8 @@ public final class ZmqTransport implements CefTransport {
     private static void configureLiveness(ZMQ.Socket socket, int handshakeTimeoutMs) {
         socket.setLinger(0);
         socket.setImmediate(true);
-        // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
-        // time to resume: shorter timeouts produced false disconnects during concurrent native CI builds. Local
-        // runtime servers still have immediate Process.onExit supervision independent of this timeout.
         socket.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
         socket.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
-        // Bound and connected sockets both need a finite native handshake interval. Without it, JeroMQ can
-        // occasionally leave a rapidly replaced DEALER pipe half-open indefinitely, so the first queued frame never
-        // reaches the peer. The client-side monitor recovery below remains a second line of defence.
         socket.setHandshakeIvl(handshakeTimeoutMs);
     }
 
@@ -254,8 +234,6 @@ public final class ZmqTransport implements CefTransport {
     public void close() {
         if (closed) return;
         closed = true;
-        // close() is also legal from a receive/disconnect callback, which runs on the worker. In that case the loop's
-        // finally block performs ownership-correct cleanup as soon as the callback returns.
         if (Thread.currentThread() != worker) joinQuietly(worker);
     }
 
@@ -275,8 +253,6 @@ public final class ZmqTransport implements CefTransport {
                 peerReady = true;
                 handshakeDeadlineNanos = 0;
             } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL) {
-                // This is JeroMQ's failed-protocol monitor event, not a successful handshake. The ensuing disconnect
-                // is an initial-pipe recovery signal and must not be surfaced as loss of an established session.
                 zmtpHandshaken = false;
                 if (runtimeServerClient && receivedFrames == 0) {
                     peerReady = false;
@@ -286,9 +262,6 @@ public final class ZmqTransport implements CefTransport {
                 zmtpHandshaken = false;
                 handshakeDeadlineNanos = 0;
                 if (runtimeServerClient && receivedFrames == 0) {
-                    // JeroMQ reports a greeting timeout as CONNECTED -> DISCONNECTED -> CONNECTED without a distinct
-                    // handshake-failure event. Until the runtime client receives its first frame this is transparent
-                    // connection establishment, and CefSessionImpl will keep retransmitting SessionReady.
                     peerReady = false;
                     continue;
                 }
@@ -333,9 +306,6 @@ public final class ZmqTransport implements CefTransport {
         byte[] out;
         while ((out = outbound.peek()) != null) {
             try {
-                // Never block the socket-owner thread: it must continue polling inbound frames and shutdown signals.
-                // A false return means the high-water mark is full; leave the head queued and retry after the bounded
-                // poll.
                 if (!main.send(out, ZMQ.DONTWAIT)) {
                     if (!sendBlocked) LOG.debug("send on {} waiting for a writable pipe", endpoint);
                     sendBlocked = true;

@@ -1,6 +1,7 @@
 #include "jni_util.h"
 #include "include/cef_api_hash.h"
 
+#include <cstdio>
 #include <cstring>
 
 static JavaVM* jvm = nullptr;
@@ -167,7 +168,12 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
     // cannot be called here because cef_load_library() hasn't been called yet.
     // It is called in loadCefLibrary0() after cef_load_library() initializes the stubs.
 #ifndef __APPLE__
-    cef4j_verify_api_hash();
+    if (!cef4j_verify_api_hash()) {
+        fprintf(stderr, "cef4j: CEF API hash mismatch (expected %s, actual %s)\n",
+                CEF_API_HASH_PLATFORM,
+                cef4j_runtime_api_hash() ? cef4j_runtime_api_hash() : "<null>");
+        return JNI_ERR;
+    }
 #endif
 
     JNIEnv* env;

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class PermissionHandlerOnDismissPermissionPromptEvent implements CefMessageView, CefMessageEncoder {
@@ -62,9 +63,13 @@ public final class PermissionHandlerOnDismissPermissionPromptEvent implements Ce
     public static final CefMessageDecoder<PermissionHandlerOnDismissPermissionPromptEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "promptId");
         long promptId = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "result");
         int result = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "PermissionHandlerOnDismissPermissionPromptEvent");
         return new PermissionHandlerOnDismissPermissionPromptEvent(browser, promptId, result);
     };
 }

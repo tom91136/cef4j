@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DisplayHandlerOnFaviconUrlchangeEvent implements CefMessageView, CefMessageEncoder {
@@ -62,15 +63,17 @@ public final class DisplayHandlerOnFaviconUrlchangeEvent implements CefMessageVi
     public static final CefMessageDecoder<DisplayHandlerOnFaviconUrlchangeEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int iconUrlsCount = __buf.getInt();
+        int iconUrlsCount = WireDecoder.count(__buf, "iconUrls");
         String[] iconUrls = new String[iconUrlsCount];
         for (int __i = 0; __i < iconUrlsCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "iconUrls[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             iconUrls[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "DisplayHandlerOnFaviconUrlchangeEvent");
         return new DisplayHandlerOnFaviconUrlchangeEvent(browser, iconUrls);
     };
 }

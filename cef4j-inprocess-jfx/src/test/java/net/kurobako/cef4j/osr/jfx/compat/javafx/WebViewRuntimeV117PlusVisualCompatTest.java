@@ -99,8 +99,8 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
         }
     }
 
-    // Detached popup WebViews leak WebKit scheduler state across tests in the same JVM, delaying or dropping
-    // subsequent popups' events. Loading about:blank drains pending timers before the next test starts.
+    // XXX: JavaFX WebView 17-23 retains detached popup scheduler work across tests; remove the about:blank drain when
+    // the minimum JavaFX version releases that work and the sequential popup compatibility tests pass without it.
     private static void releasePopup(WebView popup) throws Exception {
         onFxThread(() -> {
             popup.getEngine().setOnResized(null);

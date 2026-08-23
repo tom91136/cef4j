@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class WindowGetClientAreaBoundsInScreenResponse implements CefMessageView, CefMessageEncoder {
 
@@ -48,6 +49,7 @@ public final class WindowGetClientAreaBoundsInScreenResponse implements CefMessa
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
         Rect result = Rect.decode(__buf);
+        WireDecoder.requireFullyConsumed(__buf, "WindowGetClientAreaBoundsInScreenResponse");
         return new WindowGetClientAreaBoundsInScreenResponse(result);
     };
 }

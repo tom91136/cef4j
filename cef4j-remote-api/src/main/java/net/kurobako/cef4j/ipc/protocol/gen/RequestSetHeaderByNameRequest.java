@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestSetHeaderByNameRequest implements CefMessageView, CefMessageEncoder {
@@ -78,16 +79,19 @@ public final class RequestSetHeaderByNameRequest implements CefMessageView, CefM
     public static final CefMessageDecoder<RequestSetHeaderByNameRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int nameLen = __buf.getInt();
+        int nameLen = WireDecoder.length(__buf, "name");
         byte[] nameBuf = new byte[nameLen];
         __buf.get(nameBuf);
         String name = new String(nameBuf, StandardCharsets.UTF_8);
-        int valueLen = __buf.getInt();
+        int valueLen = WireDecoder.length(__buf, "value");
         byte[] valueBuf = new byte[valueLen];
         __buf.get(valueBuf);
         String value = new String(valueBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "overwrite");
         int overwrite = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RequestSetHeaderByNameRequest");
         return new RequestSetHeaderByNameRequest(self, name, value, overwrite);
     };
 }

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserHostExecuteDevToolsMethodRequest implements CefMessageView, CefMessageEncoder {
@@ -75,13 +76,17 @@ public final class BrowserHostExecuteDevToolsMethodRequest implements CefMessage
     public static final CefMessageDecoder<BrowserHostExecuteDevToolsMethodRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "messageId_");
         int messageId_ = __buf.getInt();
-        int methodLen = __buf.getInt();
+        int methodLen = WireDecoder.length(__buf, "method");
         byte[] methodBuf = new byte[methodLen];
         __buf.get(methodBuf);
         String method = new String(methodBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "params");
         RemoteHandle params = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "BrowserHostExecuteDevToolsMethodRequest");
         return new BrowserHostExecuteDevToolsMethodRequest(self, messageId_, method, params);
     };
 }

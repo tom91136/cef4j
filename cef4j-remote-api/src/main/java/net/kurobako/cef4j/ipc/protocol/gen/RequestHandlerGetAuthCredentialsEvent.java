@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestHandlerGetAuthCredentialsEvent implements CefMessageView, CefMessageEncoder {
@@ -115,26 +116,31 @@ public final class RequestHandlerGetAuthCredentialsEvent implements CefMessageVi
     public static final CefMessageDecoder<RequestHandlerGetAuthCredentialsEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int originUrlLen = __buf.getInt();
+        int originUrlLen = WireDecoder.length(__buf, "originUrl");
         byte[] originUrlBuf = new byte[originUrlLen];
         __buf.get(originUrlBuf);
         String originUrl = new String(originUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isProxy");
         int isProxy = __buf.getInt();
-        int hostLen = __buf.getInt();
+        int hostLen = WireDecoder.length(__buf, "host");
         byte[] hostBuf = new byte[hostLen];
         __buf.get(hostBuf);
         String host = new String(hostBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "port");
         int port = __buf.getInt();
-        int realmLen = __buf.getInt();
+        int realmLen = WireDecoder.length(__buf, "realm");
         byte[] realmBuf = new byte[realmLen];
         __buf.get(realmBuf);
         String realm = new String(realmBuf, StandardCharsets.UTF_8);
-        int schemeLen = __buf.getInt();
+        int schemeLen = WireDecoder.length(__buf, "scheme");
         byte[] schemeBuf = new byte[schemeLen];
         __buf.get(schemeBuf);
         String scheme = new String(schemeBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "RequestHandlerGetAuthCredentialsEvent");
         return new RequestHandlerGetAuthCredentialsEvent(browser, originUrl, isProxy, host, port, realm, scheme, callback);
     };
 }

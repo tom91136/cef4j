@@ -3,12 +3,12 @@
 // decrements the CEF refcount and drops the entry. ID 0 is reserved as the null handle.
 #pragma once
 
-#include <atomic>
 #include <cstdint>
 #include <mutex>
 #include <unordered_map>
 
 #include "include/capi/cef_base_capi.h"
+#include "IntIdAllocator.h"
 
 namespace cef4j {
 namespace ipc {
@@ -30,10 +30,12 @@ public:
         std::lock_guard<std::mutex> lk(mu_);
         auto rit = reverse_.find(ptr);
         if (rit != reverse_.end()) return rit->second;
+        std::int32_t id = ids_.allocate([this](std::int32_t candidate) {
+            return table_.find(candidate) != table_.end();
+        });
         auto* base = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
         base->add_ref(base);
-        std::int32_t id = next_.fetch_add(1, std::memory_order_relaxed);
-        table_[id]     = ptr;
+        table_.emplace(id, ptr);
         reverse_[ptr]  = id;
         return id;
     }
@@ -93,7 +95,7 @@ public:
     }
 
 private:
-    std::atomic<std::int32_t> next_{1};
+    IntIdAllocator ids_;
     mutable std::mutex mu_;
     std::unordered_map<std::int32_t, T*> table_;
     std::unordered_map<T*, std::int32_t> reverse_;

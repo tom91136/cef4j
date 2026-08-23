@@ -2,8 +2,10 @@ package net.kurobako.cef4j.ipc.frame;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -21,7 +23,9 @@ public final class EncodedFramePipeline implements AutoCloseable {
     private final FrameCodec codec;
     private final Consumer<EncodedFrame> consumer;
     private final ExecutorService worker;
+    private final Object commandLock = new Object();
     private final AtomicReference<RawFrame> latest = new AtomicReference<>();
+    private final AtomicReference<Thread> workerThread = new AtomicReference<>();
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean closed = new AtomicBoolean();
 
@@ -32,19 +36,26 @@ public final class EncodedFramePipeline implements AutoCloseable {
             Thread thread =
                     new Thread(r, "cef4j-frame-codec-" + codec.descriptor().id());
             thread.setDaemon(true);
+            workerThread.set(thread);
             return thread;
         });
     }
 
     /** Callback suitable for {@link FrameTransport#onRawFrame}. Copies because encoding is asynchronous. */
     public void submit(@Nonnull RawFrame frame) {
-        if (closed.get()) return;
-        latest.set(frame.snapshot());
-        if (scheduled.compareAndSet(false, true)) worker.execute(this::drain);
+        RawFrame snapshot = frame.snapshot();
+        synchronized (commandLock) {
+            if (closed.get()) return;
+            latest.set(snapshot);
+            if (scheduled.compareAndSet(false, true)) worker.execute(this::drain);
+        }
     }
 
     public void requestKeyFrame() {
-        codec.requestKeyFrame();
+        synchronized (commandLock) {
+            if (closed.get()) return;
+            worker.execute(codec::requestKeyFrame);
+        }
     }
 
     private void drain() {
@@ -65,16 +76,46 @@ public final class EncodedFramePipeline implements AutoCloseable {
             }
         } finally {
             scheduled.set(false);
-            if (!closed.get() && latest.get() != null && scheduled.compareAndSet(false, true))
-                worker.execute(this::drain);
+            synchronized (commandLock) {
+                if (!closed.get() && latest.get() != null && scheduled.compareAndSet(false, true)) {
+                    worker.execute(this::drain);
+                }
+            }
         }
     }
 
     @Override
     public void close() {
-        if (!closed.compareAndSet(false, true)) return;
-        latest.set(null);
-        worker.shutdownNow();
-        codec.close();
+        CountDownLatch codecClosed = new CountDownLatch(1);
+        synchronized (commandLock) {
+            if (!closed.compareAndSet(false, true)) return;
+            latest.set(null);
+            worker.execute(() -> {
+                try {
+                    codec.close();
+                } finally {
+                    codecClosed.countDown();
+                }
+            });
+            worker.shutdown();
+        }
+        if (Thread.currentThread() == workerThread.get()) return;
+        boolean interrupted = false;
+        while (true) {
+            try {
+                codecClosed.await();
+                break;
+            } catch (InterruptedException ignored) {
+                interrupted = true;
+            }
+        }
+        while (true) {
+            try {
+                if (worker.awaitTermination(1, TimeUnit.DAYS)) break;
+            } catch (InterruptedException ignored) {
+                interrupted = true;
+            }
+        }
+        if (interrupted) Thread.currentThread().interrupt();
     }
 }

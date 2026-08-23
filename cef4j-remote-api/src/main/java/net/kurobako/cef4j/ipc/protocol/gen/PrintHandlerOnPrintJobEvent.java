@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMessageEncoder {
@@ -79,16 +80,19 @@ public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMes
     public static final CefMessageDecoder<PrintHandlerOnPrintJobEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int documentNameLen = __buf.getInt();
+        int documentNameLen = WireDecoder.length(__buf, "documentName");
         byte[] documentNameBuf = new byte[documentNameLen];
         __buf.get(documentNameBuf);
         String documentName = new String(documentNameBuf, StandardCharsets.UTF_8);
-        int pdfFilePathLen = __buf.getInt();
+        int pdfFilePathLen = WireDecoder.length(__buf, "pdfFilePath");
         byte[] pdfFilePathBuf = new byte[pdfFilePathLen];
         __buf.get(pdfFilePathBuf);
         String pdfFilePath = new String(pdfFilePathBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
         RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "PrintHandlerOnPrintJobEvent");
         return new PrintHandlerOnPrintJobEvent(browser, documentName, pdfFilePath, callback);
     };
 }

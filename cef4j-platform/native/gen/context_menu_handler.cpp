@@ -7,7 +7,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefContextMenuHandler : public cef_context_menu_handler_t {
     JavaVM* jvm;

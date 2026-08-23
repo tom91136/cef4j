@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class FrameExecuteJavaScriptRequest implements CefMessageView, CefMessageEncoder {
@@ -78,16 +79,19 @@ public final class FrameExecuteJavaScriptRequest implements CefMessageView, CefM
     public static final CefMessageDecoder<FrameExecuteJavaScriptRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int codeLen = __buf.getInt();
+        int codeLen = WireDecoder.length(__buf, "code");
         byte[] codeBuf = new byte[codeLen];
         __buf.get(codeBuf);
         String code = new String(codeBuf, StandardCharsets.UTF_8);
-        int scriptUrlLen = __buf.getInt();
+        int scriptUrlLen = WireDecoder.length(__buf, "scriptUrl");
         byte[] scriptUrlBuf = new byte[scriptUrlLen];
         __buf.get(scriptUrlBuf);
         String scriptUrl = new String(scriptUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "startLine");
         int startLine = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "FrameExecuteJavaScriptRequest");
         return new FrameExecuteJavaScriptRequest(self, code, scriptUrl, startLine);
     };
 }

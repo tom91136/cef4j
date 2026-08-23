@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefButtonDelegate : public cef_button_delegate_t {
     JavaVM* jvm;

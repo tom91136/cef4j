@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class SchemeRegistrarAddCustomSchemeRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class SchemeRegistrarAddCustomSchemeRequest implements CefMessageVi
     public static final CefMessageDecoder<SchemeRegistrarAddCustomSchemeRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int schemeNameLen = __buf.getInt();
+        int schemeNameLen = WireDecoder.length(__buf, "schemeName");
         byte[] schemeNameBuf = new byte[schemeNameLen];
         __buf.get(schemeNameBuf);
         String schemeName = new String(schemeNameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "options");
         int options = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "SchemeRegistrarAddCustomSchemeRequest");
         return new SchemeRegistrarAddCustomSchemeRequest(self, schemeName, options);
     };
 }

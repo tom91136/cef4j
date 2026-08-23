@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefUrlRequestClient : public cef_urlrequest_client_t {
     JavaVM* jvm;

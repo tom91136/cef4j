@@ -62,8 +62,12 @@ object Main {
     )
   }
 
-  private def parseArgs(args: List[String]): Config =
-    args.foldLeft(Config(
+  private[codegen] def parseArgs(args: List[String]): Config = {
+    val required = List("--cef-include=", "--out-cpp=", "--out-java=")
+    required.foreach { prefix =>
+      require(args.exists(_.startsWith(prefix)), s"Missing required argument: ${prefix.dropRight(1)}")
+    }
+    val cfg = args.foldLeft(Config(
       cefInclude = Paths.get("."),
       outCpp = Paths.get("."),
       outJava = Paths.get("."),
@@ -107,6 +111,23 @@ object Main {
           throw new IllegalArgumentException(s"Unknown argument: $other")
       }
     }
+    validateOutputPaths(cfg)
+    cfg
+  }
+
+  private def validateOutputPaths(cfg: Config): Unit = {
+    val workingDir = Paths.get("").toAbsolutePath.normalize
+    val input      = cfg.cefInclude.toAbsolutePath.normalize
+    val outputs    = List(cfg.outCpp.toAbsolutePath.normalize, cfg.outJava.toAbsolutePath.normalize)
+    outputs.foreach { output =>
+      require(output != workingDir, s"Refusing repository/current-directory output: $output")
+      require(!input.startsWith(output), s"Refusing output that contains the CEF input tree: $output")
+    }
+    require(
+      !outputs(0).startsWith(outputs(1)) && !outputs(1).startsWith(outputs(0)),
+      "C++ and Java output directories must not overlap"
+    )
+  }
 
   private def parseDirList(value: String): List[String] =
     value.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList

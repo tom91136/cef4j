@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class NavigateResult implements CefMessageView, CefMessageEncoder {
 
@@ -79,14 +80,19 @@ public final class NavigateResult implements CefMessageView, CefMessageEncoder {
     public static final CefMessageDecoder<NavigateResult> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browserId");
         int browserId = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "httpStatus");
         int httpStatus = __buf.getInt();
-        int finalUrlLen = __buf.getInt();
+        int finalUrlLen = WireDecoder.length(__buf, "finalUrl");
         byte[] finalUrlBuf = new byte[finalUrlLen];
         __buf.get(finalUrlBuf);
         String finalUrl = new String(finalUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "bytesLoaded");
         long bytesLoaded = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, 1, "ok");
         boolean ok = __buf.get() != 0;
+        WireDecoder.requireFullyConsumed(__buf, "NavigateResult");
         return new NavigateResult(browserId, httpStatus, finalUrl, bytesLoaded, ok);
     };
 }

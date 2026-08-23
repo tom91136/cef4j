@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ViewDelegateOnParentViewChangedRequest implements CefMessageView, CefMessageEncoder {
@@ -71,10 +72,15 @@ public final class ViewDelegateOnParentViewChangedRequest implements CefMessageV
     public static final CefMessageDecoder<ViewDelegateOnParentViewChangedRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "view");
         RemoteHandle view = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "added");
         int added = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "parent");
         RemoteHandle parent = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "ViewDelegateOnParentViewChangedRequest");
         return new ViewDelegateOnParentViewChangedRequest(self, view, added, parent);
     };
 }

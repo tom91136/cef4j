@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserHostDragTargetDropRequest implements CefMessageView, CefMessageEncoder {
@@ -56,8 +57,10 @@ public final class BrowserHostDragTargetDropRequest implements CefMessageView, C
     public static final CefMessageDecoder<BrowserHostDragTargetDropRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
         MouseEvent event = MouseEvent.decode(__buf);
+        WireDecoder.requireFullyConsumed(__buf, "BrowserHostDragTargetDropRequest");
         return new BrowserHostDragTargetDropRequest(self, event);
     };
 }

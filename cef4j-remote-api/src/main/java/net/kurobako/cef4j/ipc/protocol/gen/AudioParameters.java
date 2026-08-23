@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_audio_parameters_t}. Fields are immutable; pass instances
@@ -64,9 +65,13 @@ public final class AudioParameters {
       * configured the buffer.
       */
     public static AudioParameters decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "channelLayout");
         int channelLayout = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "sampleRate");
         int sampleRate = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "framesPerBuffer");
         int framesPerBuffer = __buf.getInt();
         return new AudioParameters(size, channelLayout, sampleRate, framesPerBuffer);
     }

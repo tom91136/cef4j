@@ -52,7 +52,8 @@ object JavaEmitter {
           "import javax.annotation.Nonnull;",
           "import net.kurobako.cef4j.ipc.session.CefMessageDecoder;",
           "import net.kurobako.cef4j.ipc.session.CefMessageEncoder;",
-          "import net.kurobako.cef4j.ipc.session.CefMessageView;"
+          "import net.kurobako.cef4j.ipc.session.CefMessageView;",
+          "import net.kurobako.cef4j.ipc.session.WireDecoder;"
         ) ++
         Option.when(needsHandle)("import net.kurobako.cef4j.ipc.session.RemoteHandle;")
     ).mkString("\n")
@@ -202,40 +203,56 @@ object JavaEmitter {
        |        ByteBuffer __buf = payload.duplicate();
        |        __buf.order(ByteOrder.LITTLE_ENDIAN);
        |$reads
+       |        WireDecoder.requireFullyConsumed(__buf, "${spec.className}");
        |        return new ${spec.className}($args);
        |    };""".stripMargin
   }
 
   private def decodeRead(field: FieldSpec): List[String] = field.ty match {
-    case FieldType.I32        => List(s"        int ${field.name} = __buf.getInt();")
-    case FieldType.I64        => List(s"        long ${field.name} = __buf.getLong();")
-    case FieldType.Bool       => List(s"        boolean ${field.name} = __buf.get() != 0;")
+    case FieldType.I32 =>
+      List(
+        s"        WireDecoder.requireRemaining(__buf, Integer.BYTES, \"${field.name}\");",
+        s"        int ${field.name} = __buf.getInt();"
+      )
+    case FieldType.I64 =>
+      List(
+        s"        WireDecoder.requireRemaining(__buf, Long.BYTES, \"${field.name}\");",
+        s"        long ${field.name} = __buf.getLong();"
+      )
+    case FieldType.Bool =>
+      List(
+        s"        WireDecoder.requireRemaining(__buf, 1, \"${field.name}\");",
+        s"        boolean ${field.name} = __buf.get() != 0;"
+      )
     case FieldType.Utf8String =>
       List(
-        s"        int ${field.name}Len = __buf.getInt();",
+        s"        int ${field.name}Len = WireDecoder.length(__buf, \"${field.name}\");",
         s"        byte[] ${field.name}Buf = new byte[${field.name}Len];",
         s"        __buf.get(${field.name}Buf);",
         s"        String ${field.name} = new String(${field.name}Buf, StandardCharsets.UTF_8);"
       )
     case FieldType.Bytes =>
       List(
-        s"        int ${field.name}Len = __buf.getInt();",
+        s"        int ${field.name}Len = WireDecoder.length(__buf, \"${field.name}\");",
         s"        byte[] ${field.name} = new byte[${field.name}Len];",
         s"        __buf.get(${field.name});"
       )
     case FieldType.StringList =>
       List(
-        s"        int ${field.name}Count = __buf.getInt();",
+        s"        int ${field.name}Count = WireDecoder.count(__buf, \"${field.name}\");",
         s"        String[] ${field.name} = new String[${field.name}Count];",
         s"        for (int __i = 0; __i < ${field.name}Count; __i++) {",
-        s"            int __slen = __buf.getInt();",
+        s"            int __slen = WireDecoder.length(__buf, \"${field.name}[\" + __i + \"]\");",
         s"            byte[] __sb = new byte[__slen];",
         s"            __buf.get(__sb);",
         s"            ${field.name}[__i] = new String(__sb, StandardCharsets.UTF_8);",
         s"        }"
       )
     case FieldType.RemoteHandle =>
-      List(s"        RemoteHandle ${field.name} = new RemoteHandle(__buf.getInt());")
+      List(
+        s"        WireDecoder.requireRemaining(__buf, Integer.BYTES, \"${field.name}\");",
+        s"        RemoteHandle ${field.name} = new RemoteHandle(__buf.getInt());"
+      )
     case FieldType.DataStruct(cefName) =>
       val cls = SpecDeriver.cefStructToClassName(cefName)
       List(s"        $cls ${field.name} = $cls.decode(__buf);")

@@ -15,9 +15,7 @@
     <description>In-process JavaFX browser pane for cef4j (requires JavaFX 13+)</description>
 
     <properties>
-        <!-- PixelBuffer requires JavaFX 13+; compile against the lowest supported version -->
         <javafx.version>13.0.2</javafx.version>
-        <!-- Keep the test runtime coherent with the JavaFX 13 PixelBuffer baseline. -->
         <javafx.test.version>13.0.2</javafx.test.version>
     </properties>
 
@@ -74,7 +72,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <!-- Lets the in-process JFX tests share one parameterised harness with the IPC backend. -->
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-test-shared</artifactId>
             <scope>test</scope>
@@ -87,7 +84,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                                        <testExcludes>
+                    <testExcludes>
                         <testExclude>${cef4j.test.v117plus.excludes}</testExclude>
                     </testExcludes>
                     <testIncrementalExcludes>
@@ -99,7 +96,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- JavaFX needs a real display; surefire defaults java.awt.headless=true. -->
                     <systemPropertyVariables>
                         <cef4j.disableStderrRedirect>true</cef4j.disableStderrRedirect>
                         <java.awt.headless>false</java.awt.headless>
@@ -115,7 +111,6 @@
                         <id>cef-tests</id>
                         <goals><goal>test</goal></goals>
                         <configuration>
-                            <!-- Fresh JVM per class: CefWebView tests leave CEF state behind. -->
                             <reuseForks>false</reuseForks>
                             <excludes combine.self="override"/>
                             <includes>
@@ -131,7 +126,6 @@
                 <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <!-- Publish a test-jar so cef4j-integration-tests can reuse NativeBrowserBackend. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
@@ -227,9 +221,8 @@
     </build>
 
     <profiles>
-        <!-- macOS arm64: JavaFX 13.0.2 has no arm64 native lib in Maven Central; use 23.0.2.
-             The provided-scope deps transitively pull in javafx-*-23.0.2-mac-aarch64.jar which
-             contains both the Java classes (compile) and native .dylib files (test runtime). -->
+        <!-- XXX: JavaFX 13.0.2 has no macOS arm64 native artifact; remove this override when the minimum JavaFX
+             release publishes both classes and native libraries for macOS arm64 under the baseline version. -->
         <profile>
             <id>javafx-macos-aarch64</id>
             <activation>
@@ -243,7 +236,7 @@
                 <javafx.test.version>23.0.2</javafx.test.version>
             </properties>
         </profile>
-        <!-- macOS x86_64: use 23.0.2 for test consistency with arm64. -->
+        <!-- XXX: Keep macOS x86_64 on the arm64 test version; remove this override with the arm64 override above. -->
         <profile>
             <id>javafx-macos-x86_64</id>
             <activation>

@@ -24,4 +24,10 @@ class CefStreamHandlerTest {
         assertThat(new CefStreamHandler(FakeCefHttpEngine.empty()).getDefaultPort())
                 .isEqualTo(80);
     }
+
+    @Test
+    void explicitDefaultPortIsUsed() {
+        assertThat(new CefStreamHandler(FakeCefHttpEngine.empty(), 443).getDefaultPort())
+                .isEqualTo(443);
+    }
 }

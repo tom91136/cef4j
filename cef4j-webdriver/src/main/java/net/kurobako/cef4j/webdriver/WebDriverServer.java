@@ -5,12 +5,15 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -190,7 +193,7 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private void createSession(HttpExchange exchange, JsonObject body) throws IOException {
-        JsonObject requested = matchCapabilities(body);
+        List<JsonObject> candidates = matchCapabilities(body);
         synchronized (creationLock) {
             if (closed.get() || creatingSession || !sessions.isEmpty()) {
                 throw error(WebDriverError.SESSION_NOT_CREATED, "this endpoint already owns an active session");
@@ -199,18 +202,39 @@ public final class WebDriverServer implements AutoCloseable {
         }
 
         AutomationBackend backend = null;
-        CompletableFuture<? extends AutomationBackend> creation =
-                Objects.requireNonNull(backendFactory.create(requested), "backend factory returned null future");
         try {
-            try {
-                backend = await(creation, WebDriverError.SESSION_NOT_CREATED, commandTimeout, false);
-            } catch (RuntimeException failure) {
-                CompletableFuture<?> cleanup = creation.whenComplete((lateBackend, ignored) -> {
-                    if (lateBackend != null) closeQuietly(lateBackend);
-                });
-                cleanup.isDone();
-                throw failure;
+            JsonObject requested = null;
+            WebDriverException mismatch = null;
+            for (JsonObject candidate : candidates) {
+                CompletableFuture<? extends AutomationBackend> creation;
+                try {
+                    creation = Objects.requireNonNull(
+                            backendFactory.create(candidate), "backend factory returned null future");
+                } catch (RuntimeException failure) {
+                    throw new WebDriverException(
+                            WebDriverError.SESSION_NOT_CREATED,
+                            "backend factory failed: " + describe(failure),
+                            failure);
+                }
+                try {
+                    backend = await(creation, WebDriverError.SESSION_NOT_CREATED, commandTimeout, false, null);
+                } catch (RuntimeException failure) {
+                    CompletableFuture<?> cleanup = creation.whenComplete((lateBackend, ignored) -> {
+                        if (lateBackend != null) closeQuietly(lateBackend);
+                    });
+                    cleanup.isDone();
+                    throw failure;
+                }
+                JsonObject actual = normalizeActualCapabilities(candidate, backend.capabilities());
+                if (matchesRequestedCapabilities(candidate, actual)) {
+                    requested = candidate;
+                    break;
+                }
+                closeQuietly(backend);
+                backend = null;
+                mismatch = error(WebDriverError.SESSION_NOT_CREATED, "backend does not satisfy requested capabilities");
             }
+            if (backend == null || requested == null) throw Objects.requireNonNull(mismatch);
             if (closed.get()) {
                 backend.close();
                 throw error(WebDriverError.SESSION_NOT_CREATED, "WebDriver server closed during session creation");
@@ -219,7 +243,7 @@ public final class WebDriverServer implements AutoCloseable {
             JsonObject actual = normalizeActualCapabilities(requested, backend.capabilities());
             ActiveSession active = new ActiveSession(id, backend, actual.object("timeouts"));
             sessions.put(id, active);
-            backend = null; // ownership transferred
+            backend = null;
             if (closed.get() && sessions.remove(id, active)) {
                 active.close();
                 throw error(WebDriverError.SESSION_NOT_CREATED, "WebDriver server closed during session creation");
@@ -482,10 +506,11 @@ public final class WebDriverServer implements AutoCloseable {
     private java.util.List<String> findElementsWithImplicitWait(
             ActiveSession session, AutomationBackend backend, String using, String value, Optional<String> parent) {
         long timeoutMillis = session.timeoutMillis("implicit");
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        long started = System.nanoTime();
+        long timeoutNanos = TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         do {
             java.util.List<String> found = command(session, () -> backend.findElements(using, value, parent));
-            if (!found.isEmpty() || System.nanoTime() >= deadline) return found;
+            if (!found.isEmpty() || System.nanoTime() - started >= timeoutNanos) return found;
             try {
                 Thread.sleep(Math.min(50L, Math.max(1L, timeoutMillis)));
             } catch (InterruptedException failure) {
@@ -506,19 +531,30 @@ public final class WebDriverServer implements AutoCloseable {
                 throw error(WebDriverError.INVALID_SESSION_ID, "session is closed: " + session.id);
             }
             Duration timeout = timeoutName == null ? commandTimeout : session.timeout(timeoutName);
-            return await(operation.get(), WebDriverError.UNKNOWN_ERROR, timeout, true);
+            return await(
+                    operation.get(),
+                    WebDriverError.UNKNOWN_ERROR,
+                    timeout,
+                    true,
+                    session.backend::cancelPendingCommands);
         }
     }
 
     private static <T> T await(
-            CompletableFuture<? extends T> future, WebDriverError fallback, Duration timeout, boolean cancelOnTimeout) {
+            CompletableFuture<? extends T> future,
+            WebDriverError fallback,
+            Duration timeout,
+            boolean cancelOnTimeout,
+            @Nullable java.util.function.Consumer<Throwable> pendingCancellation) {
         Objects.requireNonNull(future, "backend returned null future");
         try {
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            // Commands cancel the abandoned future; session creation keeps it alive to close a late backend.
+            WebDriverException failure =
+                    new WebDriverException(WebDriverError.TIMEOUT, "command exceeded " + timeout, e);
             if (cancelOnTimeout) future.cancel(true);
-            throw new WebDriverException(WebDriverError.TIMEOUT, "command exceeded " + timeout, e);
+            if (pendingCancellation != null) pendingCancellation.accept(failure);
+            throw failure;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new WebDriverException(WebDriverError.UNKNOWN_ERROR, "command interrupted", e);
@@ -542,7 +578,7 @@ public final class WebDriverServer implements AutoCloseable {
         return description;
     }
 
-    private static JsonObject matchCapabilities(JsonObject body) {
+    private static List<JsonObject> matchCapabilities(JsonObject body) {
         JsonElement capabilitiesElement = body.get("capabilities");
         if (capabilitiesElement == null || !capabilitiesElement.isObject()) {
             throw error(WebDriverError.INVALID_ARGUMENT, "capabilities must be a JSON object");
@@ -558,6 +594,7 @@ public final class WebDriverServer implements AutoCloseable {
             throw error(WebDriverError.INVALID_ARGUMENT, "firstMatch must contain at least one entry");
         }
         validateCapabilityObject(always);
+        List<JsonObject> matches = new ArrayList<>();
         for (JsonElement candidateElement : first) {
             if (!candidateElement.isObject()) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "firstMatch entries must be JSON objects");
@@ -577,9 +614,11 @@ public final class WebDriverServer implements AutoCloseable {
                 throw error(
                         WebDriverError.INVALID_ARGUMENT, "alwaysMatch and firstMatch contain duplicate capabilities");
             }
-            if (matchesCef4j(merged)) return merged;
+            if (matchesCef4j(merged)) matches.add(merged);
         }
-        throw error(WebDriverError.SESSION_NOT_CREATED, "no requested capability set matches cef4j");
+        if (matches.isEmpty())
+            throw error(WebDriverError.SESSION_NOT_CREATED, "no requested capability set matches cef4j");
+        return matches;
     }
 
     private static boolean matchesCef4j(JsonObject capabilities) {
@@ -603,6 +642,12 @@ public final class WebDriverServer implements AutoCloseable {
         requireOptionalBoolean(capabilities, "acceptInsecureCerts");
         requireOptionalBoolean(capabilities, "setWindowRect");
         requireOptionalBoolean(capabilities, "strictFileInteractability");
+        requireOptionalBoolean(capabilities, "webSocketUrl");
+        JsonElement proxy = capabilities.get("proxy");
+        if (proxy != null && !proxy.isObject()) {
+            throw error(WebDriverError.INVALID_ARGUMENT, "proxy must be a JSON object");
+        }
+        requireOptionalString(capabilities, "unhandledPromptBehavior");
         JsonElement strategy = capabilities.get("pageLoadStrategy");
         if (strategy != null) {
             if (!strategy.isPrimitive() || !strategy.asPrimitive().isString()) {
@@ -630,15 +675,41 @@ public final class WebDriverServer implements AutoCloseable {
                 throw error(WebDriverError.INVALID_ARGUMENT, "unknown timeout: " + entry.getKey());
             }
             JsonElement value = entry.getValue();
-            if (!value.isPrimitive()
-                    || !value.asPrimitive().isNumber()
-                    || value.doubleValue() < 0
-                    || value.doubleValue() > Long.MAX_VALUE
-                    || value.doubleValue() != Math.rint(value.doubleValue())) {
+            if (!value.isPrimitive() || !value.asPrimitive().isNumber() || !isNonNegativeLong(value.asPrimitive())) {
                 throw error(
                         WebDriverError.INVALID_ARGUMENT, "timeout must be a non-negative integer: " + entry.getKey());
             }
         }
+    }
+
+    private static boolean isNonNegativeLong(JsonPrimitive value) {
+        try {
+            return new BigDecimal(value.string()).longValueExact() >= 0;
+        } catch (ArithmeticException | NumberFormatException ignored) {
+            return false;
+        }
+    }
+
+    private static boolean matchesRequestedCapabilities(JsonObject requested, JsonObject actual) {
+        for (String name : List.of("browserName", "browserVersion", "platformName", "pageLoadStrategy")) {
+            JsonElement expected = requested.get(name);
+            if (expected != null && !samePrimitive(expected, actual.get(name))) return false;
+        }
+        for (String name : List.of("acceptInsecureCerts", "setWindowRect", "strictFileInteractability")) {
+            JsonElement expected = requested.get(name);
+            if (expected != null) {
+                JsonElement supplied = actual.get(name);
+                boolean actualValue = supplied != null && supplied.booleanValue();
+                if (expected.booleanValue() != actualValue) return false;
+            }
+        }
+        if (requested.has("proxy") || requested.has("unhandledPromptBehavior")) return false;
+        JsonElement webSocketUrl = requested.get("webSocketUrl");
+        return webSocketUrl == null || !webSocketUrl.booleanValue() || actual.has("webSocketUrl");
+    }
+
+    private static boolean samePrimitive(JsonElement expected, @Nullable JsonElement actual) {
+        return actual != null && actual.isPrimitive() && expected.string().equals(actual.string());
     }
 
     private static JsonObject normalizeActualCapabilities(JsonObject requested, JsonObject supplied) {
@@ -664,6 +735,7 @@ public final class WebDriverServer implements AutoCloseable {
         }
         JsonElement suppliedTimeouts = result.get("timeouts");
         if (suppliedTimeouts != null) {
+            validateTimeouts(suppliedTimeouts);
             for (Map.Entry<String, JsonElement> entry :
                     suppliedTimeouts.asObject().entrySet())
                 timeouts.add(entry.getKey(), entry.getValue().deepCopy());
@@ -793,7 +865,7 @@ public final class WebDriverServer implements AutoCloseable {
         try {
             sendJson(exchange, error.httpStatus(), envelope);
         } catch (IOException ignored) {
-            // Client disconnected before the error could be returned.
+            LOG.debug("Failed to send WebDriver error response", ignored);
         }
     }
 

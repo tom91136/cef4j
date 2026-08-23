@@ -9,7 +9,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_resource_bundle_handler_t* Create_JniCefResourceBundleHandler(JNIEnv* env, jobject handler);
 extern "C" cef_browser_process_handler_t* Create_JniCefBrowserProcessHandler(JNIEnv* env, jobject handler);

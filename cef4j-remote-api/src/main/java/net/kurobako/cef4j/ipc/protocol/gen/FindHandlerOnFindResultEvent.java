@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMessageEncoder {
@@ -84,12 +85,18 @@ public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMe
     public static final CefMessageDecoder<FindHandlerOnFindResultEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "identifier");
         int identifier = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "count");
         int count = __buf.getInt();
         Rect selectionRect = Rect.decode(__buf);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "activeMatchOrdinal");
         int activeMatchOrdinal = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "finalUpdate");
         int finalUpdate = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "FindHandlerOnFindResultEvent");
         return new FindHandlerOnFindResultEvent(browser, identifier, count, selectionRect, activeMatchOrdinal, finalUpdate);
     };
 }

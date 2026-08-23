@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class V8SetPropertyResponse implements CefMessageView, CefMessageEncoder {
 
@@ -58,11 +59,13 @@ public final class V8SetPropertyResponse implements CefMessageView, CefMessageEn
     public static final CefMessageDecoder<V8SetPropertyResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, 1, "ok");
         boolean ok = __buf.get() != 0;
-        int errorMessageLen = __buf.getInt();
+        int errorMessageLen = WireDecoder.length(__buf, "errorMessage");
         byte[] errorMessageBuf = new byte[errorMessageLen];
         __buf.get(errorMessageBuf);
         String errorMessage = new String(errorMessageBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "V8SetPropertyResponse");
         return new V8SetPropertyResponse(ok, errorMessage);
     };
 }

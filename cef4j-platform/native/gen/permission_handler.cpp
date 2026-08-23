@@ -6,7 +6,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefPermissionHandler : public cef_permission_handler_t {
     JavaVM* jvm;

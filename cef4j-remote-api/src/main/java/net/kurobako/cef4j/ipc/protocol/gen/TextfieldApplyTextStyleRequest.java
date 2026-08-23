@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class TextfieldApplyTextStyleRequest implements CefMessageView, CefMessageEncoder {
@@ -70,10 +71,14 @@ public final class TextfieldApplyTextStyleRequest implements CefMessageView, Cef
     public static final CefMessageDecoder<TextfieldApplyTextStyleRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "style");
         int style = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "add");
         int add = __buf.getInt();
         Range range = Range.decode(__buf);
+        WireDecoder.requireFullyConsumed(__buf, "TextfieldApplyTextStyleRequest");
         return new TextfieldApplyTextStyleRequest(self, style, add, range);
     };
 }

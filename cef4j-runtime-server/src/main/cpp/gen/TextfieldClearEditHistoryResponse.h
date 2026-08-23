@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct TextfieldClearEditHistoryResponse {
     static constexpr int32_t kMessageId = 2126439381;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct TextfieldClearEditHistoryResponse {
                 throw std::invalid_argument("truncated TextfieldClearEditHistoryResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing TextfieldClearEditHistoryResponse payload");
         return out;
     }
 };

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ServerHandlerOnWebSocketMessageEvent implements CefMessageView, CefMessageEncoder {
@@ -64,11 +65,14 @@ public final class ServerHandlerOnWebSocketMessageEvent implements CefMessageVie
     public static final CefMessageDecoder<ServerHandlerOnWebSocketMessageEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "server");
         RemoteHandle server = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "connectionId");
         int connectionId = __buf.getInt();
-        int dataLen = __buf.getInt();
+        int dataLen = WireDecoder.length(__buf, "data");
         byte[] data = new byte[dataLen];
         __buf.get(data);
+        WireDecoder.requireFullyConsumed(__buf, "ServerHandlerOnWebSocketMessageEvent");
         return new ServerHandlerOnWebSocketMessageEvent(server, connectionId, data);
     };
 }

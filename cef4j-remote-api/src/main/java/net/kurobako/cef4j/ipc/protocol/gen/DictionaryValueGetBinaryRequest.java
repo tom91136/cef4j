@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DictionaryValueGetBinaryRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class DictionaryValueGetBinaryRequest implements CefMessageView, Ce
     public static final CefMessageDecoder<DictionaryValueGetBinaryRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int keyLen = __buf.getInt();
+        int keyLen = WireDecoder.length(__buf, "key");
         byte[] keyBuf = new byte[keyLen];
         __buf.get(keyBuf);
         String key = new String(keyBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DictionaryValueGetBinaryRequest");
         return new DictionaryValueGetBinaryRequest(self, key);
     };
 }

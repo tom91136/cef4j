@@ -12,7 +12,6 @@ public final class CdpException extends RuntimeException {
     @Nullable
     private final transient Object data;
 
-    // JSON error data may be absent or null
     @SuppressWarnings("NullableForbidden")
     public CdpException(int code, @Nonnull String message, @Nullable Object data) {
         super(message);
@@ -24,7 +23,6 @@ public final class CdpException extends RuntimeException {
         return code;
     }
 
-    // JSON error data may be absent or null
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public Object data() {

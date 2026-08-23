@@ -15,7 +15,6 @@
     <description>Gson codecs for cef4j CDP, Remote CEF recording, and WebDriver</description>
 
     <dependencies>
-        <!-- Feature APIs are optional so this codec family never selects a hosting mode. -->
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-cdp</artifactId>
@@ -48,6 +47,11 @@
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-code-policy</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-shared</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

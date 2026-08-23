@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefCookieVisitor : public cef_cookie_visitor_t {
     JavaVM* jvm;

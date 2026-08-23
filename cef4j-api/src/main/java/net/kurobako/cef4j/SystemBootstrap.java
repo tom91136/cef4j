@@ -12,9 +12,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +45,7 @@ public final class SystemBootstrap {
 
     private static final Logger log = LoggerFactory.getLogger(SystemBootstrap.class);
     private static final Object LOAD_LOCK = new Object();
+    private static final String CEF_API_VERSION_RESOURCE = "/META-INF/cef4j/cef-api-version";
 
     private SystemBootstrap() {}
 
@@ -59,7 +67,6 @@ public final class SystemBootstrap {
                 log.debug("Trying System.loadLibrary(\"cef4j\")");
                 System.loadLibrary("cef4j");
                 if (OS.isMacOS()) {
-                    // Even when loaded from system path, CEF must be loaded via cef_load_library().
                     Path libcefDir = libcefDir().orElse(null);
                     if (libcefDir == null) {
                         throw new UnsatisfiedLinkError("LIBCEF_DIR must be set on macOS to locate the CEF framework");
@@ -82,7 +89,7 @@ public final class SystemBootstrap {
                 }
             }
 
-            NativeStderr.install();
+            finishLoad();
         }
     }
 
@@ -109,7 +116,12 @@ public final class SystemBootstrap {
             }
             loaded = true;
             log.info("Loaded cef4j native library from filesystem path {}", fullPath);
+            finishLoad();
         }
+    }
+
+    private static void finishLoad() {
+        NativeStderr.install();
     }
 
     /** Returns whether the native library has been loaded. */
@@ -140,27 +152,71 @@ public final class SystemBootstrap {
         return value == null || value.isEmpty() ? null : Paths.get(value);
     }
 
-    // Walk up from working directory looking for .cef-dist/*/Release/ containing the CEF runtime,
-    // so IDE run configs work without setting LIBCEF_DIR.
     private static @Nullable Path discoverCefDist() {
-        Path dir = Paths.get(System.getProperty("user.dir"));
+        return discoverCefDist(Paths.get(System.getProperty("user.dir")), expectedCefMajor());
+    }
+
+    static @Nullable Path discoverCefDist(Path start, @Nullable String expectedMajor) {
+        Path dir = start;
         for (int i = 0; i < 5 && dir != null; i++, dir = dir.getParent()) {
             Path cefDist = dir.resolve(".cef-dist");
             if (!Files.isDirectory(cefDist)) continue;
             try (java.util.stream.Stream<Path> children = Files.list(cefDist)) {
-                Path found = children.map(child -> child.resolve("Release"))
+                String suffix = "_" + OS.platform() + "_minimal";
+                List<Path> candidates = children.filter(child -> {
+                            Path fileName = child.getFileName();
+                            return fileName != null && fileName.toString().endsWith(suffix);
+                        })
+                        .map(child -> child.resolve("Release"))
                         .filter(SystemBootstrap::isValidCefReleaseDir)
-                        .findFirst()
-                        .orElse(null);
-                if (found != null) {
-                    log.debug("Auto-discovered CEF dist: {}", found);
-                    return found;
+                        .sorted(Comparator.comparing(Path::toString))
+                        .collect(Collectors.toList());
+                if (expectedMajor != null) {
+                    candidates = candidates.stream()
+                            .filter(path -> {
+                                Path parent = path.getParent();
+                                Path fileName = parent == null ? null : parent.getFileName();
+                                return parent != null
+                                        && fileName != null
+                                        && fileName.toString().startsWith("cef_binary_" + expectedMajor + ".");
+                            })
+                            .collect(Collectors.toList());
+                }
+                if (candidates.size() == 1) {
+                    log.debug("Auto-discovered CEF dist: {}", candidates.get(0));
+                    return candidates.get(0);
+                }
+                if (candidates.size() > 1) {
+                    log.warn("Multiple CEF distributions match this build; set LIBCEF_DIR explicitly: {}", candidates);
+                    return null;
                 }
             } catch (IOException e) {
                 log.trace("skipping unreadable CEF dist candidate {}: {}", cefDist, e.toString());
             }
         }
         return null;
+    }
+
+    private static @Nullable String expectedCefMajor() {
+        String version = System.getProperty("cef4j.test.cefApiVersion");
+        if (version == null || version.isBlank()) {
+            version = packagedCefApiVersion();
+        }
+        if (version == null) return null;
+        java.util.regex.Matcher matcher =
+                java.util.regex.Pattern.compile("^(\\d+)").matcher(version);
+        return matcher.find() ? matcher.group(1) : null;
+    }
+
+    static @Nullable String packagedCefApiVersion() {
+        try (InputStream stream = SystemBootstrap.class.getResourceAsStream(CEF_API_VERSION_RESOURCE)) {
+            if (stream == null) return null;
+            String version = new String(stream.readAllBytes(), StandardCharsets.UTF_8).trim();
+            return version.isEmpty() ? null : version;
+        } catch (IOException e) {
+            log.warn("Unable to read packaged CEF API version", e);
+            return null;
+        }
     }
 
     private static boolean isValidCefReleaseDir(Path release) {
@@ -201,9 +257,6 @@ public final class SystemBootstrap {
         log.debug("Detected platform: {}, native lib: {}", platform, libName);
 
         boolean packagedRuntimeAvailable = isPackagedRuntimeAvailable();
-        // Explicit configuration wins, followed by packaged resources. Auto-discovery is only an IDE convenience
-        // fallback: allowing an arbitrary .cef-dist entry to override an application resource can pair the JNI bridge
-        // with a different CEF major while the extraction cache is keyed to the packaged runtime.
         Path configuredLibcefDir = configuredLibcefDir();
         Path discoveredLibcefDir = configuredLibcefDir == null && !packagedRuntimeAvailable ? discoverCefDist() : null;
         Path libcefDir = selectLibcefDir(configuredLibcefDir, discoveredLibcefDir, packagedRuntimeAvailable);
@@ -217,7 +270,7 @@ public final class SystemBootstrap {
 
         Path cacheDir = resolveExtractionCacheDir(platform, libName, resourceBase, libcefDir, packagedRuntimeAvailable);
         log.debug("Extraction cache dir: {}", cacheDir);
-        Files.createDirectories(cacheDir);
+        createPrivateDirectory(cacheDir);
 
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
         Path launcher = cacheDir.resolve(launcherName);
@@ -246,16 +299,14 @@ public final class SystemBootstrap {
         if (OS.isMacOS()) {
             if (libcefDir == null) prepareMacAngleLibraries(cacheDir);
 
-            // On macOS, the CEF framework must NOT be direct-linked; it is loaded dynamically via
-            // cef_load_library() (per CEF README). Load libcef4j.dylib first (it contains the
-            // cef_load_library stub), then call loadCefLibrary0() with the explicit framework path.
+            // XXX: CEF 109-150 requires macOS framework loading through cef_load_library before API use; replace this
+            // sequence only when the minimum supported CEF documents a different loader contract.
             System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
             Path frameworkBinary =
                     cacheDir.resolve("Chromium Embedded Framework.framework").resolve("Chromium Embedded Framework");
             if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
                 throw new IOException("cef_load_library() failed for: " + frameworkBinary);
             }
-            // Remove macOS quarantine attributes so CEF can spawn subprocess helpers.
             try {
                 new ProcessBuilder(
                                 "xattr",
@@ -267,16 +318,12 @@ public final class SystemBootstrap {
                         .redirectError(ProcessBuilder.Redirect.DISCARD)
                         .start()
                         .waitFor();
-            } catch (IOException ignored) {
-                // xattr may not exist or quarantine may not be set; not fatal
-            } catch (InterruptedException ignored) {
+            } catch (IOException e) {
+                log.trace("Unable to clear macOS quarantine attribute from {}: {}", cacheDir, e.toString());
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         } else if (OS.isWindows()) {
-            // On Windows, pre-load dependencies in order so each DLL is already
-            // resident when the next one tries to import it.  The JVM does not add
-            // a DLL's directory to the search path automatically, so we must
-            // resolve every required DLL explicitly before loading libcef.dll.
             for (String dep : new String[] {"chrome_elf.dll", "libcef.dll"}) {
                 Path depPath = cacheDir.resolve(dep);
                 if (Files.exists(depPath)) {
@@ -285,8 +332,6 @@ public final class SystemBootstrap {
             }
             System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
         } else {
-            // On Linux, pre-load the CEF shared library so the linker resolves
-            // libcef4j's dependency on it before we load libcef4j itself.
             System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
             System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
         }
@@ -301,10 +346,34 @@ public final class SystemBootstrap {
             @Nullable Path libcefDir,
             boolean packagedRuntimeAvailable)
             throws IOException {
-        Path baseDir = Paths.get(System.getProperty("java.io.tmpdir"), "cef4j-cache", platform);
-        Files.createDirectories(baseDir);
+        String configured = System.getProperty("cef4j.native.cache");
+        Path baseDir = configured == null || configured.isBlank()
+                ? Paths.get(System.getProperty("user.home"), ".cache", "cef4j", "native", platform)
+                : Paths.get(configured).resolve(platform);
+        createPrivateDirectory(baseDir);
         return baseDir.resolve(
                 computeExtractionCacheKey(platform, libName, resourceBase, libcefDir, packagedRuntimeAvailable));
+    }
+
+    private static void createPrivateDirectory(Path directory) throws IOException {
+        Files.createDirectories(directory);
+        if (Files.isSymbolicLink(directory) || !Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
+            throw new IOException("Native cache is not a real directory: " + directory);
+        }
+        Path home = Paths.get(System.getProperty("user.home"));
+        if (!Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS).equals(Files.getOwner(home))) {
+            throw new IOException("Native cache is not owned by the current user: " + directory);
+        }
+        try {
+            Files.setPosixFilePermissions(
+                    directory,
+                    Set.of(
+                            PosixFilePermission.OWNER_READ,
+                            PosixFilePermission.OWNER_WRITE,
+                            PosixFilePermission.OWNER_EXECUTE));
+        } catch (UnsupportedOperationException e) {
+            log.trace("POSIX permissions are unavailable for {}: {}", directory, e.toString());
+        }
     }
 
     private static String computeExtractionCacheKey(
@@ -342,7 +411,6 @@ public final class SystemBootstrap {
     }
 
     private static boolean isPackagedRuntimeAvailable() {
-        // The runtime packager emits this manifest for every selected platform.
         return SystemBootstrap.class.getClassLoader().getResource(platformRuntimeResource("file-list.txt")) != null;
     }
 
@@ -370,7 +438,6 @@ public final class SystemBootstrap {
                 if (isUsableExistingFile(target)) continue;
                 Path parent = target.getParent();
                 if (parent != null) Files.createDirectories(parent);
-                // Never write through a pre-existing symlink planted in the cache dir.
                 Files.deleteIfExists(target);
                 extractResource(platformRuntimeResource(line), target);
                 Path fileName = target.getFileName();
@@ -397,16 +464,11 @@ public final class SystemBootstrap {
 
     private static void linkCefRuntime(Path libcefDir, Path cacheDir) throws IOException {
         if (OS.isMacOS()) {
-            // On macOS, libcef4j.dylib uses @loader_path to find the framework.
-            // Symlink the entire framework next to libcef4j.dylib in the cache dir.
             String framework = "Chromium Embedded Framework.framework";
             linkOrCopy(libcefDir.resolve(framework), cacheDir.resolve(framework));
             return;
         }
 
-        // CEF resolves libcef.so symlinks and looks for resources (icudtl.dat,
-        // .pak files, locales/) next to the real libcef.so. Symlink Resources/
-        // into LIBCEF_DIR (Release/) if not already present.
         Path resourcesDir = libcefDir.resolveSibling("Resources");
         if (Files.isDirectory(resourcesDir)) {
             for (String res :
@@ -416,7 +478,6 @@ public final class SystemBootstrap {
             linkOrCopy(resourcesDir.resolve("locales"), libcefDir.resolve("locales"));
         }
 
-        // Link CEF shared libraries from LIBCEF_DIR into cache dir
         String[] libs;
         if (OS.isWindows()) {
             libs = new String[] {
@@ -429,7 +490,6 @@ public final class SystemBootstrap {
             linkOrCopy(libcefDir.resolve(lib), cacheDir.resolve(lib));
         }
 
-        // Also symlink resources into cache dir for subprocess launcher (cef4j_launcher)
         for (String res : new String[] {
             "icudtl.dat",
             "resources.pak",
@@ -449,8 +509,6 @@ public final class SystemBootstrap {
     }
 
     private static void prepareMacAngleLibraries(Path runtimeDir) throws IOException {
-        // The GPU subprocess resolves ANGLE libraries relative to its executable, not the
-        // framework bundle. This applies to both extracted and reactor-staged launchers.
         Path frameworkLibs =
                 runtimeDir.resolve("Chromium Embedded Framework.framework").resolve("Libraries");
         for (String lib :
@@ -460,32 +518,21 @@ public final class SystemBootstrap {
         }
     }
 
-    // macOS only: calls cef_load_library() from libcef_dll_dylib.cc to dynamically load the
-    // CEF framework via dlopen before cef_initialize() is called.
     private static native boolean loadCefLibrary0(String frameworkBinaryPath);
 
-    // macOS only: dispatch a single block onto Thread 0 via dispatch_async that runs
-    // initRunnable (cef_initialize), then cef_run_message_loop(), then cleanupRunnable
-    // (NativeCleaner + cef_shutdown).  Blocks the caller until init completes (semaphore).
-    static native void initAndRunOnMainThread0(Runnable initRunnable, Runnable cleanupRunnable);
+    static native void initAndRunOnMainThread0(BooleanSupplier initializer, Runnable cleanupRunnable);
 
-    // macOS only: dispatch {@code runnable.run()} onto Thread 0 (the AppKit main thread) via
-    // {@code dispatch_sync(dispatch_get_main_queue())}. If the calling thread is already Thread 0
-    // (e.g. JVM launched with {@code -XstartOnFirstThread}), the runnable is invoked directly.
-    // Exceptions thrown from the runnable are logged but not propagated.
     static native void dispatchToMainThreadSync0(Runnable runnable);
 
-    // macOS only: calls cef_quit_message_loop() + [NSApp stop:] to cause
-    // cef_run_message_loop() to return, then waits for the dispatch block to finish.
     static native void quitAndWaitMainThreadMessageLoop0();
 
     /**
      * macOS only: initialise CEF, run the message loop, and run cleanup — all on Thread 0 in a single GCD block. See
-     * {@link #initAndRunOnMainThread0(Runnable, Runnable)}.
+     * {@link #initAndRunOnMainThread0(BooleanSupplier, Runnable)}.
      */
-    public static void initAndRunOnMainThread(Runnable initRunnable, Runnable cleanupRunnable) {
+    public static void initAndRunOnMainThread(BooleanSupplier initializer, Runnable cleanupRunnable) {
         if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
-        initAndRunOnMainThread0(initRunnable, cleanupRunnable);
+        initAndRunOnMainThread0(initializer, cleanupRunnable);
     }
 
     /** macOS only. See {@link #dispatchToMainThreadSync0(Runnable)}. */
@@ -501,12 +548,15 @@ public final class SystemBootstrap {
         quitAndWaitMainThreadMessageLoop0();
     }
 
-    private static void extractResource(String resourcePath, Path target) throws IOException {
-        // The cache directory is content-addressed and callers hold its cross-process extraction lock.
-        // A target can therefore only be a complete copy of this exact resource. Reusing it is important
-        // on Windows, where a CEF subprocess from a preceding JVM may still have the launcher mapped and
-        // replacing the executable would fail with AccessDeniedException.
-        if (Files.isRegularFile(target)) return;
+    static void extractResource(String resourcePath, Path target) throws IOException {
+        if (Files.isSymbolicLink(target)) throw new IOException("Refusing symbolic link resource target: " + target);
+        byte[] expectedDigest = resourceDigest(resourcePath);
+        if (Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS)) {
+            if (Arrays.equals(expectedDigest, fileDigest(target))) return;
+            Files.delete(target);
+        } else if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
+            throw new IOException("Resource target is not a regular file: " + target);
+        }
         try (InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (in == null) {
                 throw new IOException("Resource not found on classpath: " + resourcePath);
@@ -528,6 +578,22 @@ public final class SystemBootstrap {
                 Files.deleteIfExists(temporary);
             }
         }
+    }
+
+    private static byte[] resourceDigest(String resourcePath) throws IOException {
+        MessageDigest digest = newSha256Digest();
+        updateDigestFromResource(digest, resourcePath);
+        return digest.digest();
+    }
+
+    private static byte[] fileDigest(Path path) throws IOException {
+        MessageDigest digest = newSha256Digest();
+        try (InputStream in = Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = in.read(buffer)) != -1) digest.update(buffer, 0, read);
+        }
+        return digest.digest();
     }
 
     private static void updateDigestFromResource(MessageDigest digest, String resourcePath) throws IOException {
@@ -574,15 +640,11 @@ public final class SystemBootstrap {
     private static void linkOrCopy(Path source, Path link) throws IOException {
         if (!Files.exists(source)) return;
         if (Files.isSymbolicLink(link)) {
-            // Update if target changed
             if (Files.readSymbolicLink(link).equals(source.toAbsolutePath())) return;
             Files.delete(link);
         } else if (Files.exists(link)) {
-            // Real file/directory already exists - leave it alone
             return;
         }
-        // Symbolic links on Windows require developer mode or admin privileges.
-        // Fall back to a regular copy when symlink creation fails.
         try {
             Files.createSymbolicLink(link, source.toAbsolutePath());
         } catch (UnsupportedOperationException | IOException e) {

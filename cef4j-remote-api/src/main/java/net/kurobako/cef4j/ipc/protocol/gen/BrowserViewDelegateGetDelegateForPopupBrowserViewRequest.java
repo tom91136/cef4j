@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserViewDelegateGetDelegateForPopupBrowserViewRequest implements CefMessageView, CefMessageEncoder {
@@ -79,11 +80,16 @@ public final class BrowserViewDelegateGetDelegateForPopupBrowserViewRequest impl
     public static final CefMessageDecoder<BrowserViewDelegateGetDelegateForPopupBrowserViewRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browserView");
         RemoteHandle browserView = new RemoteHandle(__buf.getInt());
         BrowserSettings settings = BrowserSettings.decode(__buf);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "client");
         RemoteHandle client = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isDevtools");
         int isDevtools = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "BrowserViewDelegateGetDelegateForPopupBrowserViewRequest");
         return new BrowserViewDelegateGetDelegateForPopupBrowserViewRequest(self, browserView, settings, client, isDevtools);
     };
 }

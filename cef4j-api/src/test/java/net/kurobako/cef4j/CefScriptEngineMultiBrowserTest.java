@@ -137,6 +137,26 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
     @Test
     @Order(7)
+    void delayedCallbackStaysBoundToCreatingBrowser() throws Exception {
+        CompletableFuture<int[]> received = new CompletableFuture<>();
+        int callback = pumpAndGet(engineA.createCallback(received::complete), 5_000);
+        pumpAndGet(engineA.evaluate("window.__delayedCallback = __cef4j_h_" + callback), 5_000);
+        pumpAndGet(
+                engineA.evaluate("setTimeout(() => window.__delayedCallback({source: 'from-a', length: 6}), 100)"),
+                5_000);
+        pumpAndGet(engineB.evaluate("'cross-browser-traffic'"), 5_000);
+
+        int[] handles = pumpAndGet(received, 5_000);
+        assertThat(handles).hasSize(1);
+        CefScriptEngine.Result argument = pumpAndGet(engineA.getProperty(handles[0], "length", false), 5_000);
+        assertThat(argument.isJson()).as(argument.toString()).isTrue();
+        assertThat(argument.json()).hasValue("6");
+        engineA.release(handles[0]);
+        engineA.release(callback);
+    }
+
+    @Test
+    @Order(8)
     void closeBrowserB_doesNotBreakA() throws Exception {
         browserB.getHost().ifPresent(host -> host.closeBrowser(true));
         engineB.dispose();

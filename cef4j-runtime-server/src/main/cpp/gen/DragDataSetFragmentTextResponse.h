@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct DragDataSetFragmentTextResponse {
     static constexpr int32_t kMessageId = 176523856;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct DragDataSetFragmentTextResponse {
                 throw std::invalid_argument("truncated DragDataSetFragmentTextResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing DragDataSetFragmentTextResponse payload");
         return out;
     }
 };

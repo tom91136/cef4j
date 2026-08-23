@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefMediaRouteCreateCallback : public cef_media_route_create_callback_t {
     JavaVM* jvm;

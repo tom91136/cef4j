@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class MenuModelHasAcceleratorAtRequest implements CefMessageView, CefMessageEncoder {
@@ -55,8 +56,11 @@ public final class MenuModelHasAcceleratorAtRequest implements CefMessageView, C
     public static final CefMessageDecoder<MenuModelHasAcceleratorAtRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "index");
         long index = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "MenuModelHasAcceleratorAtRequest");
         return new MenuModelHasAcceleratorAtRequest(self, index);
     };
 }

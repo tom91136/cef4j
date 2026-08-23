@@ -15,7 +15,7 @@ CEF4J_JNI_EXPORT_RT(void, NativeStderr, setCrashLogPath0)(JNIEnv* env, jclass cl
 
 CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, dispatchToMainThreadSync0)(JNIEnv* env, jclass clz, jobject runnable);
 
-CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env, jclass clz, jobject initRunnable, jobject cleanupRunnable);
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env, jclass clz, jobject initializer, jobject cleanupRunnable);
 
 CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv* env, jclass clz, jstring frameworkBinaryPath);
 

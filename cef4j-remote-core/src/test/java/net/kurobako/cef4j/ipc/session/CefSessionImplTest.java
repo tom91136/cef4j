@@ -13,6 +13,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -100,6 +102,25 @@ class CefSessionImplTest {
         assertThat(v.bytes).isEqualTo("pong".getBytes(StandardCharsets.UTF_8));
     }
 
+    @Test
+    void malformedStructuredErrorsFailTheRequestAsProtocolErrors() throws Exception {
+        assertMalformedError(new byte[] {1, 0, 0});
+        assertMalformedError(new byte[] {1, 0, 0, 0, -1, -1, -1, -1});
+        assertMalformedError(new byte[] {1, 0, 0, 0, 1, 0, 0, 4});
+        assertMalformedError(new byte[] {1, 0, 0, 0, 2, 0, 0, 0, 'x'});
+        assertMalformedError(new byte[] {1, 0, 0, 0, 0, 0, 0, 0, 9});
+    }
+
+    private void assertMalformedError(byte[] payload) throws Exception {
+        CompletableFuture<TestMessages.BytesView> future = session.request(
+                new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+        TestPeer.DecodedFrame request = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "request");
+        peer.sendError(request.header.corrId, MSG_PING, payload);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> future.get(2, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCauseInstanceOf(IllegalArgumentException.class);
+    }
+
     private static final class AcknowledgingRuntimeTransport implements CefTransport {
         private final int requestsToDrop;
         private final long acknowledgementDelayMillis;
@@ -184,14 +205,11 @@ class CefSessionImplTest {
                     new TestMessages.BytesEncoder(MSG_PING, ("req-" + i).getBytes(StandardCharsets.UTF_8)),
                     TestMessages.bytesDecoder(MSG_PING)));
         }
-        // Echo back each request's payload as response, keyed by corrId.
         for (int i = 0; i < n; i++) {
             TestPeer.DecodedFrame f = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "request");
-            // Response payload encodes the corrId so we can later assert per-future correctness.
             byte[] resp = ("resp-corr-" + f.header.corrId).getBytes(StandardCharsets.UTF_8);
             peer.sendResponse(f.header.corrId, MSG_PING, resp);
         }
-        // All futures must complete; each must get the response addressed to its corrId.
         for (int i = 0; i < n; i++) {
             TestMessages.BytesView v = futures.get(i).get(5, TimeUnit.SECONDS);
             String body = new String(v.bytes, StandardCharsets.UTF_8);
@@ -205,7 +223,6 @@ class CefSessionImplTest {
         try {
             CompletableFuture<TestMessages.BytesView> fut = tightTimeoutSession.request(
                     new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
-            // Drain the request so it doesn't sit in the peer's queue forever.
             try {
                 peer.poll(1, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
@@ -216,6 +233,25 @@ class CefSessionImplTest {
                     .hasCauseInstanceOf(TimeoutException.class);
         } finally {
             tightTimeoutSession.close();
+        }
+    }
+
+    @Test
+    void rejectedTimeoutSchedulingReturnsFailedFutureWithoutSending() throws Exception {
+        LoopbackTransport.Pair isolated = LoopbackTransport.create();
+        ScheduledExecutorService stopped = Executors.newSingleThreadScheduledExecutor();
+        stopped.shutdownNow();
+        CefSessionImpl rejected = new CefSessionImpl(isolated.a, Duration.ofSeconds(1), stopped);
+        TestPeer isolatedPeer = new TestPeer(isolated.b);
+        try {
+            CompletableFuture<TestMessages.BytesView> future = rejected.request(
+                    new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+
+            assertThat(future).isCompletedExceptionally();
+            assertThat(isolatedPeer.poll(100, TimeUnit.MILLISECONDS)).isNull();
+        } finally {
+            rejected.close();
+            isolatedPeer.close();
         }
     }
 
@@ -274,14 +310,12 @@ class CefSessionImplTest {
         CefSession.HandlerRegistration reg =
                 session.on(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), v -> count.incrementAndGet());
         peer.sendEvent(MSG_EVENT, new byte[] {1});
-        // Wait for first delivery.
         long deadline = System.currentTimeMillis() + 2000;
         while (count.get() == 0 && System.currentTimeMillis() < deadline) Thread.sleep(20);
         assertThat(count.get()).isEqualTo(1);
 
         reg.unregister();
         peer.sendEvent(MSG_EVENT, new byte[] {2});
-        // Give any (incorrect) delivery time to land.
         Thread.sleep(300);
         assertThat(count.get()).as("after unregister, no further deliveries").isEqualTo(1);
     }
@@ -289,7 +323,6 @@ class CefSessionImplTest {
     @Test
     void interceptHandlerResponseSentBack() throws Exception {
         session.intercept(MSG_INTERCEPT, TestMessages.bytesDecoder(MSG_INTERCEPT), event -> {
-            // Respond with the bytes reversed.
             byte[] reversed = new byte[event.bytes.length];
             for (int i = 0; i < event.bytes.length; i++) reversed[i] = event.bytes[event.bytes.length - 1 - i];
             return new TestMessages.BytesEncoder(MSG_INTERCEPT, reversed);
@@ -334,8 +367,6 @@ class CefSessionImplTest {
 
     @Test
     void peerDisconnectStopsOwnedTimerThread() throws Exception {
-        // The public constructor owns a daemon scheduler named cef-session-timer. Force it to start with a pending
-        // request, disconnect the peer, then verify that the owned thread terminates without requiring close().
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
         Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "request");
@@ -370,10 +401,8 @@ class CefSessionImplTest {
 
     @Test
     void orphanResponseDoesNotCrashSession() throws Exception {
-        // Send a RESPONSE with a corrId nobody is waiting on. Session should drop it.
         peer.sendResponse(/*corrId*/ 12345, MSG_PING, new byte[] {1, 2, 3});
         Thread.sleep(200);
-        // Verify the session still works.
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
         TestPeer.DecodedFrame f = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "follow-up request");

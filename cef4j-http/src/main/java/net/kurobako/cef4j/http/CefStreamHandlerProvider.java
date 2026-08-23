@@ -14,15 +14,15 @@ import javax.annotation.Nullable;
 public final class CefStreamHandlerProvider extends URLStreamHandlerProvider {
 
     @Override
-    // JDK contract: null protocol/result
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public URLStreamHandler createURLStreamHandler(@Nullable String protocol) {
         if (protocol == null) return null;
         switch (protocol) {
             case "http":
+                return new CefStreamHandler(CefUrlRequestHttpEngine.INSTANCE, 80);
             case "https":
-                return new CefStreamHandler(CefUrlRequestHttpEngine.INSTANCE);
+                return new CefStreamHandler(CefUrlRequestHttpEngine.INSTANCE, 443);
             default:
                 return null;
         }

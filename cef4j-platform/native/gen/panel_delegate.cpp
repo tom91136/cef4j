@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefPanelDelegate : public cef_panel_delegate_t {
     JavaVM* jvm;

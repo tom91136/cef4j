@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestHandlerOnOpenUrlfromTabEvent implements CefMessageView, CefMessageEncoder {
@@ -82,14 +83,19 @@ public final class RequestHandlerOnOpenUrlfromTabEvent implements CefMessageView
     public static final CefMessageDecoder<RequestHandlerOnOpenUrlfromTabEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
-        int targetUrlLen = __buf.getInt();
+        int targetUrlLen = WireDecoder.length(__buf, "targetUrl");
         byte[] targetUrlBuf = new byte[targetUrlLen];
         __buf.get(targetUrlBuf);
         String targetUrl = new String(targetUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "targetDisposition");
         int targetDisposition = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "userGesture");
         int userGesture = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RequestHandlerOnOpenUrlfromTabEvent");
         return new RequestHandlerOnOpenUrlfromTabEvent(browser, frame, targetUrl, targetDisposition, userGesture);
     };
 }

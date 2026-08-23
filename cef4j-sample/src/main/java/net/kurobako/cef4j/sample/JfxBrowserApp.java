@@ -43,9 +43,7 @@ public final class JfxBrowserApp {
         });
         Application.launch(JfxApp.class, args);
         CefWebView.terminate();
-        // halt() instead of normal return: on macOS, JVM teardown fires CEF's
-        // CFRunLoop observers after the message loop has stopped, causing a crash.
-        Runtime.getRuntime().halt(0);
+        SampleShutdown.afterCefTermination();
     }
 
     public static class JfxApp extends Application {
@@ -53,8 +51,8 @@ public final class JfxBrowserApp {
 
         @Override
         public void start(Stage stage) throws IOException {
-            // JavaFX must establish its AppKit integration before CEF on macOS.
             CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.noSandbox = 1;
             settings.cachePath = createCacheDir().toAbsolutePath().toString();
             CefWebView.initialise(settings, List.of(), Optional.empty());
 
@@ -64,7 +62,6 @@ public final class JfxBrowserApp {
 
             TabPane tabPane = new TabPane();
 
-            // "+" tab trick - an empty non-closable tab that creates a new tab when selected
             Tab newTabTab = new Tab("+");
             newTabTab.setClosable(false);
             tabPane.getTabs().add(newTabTab);
@@ -94,12 +91,10 @@ public final class JfxBrowserApp {
                         }
                     }
                 }
-                // Only the "+" tab remains - exit
                 if (tabPane.getTabs().size() <= 1) {
                     Platform.exit();
                     return;
                 }
-                // Ensure "+" tab is always last
                 int plusIdx = tabPane.getTabs().indexOf(newTabTab);
                 int lastIdx = tabPane.getTabs().size() - 1;
                 if (plusIdx >= 0 && plusIdx != lastIdx) {
@@ -119,7 +114,6 @@ public final class JfxBrowserApp {
                 Platform.exit();
             });
             Scene scene = new Scene(root);
-            // Scene-level shortcuts so they work regardless of focus
             scene.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                 if (!e.isShortcutDown()) return;
                 switch (e.getCode()) {
@@ -148,7 +142,6 @@ public final class JfxBrowserApp {
 
         private BrowserTab createTab(TabPane tabPane, Stage stage, String initialUrl) {
             BrowserTab tab = new BrowserTab(tabPane, stage, initialUrl);
-            // Insert before the "+" tab (always last)
             int insertAt = Math.max(0, tabPane.getTabs().size() - 1);
             tabPane.getTabs().add(insertAt, tab);
             return tab;
@@ -225,7 +218,6 @@ public final class JfxBrowserApp {
                     .addListener((obs, oldZoom, newZoom) ->
                             zoomResetBtn.setText(Math.round(newZoom.doubleValue() * 100) + "%"));
 
-            // Mouse back/forward buttons
             view.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, e -> {
                 if (e.getButton() == MouseButton.BACK) {
                     view.goBack();
@@ -235,7 +227,6 @@ public final class JfxBrowserApp {
                     e.consume();
                 }
             });
-            // Browser keyboard shortcuts
             view.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                 boolean shortcut = e.isShortcutDown();
                 switch (e.getCode()) {
@@ -277,7 +268,6 @@ public final class JfxBrowserApp {
                             e.consume();
                         }
                         break;
-                    // Ctrl+T and Ctrl+W handled at scene level
                     default:
                         break;
                 }
@@ -289,7 +279,6 @@ public final class JfxBrowserApp {
                 Platform.runLater(() -> owner.getSelectionModel().select(popupTab));
                 return popupTab.view.getEngine();
             });
-            // JS alert/confirm/prompt - custom handlers override the built-in JavaFX dialogs
             view.getEngine()
                     .setOnAlert(
                             event -> statusLabel.setText("Alert: " + (event.getData() != null ? event.getData() : "")));
@@ -374,7 +363,6 @@ public final class JfxBrowserApp {
             if (host.hasDevTools()) {
                 host.closeDevTools();
             } else {
-                // DevTools is always Chrome-style windowed - pass defaults to let CEF create a native window
                 host.showDevTools(null, null, null, new net.kurobako.cef4j.gen.CefPoint(0, 0));
             }
         }

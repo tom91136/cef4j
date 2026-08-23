@@ -8,3 +8,5 @@ domain Runtime
       optional string class
 
   command enable
+
+domain DOM

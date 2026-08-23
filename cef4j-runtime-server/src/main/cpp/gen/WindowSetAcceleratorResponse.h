@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct WindowSetAcceleratorResponse {
     static constexpr int32_t kMessageId = 407467693;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct WindowSetAcceleratorResponse {
                 throw std::invalid_argument("truncated WindowSetAcceleratorResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing WindowSetAcceleratorResponse payload");
         return out;
     }
 };

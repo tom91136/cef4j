@@ -211,24 +211,22 @@ Always isolate native/UI tests:
 xvfb-run -a ./mvnw -pl '<modules>' -am test
 ```
 
-CEF startup applies `noSandbox` and the no-sandbox flags needed by this embedding. Container/tool sandboxes can still
-cause false negatives; reproduce on the host's private Xvfb before changing code. Prefer software rendering when the
-machine has no usable GPU.
+cef4j's direct-launch distribution does not implement CEF's supported sandbox setup. Startup requires callers to set
+`noSandbox=1` explicitly; cef4j does not inject sandbox-disabling command-line flags. Container/tool sandboxes can
+still cause false negatives, so reproduce on the host's private Xvfb before changing code.
 
 CI and release builds set `CMAKE_SYSROOT` to `sysroot/out/<arch>`. If CMake reports missing standard headers or links
 against runner libraries, confirm the matching tarball was prepared with `sysroot/manage.sh prepare <arch>` and that
 the configure log names `cmake/toolchains/linux-<arch>.cmake` plus a sysroot GCC install directory. Delete only the
 affected module's `target/cmake-build` before reconfiguring; CMake does not change toolchains in an existing cache.
 
-The cache key includes OS, runner architecture, target architecture, and `sysroot/Dockerfile` hash. RISC-V uses
-`Dockerfile.ubuntu` and is intentionally outside required CI. PowerPC is not carried in this repository.
+The cache key includes OS, runner architecture, target architecture, and `sysroot/Dockerfile` hash.
 
 ### macOS
 
-The Java `main` thread is not necessarily OS Thread 0. Current cef4j OSR startup dispatches `cef_initialize()` to
-Thread 0 via GCD, sets `externalMessagePump=1`, and installs a CFRunLoop timer there to call
-`cef_do_message_loop_work()`. Shutdown is also dispatched to Thread 0. Do not pass `-XstartOnFirstThread`; it conflicts
-with JavaFX/AWT startup patterns and cef4j does not require it.
+The Java `main` thread is not necessarily OS Thread 0. cef4j runs initialization, the managed CEF message loop, and
+shutdown on Thread 0. Do not pass `-XstartOnFirstThread`; it conflicts with JavaFX/AWT startup patterns and cef4j does
+not require it.
 
 CEF subprocess Mach-port rendezvous derives its service name from the bundle identifier. A bare helper executable and
 the JVM bundle can otherwise disagree. `bundle_fix_mac.mm` makes both sides see the cef4j identifier. If subprocesses

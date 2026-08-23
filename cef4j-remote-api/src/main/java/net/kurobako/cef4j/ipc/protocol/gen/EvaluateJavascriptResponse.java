@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class EvaluateJavascriptResponse implements CefMessageView, CefMessageEncoder {
 
@@ -97,19 +98,25 @@ public final class EvaluateJavascriptResponse implements CefMessageView, CefMess
     public static final CefMessageDecoder<EvaluateJavascriptResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "valueKind");
         int valueKind = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, 1, "boolValue");
         boolean boolValue = __buf.get() != 0;
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "intValue");
         int intValue = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "doubleValue");
         long doubleValue = __buf.getLong();
-        int stringValueLen = __buf.getInt();
+        int stringValueLen = WireDecoder.length(__buf, "stringValue");
         byte[] stringValueBuf = new byte[stringValueLen];
         __buf.get(stringValueBuf);
         String stringValue = new String(stringValueBuf, StandardCharsets.UTF_8);
-        int errorMessageLen = __buf.getInt();
+        int errorMessageLen = WireDecoder.length(__buf, "errorMessage");
         byte[] errorMessageBuf = new byte[errorMessageLen];
         __buf.get(errorMessageBuf);
         String errorMessage = new String(errorMessageBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "valueHandle");
         int valueHandle = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "EvaluateJavascriptResponse");
         return new EvaluateJavascriptResponse(valueKind, boolValue, intValue, doubleValue, stringValue, errorMessage, valueHandle);
     };
 }

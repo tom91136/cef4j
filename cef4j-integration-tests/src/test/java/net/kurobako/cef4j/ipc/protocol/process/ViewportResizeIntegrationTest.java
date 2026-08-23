@@ -58,7 +58,6 @@ class ViewportResizeIntegrationTest {
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
-            // Subscribe to OsrPaintEvent first so the bootstrap paint isn't dropped.
             LinkedBlockingQueue<OsrPaintEvent> paints = new LinkedBlockingQueue<>();
             session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, paints::offer);
 
@@ -69,21 +68,14 @@ class ViewportResizeIntegrationTest {
                     });
             RemoteHandle browserHandle = handleFuture.get(20, TimeUnit.SECONDS);
 
-            // Drain the bootstrap paint (default 800x600). It might or might not arrive before our resize —
-            // either way, we want to compare against a paint that lands AFTER the resize ack.
             OsrPaintEvent bootstrap = paints.poll(15, TimeUnit.SECONDS);
             assertThat(bootstrap).isNotNull();
             assertThat(bootstrap.width()).isEqualTo(800);
             assertThat(bootstrap.height()).isEqualTo(600);
 
-            // Resize: tell the server the viewport is now 1024x768. The server updates its render handler's
-            // view rect and posts was_resized to the CEF UI thread; CEF eventually calls back into the
-            // render handler to repaint at the new dims.
             session.request(new SetViewportSizeRequest(browserHandle, 1024, 768), SetViewportSizeResponse.DECODER)
                     .get(5, TimeUnit.SECONDS);
 
-            // Poll for a paint at the new size. Drop bootstrap-leftover frames (any 800x600 paint queued
-            // after our request but before CEF re-rendered).
             OsrPaintEvent resized = null;
             long deadline = System.nanoTime() + Duration.ofSeconds(15).toNanos();
             while (System.nanoTime() < deadline) {

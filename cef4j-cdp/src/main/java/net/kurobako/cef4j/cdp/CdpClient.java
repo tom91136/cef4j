@@ -3,6 +3,7 @@ package net.kurobako.cef4j.cdp;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,12 +30,28 @@ public final class CdpClient implements AutoCloseable {
         return transport;
     }
 
-    // null params omit the JSON-RPC request body
-    @SuppressWarnings("NullableForbidden")
+    @SuppressWarnings({"FutureReturnValueIgnored", "NullableForbidden"})
     public <T> CompletionStage<T> call(
             String method, @Nullable Map<String, Object> params, Function<Map<String, Object>, T> decoder) {
         byte[] bytes = params == null ? null : codec.encode(params);
-        return transport.execute(method, bytes).thenApply(result -> decoder.apply(asObject(codec.decode(result))));
+        CompletableFuture<byte[]> source = transport.execute(method, bytes).toCompletableFuture();
+        CompletableFuture<T> result = new CompletableFuture<>();
+        source.whenComplete((value, failure) -> {
+            try {
+                if (failure != null) result.completeExceptionally(failure);
+                else result.complete(decoder.apply(asObject(codec.decode(value))));
+            } catch (Throwable decodeFailure) {
+                result.completeExceptionally(decodeFailure);
+            }
+        });
+        result.whenComplete((ignored, failure) -> {
+            if (result.isCancelled()) source.cancel(false);
+        });
+        return result;
+    }
+
+    public void cancelPending(Throwable failure) {
+        transport.cancelPending(failure);
     }
 
     public <T> CdpSubscription on(String method, Function<Map<String, Object>, T> decoder, Consumer<T> handler) {

@@ -43,7 +43,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         this.cdp = cdp;
         this.client = client;
         runtime = client.domains().runtime();
-        dom = client.domains().dOM();
+        dom = client.domains().dom();
         page = client.domains().page();
         input = client.domains().input();
         network = client.domains().network();
@@ -87,8 +87,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     public CompletableFuture<Void> navigate(@Nonnull String url) {
         Objects.requireNonNull(url, "url");
         elements.clear();
-        return cdp.loadUrl(url)
-                .thenCompose(ignored -> awaitNotLoading(System.nanoTime() + TimeUnit.SECONDS.toNanos(30)));
+        return cdp.loadUrl(url).thenCompose(ignored -> awaitNotLoading());
     }
 
     @Override
@@ -106,8 +105,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Override
     @Nonnull
     public CompletableFuture<String> pageSource() {
-        // getOuterHTML gained includeShadowDOM in newer protocol versions, use the raw command for a stable parameter
-        // set
         return dom.getDocument(OptionalLong.of(0), Optional.empty())
                 .thenCompose(root -> {
                     Map<String, Object> params = new LinkedHashMap<>();
@@ -368,7 +365,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<Void> waitForLoad(Supplier<? extends CompletableFuture<?>> command) {
-        return command.get().thenCompose(ignored -> awaitNotLoading(System.nanoTime() + TimeUnit.SECONDS.toNanos(30)));
+        return command.get().thenCompose(ignored -> awaitNotLoading());
     }
 
     @Override
@@ -411,15 +408,9 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Override
     @Nonnull
     public CompletableFuture<Void> addCookie(JsonObject cookie) {
-        if (!cookie.has("name") || !cookie.get("name").isPrimitive()) {
-            return failed(failure(WebDriverError.INVALID_ARGUMENT, "cookie name must be a string"));
-        }
-        if (!cookie.has("value") || !cookie.get("value").isPrimitive()) {
-            return failed(failure(WebDriverError.INVALID_ARGUMENT, "cookie value must be a string"));
-        }
+        validateCookie(cookie);
         return currentUrl()
                 .thenCompose(url -> {
-                    // setCookie's optional parameter set grew sameParty between protocol versions, use the raw command
                     Map<String, Object> params = new LinkedHashMap<>();
                     params.put("name", CdpObject.json(cookie.get("name").string()));
                     params.put("value", CdpObject.json(cookie.get("value").string()));
@@ -437,6 +428,57 @@ public final class CdpAutomationBackend implements AutomationBackend {
                     if (!success) throw failure(WebDriverError.INVALID_ARGUMENT, "CEF rejected cookie");
                     return null;
                 });
+    }
+
+    static void validateCookie(JsonObject cookie) {
+        requireCookieString(cookie, "name", true);
+        requireCookieString(cookie, "value", true);
+        requireCookieString(cookie, "domain", false);
+        requireCookieString(cookie, "path", false);
+        requireCookieBoolean(cookie, "secure");
+        requireCookieBoolean(cookie, "httpOnly");
+        validateCookieSameSite(cookie);
+        validateCookieExpiry(cookie);
+    }
+
+    private static void requireCookieString(JsonObject cookie, String name, boolean required) {
+        JsonElement value = cookie.get(name);
+        if (value == null && !required) return;
+        if (value == null || !value.isPrimitive() || !value.asPrimitive().isString()) {
+            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie " + name + " must be a string");
+        }
+    }
+
+    private static void requireCookieBoolean(JsonObject cookie, String name) {
+        JsonElement value = cookie.get(name);
+        if (value != null && (!value.isPrimitive() || !value.asPrimitive().isBoolean())) {
+            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie " + name + " must be a boolean");
+        }
+    }
+
+    private static void validateCookieSameSite(JsonObject cookie) {
+        JsonElement value = cookie.get("sameSite");
+        if (value == null) return;
+        if (!value.isPrimitive() || !value.asPrimitive().isString()) {
+            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie sameSite must be a string");
+        }
+        String sameSite = value.string();
+        if (!sameSite.equals("Strict") && !sameSite.equals("Lax") && !sameSite.equals("None")) {
+            throw failure(WebDriverError.INVALID_ARGUMENT, "invalid cookie sameSite: " + sameSite);
+        }
+    }
+
+    private static void validateCookieExpiry(JsonObject cookie) {
+        JsonElement value = cookie.get("expiry");
+        if (value == null) return;
+        if (!value.isPrimitive() || !value.asPrimitive().isNumber()) {
+            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer");
+        }
+        try {
+            if (new java.math.BigDecimal(value.string()).longValueExact() < 0) throw new ArithmeticException();
+        } catch (ArithmeticException | NumberFormatException ignored) {
+            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer");
+        }
     }
 
     private static Optional<String> optionalString(JsonObject source, String name) {
@@ -462,7 +504,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Override
     @Nonnull
     public CompletableFuture<Void> deleteCookie(String name) {
-        // deleteCookies gained partitionKey in newer protocol versions, use the raw command for a stable parameter set
         return currentUrl()
                 .thenCompose(url -> {
                     Map<String, Object> params = new LinkedHashMap<>();
@@ -489,7 +530,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     private CompletableFuture<Void> dispatchMouse(
             String type, double x, double y, Input.MouseButton button, int clickCount, int buttons) {
-        // dispatchMouseEvent's tiltX/tiltY types changed between protocol versions, use the raw command
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("type", CdpObject.json(type));
         params.put("x", x);
@@ -586,7 +626,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
                                                         connected.result(), connected.exceptionDetails())
                                                 .booleanValue();
                                     } catch (RuntimeException ignored) {
-                                        // Treat an execution-context loss as a stale node.
+                                        attached = false;
                                     }
                                 }
                                 if (attached) {
@@ -691,7 +731,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     private CompletableFuture<Runtime.EvaluateResult> evaluate(
             String expression, boolean returnByValue, boolean awaitPromise) {
-        // evaluate's trailing parameters changed between protocol versions, use the raw command
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("expression", CdpObject.json(expression));
         params.put("returnByValue", returnByValue);
@@ -702,7 +741,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     private CompletableFuture<Runtime.CallFunctionOnResult> callFunctionOn(
             String objectId, String function, List<Runtime.CallArgument> arguments, boolean returnByValue) {
-        // callFunctionOn's trailing parameters changed between protocol versions, use the raw command
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("functionDeclaration", CdpObject.json(function));
         params.put("objectId", CdpObject.json(objectId));
@@ -713,18 +751,22 @@ public final class CdpAutomationBackend implements AutomationBackend {
                 .toCompletableFuture();
     }
 
-    private CompletableFuture<Void> awaitNotLoading(long deadlineNanos) {
-        return CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(25, TimeUnit.MILLISECONDS))
+    private CompletableFuture<Void> awaitNotLoading() {
+        CompletableFuture<Void> result = new CompletableFuture<>();
+        pollLoading(result);
+        return result;
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    private void pollLoading(CompletableFuture<Void> result) {
+        if (result.isDone()) return;
+        CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(25, TimeUnit.MILLISECONDS))
                 .thenCompose(ignored -> cdp.loading())
-                .thenCompose(loading -> {
-                    if (!loading) return CompletableFuture.completedFuture(null);
-                    if (System.nanoTime() >= deadlineNanos) {
-                        CompletableFuture<Void> timeout = new CompletableFuture<>();
-                        timeout.completeExceptionally(
-                                failure(WebDriverError.TIMEOUT, "CEF did not finish loading the document"));
-                        return timeout;
-                    }
-                    return awaitNotLoading(deadlineNanos);
+                .whenComplete((loading, failure) -> {
+                    if (result.isDone()) return;
+                    if (failure != null) result.completeExceptionally(failure);
+                    else if (!loading) result.complete(null);
+                    else pollLoading(result);
                 });
     }
 
@@ -752,6 +794,11 @@ public final class CdpAutomationBackend implements AutomationBackend {
         if ("undefined".equals(result.type().value())) return JsonNull.INSTANCE;
         Optional<String> description = result.description();
         return description.isEmpty() ? JsonNull.INSTANCE : cdp.jsonCodec().decode(description.get());
+    }
+
+    @Override
+    public void cancelPendingCommands(@Nonnull Throwable failure) {
+        client.cancelPending(failure);
     }
 
     @Override

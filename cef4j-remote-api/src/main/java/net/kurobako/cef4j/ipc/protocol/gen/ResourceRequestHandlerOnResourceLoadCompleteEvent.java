@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ResourceRequestHandlerOnResourceLoadCompleteEvent implements CefMessageView, CefMessageEncoder {
@@ -86,12 +87,19 @@ public final class ResourceRequestHandlerOnResourceLoadCompleteEvent implements 
     public static final CefMessageDecoder<ResourceRequestHandlerOnResourceLoadCompleteEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "request");
         RemoteHandle request = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "response");
         RemoteHandle response = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "status");
         int status = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "receivedContentLength");
         long receivedContentLength = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "ResourceRequestHandlerOnResourceLoadCompleteEvent");
         return new ResourceRequestHandlerOnResourceLoadCompleteEvent(browser, frame, request, response, status, receivedContentLength);
     };
 }

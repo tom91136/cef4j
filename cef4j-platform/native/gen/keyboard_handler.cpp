@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
     JavaVM* jvm;

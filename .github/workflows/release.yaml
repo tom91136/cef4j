@@ -20,7 +20,6 @@ concurrency:
 env:
   CEF_VERSION: '150.0.18+gdb11278+chromium-150.0.7871.213'
   CEF_API: '150'
-  # XXX Release baseline is the oldest supported JavaFX API; newer lines are tested in main.yaml.
   JAVAFX_VERSION: '13.0.2'
 
 jobs:
@@ -39,7 +38,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: corretto
-          java-version: '17'
+          java-version: '21'
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
@@ -90,7 +89,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: ${{ matrix.distribution }}
-          java-version: '17'
+          java-version: '21'
           cache: maven
           cache-dependency-path: '**/pom.xml'
 

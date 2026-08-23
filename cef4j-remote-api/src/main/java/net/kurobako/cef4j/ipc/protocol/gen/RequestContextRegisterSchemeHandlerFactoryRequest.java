@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestContextRegisterSchemeHandlerFactoryRequest implements CefMessageView, CefMessageEncoder {
@@ -79,16 +80,19 @@ public final class RequestContextRegisterSchemeHandlerFactoryRequest implements 
     public static final CefMessageDecoder<RequestContextRegisterSchemeHandlerFactoryRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int schemeNameLen = __buf.getInt();
+        int schemeNameLen = WireDecoder.length(__buf, "schemeName");
         byte[] schemeNameBuf = new byte[schemeNameLen];
         __buf.get(schemeNameBuf);
         String schemeName = new String(schemeNameBuf, StandardCharsets.UTF_8);
-        int domainNameLen = __buf.getInt();
+        int domainNameLen = WireDecoder.length(__buf, "domainName");
         byte[] domainNameBuf = new byte[domainNameLen];
         __buf.get(domainNameBuf);
         String domainName = new String(domainNameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "factory");
         RemoteHandle factory = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "RequestContextRegisterSchemeHandlerFactoryRequest");
         return new RequestContextRegisterSchemeHandlerFactoryRequest(self, schemeName, domainName, factory);
     };
 }

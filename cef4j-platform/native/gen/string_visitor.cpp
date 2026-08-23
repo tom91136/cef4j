@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefStringVisitor : public cef_string_visitor_t {
     JavaVM* jvm;

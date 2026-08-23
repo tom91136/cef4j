@@ -110,7 +110,8 @@ object JavaDataStructEmitter {
     """import java.nio.ByteBuffer;
       |import java.nio.ByteOrder;
       |import java.nio.charset.StandardCharsets;
-      |import javax.annotation.Nonnull;""".stripMargin
+      |import javax.annotation.Nonnull;
+      |import net.kurobako.cef4j.ipc.session.WireDecoder;""".stripMargin
 
   private def renderField(f: FieldSpec): String =
     s"    private final ${javaType(f.ty)} ${f.name};"
@@ -158,23 +159,29 @@ object JavaDataStructEmitter {
   private def renderDecodeBody(spec: DataStructSpec): String =
     spec.fields.map { f =>
       f.ty match {
-        case FieldType.I32        => s"        int ${f.name} = __buf.getInt();"
-        case FieldType.I64        => s"        long ${f.name} = __buf.getLong();"
-        case FieldType.Bool       => s"        boolean ${f.name} = __buf.get() != 0;"
+        case FieldType.I32 =>
+          s"""        WireDecoder.requireRemaining(__buf, Integer.BYTES, "${f.name}");
+             |        int ${f.name} = __buf.getInt();""".stripMargin
+        case FieldType.I64 =>
+          s"""        WireDecoder.requireRemaining(__buf, Long.BYTES, "${f.name}");
+             |        long ${f.name} = __buf.getLong();""".stripMargin
+        case FieldType.Bool =>
+          s"""        WireDecoder.requireRemaining(__buf, 1, "${f.name}");
+             |        boolean ${f.name} = __buf.get() != 0;""".stripMargin
         case FieldType.Utf8String =>
-          s"""        int ${f.name}Len = __buf.getInt();
+          s"""        int ${f.name}Len = WireDecoder.length(__buf, "${f.name}");
              |        byte[] ${f.name}Buf = new byte[${f.name}Len];
              |        __buf.get(${f.name}Buf);
              |        String ${f.name} = new String(${f.name}Buf, StandardCharsets.UTF_8);""".stripMargin
         case FieldType.Bytes =>
-          s"""        int ${f.name}Len = __buf.getInt();
+          s"""        int ${f.name}Len = WireDecoder.length(__buf, "${f.name}");
              |        byte[] ${f.name} = new byte[${f.name}Len];
              |        __buf.get(${f.name});""".stripMargin
         case FieldType.StringList =>
           s"        String[] ${f.name} = new String[0]; // unreachable" // data structs don't carry StringLists
         case FieldType.RemoteHandle =>
-          s"        net.kurobako.cef4j.ipc.session.RemoteHandle ${f.name} = " +
-            s"new net.kurobako.cef4j.ipc.session.RemoteHandle(__buf.getInt());"
+          s"""        WireDecoder.requireRemaining(__buf, Integer.BYTES, "${f.name}");
+             |        net.kurobako.cef4j.ipc.session.RemoteHandle ${f.name} = new net.kurobako.cef4j.ipc.session.RemoteHandle(__buf.getInt());""".stripMargin
         case FieldType.DataStruct(cefName) =>
           val cls = SpecDeriver.cefStructToClassName(cefName)
           s"        $cls ${f.name} = $cls.decode(__buf);"

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class KeyboardHandlerOnKeyEventEvent implements CefMessageView, CefMessageEncoder {
@@ -63,9 +64,12 @@ public final class KeyboardHandlerOnKeyEventEvent implements CefMessageView, Cef
     public static final CefMessageDecoder<KeyboardHandlerOnKeyEventEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
         KeyEvent event = KeyEvent.decode(__buf);
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "osEvent");
         long osEvent = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "KeyboardHandlerOnKeyEventEvent");
         return new KeyboardHandlerOnKeyEventEvent(browser, event, osEvent);
     };
 }

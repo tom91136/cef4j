@@ -19,14 +19,10 @@ import org.junit.jupiter.api.Timeout.ThreadMode;
 /**
  * Contract that every {@link CefTransport} implementation must honour. Subclasses provide a connected pair via
  * {@link #newPair}; the rest of the assertions are shared.
- *
- * <p>Per-method @Timeout is generous because implementations perform real socket I/O and CI hosts can be heavily
- * loaded. {@code SEPARATE_THREAD} also lets JUnit stop a transport implementation that deadlocks during teardown.
  */
 @Timeout(value = 60, threadMode = ThreadMode.SEPARATE_THREAD)
 public abstract class CefTransportContractTest {
 
-    /** Returns a freshly connected, isolated transport pair. Each test gets its own. */
     protected abstract Pair newPair() throws Exception;
 
     protected static class Pair implements AutoCloseable {

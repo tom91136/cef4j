@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(15)
-class SessionRecordingReplayTest {
+public abstract class SessionRecordingReplayContract {
     private static final int REQUEST = 101;
     private static final int EVENT = 202;
     private static final int INTERCEPT = 303;
@@ -297,7 +297,7 @@ class SessionRecordingReplayTest {
                 Envelope.Header header = Envelope.readHeader(frame);
                 byte[] bytes = new byte[frame.remaining()];
                 frame.get(bytes);
-                frames.offer(new Frame(header.kind, header.corrId, bytes));
+                frames.add(new Frame(header.kind, header.corrId, bytes));
             });
         }
 

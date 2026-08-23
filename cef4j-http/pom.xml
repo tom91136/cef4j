@@ -85,7 +85,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <!-- Real-CEF test needs a live CEF process; run it in an isolated fork. -->
                         <exclude>**/CefHttpIntegrationTest.java</exclude>
                     </excludes>
                 </configuration>

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RendererReleaseHandleRequest implements CefMessageView, CefMessageEncoder {
@@ -68,12 +69,15 @@ public final class RendererReleaseHandleRequest implements CefMessageView, CefMe
     public static final CefMessageDecoder<RendererReleaseHandleRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "handle");
         RemoteHandle handle = new RemoteHandle(__buf.getInt());
-        int kindLen = __buf.getInt();
+        int kindLen = WireDecoder.length(__buf, "kind");
         byte[] kindBuf = new byte[kindLen];
         __buf.get(kindBuf);
         String kind = new String(kindBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "RendererReleaseHandleRequest");
         return new RendererReleaseHandleRequest(frame, handle, kind);
     };
 }

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class ZipReaderTellResponse implements CefMessageView, CefMessageEncoder {
 
@@ -46,7 +47,9 @@ public final class ZipReaderTellResponse implements CefMessageView, CefMessageEn
     public static final CefMessageDecoder<ZipReaderTellResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "result");
         long result = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "ZipReaderTellResponse");
         return new ZipReaderTellResponse(result);
     };
 }

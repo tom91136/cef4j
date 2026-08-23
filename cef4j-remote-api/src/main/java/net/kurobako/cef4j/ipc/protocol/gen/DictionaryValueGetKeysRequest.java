@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DictionaryValueGetKeysRequest implements CefMessageView, CefMessageEncoder {
@@ -62,15 +63,17 @@ public final class DictionaryValueGetKeysRequest implements CefMessageView, CefM
     public static final CefMessageDecoder<DictionaryValueGetKeysRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int keysCount = __buf.getInt();
+        int keysCount = WireDecoder.count(__buf, "keys");
         String[] keys = new String[keysCount];
         for (int __i = 0; __i < keysCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "keys[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             keys[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "DictionaryValueGetKeysRequest");
         return new DictionaryValueGetKeysRequest(self, keys);
     };
 }

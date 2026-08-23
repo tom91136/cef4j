@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestContextSetChromeColorSchemeRequest implements CefMessageView, CefMessageEncoder {
@@ -62,9 +63,13 @@ public final class RequestContextSetChromeColorSchemeRequest implements CefMessa
     public static final CefMessageDecoder<RequestContextSetChromeColorSchemeRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "variant");
         int variant = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "userColor");
         int userColor = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RequestContextSetChromeColorSchemeRequest");
         return new RequestContextSetChromeColorSchemeRequest(self, variant, userColor);
     };
 }

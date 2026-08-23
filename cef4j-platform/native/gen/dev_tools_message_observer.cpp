@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefDevToolsMessageObserver : public cef_dev_tools_message_observer_t {
     JavaVM* jvm;

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class TaskManagerKillTaskRequest implements CefMessageView, CefMessageEncoder {
@@ -55,8 +56,11 @@ public final class TaskManagerKillTaskRequest implements CefMessageView, CefMess
     public static final CefMessageDecoder<TaskManagerKillTaskRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "taskId");
         long taskId = __buf.getLong();
+        WireDecoder.requireFullyConsumed(__buf, "TaskManagerKillTaskRequest");
         return new TaskManagerKillTaskRequest(self, taskId);
     };
 }

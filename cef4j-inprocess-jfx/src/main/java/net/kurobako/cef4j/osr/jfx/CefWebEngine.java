@@ -35,7 +35,8 @@ import org.w3c.dom.Document;
  */
 @SuppressWarnings({"unused", "NullableForbidden"}) // JavaFX bean accessors treat unset properties as null
 public final class CefWebEngine {
-    // Chromium truncates data: URLs around 2 MB; reject larger content up front instead of silently loading a prefix.
+    // XXX: Chromium 150 truncates data URLs near 2 MiB; remove or revise this guard when the minimum Chromium version
+    // has a documented higher data-URL limit and the loadContent boundary test covers that limit.
     private static final int MAX_DATA_URL_CONTENT_BYTES = 2 * 1024 * 1024;
 
     private final CefWebView view;

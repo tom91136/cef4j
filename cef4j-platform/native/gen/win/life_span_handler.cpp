@@ -8,7 +8,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_client_t* Create_JniCefClient(JNIEnv* env, jobject handler);
 

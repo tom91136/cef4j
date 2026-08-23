@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class AuthCallbackContRequest implements CefMessageView, CefMessageEncoder {
@@ -71,15 +72,17 @@ public final class AuthCallbackContRequest implements CefMessageView, CefMessage
     public static final CefMessageDecoder<AuthCallbackContRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int usernameLen = __buf.getInt();
+        int usernameLen = WireDecoder.length(__buf, "username");
         byte[] usernameBuf = new byte[usernameLen];
         __buf.get(usernameBuf);
         String username = new String(usernameBuf, StandardCharsets.UTF_8);
-        int passwordLen = __buf.getInt();
+        int passwordLen = WireDecoder.length(__buf, "password");
         byte[] passwordBuf = new byte[passwordLen];
         __buf.get(passwordBuf);
         String password = new String(passwordBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "AuthCallbackContRequest");
         return new AuthCallbackContRequest(self, username, password);
     };
 }

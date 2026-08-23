@@ -96,7 +96,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             AtomicReference<StackPane> rootRef = new AtomicReference<>();
             AtomicReference<Stage> stageRef = new AtomicReference<>();
             onFxThread(() -> {
-                RemoteWebView nextView = new RemoteWebView(frames::bind);
+                RemoteWebView nextView = new RemoteWebView((session, browser) -> frames.bind(session));
                 // Seed the remote viewport before attach instead of relying on the first visible-stage pulse.
                 // JavaFX 25 on macOS can defer that pulse until after CEF has emitted its bootstrap 1x1 paint,
                 // leaving legacy CEF releases at 1x1 indefinitely when no subsequent layout is requested.

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DragDataSetFragmentHtmlRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class DragDataSetFragmentHtmlRequest implements CefMessageView, Cef
     public static final CefMessageDecoder<DragDataSetFragmentHtmlRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int htmlLen = __buf.getInt();
+        int htmlLen = WireDecoder.length(__buf, "html");
         byte[] htmlBuf = new byte[htmlLen];
         __buf.get(htmlBuf);
         String html = new String(htmlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "DragDataSetFragmentHtmlRequest");
         return new DragDataSetFragmentHtmlRequest(self, html);
     };
 }

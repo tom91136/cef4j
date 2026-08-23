@@ -6,7 +6,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefDownloadHandler : public cef_download_handler_t {
     JavaVM* jvm;

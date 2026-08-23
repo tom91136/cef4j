@@ -24,14 +24,12 @@ public abstract class CdpObject {
         return values;
     }
 
-    // null removes the field, the wire form treats omission as absent
     @SuppressWarnings("NullableForbidden")
     protected final void set(String name, @Nullable Object value) {
         if (value == null) values.remove(name);
         else values.put(name, json(value));
     }
 
-    // decoded JSON null and absent fields share the Java null representation
     @SuppressWarnings("NullableForbidden")
     @Nullable
     protected final Object raw(String name) {
@@ -45,14 +43,12 @@ public abstract class CdpObject {
         return value;
     }
 
-    // passes through JSON-null nodes as null
     @SuppressWarnings({"unchecked", "NullableForbidden"})
     @Nullable
     public static Map<String, Object> objectMap(@Nullable Object value) {
         return value == null ? null : (Map<String, Object>) value;
     }
 
-    // passes through JSON-null nodes as null
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public static <T> List<T> list(@Nullable Object value, Function<Object, T> mapper) {
@@ -83,14 +79,12 @@ public abstract class CdpObject {
         return value;
     }
 
-    // passes through JSON-null nodes as null
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public static Long numberAsLong(@Nullable Object value) {
         return value == null ? null : ((Number) value).longValue();
     }
 
-    // passes through JSON-null nodes as null
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public static Double numberAsDouble(@Nullable Object value) {

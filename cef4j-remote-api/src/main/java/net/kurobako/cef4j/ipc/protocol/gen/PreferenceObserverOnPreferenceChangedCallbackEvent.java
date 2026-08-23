@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class PreferenceObserverOnPreferenceChangedCallbackEvent implements CefMessageView, CefMessageEncoder {
 
@@ -58,11 +59,13 @@ public final class PreferenceObserverOnPreferenceChangedCallbackEvent implements
     public static final CefMessageDecoder<PreferenceObserverOnPreferenceChangedCallbackEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
         int callbackId = __buf.getInt();
-        int nameLen = __buf.getInt();
+        int nameLen = WireDecoder.length(__buf, "name");
         byte[] nameBuf = new byte[nameLen];
         __buf.get(nameBuf);
         String name = new String(nameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "PreferenceObserverOnPreferenceChangedCallbackEvent");
         return new PreferenceObserverOnPreferenceChangedCallbackEvent(callbackId, name);
     };
 }

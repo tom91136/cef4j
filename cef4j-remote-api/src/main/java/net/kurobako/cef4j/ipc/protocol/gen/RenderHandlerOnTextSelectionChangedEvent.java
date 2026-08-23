@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RenderHandlerOnTextSelectionChangedEvent implements CefMessageView, CefMessageEncoder {
@@ -68,12 +69,14 @@ public final class RenderHandlerOnTextSelectionChangedEvent implements CefMessag
     public static final CefMessageDecoder<RenderHandlerOnTextSelectionChangedEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int selectedTextLen = __buf.getInt();
+        int selectedTextLen = WireDecoder.length(__buf, "selectedText");
         byte[] selectedTextBuf = new byte[selectedTextLen];
         __buf.get(selectedTextBuf);
         String selectedText = new String(selectedTextBuf, StandardCharsets.UTF_8);
         Range selectedRange = Range.decode(__buf);
+        WireDecoder.requireFullyConsumed(__buf, "RenderHandlerOnTextSelectionChangedEvent");
         return new RenderHandlerOnTextSelectionChangedEvent(browser, selectedText, selectedRange);
     };
 }

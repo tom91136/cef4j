@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class V8ContextCreatedEvent implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class V8ContextCreatedEvent implements CefMessageView, CefMessageEn
     public static final CefMessageDecoder<V8ContextCreatedEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int frameUrlLen = __buf.getInt();
+        int frameUrlLen = WireDecoder.length(__buf, "frameUrl");
         byte[] frameUrlBuf = new byte[frameUrlLen];
         __buf.get(frameUrlBuf);
         String frameUrl = new String(frameUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "V8ContextCreatedEvent");
         return new V8ContextCreatedEvent(browser, frameUrl);
     };
 }

@@ -61,7 +61,7 @@ class RemoteWebViewTest {
         AtomicReference<CompletableFuture<Void>> resizeRef = new AtomicReference<>();
 
         onFxThread(() -> {
-            RemoteWebView view = new RemoteWebView(ignored -> new FakeFrameTransport());
+            RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
             view.resize(640, 480);
             view.attach(session);
             session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
@@ -116,15 +116,54 @@ class RemoteWebViewTest {
     void customFrameTransportIsBoundAndOwnedByTheView() {
         FakeSession session = new FakeSession();
         FakeFrameTransport frames = new FakeFrameTransport();
-        RemoteWebView view = new RemoteWebView(boundSession -> {
+        RemoteWebView view = new RemoteWebView((boundSession, browser) -> {
             assertThat(boundSession).isSameAs(session);
+            assertThat(browser).isEqualTo(new RemoteHandle(19));
             return frames;
         });
 
         view.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(19)));
         assertThat(frames.consumer).isNotNull();
         view.release();
         assertThat(frames.closed).isTrue();
+    }
+
+    @Test
+    void rejectsViewportOutsideSharedRuntimeBudget() {
+        RemoteWebView view = new RemoteWebView();
+
+        assertThatThrownBy(() -> view.resizeViewport(8193, 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> view.resizeViewport(3840, 2161)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void automaticLayoutDoesNotSendViewportOutsideSharedRuntimeBudget() {
+        FakeSession session = new FakeSession();
+        RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
+        view.resize(8193, 1);
+        view.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+
+        assertThat(session.requests)
+                .filteredOn(SetViewportSizeRequest.class::isInstance)
+                .noneMatch(request -> ((SetViewportSizeRequest) request).width() == 8193);
+        view.release();
+    }
+
+    @Test
+    void failedLifecycleSubscriptionCanBeRetried() {
+        FakeSession session = new FakeSession();
+        session.rejectRegistration = true;
+        RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
+
+        assertThatThrownBy(() -> view.attach(session)).isInstanceOf(IllegalStateException.class);
+        session.rejectRegistration = false;
+        view.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(23)));
+
+        assertThat(view.browserReady()).isCompletedWithValue(new RemoteHandle(23));
+        view.release();
     }
 
     private static void startJavaFx() throws Exception {
@@ -177,6 +216,7 @@ class RemoteWebViewTest {
         private final Map<Integer, List<Consumer<?>>> handlers = new HashMap<>();
         private final List<CefMessageEncoder> requests = new ArrayList<>();
         private final List<CompletableFuture<?>> responses = new ArrayList<>();
+        private boolean rejectRegistration;
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
@@ -195,6 +235,7 @@ class RemoteWebViewTest {
         @Override
         public <E extends CefMessageView> HandlerRegistration on(
                 int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
+            if (rejectRegistration) throw new IllegalStateException("registration rejected");
             handlers.computeIfAbsent(messageId, ignored -> new ArrayList<>()).add(handler);
             return () -> handlers.getOrDefault(messageId, List.of()).remove(handler);
         }
@@ -207,7 +248,7 @@ class RemoteWebViewTest {
 
         @SuppressWarnings("unchecked")
         private <E extends CefMessageView> void emit(E event) {
-            for (Consumer<?> handler : handlers.getOrDefault(event.messageId(), List.of())) {
+            for (Consumer<?> handler : new ArrayList<>(handlers.getOrDefault(event.messageId(), List.of()))) {
                 ((Consumer<E>) handler).accept(event);
             }
         }

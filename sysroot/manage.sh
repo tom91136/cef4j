@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 build|prepare <x86_64|aarch64|riscv64>" >&2
+  echo "usage: $0 build|prepare <x86_64|aarch64>" >&2
   exit 2
 }
 
@@ -29,13 +29,6 @@ case ${arch} in
     platform=linux/arm64
     build_args=(--build-arg RHEL_TRIPLE=aarch64-redhat-linux
                 --build-arg GNU_TRIPLE=aarch64-linux-gnu)
-    ;;
-  riscv64)
-    variant=ubuntu20
-    dockerfile=Dockerfile.ubuntu
-    platform=linux/riscv64
-    build_args=(--build-arg SYSBASE=docker.io/riscv64/ubuntu:20.04
-                --build-arg GCC_MAJOR=10)
     ;;
   *) usage ;;
 esac

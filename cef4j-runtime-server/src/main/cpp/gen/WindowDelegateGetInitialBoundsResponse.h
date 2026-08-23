@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct WindowDelegateGetInitialBoundsResponse {
     static constexpr int32_t kMessageId = 1213860362;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     Rect result;
 
@@ -39,6 +41,8 @@ struct WindowDelegateGetInitialBoundsResponse {
         out.result = Rect::decode(src + pos, len - pos);
         requireAvailable(out.result.encodedSize());
         pos += out.result.encodedSize();
+        if (pos != len)
+            throw std::invalid_argument("trailing WindowDelegateGetInitialBoundsResponse payload");
         return out;
     }
 };

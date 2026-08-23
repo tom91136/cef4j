@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class PreferenceManagerCanSetPreferenceRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class PreferenceManagerCanSetPreferenceRequest implements CefMessag
     public static final CefMessageDecoder<PreferenceManagerCanSetPreferenceRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int nameLen = __buf.getInt();
+        int nameLen = WireDecoder.length(__buf, "name");
         byte[] nameBuf = new byte[nameLen];
         __buf.get(nameBuf);
         String name = new String(nameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "PreferenceManagerCanSetPreferenceRequest");
         return new PreferenceManagerCanSetPreferenceRequest(self, name);
     };
 }

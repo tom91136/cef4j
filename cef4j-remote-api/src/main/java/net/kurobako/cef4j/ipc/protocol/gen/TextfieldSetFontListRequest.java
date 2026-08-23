@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class TextfieldSetFontListRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class TextfieldSetFontListRequest implements CefMessageView, CefMes
     public static final CefMessageDecoder<TextfieldSetFontListRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int fontListLen = __buf.getInt();
+        int fontListLen = WireDecoder.length(__buf, "fontList");
         byte[] fontListBuf = new byte[fontListLen];
         __buf.get(fontListBuf);
         String fontList = new String(fontListBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "TextfieldSetFontListRequest");
         return new TextfieldSetFontListRequest(self, fontList);
     };
 }

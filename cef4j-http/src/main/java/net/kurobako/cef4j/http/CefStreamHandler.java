@@ -8,9 +8,15 @@ import javax.annotation.Nonnull;
 final class CefStreamHandler extends URLStreamHandler {
 
     private final CefHttpEngine engine;
+    private final int defaultPort;
 
     CefStreamHandler(@Nonnull CefHttpEngine engine) {
+        this(engine, 80);
+    }
+
+    CefStreamHandler(@Nonnull CefHttpEngine engine, int defaultPort) {
         this.engine = engine;
+        this.defaultPort = defaultPort;
     }
 
     @Override
@@ -21,6 +27,6 @@ final class CefStreamHandler extends URLStreamHandler {
 
     @Override
     public int getDefaultPort() {
-        return 80;
+        return defaultPort;
     }
 }

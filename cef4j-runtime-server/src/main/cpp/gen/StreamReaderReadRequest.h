@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct StreamReaderReadRequest {
     static constexpr int32_t kMessageId = 1104692288;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     std::vector<std::uint8_t> ptr;
@@ -67,6 +69,7 @@ struct StreamReaderReadRequest {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for ptr");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for ptr");
             requireAvailable(static_cast<std::size_t>(n));
             out.ptr.assign(src + pos, src + pos + n);
             pos += static_cast<std::size_t>(n);
@@ -74,6 +77,8 @@ struct StreamReaderReadRequest {
         requireAvailable(8);
         out.n = static_cast<std::int64_t>(static_cast<std::uint64_t>(src[pos]) | (static_cast<std::uint64_t>(src[pos + 1]) << 8) | (static_cast<std::uint64_t>(src[pos + 2]) << 16) | (static_cast<std::uint64_t>(src[pos + 3]) << 24) | (static_cast<std::uint64_t>(src[pos + 4]) << 32) | (static_cast<std::uint64_t>(src[pos + 5]) << 40) | (static_cast<std::uint64_t>(src[pos + 6]) << 48) | (static_cast<std::uint64_t>(src[pos + 7]) << 56));
         pos += 8;
+        if (pos != len)
+            throw std::invalid_argument("trailing StreamReaderReadRequest payload");
         return out;
     }
 };

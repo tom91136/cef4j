@@ -12,8 +12,7 @@
         <maven.compiler.release>11</maven.compiler.release>
         <cef4j.version>150.0.0</cef4j.version>
         <cef4j.packager.version>0.1.0</cef4j.packager.version>
-        <cef4j.platform.artifact>cef4j-platform-linux</cef4j.platform.artifact>
-        <cef4j.platform.classifier>x86_64</cef4j.platform.classifier>
+        <cef4j.runtime.platform>linux-x86_64</cef4j.runtime.platform>
         <cef.version>150.0.18+gdb11278+chromium-150.0.7871.213</cef.version>
     </properties>
 
@@ -30,9 +29,9 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>${cef4j.platform.artifact}</artifactId>
+            <artifactId>cef4j-platform</artifactId>
             <version>${cef4j.version}</version>
-            <classifier>${cef4j.platform.classifier}</classifier>
+            <classifier>${cef4j.runtime.platform}</classifier>
         </dependency>
     </dependencies>
 
@@ -54,7 +53,7 @@
                             <arguments>
                                 <argument>package</argument>
                                 <argument>--cef-version=${cef.version}</argument>
-                                <argument>--platform=linux-x86_64</argument>
+                                <argument>--platform=${cef4j.runtime.platform}</argument>
                                 <argument>--locales=en-US</argument>
                                 <argument>--output=${project.build.outputDirectory}</argument>
                             </arguments>

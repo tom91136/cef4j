@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_urlparts_t}. Fields are immutable; pass instances
@@ -143,44 +144,45 @@ public final class Urlparts {
       * configured the buffer.
       */
     public static Urlparts decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
-        int specLen = __buf.getInt();
+        int specLen = WireDecoder.length(__buf, "spec");
         byte[] specBuf = new byte[specLen];
         __buf.get(specBuf);
         String spec = new String(specBuf, StandardCharsets.UTF_8);
-        int schemeLen = __buf.getInt();
+        int schemeLen = WireDecoder.length(__buf, "scheme");
         byte[] schemeBuf = new byte[schemeLen];
         __buf.get(schemeBuf);
         String scheme = new String(schemeBuf, StandardCharsets.UTF_8);
-        int usernameLen = __buf.getInt();
+        int usernameLen = WireDecoder.length(__buf, "username");
         byte[] usernameBuf = new byte[usernameLen];
         __buf.get(usernameBuf);
         String username = new String(usernameBuf, StandardCharsets.UTF_8);
-        int passwordLen = __buf.getInt();
+        int passwordLen = WireDecoder.length(__buf, "password");
         byte[] passwordBuf = new byte[passwordLen];
         __buf.get(passwordBuf);
         String password = new String(passwordBuf, StandardCharsets.UTF_8);
-        int hostLen = __buf.getInt();
+        int hostLen = WireDecoder.length(__buf, "host");
         byte[] hostBuf = new byte[hostLen];
         __buf.get(hostBuf);
         String host = new String(hostBuf, StandardCharsets.UTF_8);
-        int portLen = __buf.getInt();
+        int portLen = WireDecoder.length(__buf, "port");
         byte[] portBuf = new byte[portLen];
         __buf.get(portBuf);
         String port = new String(portBuf, StandardCharsets.UTF_8);
-        int originLen = __buf.getInt();
+        int originLen = WireDecoder.length(__buf, "origin");
         byte[] originBuf = new byte[originLen];
         __buf.get(originBuf);
         String origin = new String(originBuf, StandardCharsets.UTF_8);
-        int pathLen = __buf.getInt();
+        int pathLen = WireDecoder.length(__buf, "path");
         byte[] pathBuf = new byte[pathLen];
         __buf.get(pathBuf);
         String path = new String(pathBuf, StandardCharsets.UTF_8);
-        int queryLen = __buf.getInt();
+        int queryLen = WireDecoder.length(__buf, "query");
         byte[] queryBuf = new byte[queryLen];
         __buf.get(queryBuf);
         String query = new String(queryBuf, StandardCharsets.UTF_8);
-        int fragmentLen = __buf.getInt();
+        int fragmentLen = WireDecoder.length(__buf, "fragment");
         byte[] fragmentBuf = new byte[fragmentLen];
         __buf.get(fragmentBuf);
         String fragment = new String(fragmentBuf, StandardCharsets.UTF_8);

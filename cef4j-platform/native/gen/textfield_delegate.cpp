@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefTextfieldDelegate : public cef_textfield_delegate_t {
     JavaVM* jvm;

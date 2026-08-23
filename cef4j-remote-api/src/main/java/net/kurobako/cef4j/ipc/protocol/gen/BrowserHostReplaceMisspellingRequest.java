@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserHostReplaceMisspellingRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class BrowserHostReplaceMisspellingRequest implements CefMessageVie
     public static final CefMessageDecoder<BrowserHostReplaceMisspellingRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int wordLen = __buf.getInt();
+        int wordLen = WireDecoder.length(__buf, "word");
         byte[] wordBuf = new byte[wordLen];
         __buf.get(wordBuf);
         String word = new String(wordBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "BrowserHostReplaceMisspellingRequest");
         return new BrowserHostReplaceMisspellingRequest(self, word);
     };
 }

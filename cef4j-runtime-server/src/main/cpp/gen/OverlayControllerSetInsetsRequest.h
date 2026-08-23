@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct OverlayControllerSetInsetsRequest {
     static constexpr int32_t kMessageId = 329679347;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     Insets insets;
@@ -51,6 +53,8 @@ struct OverlayControllerSetInsetsRequest {
         out.insets = Insets::decode(src + pos, len - pos);
         requireAvailable(out.insets.encodedSize());
         pos += out.insets.encodedSize();
+        if (pos != len)
+            throw std::invalid_argument("trailing OverlayControllerSetInsetsRequest payload");
         return out;
     }
 };

@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_insets_t}. Fields are immutable; pass instances
@@ -64,9 +65,13 @@ public final class Insets {
       * configured the buffer.
       */
     public static Insets decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "top");
         int top = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "left");
         int left = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "bottom");
         int bottom = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "right");
         int right = __buf.getInt();
         return new Insets(top, left, bottom, right);
     }

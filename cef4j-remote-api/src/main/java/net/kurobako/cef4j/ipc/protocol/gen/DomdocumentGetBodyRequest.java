@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DomdocumentGetBodyRequest implements CefMessageView, CefMessageEncoder {
@@ -56,8 +57,11 @@ public final class DomdocumentGetBodyRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<DomdocumentGetBodyRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "DomdocumentGetBodyRequest");
         return new DomdocumentGetBodyRequest(frame, self);
     };
 }

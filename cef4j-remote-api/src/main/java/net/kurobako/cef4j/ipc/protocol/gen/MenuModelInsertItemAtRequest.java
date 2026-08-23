@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class MenuModelInsertItemAtRequest implements CefMessageView, CefMessageEncoder {
@@ -74,13 +75,17 @@ public final class MenuModelInsertItemAtRequest implements CefMessageView, CefMe
     public static final CefMessageDecoder<MenuModelInsertItemAtRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "index");
         long index = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "commandId");
         int commandId = __buf.getInt();
-        int labelLen = __buf.getInt();
+        int labelLen = WireDecoder.length(__buf, "label");
         byte[] labelBuf = new byte[labelLen];
         __buf.get(labelBuf);
         String label = new String(labelBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "MenuModelInsertItemAtRequest");
         return new MenuModelInsertItemAtRequest(self, index, commandId, label);
     };
 }

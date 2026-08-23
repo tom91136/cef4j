@@ -17,7 +17,6 @@
 
     <properties>
         <exec.skip>false</exec.skip>
-        <!-- Linux only for Slice C; mac/windows added later. -->
         <ipc.gen.cpp.dir>${project.basedir}/src/main/cpp/gen</ipc.gen.cpp.dir>
     </properties>
 
@@ -43,7 +42,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
-                    <!-- Generate protocol and AST-derived C++ headers before CMake configures. -->
                     <execution>
                         <id>run-ipc-codegen-cpp</id>
                         <phase>generate-sources</phase>
@@ -73,7 +71,6 @@
                                 <argument>-DCEF_ROOT=${cef.dist.dir}</argument>
                                 <argument>-DCEF4J_API_VERSION_RAW=${cef.version}</argument>
                                 <argument>-DCMAKE_BUILD_TYPE=Release</argument>
-                                <!-- libzmq 4.3.5 still declares an old CMake compatibility floor. -->
                                 <argument>-Wno-deprecated</argument>
                             </arguments>
                         </configuration>

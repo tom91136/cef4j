@@ -11,6 +11,9 @@
 namespace cef4j {
 namespace ipc {
 
+constexpr std::size_t kMaxFrameSize = 64U * 1024U * 1024U;
+constexpr std::size_t kMaxQueuedBytes = 128U * 1024U * 1024U;
+
 class IpcServer {
 public:
     // Called on the worker thread for each frame received. The header has been

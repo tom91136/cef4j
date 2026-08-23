@@ -34,6 +34,7 @@ class CefWebViewV117PlusInputTest {
     static void setup(@TempDir Path tempDir) throws Exception {
         assumeDisplayServer();
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().noSandbox = 1;
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
         launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();

@@ -13,7 +13,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_resource_request_handler_t* Create_JniCefResourceRequestHandler(JNIEnv* env, jobject handler);
 

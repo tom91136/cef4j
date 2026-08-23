@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestHandlerOnRenderProcessTerminatedEvent implements CefMessageView, CefMessageEncoder {
@@ -74,13 +75,17 @@ public final class RequestHandlerOnRenderProcessTerminatedEvent implements CefMe
     public static final CefMessageDecoder<RequestHandlerOnRenderProcessTerminatedEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "status");
         int status = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "errorCode");
         int errorCode = __buf.getInt();
-        int errorStringLen = __buf.getInt();
+        int errorStringLen = WireDecoder.length(__buf, "errorString");
         byte[] errorStringBuf = new byte[errorStringLen];
         __buf.get(errorStringBuf);
         String errorString = new String(errorStringBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "RequestHandlerOnRenderProcessTerminatedEvent");
         return new RequestHandlerOnRenderProcessTerminatedEvent(browser, status, errorCode, errorString);
     };
 }

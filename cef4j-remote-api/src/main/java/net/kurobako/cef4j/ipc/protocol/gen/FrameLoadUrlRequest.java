@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class FrameLoadUrlRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class FrameLoadUrlRequest implements CefMessageView, CefMessageEnco
     public static final CefMessageDecoder<FrameLoadUrlRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int urlLen = __buf.getInt();
+        int urlLen = WireDecoder.length(__buf, "url");
         byte[] urlBuf = new byte[urlLen];
         __buf.get(urlBuf);
         String url = new String(urlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "FrameLoadUrlRequest");
         return new FrameLoadUrlRequest(self, url);
     };
 }

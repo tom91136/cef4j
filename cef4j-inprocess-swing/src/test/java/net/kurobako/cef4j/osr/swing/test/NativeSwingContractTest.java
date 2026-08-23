@@ -24,9 +24,8 @@ class NativeSwingContractTest {
 
     @AfterAll
     static void shutdown() throws Exception {
-        // Windows can hang during message-loop shutdown. With AWT active on macOS, older CEF releases can post an
-        // AppKit notification after cef_shutdown and trap an otherwise successful Surefire fork. The isolated test
-        // process owns native teardown on both platforms; Linux retains explicit shutdown coverage here.
+        // XXX: CEF 150 shutdown can hang the Windows message loop or post late AppKit work after AWT starts on macOS;
+        // enable explicit shutdown when the minimum CEF is above 150 and both isolated native contract forks return.
         if (shouldTerminateCef(OS.isWindows(), OS.isMacOS()) && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             CefBrowserPanel.terminate();
         } else if (OS.isWindows() || OS.isMacOS()) {

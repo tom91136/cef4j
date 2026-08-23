@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestSetReferrerRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class RequestSetReferrerRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<RequestSetReferrerRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int referrerUrlLen = __buf.getInt();
+        int referrerUrlLen = WireDecoder.length(__buf, "referrerUrl");
         byte[] referrerUrlBuf = new byte[referrerUrlLen];
         __buf.get(referrerUrlBuf);
         String referrerUrl = new String(referrerUrlBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "policy");
         int policy = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RequestSetReferrerRequest");
         return new RequestSetReferrerRequest(self, referrerUrl, policy);
     };
 }

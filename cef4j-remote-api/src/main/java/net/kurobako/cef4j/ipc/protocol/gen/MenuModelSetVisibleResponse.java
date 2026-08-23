@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class MenuModelSetVisibleResponse implements CefMessageView, CefMessageEncoder {
 
@@ -46,7 +47,9 @@ public final class MenuModelSetVisibleResponse implements CefMessageView, CefMes
     public static final CefMessageDecoder<MenuModelSetVisibleResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "result");
         int result = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "MenuModelSetVisibleResponse");
         return new MenuModelSetVisibleResponse(result);
     };
 }

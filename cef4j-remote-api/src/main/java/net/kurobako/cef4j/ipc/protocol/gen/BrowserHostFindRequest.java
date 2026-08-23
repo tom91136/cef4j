@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserHostFindRequest implements CefMessageView, CefMessageEncoder {
@@ -81,14 +82,19 @@ public final class BrowserHostFindRequest implements CefMessageView, CefMessageE
     public static final CefMessageDecoder<BrowserHostFindRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int searchTextLen = __buf.getInt();
+        int searchTextLen = WireDecoder.length(__buf, "searchText");
         byte[] searchTextBuf = new byte[searchTextLen];
         __buf.get(searchTextBuf);
         String searchText = new String(searchTextBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "forward");
         int forward = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "matchCase");
         int matchCase = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "findNext");
         int findNext = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "BrowserHostFindRequest");
         return new BrowserHostFindRequest(self, searchText, forward, matchCase, findNext);
     };
 }

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ViewDelegateOnWindowChangedRequest implements CefMessageView, CefMessageEncoder {
@@ -63,9 +64,13 @@ public final class ViewDelegateOnWindowChangedRequest implements CefMessageView,
     public static final CefMessageDecoder<ViewDelegateOnWindowChangedRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "view");
         RemoteHandle view = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "added");
         int added = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "ViewDelegateOnWindowChangedRequest");
         return new ViewDelegateOnWindowChangedRequest(self, view, added);
     };
 }

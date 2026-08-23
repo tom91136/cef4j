@@ -92,7 +92,7 @@ final class ScrollbarTheme {
                     }
                 }
             } catch (Exception ignored) {
-                // Scene graph may not be fully initialised; fall back to default.
+                return DEFAULT_BASE;
             }
         }
         return DEFAULT_BASE;

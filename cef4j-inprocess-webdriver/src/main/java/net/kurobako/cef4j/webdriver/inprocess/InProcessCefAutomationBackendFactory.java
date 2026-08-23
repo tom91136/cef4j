@@ -59,7 +59,7 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
                 InProcessBrowserRuntime runtime, WebDriverJsonCodec jsonCodec) {
             try {
                 CefBrowser browser = Objects.requireNonNull(runtime.browser(), "runtime.browser()");
-                return InProcessDevToolsSession.attach(browser)
+                return InProcessDevToolsSession.attach(browser, jsonCodec)
                         .thenApply(devTools -> new InProcessCdpBrowser(runtime, browser, devTools, jsonCodec))
                         .whenComplete((ignored, failure) -> {
                             if (failure != null) runtime.close();

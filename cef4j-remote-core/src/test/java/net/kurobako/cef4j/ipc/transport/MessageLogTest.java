@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,6 +56,19 @@ class MessageLogTest {
         bytes[11] = 99;
         Files.write(file, bytes);
         assertThatIOException().isThrownBy(() -> MessageLog.reader(file)).withMessageContaining("version");
+    }
+
+    @Test
+    void readerRejectsOversizedPayloadBeforeAllocation(@TempDir Path tmp) throws IOException {
+        Path file = tmp.resolve("oversized.bin");
+        ByteBuffer bytes = ByteBuffer.allocate(29);
+        bytes.put(MessageLog.MAGIC).putInt(MessageLog.VERSION).putInt(0);
+        bytes.put(MessageLog.Direction.INBOUND.code).putLong(1L).putInt(MessageLog.MAX_PAYLOAD_BYTES + 1);
+        Files.write(file, bytes.array());
+
+        try (MessageLog.Reader reader = MessageLog.reader(file)) {
+            assertThatIOException().isThrownBy(reader::next).withMessageContaining("payload length");
+        }
     }
 
     @Test

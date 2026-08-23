@@ -81,6 +81,30 @@ final class RuntimeServerSupervisorTest {
     }
 
     @Test
+    void rapidPostHandshakeCrashLoopExhaustsRecoveryBudget(@TempDir Path temporary) throws Exception {
+        RuntimeServerSupervisor.Configuration configuration = new RuntimeServerSupervisor.Configuration(
+                launcher(temporary),
+                "zmq",
+                "tcp://127.0.0.1:0",
+                "shared-file",
+                Duration.ofSeconds(5),
+                Duration.ofSeconds(2),
+                Duration.ofMillis(10),
+                Duration.ofMillis(100),
+                1,
+                Map.of("CEF4J_STUB_DROP_AFTER_MS", "20"));
+        try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
+            supervisor.start().get(300, TimeUnit.SECONDS);
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+            while (supervisor.state() != RuntimeServerSupervisor.State.FAILED && System.nanoTime() < deadline) {
+                Thread.sleep(10);
+            }
+            assertThat(supervisor.state()).isEqualTo(RuntimeServerSupervisor.State.FAILED);
+            assertThat(supervisor.current()).isEmpty();
+        }
+    }
+
+    @Test
     void replacesCrashedGenerationWithoutReusingItsSession(@TempDir Path temporary) throws Exception {
         Path launcher = launcher(temporary);
         AtomicInteger middlewareApplications = new AtomicInteger();
@@ -120,6 +144,32 @@ final class RuntimeServerSupervisorTest {
     }
 
     @Test
+    void listenerRegisteredDuringInstallReceivesGenerationOnce(@TempDir Path temporary) throws Exception {
+        CountDownLatch installing = new CountDownLatch(1);
+        RuntimeServerSupervisor.Configuration configuration = new RuntimeServerSupervisor.Configuration(
+                        launcher(temporary),
+                        "zmq",
+                        "tcp://127.0.0.1:0",
+                        "shared-file",
+                        Duration.ofSeconds(5),
+                        Duration.ofSeconds(2),
+                        Duration.ofMillis(25),
+                        Duration.ofMillis(100),
+                        0,
+                        Map.of())
+                .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
+        AtomicInteger deliveries = new AtomicInteger();
+        try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
+            CompletableFuture<RuntimeServerSupervisor.Connection> started = supervisor.start();
+            assertThat(installing.await(300, TimeUnit.SECONDS)).isTrue();
+            try (AutoCloseable ignored = supervisor.onConnection(connection -> deliveries.incrementAndGet())) {
+                started.get(300, TimeUnit.SECONDS);
+                assertThat(deliveries).hasValue(1);
+            }
+        }
+    }
+
+    @Test
     void closeDuringGenerationInstallLeavesSupervisorClosed(@TempDir Path temporary) throws Exception {
         Path pidFile = temporary.resolve("install-race.pid");
         CountDownLatch installing = new CountDownLatch(1);
@@ -137,18 +187,9 @@ final class RuntimeServerSupervisorTest {
                 .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
         RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
         var unused = supervisor.start();
-        // The latch guards the race being tested, not startup performance. Native CI builds can starve the stub
-        // process for more than ten seconds before it reaches the install transition.
         assertThat(installing.await(300, TimeUnit.SECONDS)).isTrue();
         supervisor.close();
 
-        // Wait for spawn to execute its install transition, then for the final state to settle at CLOSED.
-        long transition = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(500);
-        while (supervisor.state() == RuntimeServerSupervisor.State.CLOSED && System.nanoTime() < transition)
-            Thread.sleep(1);
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (supervisor.state() != RuntimeServerSupervisor.State.CLOSED && System.nanoTime() < deadline)
-            Thread.sleep(10);
         assertThat(supervisor.state()).isEqualTo(RuntimeServerSupervisor.State.CLOSED);
         assertThat(supervisor.current()).isEmpty();
 
@@ -190,10 +231,6 @@ final class RuntimeServerSupervisorTest {
         public void encodeInto(ByteBuffer destination) {}
     }
 
-    /**
-     * Delegating session whose {@code onClose} blocks so the test can race {@link RuntimeServerSupervisor#close()}
-     * against the connection install.
-     */
     private static final class BlockingOnCloseSession implements CefSession {
         private final CefSession delegate;
         private final CountDownLatch installing;
@@ -227,7 +264,6 @@ final class RuntimeServerSupervisorTest {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                // close() interrupted the sleep, which means it has fully run.
             }
             return () -> {};
         }

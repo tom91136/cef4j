@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class ViewGetSizeResponse implements CefMessageView, CefMessageEncoder {
 
@@ -48,6 +49,7 @@ public final class ViewGetSizeResponse implements CefMessageView, CefMessageEnco
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
         Size result = Size.decode(__buf);
+        WireDecoder.requireFullyConsumed(__buf, "ViewGetSizeResponse");
         return new ViewGetSizeResponse(result);
     };
 }

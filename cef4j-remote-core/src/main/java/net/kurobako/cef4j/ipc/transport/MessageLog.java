@@ -39,6 +39,7 @@ public final class MessageLog {
 
     static final byte[] MAGIC = {'C', 'E', 'F', '4', 'J', 'L', 'O', 'G'};
     static final int VERSION = 1;
+    static final int MAX_PAYLOAD_BYTES = 64 * 1024 * 1024;
 
     /** Direction of a recorded frame, from the recording side's perspective. */
     public enum Direction {
@@ -153,7 +154,7 @@ public final class MessageLog {
             Direction dir = Direction.of((byte) dirByte);
             long ts = in.readLong();
             int len = in.readInt();
-            if (len < 0) throw new IOException("negative payload length: " + len);
+            if (len < 0 || len > MAX_PAYLOAD_BYTES) throw new IOException("invalid payload length: " + len);
             byte[] payload = new byte[len];
             in.readFully(payload);
             return Optional.of(new Entry(dir, ts, payload));

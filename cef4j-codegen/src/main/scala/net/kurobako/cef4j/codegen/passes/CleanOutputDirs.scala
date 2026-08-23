@@ -6,6 +6,8 @@ import java.nio.file.Path
 import net.kurobako.cef4j.codegen.FileSystem
 
 object CleanOutputDirs {
+  private val GeneratedPrefix = "// GENERATED - do not edit. Regenerate via:"
+
   def apply(dirs: Path*): Unit =
     dirs.foreach(cleanDir)
 
@@ -19,23 +21,36 @@ object CleanOutputDirs {
           val n = p.getFileName.toString
           n.endsWith(".cpp") || n.endsWith(".h")
         }
+        .filter(isGenerated)
         .foreach(FileSystem.deleteIfExists)
     }
 
     if (Files.exists(targetPlatformDir)) {
-      FileSystem.descendants(targetPlatformDir)
-        .sortBy(_.toString)(using Ordering[String].reverse)
-        .foreach(FileSystem.deleteIfExists)
+      cleanGeneratedTree(targetPlatformDir)
     }
     FileSystem.createDirectories(targetPlatformDir)
   }
 
   private def cleanDir(dir: Path): Unit = {
     if (Files.exists(dir)) {
-      FileSystem.descendants(dir)
-        .sortBy(_.toString)(using Ordering[String].reverse)
-        .foreach(FileSystem.deleteIfExists)
+      cleanGeneratedTree(dir)
     }
     FileSystem.createDirectories(dir)
+  }
+
+  private def cleanGeneratedTree(dir: Path): Unit = {
+    val descendants = FileSystem.descendants(dir).toList
+    descendants.filter(Files.isRegularFile(_)).filter(isGenerated).foreach(FileSystem.deleteIfExists)
+    descendants
+      .filter(Files.isDirectory(_))
+      .sortBy(_.toString)(using Ordering[String].reverse)
+      .filter(path => FileSystem.children(path).isEmpty)
+      .foreach(FileSystem.deleteIfExists)
+  }
+
+  private def isGenerated(path: Path): Boolean = {
+    val reader = Files.newBufferedReader(path)
+    try Option(reader.readLine()).exists(_.startsWith(GeneratedPrefix))
+    finally reader.close()
   }
 }

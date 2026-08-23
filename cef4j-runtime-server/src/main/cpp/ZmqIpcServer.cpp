@@ -10,7 +10,6 @@ namespace cef4j {
 namespace ipc {
 
 namespace {
-constexpr std::size_t kMaxFrameSize = 64U * 1024U * 1024U;
 constexpr long kPollTimeoutMs = 10;
 constexpr int kHeartbeatIntervalMs = 1000;
 constexpr int kHeartbeatTimeoutMs = 360000;
@@ -132,7 +131,7 @@ void ZmqIpcServer::workerLoop(std::string addr) {
 
 bool ZmqIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId, std::int32_t messageId,
                      const std::uint8_t* payload, std::size_t payloadLen) {
-    if (!running_) return false;
+    if (!running_ || payloadLen > kMaxFrameSize - kHeaderSize) return false;
     std::vector<std::uint8_t> frame(kHeaderSize + payloadLen);
     writeHeader(frame.data(), kind, flags, corrId, messageId, static_cast<std::int32_t>(payloadLen));
     if (payload && payloadLen > 0) {
@@ -140,6 +139,11 @@ bool ZmqIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId, std:
     }
     {
         std::lock_guard<std::mutex> lk(outboundMu_);
+        if (queuedBytes_ > kMaxQueuedBytes || frame.size() > kMaxQueuedBytes - queuedBytes_) {
+            stop_ = true;
+            return false;
+        }
+        queuedBytes_ += frame.size();
         outbound_.push_back(std::move(frame));
     }
     return true;
@@ -155,6 +159,13 @@ bool ZmqIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t corrId
         std::lock_guard<std::mutex> lk(outboundMu_);
         auto it = std::find_if(latest_.begin(), latest_.end(),
                                [streamId](const auto& item) { return item.first == streamId; });
+        std::size_t replacedBytes = it == latest_.end() ? 0 : it->second.size();
+        std::size_t retainedBytes = queuedBytes_ - replacedBytes;
+        if (retainedBytes > kMaxQueuedBytes || frame.size() > kMaxQueuedBytes - retainedBytes) {
+            stop_ = true;
+            return false;
+        }
+        queuedBytes_ = retainedBytes + frame.size();
         if (it == latest_.end()) latest_.emplace_back(streamId, std::move(frame));
         else it->second = std::move(frame);
     }
@@ -189,7 +200,7 @@ void ZmqIpcServer::drainIncoming() {
             break;
         }
         std::size_t sz = zmq_msg_size(&msg);
-        if (sz < kHeaderSize) {
+        if (sz < kHeaderSize || sz > kMaxFrameSize) {
             zmq_msg_close(&msg);
             continue;
         }
@@ -199,7 +210,12 @@ void ZmqIpcServer::drainIncoming() {
             zmq_msg_close(&msg);
             continue;
         }
-        peerIdentity_ = std::move(route);
+        if (peerIdentity_.empty()) {
+            peerIdentity_ = std::move(route);
+        } else if (route != peerIdentity_) {
+            zmq_msg_close(&msg);
+            continue;
+        }
         std::vector<std::uint8_t> payload;
         if (sz > kHeaderSize) {
             payload.assign(data + kHeaderSize, data + sz);
@@ -216,13 +232,32 @@ void ZmqIpcServer::drainOutbound() {
         batch.swap(outbound_);
         for (auto& item : latest_) batch.push_back(std::move(item.second));
         latest_.clear();
+        queuedBytes_ = 0;
     }
-    if (peerIdentity_.empty()) {
+    auto requeue = [this, &batch]() {
         std::lock_guard<std::mutex> lk(outboundMu_);
+        std::size_t batchBytes = 0;
+        for (const auto& frame : batch) {
+            if (batchBytes > kMaxQueuedBytes || frame.size() > kMaxQueuedBytes - batchBytes) {
+                stop_ = true;
+                batch.clear();
+                return;
+            }
+            batchBytes += frame.size();
+        }
+        if (queuedBytes_ > kMaxQueuedBytes || batchBytes > kMaxQueuedBytes - queuedBytes_) {
+            stop_ = true;
+            batch.clear();
+            return;
+        }
+        queuedBytes_ += batchBytes;
         while (!batch.empty()) {
             outbound_.push_front(std::move(batch.back()));
             batch.pop_back();
         }
+    };
+    if (peerIdentity_.empty()) {
+        requeue();
         return;
     }
     while (!batch.empty()) {
@@ -236,16 +271,7 @@ void ZmqIpcServer::drainOutbound() {
         }
         int error = zmq_errno();
         if ((error == EAGAIN || error == EHOSTUNREACH) && running_) {
-            // A disconnected or temporarily back-pressured peer must never pin
-            // the worker inside zmq_send: stop() owns a join on this thread.
-            // Put the unsent suffix ahead of anything producers queued while we
-            // were sending, preserving request/response order for the next poll.
-            if (error == EHOSTUNREACH) peerIdentity_.clear();
-            std::lock_guard<std::mutex> lk(outboundMu_);
-            while (!batch.empty()) {
-                outbound_.push_front(std::move(batch.back()));
-                batch.pop_back();
-            }
+            requeue();
             return;
         }
         if (error != EAGAIN && error != ETERM) {

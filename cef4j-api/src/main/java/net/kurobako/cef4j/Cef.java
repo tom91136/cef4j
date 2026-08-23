@@ -28,17 +28,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Singleton managing the CEF lifecycle: configuration, initialization, message loop, and shutdown.
  *
- * <p>The message-loop thread is chosen per platform by {@link #osrLaunchArgs()} and honoured automatically by
- * {@link #initialise(Mutable, List)}:
- *
- * <ul>
- *   <li><b>macOS</b> — {@code cef_initialize()} is dispatched onto Thread 0 (the AppKit main thread) via GCD with
- *       {@code externalMessagePump=1}. A CFRunLoop timer on Thread 0 calls {@code cef_do_message_loop_work()} at ~60
- *       Hz, coexisting with AWT/Glass event handling. No {@code -XstartOnFirstThread} is required. {@link #terminate()}
- *       dispatches cleanup ({@code cef_shutdown}) to Thread 0 via GCD.
- *   <li><b>Linux</b> — {@code multiThreadedMessageLoop=1}. CEF runs its own UI thread internally.
- *   <li><b>Windows</b> — CEF runs on a daemon thread created by {@code initialise()}.
- * </ul>
+ * <p>The message-loop thread is chosen per platform by {@link #osrLaunchArgs()} and managed by
+ * {@link #initialise(Mutable, List)}. On macOS cef4j performs initialization and shutdown on the AppKit main thread; on
+ * Linux CEF manages its own UI thread; on Windows cef4j manages a daemon thread.
  *
  * <p>When {@code externalMessagePump} is explicitly set by the caller (advanced use), cef4j skips the internal
  * lifecycle and the caller must drive the loop via {@link #doMessageLoopWork()} on the init thread.
@@ -87,7 +79,7 @@ public enum Cef {
 
         public LaunchArgs(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> args) {
             this.settings = Objects.requireNonNull(settings, "settings");
-            this.args = List.copyOf(Objects.requireNonNull(args, "args"));
+            this.args = new ArrayList<>(Objects.requireNonNull(args, "args"));
         }
 
         @Nonnull
@@ -104,21 +96,9 @@ public enum Cef {
     /**
      * Returns a fresh {@link LaunchArgs} configured for OSR UI embeddings (Swing, JavaFX).
      *
-     * <p>Encodes the platform-specific message-loop mode that avoids conflicts with the host UI toolkit:
-     *
-     * <ul>
-     *   <li>macOS: both loop modes off - {@link #initialiseInternal} forces {@code externalMessagePump=1} and
-     *       dispatches {@code cef_initialize()} onto Thread 0 (the AppKit main thread) via GCD, then installs a
-     *       CFRunLoop timer that calls {@code cef_do_message_loop_work()} at ~60 Hz on Thread 0. This avoids claiming
-     *       {@code [NSApp run]} (which conflicts with AWT/Glass) while satisfying CEF's requirement that UI callbacks
-     *       land on the same thread that called {@code cef_initialize()}. No {@code -XstartOnFirstThread} is required.
-     *   <li>Linux: {@code multiThreadedMessageLoop=1} plus {@code --ozone-platform=x11} - Glass-GTK3 owns the process
-     *       GDK default display; CEF must run its own UI thread rather than a daemon-wrapped loop.
-     *   <li>Windows: both loop modes off - CEF runs on an internal daemon thread managed by cef4j.
-     * </ul>
-     *
-     * <p>Always sets {@code windowlessRenderingEnabled=1} and adds {@code --disable-popup-blocking}. Callers typically
-     * set {@code cachePath} and any extra args before passing to {@link #initialise(CefSettings.Mutable, List)}.
+     * <p>Always sets {@code windowlessRenderingEnabled=1} and adds {@code --disable-popup-blocking}. Callers must set
+     * {@code noSandbox=1} to acknowledge that cef4j's direct-launch distribution cannot initialize CEF's supported
+     * sandbox before passing the settings to {@link #initialise(CefSettings.Mutable, List)}.
      */
     public static LaunchArgs osrLaunchArgs() {
         CefSettings.Mutable settings = new CefSettings.Mutable();
@@ -127,8 +107,6 @@ public enum Cef {
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 1;
         } else {
-            // macOS: cef4j dispatches init + message loop onto Thread 0 via GCD.
-            // Windows: CEF runs on a daemon thread managed by cef4j.
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;
         }
@@ -205,19 +183,30 @@ public enum Cef {
     }
 
     /**
-     * Initialise CEF without validating settings. Use this only if you know what you are doing — certain configurations
-     * (e.g. {@code multiThreadedMessageLoop=1} on macOS) will crash or hang the process.
+     * Initialise CEF without validating message-loop settings. This does not bypass the required {@code noSandbox=1}
+     * acknowledgement. Use this only if you know what you are doing — certain configurations (e.g.
+     * {@code multiThreadedMessageLoop=1} on macOS) will crash or hang the process.
      */
     public void initialiseUnsafe(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+        validateSandboxAvailability(settings);
         initialiseInternal(settings, extraArgs);
     }
 
-    private static void validateSettings(CefSettings.Mutable settings) {
+    static void validateSettings(CefSettings.Mutable settings) {
+        validateSandboxAvailability(settings);
         if (OS.isMacOS() && settings.multiThreadedMessageLoop != 0) {
             throw new IllegalArgumentException("multiThreadedMessageLoop is not supported on macOS. "
                     + "Leave both externalMessagePump and multiThreadedMessageLoop at 0 and cef4j will "
                     + "dispatch cef_initialize()/cef_run_message_loop() onto Thread 0 internally. "
                     + "Call initialiseUnsafe() to bypass this check.");
+        }
+    }
+
+    private static void validateSandboxAvailability(CefSettings.Mutable settings) {
+        if (settings.noSandbox == 0) {
+            throw new IllegalArgumentException(
+                    "CEF sandboxing is unavailable with cef4j's direct-launch distribution. Set noSandbox=1 "
+                            + "to explicitly accept unsandboxed renderer, GPU, and utility processes.");
         }
     }
 
@@ -268,11 +257,6 @@ public enum Cef {
             }
             setOptionalIntSetting(settings, "disableSignalHandlers", 1);
 
-            // Sandbox is not supported in JVM-based CEF embeddings: the subprocess helper is a
-            // separate executable and sandbox initialisation requires same-process control that the
-            // JVM cannot provide. See JCEF context.cpp and CEF sandbox_setup docs.
-            settings.noSandbox = 1;
-
             log.debug(
                     "CEF config: subprocess={}, resources={}",
                     settings.browserSubprocessPath,
@@ -286,11 +270,6 @@ public enum Cef {
             boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
 
             if (useExternalPump || useMultiThreadedLoop) {
-                // External pump: caller drives the loop via doMessageLoopWork().
-                // Multi-threaded loop: CEF spawns its own UI thread internally.
-                // In both cases cef_initialize() must be followed by neither runMessageLoop() nor a
-                // daemon-thread wrapper - runMessageLoop() is invalid under multiThreadedMessageLoop
-                // and forking from a multithreaded JVM corrupts child-process FD inheritance.
                 CefSettings immutable = settings.toImmutable();
                 final int result = CefGlobals.initialize(mainArgs(argv), immutable, appHandler, null);
                 if (result == 0) {
@@ -302,11 +281,6 @@ public enum Cef {
                 initThread = Thread.currentThread();
                 daemonManaged = false;
             } else if (OS.isMacOS()) {
-                // macOS path: dispatch cef_initialize() + cef_run_message_loop() + cleanup onto
-                // Thread 0 (the AppKit main thread) in a single dispatch_async block.
-                // cef_run_message_loop() calls [NSApp run] which becomes the event loop for Thread 0.
-                // terminate() posts cef_quit_message_loop() to CEF's UI thread and waits for the
-                // dispatch block to finish via a semaphore.
                 final CefSettings finalSettings = settings.toImmutable();
                 final CefApp finalAppHandler = appHandler;
                 final List<String> finalArgv = List.copyOf(argv);
@@ -320,9 +294,9 @@ public enum Cef {
                             } catch (Throwable t) {
                                 initError.set(t);
                             }
+                            return result[0] != 0 && initError.get() == null;
                         },
                         () -> {
-                            // Runs on Thread 0 after cef_run_message_loop() returns.
                             int released = NativeCleaner.INSTANCE.releaseAll();
                             log.info("Released {} outstanding NativePeers before shutdown", released);
                         });
@@ -342,7 +316,6 @@ public enum Cef {
                 daemonManaged = false;
                 macOsManaged = true;
             } else {
-                // Daemon thread path: CEF init + message loop run on a dedicated thread.
                 CountDownLatch initLatch = new CountDownLatch(1);
                 AtomicReference<Throwable> initError = new AtomicReference<>();
                 CountDownLatch sdLatch = new CountDownLatch(1);
@@ -385,18 +358,7 @@ public enum Cef {
                 daemon.setDaemon(true);
                 daemon.start();
 
-                boolean interrupted = false;
-                while (true) {
-                    try {
-                        initLatch.await();
-                        break;
-                    } catch (InterruptedException ignored) {
-                        // CEF initialization cannot safely be abandoned once its daemon has entered native code.
-                        // Finish the lifecycle transition, then restore the caller's interrupt status.
-                        interrupted = true;
-                    }
-                }
-                if (interrupted) Thread.currentThread().interrupt();
+                awaitUninterruptibly(initLatch);
 
                 Throwable error = initError.get();
                 if (error != null) {
@@ -450,17 +412,10 @@ public enum Cef {
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
         argv.add("cef4j");
         argv.addAll(extraArgs);
-        addArgIfMissing(argv, "--no-sandbox");
         if (!OS.isWindows()) {
-            // CEF releases before disable_signal_handlers briefly install default fatal-signal handlers during
-            // cef_initialize(). Snapshotting and restoring them afterward still leaves a race with HotSpot's normal
-            // SIGSEGV safepoint polling. Prevent CEF from replacing the JVM handlers in the first place.
+            // XXX: CEF 109.1.18 and 116.0.27 lack disable_signal_handlers; keep HotSpot's fatal handlers protected
+            // until those compatibility lanes are dropped.
             addArgIfMissing(argv, "--disable-in-process-stack-traces");
-        }
-        if (OS.isLinux()) {
-            addArgIfMissing(argv, "--disable-setuid-sandbox");
-            addArgIfMissing(argv, "--disable-seccomp-filter-sandbox");
-            addArgIfMissing(argv, "--disable-gpu-sandbox");
         }
         return argv;
     }
@@ -490,9 +445,8 @@ public enum Cef {
      * remains accessible but all operations will throw {@link IllegalStateException}.
      */
     public void terminate() {
-        // Transition to SHUTTING_DOWN under the monitor, then release it before blocking calls.
-        // Holding the monitor during dispatch_sync/semaphore_wait would deadlock if Thread 0
-        // (or the daemon thread) tries to enter a lifecycle-critical section during shutdown.
+        // XXX: macOS dispatch and daemon teardown can reenter the lifecycle; keep blocking shutdown calls outside
+        // lifecycleLock until native teardown no longer reenters Java.
         boolean isMacOs;
         boolean isDaemon;
         synchronized (lifecycleLock) {
@@ -511,22 +465,11 @@ public enum Cef {
         log.info("CEF shutting down");
 
         if (isMacOs) {
-            // Ask CEF to quit its message loop naturally, using an NSApp wake-up only
-            // as a bounded fallback, then wait for cleanup and cef_shutdown().
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
         } else if (isDaemon) {
-            // Signal the daemon thread's runMessageLoop() to return; cleanup runs there.
             CefGlobals.quitMessageLoop();
-            try {
-                if (shutdownLatch != null) {
-                    shutdownLatch.await();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                log.warn("Interrupted waiting for CEF shutdown");
-            }
+            if (shutdownLatch != null) awaitUninterruptibly(shutdownLatch);
         } else {
-            // External message pump / multithreaded loop path: clean-up runs on the calling thread.
             int released = NativeCleaner.INSTANCE.releaseAll();
             log.info("Released {} outstanding NativePeers before shutdown", released);
             CefGlobals.shutdown();
@@ -536,6 +479,19 @@ public enum Cef {
             state = State.TERMINATED;
         }
         log.info("CEF terminated");
+    }
+
+    static void awaitUninterruptibly(CountDownLatch latch) {
+        boolean interrupted = false;
+        while (true) {
+            try {
+                latch.await();
+                break;
+            } catch (InterruptedException ignored) {
+                interrupted = true;
+            }
+        }
+        if (interrupted) Thread.currentThread().interrupt();
     }
 
     /**
@@ -563,8 +519,6 @@ public enum Cef {
 
     private static CefMainArgs mainArgs(List<String> argv) {
         if (OS.isWindows()) {
-            // A null HINSTANCE asks CEF/Chromium to use the current executable module. Keeping the native handle out
-            // of Java also preserves the pure-Java public bootstrap API.
             return new net.kurobako.cef4j.gen.win.CefMainArgs(0L);
         }
         if (OS.isMacOS()) {
@@ -603,7 +557,8 @@ public enum Cef {
             var field = settings.getClass().getField(fieldName);
             field.setInt(settings, value);
         } catch (NoSuchFieldException ignored) {
-            // Older generated settings structs may not expose newer optional fields.
+            // XXX: CEF 109.1.18 and 116.0.27 generated settings lack newer fields; remove reflection when those
+            // compatibility lanes are dropped.
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("Unable to set CEF setting: " + fieldName, e);
         }

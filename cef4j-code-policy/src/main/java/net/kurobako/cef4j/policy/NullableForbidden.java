@@ -18,9 +18,7 @@ import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
+import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -34,8 +32,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 /**
  * Bans {@code javax.annotation.Nullable} from public/protected API. The policy is that absence is modelled with
@@ -188,56 +184,25 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
             }
             ExecutableElement method = Objects.requireNonNull((ExecutableElement) param.getEnclosingElement());
             int index = method.getParameters().indexOf((VariableElement) param);
-            return overridesNullable(method, Objects.requireNonNull((TypeElement) method.getEnclosingElement()), index);
+            return overridesNullable(method, index, state);
         }
         if (member instanceof MethodTree) {
-            return overridesNullable(
-                    (ExecutableElement) symbol, Objects.requireNonNull((TypeElement) symbol.getEnclosingElement()), -1);
+            return overridesNullable((ExecutableElement) symbol, -1, state);
         }
         return false;
     }
 
-    private static boolean overridesNullable(ExecutableElement method, TypeElement enclosing, int paramIndex) {
-        Deque<TypeMirror> worklist = new ArrayDeque<>();
-        pushSupertypes(enclosing, worklist);
-        Set<TypeElement> visited = new HashSet<>();
-        while (!worklist.isEmpty()) {
-            TypeMirror type = worklist.poll();
-            TypeElement superType = typeSymbol(type);
-            if (superType == null || !visited.add(superType)) {
-                continue;
+    private static boolean overridesNullable(ExecutableElement method, int paramIndex, VisitorState state) {
+        if (!(method instanceof MethodSymbol methodSymbol)) return false;
+        for (MethodSymbol candidate : ASTHelpers.findSuperMethods(methodSymbol, state.getTypes())) {
+            if (paramIndex < 0) {
+                if (isNullableElement(candidate)) return true;
+            } else {
+                List<? extends VariableElement> params = candidate.getParameters();
+                if (paramIndex < params.size() && isNullableElement(params.get(paramIndex))) return true;
             }
-            for (Element candidate : superType.getEnclosedElements()) {
-                if (candidate.getKind() != ElementKind.METHOD
-                        || !candidate.getSimpleName().contentEquals(method.getSimpleName())
-                        || ((ExecutableElement) candidate).getParameters().size()
-                                != method.getParameters().size()) {
-                    continue;
-                }
-                if (paramIndex < 0) {
-                    if (isNullableElement(candidate)) return true;
-                } else {
-                    List<? extends VariableElement> params = ((ExecutableElement) candidate).getParameters();
-                    if (paramIndex < params.size() && isNullableElement(params.get(paramIndex))) return true;
-                }
-            }
-            pushSupertypes(superType, worklist);
         }
         return false;
-    }
-
-    private static @Nullable TypeElement typeSymbol(TypeMirror type) {
-        if (!(type instanceof com.sun.tools.javac.code.Type t)) {
-            return null;
-        }
-        return (TypeElement) t.tsym;
-    }
-
-    private static void pushSupertypes(TypeElement type, Deque<TypeMirror> worklist) {
-        if (type.getSuperclass() != null && type.getSuperclass().getKind() != TypeKind.NONE) {
-            worklist.push(type.getSuperclass());
-        }
-        worklist.addAll(type.getInterfaces());
     }
 
     private static boolean isNullableElement(Element element) {

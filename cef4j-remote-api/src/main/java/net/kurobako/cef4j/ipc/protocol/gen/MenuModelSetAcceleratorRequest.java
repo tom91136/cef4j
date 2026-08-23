@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class MenuModelSetAcceleratorRequest implements CefMessageView, CefMessageEncoder {
@@ -83,12 +84,19 @@ public final class MenuModelSetAcceleratorRequest implements CefMessageView, Cef
     public static final CefMessageDecoder<MenuModelSetAcceleratorRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "commandId");
         int commandId = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "keyCode");
         int keyCode = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "shiftPressed");
         int shiftPressed = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "ctrlPressed");
         int ctrlPressed = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "altPressed");
         int altPressed = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "MenuModelSetAcceleratorRequest");
         return new MenuModelSetAcceleratorRequest(self, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
     };
 }

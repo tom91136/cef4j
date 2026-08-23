@@ -74,6 +74,7 @@ final class SwingBrowserPanelTestSupport {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
             Path reportDir = Files.createDirectories(Path.of("target", "surefire-reports"));
             CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.noSandbox = 1;
             settings.cachePath = cacheDir.toAbsolutePath().toString();
             settings.rootCachePath = cacheDir.toAbsolutePath().toString();
             settings.logFile = reportDir
@@ -206,8 +207,7 @@ final class SwingBrowserPanelTestSupport {
                             state.location = Objects.requireNonNullElse(url, "");
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"
-                        }) // long cursor on v109/v116; int on v117+
+                        @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
                         public boolean onCursorChange(
                                 @Nullable CefBrowser b,
                                 long cursor,
@@ -216,8 +216,7 @@ final class SwingBrowserPanelTestSupport {
                             return type != null && updateCursor(type);
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"
-                        }) // int cursor on v117+; long on v109/v116
+                        @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
                         public boolean onCursorChange(
                                 @Nullable CefBrowser b,
                                 int cursor,

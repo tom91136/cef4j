@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class DisplayHandlerOnConsoleMessageEvent implements CefMessageView, CefMessageEncoder {
@@ -85,17 +86,21 @@ public final class DisplayHandlerOnConsoleMessageEvent implements CefMessageView
     public static final CefMessageDecoder<DisplayHandlerOnConsoleMessageEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "level");
         int level = __buf.getInt();
-        int messageLen = __buf.getInt();
+        int messageLen = WireDecoder.length(__buf, "message");
         byte[] messageBuf = new byte[messageLen];
         __buf.get(messageBuf);
         String message = new String(messageBuf, StandardCharsets.UTF_8);
-        int sourceLen = __buf.getInt();
+        int sourceLen = WireDecoder.length(__buf, "source");
         byte[] sourceBuf = new byte[sourceLen];
         __buf.get(sourceBuf);
         String source = new String(sourceBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "line");
         int line = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "DisplayHandlerOnConsoleMessageEvent");
         return new DisplayHandlerOnConsoleMessageEvent(browser, level, message, source, line);
     };
 }

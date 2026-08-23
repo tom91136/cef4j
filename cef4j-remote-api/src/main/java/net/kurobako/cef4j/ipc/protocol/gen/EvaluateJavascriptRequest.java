@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class EvaluateJavascriptRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class EvaluateJavascriptRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<EvaluateJavascriptRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
-        int codeLen = __buf.getInt();
+        int codeLen = WireDecoder.length(__buf, "code");
         byte[] codeBuf = new byte[codeLen];
         __buf.get(codeBuf);
         String code = new String(codeBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, 1, "retainHandle");
         boolean retainHandle = __buf.get() != 0;
+        WireDecoder.requireFullyConsumed(__buf, "EvaluateJavascriptRequest");
         return new EvaluateJavascriptRequest(frame, code, retainHandle);
     };
 }

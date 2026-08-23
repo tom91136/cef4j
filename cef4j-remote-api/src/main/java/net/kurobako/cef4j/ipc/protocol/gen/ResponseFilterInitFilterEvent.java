@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class ResponseFilterInitFilterEvent implements CefMessageView, CefMessageEncoder {
 
@@ -45,6 +46,7 @@ public final class ResponseFilterInitFilterEvent implements CefMessageView, CefM
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
 
+        WireDecoder.requireFullyConsumed(__buf, "ResponseFilterInitFilterEvent");
         return new ResponseFilterInitFilterEvent();
     };
 }

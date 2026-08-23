@@ -168,6 +168,38 @@ class DevToolsSessionTest {
         }
     }
 
+    @Test
+    void cancelledCommandDoesNotConsumeALaterResponse() throws Exception {
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
+                Peer peer = new Peer(pair.b)) {
+            RemoteHandle browser = new RemoteHandle(51);
+            var attaching = DevToolsSession.attach(
+                    session, browser, new BrowserHost(session, new RemoteHandle(52)), new GsonCdpCodec());
+            peer.respond(peer.receive(), null);
+            DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
+
+            CompletableFuture<Map<String, Object>> cancelled = devTools.send("Runtime.evaluate", null);
+            Frame firstSend = peer.receive();
+            int firstId = commandId(firstSend);
+            peer.respond(firstSend, new BrowserHostSendDevToolsMessageResponse(1));
+            cancelled.cancel(false);
+            peer.event(new DevToolsMessageEvent(
+                    browser,
+                    ("{\"id\":" + firstId + ",\"result\":{\"stale\":true}}").getBytes(StandardCharsets.UTF_8)));
+
+            CompletableFuture<Map<String, Object>> next = devTools.send("Runtime.evaluate", null);
+            Frame nextSend = peer.receive();
+            int nextId = commandId(nextSend);
+            peer.respond(nextSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.event(new DevToolsMessageEvent(
+                    browser, ("{\"id\":" + nextId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
+
+            assertThat(cancelled).isCancelled();
+            assertThat(next.get(2, TimeUnit.SECONDS)).containsEntry("answer", 42.0);
+        }
+    }
+
     private static int commandId(Frame frame) {
         BrowserHostSendDevToolsMessageRequest request =
                 BrowserHostSendDevToolsMessageRequest.DECODER.decode(ByteBuffer.wrap(frame.payload));

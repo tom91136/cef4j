@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct WindowSendMouseMoveResponse {
     static constexpr int32_t kMessageId = 11125529;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct WindowSendMouseMoveResponse {
                 throw std::invalid_argument("truncated WindowSendMouseMoveResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing WindowSendMouseMoveResponse payload");
         return out;
     }
 };

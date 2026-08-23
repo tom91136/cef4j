@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,8 +40,8 @@ public final class ReplayTransport implements CefTransport {
     @Nullable
     private volatile Consumer<ByteBuffer> handler;
 
-    private volatile boolean started = false;
-    private volatile boolean closed = false;
+    private final AtomicBoolean started = new AtomicBoolean();
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     public static ReplayTransport fromFile(@Nonnull Path file) throws IOException {
         try (MessageLog.Reader r = MessageLog.reader(file)) {
@@ -86,7 +87,7 @@ public final class ReplayTransport implements CefTransport {
 
     @Override
     public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
-        if (closed) throw new CefTransportException("replay transport closed");
+        if (closed.get()) throw new CefTransportException("replay transport closed");
         byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         synchronized (outboundLock) {
@@ -105,8 +106,7 @@ public final class ReplayTransport implements CefTransport {
      * where events arrive before the consumer can subscribe. Idempotent.
      */
     public void start() {
-        if (started) return;
-        started = true;
+        if (!started.compareAndSet(false, true)) return;
         Consumer<ByteBuffer> h = handler;
         if (h == null) return;
         for (byte[] payload : inbound) h.accept(ByteBuffer.wrap(payload));
@@ -119,11 +119,11 @@ public final class ReplayTransport implements CefTransport {
 
     @Override
     public boolean isConnected() {
-        return !closed;
+        return !closed.get();
     }
 
     @Override
     public void close() {
-        closed = true;
+        closed.set(true);
     }
 }

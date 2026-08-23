@@ -8,7 +8,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefCookieAccessFilter : public cef_cookie_access_filter_t {
     JavaVM* jvm;

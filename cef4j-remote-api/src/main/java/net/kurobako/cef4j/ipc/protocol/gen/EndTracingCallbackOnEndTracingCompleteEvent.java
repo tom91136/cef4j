@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMessageView, CefMessageEncoder {
 
@@ -51,10 +52,11 @@ public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMes
     public static final CefMessageDecoder<EndTracingCallbackOnEndTracingCompleteEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int tracingFileLen = __buf.getInt();
+        int tracingFileLen = WireDecoder.length(__buf, "tracingFile");
         byte[] tracingFileBuf = new byte[tracingFileLen];
         __buf.get(tracingFileBuf);
         String tracingFile = new String(tracingFileBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "EndTracingCallbackOnEndTracingCompleteEvent");
         return new EndTracingCallbackOnEndTracingCompleteEvent(tracingFile);
     };
 }

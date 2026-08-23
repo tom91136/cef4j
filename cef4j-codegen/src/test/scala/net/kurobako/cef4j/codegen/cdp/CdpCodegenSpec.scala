@@ -132,6 +132,8 @@ class CdpCodegenSpec extends munit.FunSuite {
       assert(runtime.contains("public Optional<String> classValue()"))
       assert(domains.contains("@Generated(\"mvn generate-sources -pl cef4j-platform\")"))
       assert(domains.contains("public Page.Client page()"))
+      assert(domains.contains("public DOM.Client dom()"))
+      assert(domains.contains("@Deprecated public DOM.Client dOM() { return dom(); }"))
       assert(metadata.contains("chromium.version=150.0.0.0"))
       assert(!metadata.contains("schema.sha256="))
     } finally FileSystem.deleteTree(root)

@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct ViewRequestFocusResponse {
     static constexpr int32_t kMessageId = 1905201877;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct ViewRequestFocusResponse {
                 throw std::invalid_argument("truncated ViewRequestFocusResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing ViewRequestFocusResponse payload");
         return out;
     }
 };

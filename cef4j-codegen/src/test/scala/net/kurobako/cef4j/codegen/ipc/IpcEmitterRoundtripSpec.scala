@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import java.lang.reflect.InvocationTargetException
 import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.file.Files
@@ -109,6 +110,70 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
     assertEquals(cls.getMethod("ts").invoke(decoded).asInstanceOf[Long], 1234567890L)
   }
 
+  test("Java message decoder rejects negative, truncated, oversized, and trailing payloads") {
+    val spec = MessageSpec(
+      className = "HostileRequest",
+      packageName = "test.gen",
+      messageId = 102,
+      fields = List(FieldSpec("name", FieldType.Utf8String))
+    )
+    val classes      = compileAll(spec.packageName + "." + spec.className -> JavaEmitter.emit(spec))
+    val cls          = classes.get(spec.packageName + "." + spec.className)
+    val decoder      = cls.getField("DECODER").get(null)
+    val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
+    val decode       = decoderIface.getMethod("decode", classOf[ByteBuffer])
+
+    def rejects(bytes: Array[Byte]): Unit = {
+      val thrown = intercept[InvocationTargetException](decode.invoke(decoder, ByteBuffer.wrap(bytes)))
+      assert(thrown.getCause.isInstanceOf[IllegalArgumentException], thrown.getCause.toString)
+    }
+
+    rejects(ByteBuffer.allocate(4).order(java.nio.ByteOrder.LITTLE_ENDIAN).putInt(-1).array())
+    rejects(ByteBuffer.allocate(6).order(java.nio.ByteOrder.LITTLE_ENDIAN).putInt(3).put(Array[Byte](1, 2)).array())
+    rejects(ByteBuffer.allocate(4).order(java.nio.ByteOrder.LITTLE_ENDIAN).putInt(64 * 1024 * 1024 + 1).array())
+    rejects(
+      ByteBuffer.allocate(6).order(java.nio.ByteOrder.LITTLE_ENDIAN).putInt(1).put(1.toByte).put(2.toByte).array()
+    )
+  }
+
+  test("nested Java data struct validates lengths while parent enforces exact exhaustion") {
+    val data = DataStructSpec(
+      className = "Label",
+      packageName = "test.gen",
+      cefStructName = "cef_label_t",
+      fields = List(FieldSpec("text", FieldType.Utf8String))
+    )
+    val message = MessageSpec(
+      className = "NestedRequest",
+      packageName = "test.gen",
+      messageId = 103,
+      fields = List(FieldSpec("label", FieldType.DataStruct("cef_label_t")), FieldSpec("tail", FieldType.I32))
+    )
+    val classes = compileAll(
+      data.packageName + "." + data.className       -> JavaDataStructEmitter.emit(data),
+      message.packageName + "." + message.className -> JavaEmitter.emit(message)
+    )
+    val cls          = classes.get(message.packageName + "." + message.className)
+    val decoder      = cls.getField("DECODER").get(null)
+    val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
+    val decode       = decoderIface.getMethod("decode", classOf[ByteBuffer])
+
+    val valid = ByteBuffer
+      .allocate(10)
+      .order(java.nio.ByteOrder.LITTLE_ENDIAN)
+      .putInt(2)
+      .put('o'.toByte)
+      .put('k'.toByte)
+      .putInt(7)
+      .array()
+    val decoded = decode.invoke(decoder, ByteBuffer.wrap(valid))
+    assertEquals(cls.getMethod("tail").invoke(decoded).asInstanceOf[Int], 7)
+
+    val truncated = ByteBuffer.allocate(5).order(java.nio.ByteOrder.LITTLE_ENDIAN).putInt(2).put('o'.toByte).array()
+    val thrown    = intercept[InvocationTargetException](decode.invoke(decoder, ByteBuffer.wrap(truncated)))
+    assert(thrown.getCause.isInstanceOf[IllegalArgumentException], thrown.getCause.toString)
+  }
+
   test("emitter rejects negative message ids") {
     intercept[IllegalArgumentException] {
       MessageSpec("X", "test.gen", -1, Nil)
@@ -166,6 +231,33 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
         |@FunctionalInterface
         |public interface CefMessageDecoder<T extends CefMessageView> {
         |    T decode(java.nio.ByteBuffer payload);
+        |}
+        |""".stripMargin,
+    "net.kurobako.cef4j.ipc.session.WireDecoder" ->
+      """package net.kurobako.cef4j.ipc.session;
+        |public final class WireDecoder {
+        |    private static final int MAX_FIELD_BYTES = 64 * 1024 * 1024;
+        |    private static final int MAX_COLLECTION_ITEMS = 1_000_000;
+        |    public static void requireRemaining(java.nio.ByteBuffer source, int count, String field) {
+        |        if (count < 0 || count > source.remaining()) throw new IllegalArgumentException("truncated " + field);
+        |    }
+        |    public static int length(java.nio.ByteBuffer source, String field) {
+        |        requireRemaining(source, 4, field);
+        |        int value = source.getInt();
+        |        if (value < 0 || value > MAX_FIELD_BYTES || value > source.remaining())
+        |            throw new IllegalArgumentException("invalid length for " + field);
+        |        return value;
+        |    }
+        |    public static int count(java.nio.ByteBuffer source, String field) {
+        |        requireRemaining(source, 4, field);
+        |        int value = source.getInt();
+        |        if (value < 0 || value > MAX_COLLECTION_ITEMS || value > source.remaining() / 4)
+        |            throw new IllegalArgumentException("invalid count for " + field);
+        |        return value;
+        |    }
+        |    public static void requireFullyConsumed(java.nio.ByteBuffer source, String type) {
+        |        if (source.hasRemaining()) throw new IllegalArgumentException("trailing bytes for " + type);
+        |    }
         |}
         |""".stripMargin
   )

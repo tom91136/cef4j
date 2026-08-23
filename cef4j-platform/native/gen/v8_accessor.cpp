@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefV8Accessor : public cef_v8_accessor_t {
     JavaVM* jvm;

@@ -56,6 +56,7 @@ class CefAppDelegatingTest {
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         TestTempDirs.cleanupAtExit(tempDir);
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.rootCachePath = cacheDir.toAbsolutePath().toString();
         settings.windowlessRenderingEnabled = 1;

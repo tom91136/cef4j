@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefFindHandler : public cef_find_handler_t {
     JavaVM* jvm;

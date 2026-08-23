@@ -7,7 +7,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_browser_view_delegate_t* Create_JniCefBrowserViewDelegate(JNIEnv* env, jobject handler);
 

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class InlinePaintEvent implements CefMessageView, CefMessageEncoder {
@@ -113,18 +114,28 @@ public final class InlinePaintEvent implements CefMessageView, CefMessageEncoder
     public static final CefMessageDecoder<InlinePaintEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "frameSequence");
         long frameSequence = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
         int width = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
         int height = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "paintType");
         int paintType = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyX");
         int dirtyX = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyY");
         int dirtyY = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyWidth");
         int dirtyWidth = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyHeight");
         int dirtyHeight = __buf.getInt();
-        int pixelsLen = __buf.getInt();
+        int pixelsLen = WireDecoder.length(__buf, "pixels");
         byte[] pixels = new byte[pixelsLen];
         __buf.get(pixels);
+        WireDecoder.requireFullyConsumed(__buf, "InlinePaintEvent");
         return new InlinePaintEvent(browser, frameSequence, width, height, paintType, dirtyX, dirtyY, dirtyWidth, dirtyHeight, pixels);
     };
 }

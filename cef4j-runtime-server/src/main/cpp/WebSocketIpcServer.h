@@ -60,6 +60,7 @@ private:
         std::int64_t streamId = 0;
     };
     std::deque<OutboundFrame> outbound_;
+    std::size_t queuedBytes_ = 0;
     std::mutex clientMu_;
     bool fragmented_ = false;
     std::vector<std::uint8_t> inboundMessage_;

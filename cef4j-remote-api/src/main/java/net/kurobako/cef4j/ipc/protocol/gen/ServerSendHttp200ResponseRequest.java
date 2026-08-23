@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ServerSendHttp200ResponseRequest implements CefMessageView, CefMessageEncoder {
@@ -76,15 +77,18 @@ public final class ServerSendHttp200ResponseRequest implements CefMessageView, C
     public static final CefMessageDecoder<ServerSendHttp200ResponseRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "connectionId");
         int connectionId = __buf.getInt();
-        int contentTypeLen = __buf.getInt();
+        int contentTypeLen = WireDecoder.length(__buf, "contentType");
         byte[] contentTypeBuf = new byte[contentTypeLen];
         __buf.get(contentTypeBuf);
         String contentType = new String(contentTypeBuf, StandardCharsets.UTF_8);
-        int dataLen = __buf.getInt();
+        int dataLen = WireDecoder.length(__buf, "data");
         byte[] data = new byte[dataLen];
         __buf.get(data);
+        WireDecoder.requireFullyConsumed(__buf, "ServerSendHttp200ResponseRequest");
         return new ServerSendHttp200ResponseRequest(self, connectionId, contentType, data);
     };
 }

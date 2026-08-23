@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct KeyboardHandlerOnKeyEventResponse {
     static constexpr int32_t kMessageId = 377595564;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     bool result = false;
 
@@ -39,6 +41,8 @@ struct KeyboardHandlerOnKeyEventResponse {
         requireAvailable(1);
         out.result = src[pos] != 0;
         pos += 1;
+        if (pos != len)
+            throw std::invalid_argument("trailing KeyboardHandlerOnKeyEventResponse payload");
         return out;
     }
 };

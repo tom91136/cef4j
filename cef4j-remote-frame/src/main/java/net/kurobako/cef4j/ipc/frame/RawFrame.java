@@ -13,11 +13,20 @@ public final class RawFrame {
     private final FrameMetadata metadata;
 
     public RawFrame(int width, int height, int stride, @Nonnull ByteBuffer pixels, @Nonnull FrameMetadata metadata) {
-        if (width <= 0 || height <= 0 || stride < width * 4) throw new IllegalArgumentException("invalid dimensions");
+        long rowBytes = (long) width * 4L;
+        long requiredBytes = (long) stride * height;
+        if (width <= 0 || height <= 0 || stride < rowBytes || requiredBytes > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("invalid dimensions");
+        }
+        ByteBuffer source = Objects.requireNonNull(pixels, "pixels");
+        if (source.remaining() < requiredBytes) {
+            throw new IllegalArgumentException(
+                    "pixel buffer has " + source.remaining() + " bytes, requires " + requiredBytes);
+        }
         this.width = width;
         this.height = height;
         this.stride = stride;
-        this.pixels = Objects.requireNonNull(pixels, "pixels").asReadOnlyBuffer();
+        this.pixels = source.asReadOnlyBuffer();
         this.metadata = Objects.requireNonNull(metadata, "metadata");
     }
 

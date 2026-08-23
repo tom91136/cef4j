@@ -69,7 +69,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             AtomicReference<RemoteBrowserPanel> panelRef = new AtomicReference<>();
             AtomicReference<JFrame> frameRef = new AtomicReference<>();
             onEdt(() -> {
-                RemoteBrowserPanel nextPanel = new RemoteBrowserPanel(frames::bind);
+                RemoteBrowserPanel nextPanel = new RemoteBrowserPanel((session, browser) -> frames.bind(session));
                 nextPanel.setPreferredSize(new Dimension(width, height));
                 JFrame nextFrame = new JFrame("cef4j remote Swing contract");
                 nextFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

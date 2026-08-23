@@ -7,10 +7,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpException;
+import net.kurobako.cef4j.cdp.CdpRequestTracker;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -20,36 +21,43 @@ import net.kurobako.cef4j.gen.CefRegistration;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefTaskRunner;
 import net.kurobako.cef4j.gen.CefThreadId;
+import net.kurobako.cef4j.webdriver.JsonElement;
+import net.kurobako.cef4j.webdriver.JsonObject;
+import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * CDP transport for a browser hosted in the current JVM. It uses CEF's observer API and does not require a remote
- * debugging port or a system Chrome installation.
- */
 public final class InProcessDevToolsSession implements CdpTransport, CefDevToolsMessageObserver {
     private static final Logger LOG = LoggerFactory.getLogger(InProcessDevToolsSession.class);
 
     private final CefBrowserHost host;
-    private final AtomicInteger nextMessageId = new AtomicInteger();
+    private final WebDriverJsonCodec jsonCodec;
     private final AtomicBoolean open = new AtomicBoolean(true);
-    private final ConcurrentHashMap<Integer, CompletableFuture<byte[]>> pending = new ConcurrentHashMap<>();
+    private final CdpRequestTracker<byte[]> requests = new CdpRequestTracker<>();
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<byte[]>>> handlers =
             new ConcurrentHashMap<>();
 
     @Nullable
     private volatile CefRegistration registration;
 
-    private InProcessDevToolsSession(CefBrowserHost host) {
+    private InProcessDevToolsSession(CefBrowserHost host, WebDriverJsonCodec jsonCodec) {
         this.host = host;
+        this.jsonCodec = jsonCodec;
     }
 
     @Nonnull
     public static CompletableFuture<InProcessDevToolsSession> attach(@Nonnull CefBrowser browser) {
+        return attach(browser, WebDriverJsonCodec.installed());
+    }
+
+    @Nonnull
+    public static CompletableFuture<InProcessDevToolsSession> attach(
+            @Nonnull CefBrowser browser, @Nonnull WebDriverJsonCodec jsonCodec) {
         Objects.requireNonNull(browser, "browser");
+        Objects.requireNonNull(jsonCodec, "jsonCodec");
         CefBrowserHost host = browser.getHost().orElse(null);
         if (host == null) return failed(new IllegalStateException("in-process browser has no host"));
-        InProcessDevToolsSession session = new InProcessDevToolsSession(host);
+        InProcessDevToolsSession session = new InProcessDevToolsSession(host, jsonCodec);
         return onUiThread(() -> {
                     session.registration = host.addDevToolsMessageObserver(session)
                             .orElseThrow(() -> new IllegalStateException("CEF rejected DevTools observer"));
@@ -67,12 +75,11 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
         Objects.requireNonNull(method, "method");
         if (!method.matches("[A-Za-z0-9_.-]+")) throw new IllegalArgumentException("invalid CDP method name");
         if (!open.get()) return failed(new IllegalStateException("DevTools session is closed"));
-        int id = nextMessageId.updateAndGet(previous -> previous == Integer.MAX_VALUE ? 1 : previous + 1);
-        CompletableFuture<byte[]> result = new CompletableFuture<>();
-        pending.put(id, result);
-        if (!open.get() && pending.remove(id, result)) {
-            result.completeExceptionally(new IllegalStateException("DevTools session is closed"));
-            return result;
+        CdpRequestTracker.Request<byte[]> request = requests.register();
+        int id = request.id();
+        if (!open.get()) {
+            requests.fail(id, new IllegalStateException("DevTools session is closed"));
+            return request;
         }
         byte[] prefix = ("{\"id\":" + id + ",\"method\":\"" + method + "\"").getBytes(StandardCharsets.UTF_8);
         byte[] bytes;
@@ -93,7 +100,12 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
             if (failure != null) completeFailure(id, failure);
             else if (!accepted) completeFailure(id, new IllegalStateException("CEF rejected DevTools message " + id));
         });
-        return result;
+        return request;
+    }
+
+    @Override
+    public void cancelPending(@Nonnull Throwable failure) {
+        requests.failAll(failure);
     }
 
     @Override
@@ -101,6 +113,7 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
     public CdpSubscription subscribe(@Nonnull String method, @Nonnull Consumer<byte[]> handler) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(handler, "handler");
+        if (!open.get()) throw new IllegalStateException("DevTools session is closed");
         CopyOnWriteArrayList<Consumer<byte[]>> current =
                 handlers.computeIfAbsent(method, ignored -> new CopyOnWriteArrayList<>());
         current.add(handler);
@@ -115,11 +128,9 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
     @Override
     public void onDevToolsMethodResult(
             @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
-        CompletableFuture<byte[]> future = pending.remove(messageId);
-        if (future == null) return;
         byte[] bytes = bytes(result);
-        if (success) future.complete(bytes);
-        else future.completeExceptionally(new IllegalStateException(new String(bytes, StandardCharsets.UTF_8)));
+        if (success) requests.complete(messageId, bytes);
+        else requests.fail(messageId, decodeError(bytes));
     }
 
     @Override
@@ -139,14 +150,18 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
 
     @Override
     public void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
-        failPending(new IllegalStateException("DevTools agent detached"));
+        terminate(new IllegalStateException("DevTools agent detached"));
     }
 
     @Override
     public void close() {
+        terminate(new IllegalStateException("DevTools session is closed"));
+    }
+
+    private void terminate(IllegalStateException failure) {
         if (!open.compareAndSet(true, false)) return;
         handlers.clear();
-        failPending(new IllegalStateException("DevTools session is closed"));
+        requests.failAll(failure);
         CefRegistration current = registration;
         registration = null;
         if (current != null)
@@ -154,21 +169,32 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
                         current.close();
                         return Boolean.TRUE;
                     })
-                    .exceptionally(failure -> {
-                        LOG.debug("DevTools observer close failed", failure);
+                    .exceptionally(closeFailure -> {
+                        LOG.debug("DevTools observer close failed", closeFailure);
                         return Boolean.FALSE;
                     });
     }
 
-    private void completeFailure(int id, Throwable failure) {
-        CompletableFuture<byte[]> future = pending.remove(id);
-        if (future != null) future.completeExceptionally(failure);
+    private CdpException decodeError(byte[] bytes) {
+        try {
+            JsonObject error = jsonCodec.decode(bytes).asObject();
+            JsonElement code = error.get("code");
+            JsonElement message = error.get("message");
+            if (code != null && message != null) {
+                return new CdpException(code.intValue(), message.string(), error.get("data"));
+            }
+        } catch (RuntimeException ignored) {
+            return undecodedError(bytes);
+        }
+        return undecodedError(bytes);
     }
 
-    private void failPending(Throwable failure) {
-        pending.forEach((id, future) -> {
-            if (pending.remove(id, future)) future.completeExceptionally(failure);
-        });
+    private static CdpException undecodedError(byte[] bytes) {
+        return new CdpException(-1, new String(bytes, StandardCharsets.UTF_8), null);
+    }
+
+    private void completeFailure(int id, Throwable failure) {
+        requests.fail(id, failure);
     }
 
     private static byte[] bytes(@Nullable ByteBuffer source) {

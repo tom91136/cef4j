@@ -27,7 +27,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,9 +92,8 @@ public class CefBrowserPanel extends JPanel {
     @Nullable
     private transient BufferedImage lastPaintedImage;
 
-    // Cached screen location, updated on the EDT. Read by CEF render handler callbacks
-    // which may run on the AppKit main thread where acquiring AWTTreeLock can deadlock
-    // against the EDT during window realisation.
+    // XXX: CEF render callbacks run outside the AWT EDT, where querying Component location can deadlock on AWTTreeLock;
+    // remove this cache only if a bridge snapshots the coordinates on the EDT before every render callback reads them.
     private volatile int cachedScreenX;
     private volatile int cachedScreenY;
     private volatile boolean screenLocationValid;
@@ -122,9 +120,6 @@ public class CefBrowserPanel extends JPanel {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
-            // Do not touch Swing before initialiseAwtPeer has checked the platform. On macOS without
-            // -XstartOnFirstThread, even SwingUtilities.isEventDispatchThread() can trigger AWT initialisation and
-            // block until [NSApp run] is running on Thread 0. CEF must initialise first there.
             Cef.State cefState = Cef.INSTANCE.state();
             if (cefState == Cef.State.INITIALISED) {
                 requireOsrInitialised();
@@ -178,8 +173,6 @@ public class CefBrowserPanel extends JPanel {
             awtBootstrapFrame = null;
             if (frame != null && !SwingUtilities.isEventDispatchThread()) {
                 try {
-                    // Drain browser/frame disposal work while the bootstrap peer still keeps AWT/X11 alive. Older CEF
-                    // releases can otherwise race toolkit auto-shutdown while cef_shutdown is still unwinding.
                     SwingUtilities.invokeAndWait(() -> {});
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -204,7 +197,6 @@ public class CefBrowserPanel extends JPanel {
         }
         try {
             SwingUtilities.invokeAndWait(dispose);
-            // Disposal can enqueue final hierarchy/component work behind the callback itself.
             SwingUtilities.invokeAndWait(() -> {});
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -248,7 +240,6 @@ public class CefBrowserPanel extends JPanel {
             BufferedImage img = prev.filter(p -> p.getWidth() == w && p.getHeight() == h)
                     .orElseGet(() -> new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB));
             int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
-            // The paint buffer is a full frame; partial copies flicker with the current double-buffering path.
             System.arraycopy(pixels, 0, dst, 0, w * h);
             return img;
         });
@@ -265,7 +256,6 @@ public class CefBrowserPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                // Keep focus while the popup window owns pointer interaction, or CEF closes the popup immediately.
                 if (osrPopupWindow != null && osrPopupWindow.isVisible()) return;
                 ifHostPresent(h -> h.setFocus(false));
             }
@@ -302,7 +292,6 @@ public class CefBrowserPanel extends JPanel {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                // Ignore transitions into the popup window so CEF does not treat them as a real leave.
                 JWindow popup = osrPopupWindow;
                 if (popup != null && popup.isVisible()) {
                     Point screen = e.getLocationOnScreen();
@@ -427,7 +416,7 @@ public class CefBrowserPanel extends JPanel {
                 screenLocationValid = true;
                 return;
             } catch (java.awt.IllegalComponentStateException ignored) {
-                // fall through
+                screenLocationValid = false;
             }
         }
         screenLocationValid = false;
@@ -512,10 +501,8 @@ public class CefBrowserPanel extends JPanel {
                     int height) {
                 boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
                 if (isPopup) {
-                    int pixelCount = width * height;
-                    int[] px = new int[pixelCount];
-                    buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(px, 0, pixelCount);
-                    SwingUtilities.invokeLater(() -> blitOsrPopup(px, width, height));
+                    CefFrameBuffer.copyBgraPixels(buffer, width, height)
+                            .ifPresent(px -> SwingUtilities.invokeLater(() -> blitOsrPopup(px, width, height)));
                 } else {
                     if (frameBuffer.onPaint(buffer, width, height, dirtyRects).isPresent()) {
                         onViewPainted(width, height);
@@ -530,14 +517,11 @@ public class CefBrowserPanel extends JPanel {
     protected void onViewPainted(int width, int height) {}
 
     /** Attaches an already-created browser to this panel and refreshes its OSR viewport. */
-    // null detaches the browser
     @SuppressWarnings("NullableForbidden")
     public void browser(@Nullable CefBrowser browser) {
         this.browser = browser;
         if (browser == null) return;
         Runnable refresh = () -> {
-            // The panel may have been realised before CEF completed browser creation. In that ordering its component
-            // resize event had no browser host to notify, so explicitly publish the current viewport on attachment.
             updateScreenLocation();
             refreshView(true);
         };
@@ -546,7 +530,6 @@ public class CefBrowserPanel extends JPanel {
     }
 
     /** Returns the attached browser, or {@code null} if none is attached. */
-    // null when no browser is attached
     @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowser browser() {
@@ -677,7 +660,7 @@ public class CefBrowserPanel extends JPanel {
             Point panelScreen = getLocationOnScreen();
             osrPopupWindow.setLocation(panelScreen.x + rect.x, panelScreen.y + rect.y);
         } catch (java.awt.IllegalComponentStateException e) {
-            // Panel not currently showing; skip position update - next paint will retry.
+            osrPopupWindow.setLocation(rect.x, rect.y);
         }
         if (!osrPopupWindow.isVisible()) {
             osrPopupWindow.setVisible(true);

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent impleme
     public static final CefMessageDecoder<BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "commandLine");
         RemoteHandle commandLine = new RemoteHandle(__buf.getInt());
-        int currentDirectoryLen = __buf.getInt();
+        int currentDirectoryLen = WireDecoder.length(__buf, "currentDirectory");
         byte[] currentDirectoryBuf = new byte[currentDirectoryLen];
         __buf.get(currentDirectoryBuf);
         String currentDirectory = new String(currentDirectoryBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent");
         return new BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent(commandLine, currentDirectory);
     };
 }

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ResponseSetCharsetRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class ResponseSetCharsetRequest implements CefMessageView, CefMessa
     public static final CefMessageDecoder<ResponseSetCharsetRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int charsetLen = __buf.getInt();
+        int charsetLen = WireDecoder.length(__buf, "charset");
         byte[] charsetBuf = new byte[charsetLen];
         __buf.get(charsetBuf);
         String charset = new String(charsetBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ResponseSetCharsetRequest");
         return new ResponseSetCharsetRequest(self, charset);
     };
 }

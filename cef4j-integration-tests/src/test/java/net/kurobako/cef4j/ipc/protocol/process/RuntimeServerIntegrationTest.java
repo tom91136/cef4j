@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -27,6 +29,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
+import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
@@ -37,6 +40,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
+import org.zeromq.SocketType;
+import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
 /** End-to-end runtime-server lifecycle and transport coverage. */
 @Timeout(600)
@@ -154,9 +160,32 @@ class RuntimeServerIntegrationTest {
     }
 
     @Test
+    void zmqRuntimeRejectsASecondDealerPeer() throws Exception {
+        try (RuntimeServerProcess server = startServerWithEnv();
+                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30));
+                ZContext context = new ZContext()) {
+            ZMQ.Socket secondPeer = context.createSocket(SocketType.DEALER);
+            secondPeer.setLinger(0);
+            secondPeer.setReceiveTimeOut(1_000);
+            secondPeer.connect(server.endpoint());
+            ByteBuffer ready = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+            Envelope.writeHeader(ready, Envelope.Kind.REQUEST, 0, 0, 0, 0);
+            secondPeer.send(ready.array(), 0);
+            assertThat(secondPeer.recv(0)).isNull();
+
+            assertThat(session.request(
+                                    new CreateBrowserRequest(
+                                            "about:blank",
+                                            BrowserSettings.builder().build()),
+                                    CreateBrowserResponse.DECODER)
+                            .get(20, TimeUnit.SECONDS))
+                    .isNotNull();
+        }
+    }
+
+    @Test
     void loadUrlRoundTripsThroughRuntimeServer() throws Exception {
-        // End-to-end through the AST pipeline: get the server's initial browser handle, walk to its main
-        // frame, dispatch Frame.loadUrl, observe CefLoadHandler.onLoadEnd via the typed handler API.
         HttpServer fixture = startFixture();
         try (RuntimeServerProcess server = startServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
@@ -169,8 +198,6 @@ class RuntimeServerIntegrationTest {
                         if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
                     });
 
-            // Subscribe before navigating. about:blank also fires onLoadEnd; filter on URL via Frame.getUrl
-            // (the AST event carries handles only).
             CountDownLatch sawOurUrl = new CountDownLatch(1);
             int[] capturedStatus = {-1};
             CopyOnWriteArrayList<CompletableFuture<Void>> urlChecks = new CopyOnWriteArrayList<>();
@@ -178,8 +205,6 @@ class RuntimeServerIntegrationTest {
                 @Override
                 public void onLoadEnd(RemoteHandle browser, RemoteHandle frame, int httpStatusCode) {
                     urlChecks.add(new Frame(session, frame).getUrl().thenAccept(loaded -> {
-                        // Resolving the frame URL is asynchronous. An about:blank OnLoadEnd can therefore
-                        // observe the subsequent target URL; only correlate successful HTTP load events.
                         if (httpStatusCode == 200 && (loaded.equals(url) || loaded.startsWith(url))) {
                             capturedStatus[0] = httpStatusCode;
                             sawOurUrl.countDown();
@@ -206,10 +231,6 @@ class RuntimeServerIntegrationTest {
 
     @Test
     void cefDisplayHandlerOnAddressChangeFiresOnNavigation() throws Exception {
-        // Validates the generated `wireClient` chain end-to-end for a non-LoadHandler handler:
-        // CefClient::get_display_handler returns the generated DisplayHandlerForwarder; CEF fires
-        // on_address_change during navigation; the forwarder encodes a `DisplayHandlerOnAddressChangeEvent`
-        // (browser, frame, url) and sends it; CefDisplayHandler.register decodes it back to typed callbacks.
         HttpServer fixture = startFixture();
         try (RuntimeServerProcess server = startServerWithEnv();
                 ZmqTransport transport = ZmqTransport.connect(server.endpoint());
@@ -250,10 +271,6 @@ class RuntimeServerIntegrationTest {
         try (net.kurobako.cef4j.ipc.transport.CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(60))) {
 
-            // Send a request with a messageId the server does not handle. The server drops it silently
-            // (no ack), so the JVM-side future stays pending until the transport reports a disconnect.
-            // Then we kill the server; the session's onDisconnect handler must fail the pending future
-            // with a CefTransportException.
             int unhandledMessageId = 9999;
             CompletableFuture<ReleaseHandleResponse> fut = session.request(
                     new net.kurobako.cef4j.ipc.session.CefMessageEncoder() {
@@ -272,10 +289,7 @@ class RuntimeServerIntegrationTest {
                     },
                     ReleaseHandleResponse.DECODER);
 
-            // Let the server bind and the ZMTP heartbeat exchange establish.
             Thread.sleep(500);
-            // Kill the complete CEF process tree. Killing only the server parent reparents renderer children
-            // before close() can enumerate them and poisons later native tests on constrained runners.
             server.kill();
 
             org.assertj.core.api.Assertions.assertThatThrownBy(() -> fut.get(20, TimeUnit.SECONDS))

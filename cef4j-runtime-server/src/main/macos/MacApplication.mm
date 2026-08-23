@@ -11,10 +11,8 @@ namespace {
 std::atomic<bool> g_quitMessageLoop{false};
 }
 
-// Keep these protocol declarations in C/Objective-C territory. Including
-// cef_application_mac.h also pulls the C++ wrapper API, whose language-level
-// requirement is newer than the C API runtime server's C++17 floor in recent
-// CEF distributions.
+// XXX: CEF 150 cef_application_mac.h pulls wrapper headers above this target's C++17 floor; remove when the target
+// adopts that wrapper language level.
 @protocol CrAppProtocol
 - (BOOL)isHandlingSendEvent;
 @end
@@ -26,10 +24,7 @@ std::atomic<bool> g_quitMessageLoop{false};
 @protocol CefAppProtocol <CrAppControlProtocol>
 @end
 
-// CEF's macOS message pump integrates with NSApplication. Creating the required
-// CefAppProtocol implementation before cef_initialize keeps UI-thread tasks,
-// renderer callbacks and orderly shutdown moving even when the application is
-// launched directly by a non-GUI parent such as Maven or a service supervisor.
+// XXX: CEF 150 on macOS requires CefAppProtocol before cef_initialize; remove when CEF documents a C-API bootstrap.
 @interface Cef4jRuntimeApplication : NSApplication <CefAppProtocol> {
 @private
     BOOL handlingSendEvent_;
@@ -57,9 +52,6 @@ std::atomic<bool> g_quitMessageLoop{false};
 @end
 
 extern "C" void* cef4jInitializeMacApplication() {
-    // Match CEF's C API sample by keeping an Objective-C autorelease pool alive
-    // for the complete browser-process lifetime, including CEF initialization,
-    // the native message loop and shutdown.
     NSAutoreleasePool* autoreleasePool = [[NSAutoreleasePool alloc] init];
     [Cef4jRuntimeApplication sharedApplication];
     if (![NSApp isKindOfClass:[Cef4jRuntimeApplication class]]) {
@@ -78,12 +70,7 @@ extern "C" void cef4jReleaseMacApplication(void* autoreleasePool) {
 extern "C" void cef4jRunMacMessageLoop() {
     g_quitMessageLoop.store(false, std::memory_order_release);
 
-    // A bundle executable launched directly by ProcessBuilder does not always
-    // receive LaunchServices' normal finish-launching transition on hosted
-    // macOS runners. Complete it explicitly, then drive both AppKit's run loop
-    // and CEF work from the process main thread. This is also more robust than
-    // relying on cef_run_message_loop()'s nested [NSApp run] integration for a
-    // UI-element application that owns no native windows.
+    // XXX: Direct ProcessBuilder launches bypass LaunchServices on macOS; remove if startup uses LaunchServices.
     if (![NSApp isRunning]) [NSApp finishLaunching];
     while (!g_quitMessageLoop.load(std::memory_order_acquire)) {
         @autoreleasepool {
@@ -92,8 +79,7 @@ extern "C" void cef4jRunMacMessageLoop() {
         }
     }
 
-    // Let CEF and AppKit process teardown work posted by the final browser
-    // callback before cef_shutdown() removes their run-loop observers.
+    // XXX: CEF 150 posts AppKit teardown after the final browser callback; remove when shutdown is synchronous.
     for (int i = 0; i < 10; ++i) {
         @autoreleasepool {
             cef_do_message_loop_work();

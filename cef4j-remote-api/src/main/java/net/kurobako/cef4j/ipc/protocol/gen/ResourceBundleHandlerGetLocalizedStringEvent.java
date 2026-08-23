@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class ResourceBundleHandlerGetLocalizedStringEvent implements CefMessageView, CefMessageEncoder {
 
@@ -58,11 +59,13 @@ public final class ResourceBundleHandlerGetLocalizedStringEvent implements CefMe
     public static final CefMessageDecoder<ResourceBundleHandlerGetLocalizedStringEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "stringId");
         int stringId = __buf.getInt();
-        int stringLen = __buf.getInt();
+        int stringLen = WireDecoder.length(__buf, "string");
         byte[] stringBuf = new byte[stringLen];
         __buf.get(stringBuf);
         String string = new String(stringBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ResourceBundleHandlerGetLocalizedStringEvent");
         return new ResourceBundleHandlerGetLocalizedStringEvent(stringId, string);
     };
 }

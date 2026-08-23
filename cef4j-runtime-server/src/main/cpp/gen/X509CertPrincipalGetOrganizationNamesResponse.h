@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct X509CertPrincipalGetOrganizationNamesResponse {
     static constexpr int32_t kMessageId = 94198342;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
 
 
@@ -35,6 +37,8 @@ struct X509CertPrincipalGetOrganizationNamesResponse {
                 throw std::invalid_argument("truncated X509CertPrincipalGetOrganizationNamesResponse payload");
         };
 
+        if (pos != len)
+            throw std::invalid_argument("trailing X509CertPrincipalGetOrganizationNamesResponse payload");
         return out;
     }
 };

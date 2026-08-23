@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class CommandLinePrependWrapperRequest implements CefMessageView, CefMessageEncoder {
@@ -60,11 +61,13 @@ public final class CommandLinePrependWrapperRequest implements CefMessageView, C
     public static final CefMessageDecoder<CommandLinePrependWrapperRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int wrapperLen = __buf.getInt();
+        int wrapperLen = WireDecoder.length(__buf, "wrapper");
         byte[] wrapperBuf = new byte[wrapperLen];
         __buf.get(wrapperBuf);
         String wrapper = new String(wrapperBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "CommandLinePrependWrapperRequest");
         return new CommandLinePrependWrapperRequest(self, wrapper);
     };
 }

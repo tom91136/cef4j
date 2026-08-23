@@ -2,6 +2,7 @@ package net.kurobako.cef4j.remote.jfx;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,6 +31,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.remote.RemoteViewportConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * <p>Input: mouse press/release/move/exit/scroll and key press/release/typed events are forwarded through the codegen
  * {@code BrowserHost.sendMouse{Click,Move,Wheel}Event} / {@code sendKeyEvent} wires. The view captures focus on click.
  * Modifier-key state is mapped to CEF's {@code event_flags_t}; mouse-button bits are reconstructed per event.
- * Drag-and-drop, IME and clipboard are not yet wired (cef4j-inprocess-jfx covers all three for the in-process backend;
- * the remote equivalents are follow-up work).
  *
  * <p>Threading: pixel updates land on the JFX application thread via {@link Platform#runLater}; control methods can be
  * called from any thread. The CEF UI thread is the server's, not ours.
@@ -62,7 +62,7 @@ public final class RemoteWebView extends Region {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteWebView.class);
 
     private final ImageView imageView = new ImageView();
-    private final CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
+    private volatile CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
     private final FrameTransportFactory frameTransportFactory;
     private final LatestOnlyDispatcher<FrameSnapshot> frameDispatcher =
             new LatestOnlyDispatcher<>(Platform::runLater, this::presentFrameOnFxThread);
@@ -78,6 +78,9 @@ public final class RemoteWebView extends Region {
 
     @Nullable
     private HandlerRegistration lifecycleRegistration;
+
+    @Nullable
+    private RuntimeException setupFailure;
 
     @Nullable
     private WritableImage backingImage;
@@ -99,16 +102,13 @@ public final class RemoteWebView extends Region {
     private final AtomicReference<BrowserHost> hostRef = new AtomicReference<>();
 
     public RemoteWebView() {
-        this(SharedFileFrameTransport::bindAll);
+        this(SharedFileFrameTransport::bind);
     }
 
     /** Creates a view whose pixels are supplied by the given transport factory when {@link #attach} is called. */
     public RemoteWebView(@Nonnull FrameTransportFactory frameTransportFactory) {
         this.frameTransportFactory = frameTransportFactory;
         getChildren().add(imageView);
-        // The latest frame is presentation content, not a sizing constraint. If the ImageView remains managed,
-        // its intrinsic bitmap dimensions become this Region's computed minimum size and prevent a containing
-        // Stage from shrinking the remote viewport after the first paint.
         imageView.setManaged(false);
         imageView.setFitWidth(0); // size from intrinsic until paint arrives
         wireInputForwarding();
@@ -129,8 +129,6 @@ public final class RemoteWebView extends Region {
         setOnMouseDragged(e -> forwardMouseMove(e, /*mouseLeave=*/ false));
         setOnMouseExited(e -> forwardMouseMove(e, /*mouseLeave=*/ true));
         setOnScroll(this::forwardMouseWheel);
-        // Use event filters (capture phase) for keys so the RemoteWebView consumes them before scene-level
-        // shortcuts steal them. Mirrors cef4j-inprocess-jfx's CefWebView. Filters fire on the focused node only.
         addEventFilter(KeyEvent.KEY_PRESSED, this::forwardKeyPressed);
         addEventFilter(KeyEvent.KEY_RELEASED, this::forwardKeyReleased);
         addEventFilter(KeyEvent.KEY_TYPED, this::forwardKeyTyped);
@@ -231,8 +229,7 @@ public final class RemoteWebView extends Region {
 
     /**
      * Builds and dispatches a single CEF KeyEvent. {@code keyCode} populates both windowsKeyCode and nativeKeyCode (we
-     * don't have OS-specific scancodes from JFX); {@code character} is non-zero only for KEYEVENT_CHAR. The builder
-     * keeps this source compatible with CEF releases from before the size field was added.
+     * don't have OS-specific scancodes from JFX); {@code character} is non-zero only for KEYEVENT_CHAR.
      */
     private void sendKey(int eventType, KeyEvent jfx, int keyCode, int character) {
         BrowserHost host = hostRef.get();
@@ -262,24 +259,29 @@ public final class RemoteWebView extends Region {
             if (this.session == session) return;
             throw new IllegalStateException("RemoteWebView instances cannot be attached to more than one session");
         }
-        attachedOnce = true;
+        Objects.requireNonNull(session, "session");
+        if (browserHandle.isCompletedExceptionally()) browserHandle = new CompletableFuture<>();
         this.session = session;
-
-        // Subscribe to paint events eagerly so we never miss the server's bootstrap paint. Filter is set once
-        // we learn the browser handle below; until then, a single bootstrap browser means accept-all is safe.
-        this.frameTransport = frameTransportFactory.bind(session);
-        frameTransport.onFrame(this::onFrame);
-
-        this.lifecycleRegistration = session.onLatest(
-                LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                    if (!browserHandle.isDone()) {
-                        readyBrowser = ev.browser();
-                        browserHandle.complete(ev.browser());
-                    }
-                });
-        // Resolve the BrowserHost facade as soon as the browser handle lands so the input handlers can fire.
-        // Failures are logged but non-fatal — input is best-effort, the page can still render and respond
-        // to programmatic eval.
+        setupFailure = null;
+        HandlerRegistration registration;
+        try {
+            registration = session.onLatest(
+                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
+                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    event -> installBrowser(session, event.browser()));
+        } catch (RuntimeException failure) {
+            this.session = null;
+            throw failure;
+        }
+        if (setupFailure != null || this.session != session) {
+            registration.unregister();
+            RuntimeException failure = setupFailure;
+            setupFailure = null;
+            this.session = null;
+            throw Objects.requireNonNull(failure, "frame transport setup failure");
+        }
+        lifecycleRegistration = registration;
+        attachedOnce = true;
         observe(
                 browserHandle
                         .thenCompose(h -> new Browser(session, h).getHost())
@@ -287,9 +289,37 @@ public final class RemoteWebView extends Region {
                             if (this.session == session) hostRef.set(host);
                         }),
                 "resolve BrowserHost for input forwarding");
-        // layoutChildren records desiredSize even before attachment. Flush that latest value—not merely a
-        // subsequent size change—as soon as the browser handle becomes available.
         observe(browserHandle.thenAccept(handle -> flushViewportSize(session, handle)), "flush initial viewport size");
+    }
+
+    private synchronized void installBrowser(CefSession expectedSession, RemoteHandle browser) {
+        CompletableFuture<RemoteHandle> pendingBrowser = browserHandle;
+        if (session != expectedSession || pendingBrowser.isDone()) return;
+        FrameTransport created = null;
+        try {
+            created = frameTransportFactory.bind(expectedSession, browser);
+            created.onFrame(this::onFrame);
+            frameTransport = created;
+            readyBrowser = browser;
+            pendingBrowser.complete(browser);
+        } catch (RuntimeException failure) {
+            if (created != null) {
+                try {
+                    created.close();
+                } catch (RuntimeException closeFailure) {
+                    failure.addSuppressed(closeFailure);
+                }
+            }
+            frameTransport = null;
+            readyBrowser = null;
+            setupFailure = failure;
+            HandlerRegistration registration = lifecycleRegistration;
+            lifecycleRegistration = null;
+            session = null;
+            attachedOnce = false;
+            if (registration != null) registration.unregister();
+            pendingBrowser.completeExceptionally(failure);
+        }
     }
 
     /** Future resolves with the browser handle once the server has reported its auto-created browser. */
@@ -327,7 +357,7 @@ public final class RemoteWebView extends Region {
     /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
     @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
-        if (width <= 0 || height <= 0) throw new IllegalArgumentException("viewport dimensions must be positive");
+        RemoteViewportConstraints.validate(width, height);
         if (!Platform.isFxApplicationThread()) {
             return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, width, height));
         }
@@ -339,6 +369,13 @@ public final class RemoteWebView extends Region {
 
     private CompletableFuture<Void> requestViewportSize(
             CefSession expectedSession, RemoteHandle handle, int width, int height) {
+        try {
+            RemoteViewportConstraints.validate(width, height);
+        } catch (IllegalArgumentException invalidSize) {
+            CompletableFuture<Void> failure = new CompletableFuture<>();
+            failure.completeExceptionally(invalidSize);
+            return failure;
+        }
         long desired = packSize(width, height);
         desiredSize.set(desired);
         reportedSize.set(desired);
@@ -403,10 +440,6 @@ public final class RemoteWebView extends Region {
 
     @Override
     protected void layoutChildren() {
-        // Stretch the image view to our layout bounds, then push the new viewport size to the server if it
-        // changed. The server updates its render-handler view rect and triggers a was_resized so CEF
-        // repaints at the new size. Skip when nothing changed (or below 1px) to avoid request churn during
-        // layout passes.
         imageView.relocate(0, 0);
         imageView.setFitWidth(getWidth());
         imageView.setFitHeight(getHeight());
@@ -416,6 +449,12 @@ public final class RemoteWebView extends Region {
     }
 
     private void reportViewportSize(int width, int height) {
+        try {
+            RemoteViewportConstraints.validate(width, height);
+        } catch (IllegalArgumentException invalidSize) {
+            LOG.debug("ignoring automatic viewport resize to {}x{}: {}", width, height, invalidSize.getMessage());
+            return;
+        }
         desiredSize.set(packSize(width, height));
         CefSession s = this.session;
         if (s == null) return;
@@ -433,7 +472,6 @@ public final class RemoteWebView extends Region {
         expectedSession
                 .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
                 .exceptionally(ex -> {
-                    // Allow the next layout pass to retry this exact size after a transient send failure.
                     reportedSize.compareAndSet(desired, -1);
                     LOG.debug("viewport resize to {}x{} failed: {}", width, height, ex.toString());
                     return null;
@@ -509,6 +547,6 @@ public final class RemoteWebView extends Region {
     @FunctionalInterface
     public interface FrameTransportFactory {
         @Nonnull
-        FrameTransport bind(@Nonnull CefSession session);
+        FrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser);
     }
 }

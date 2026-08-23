@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RequestHandlerOnBeforeBrowseEvent implements CefMessageView, CefMessageEncoder {
@@ -78,11 +79,17 @@ public final class RequestHandlerOnBeforeBrowseEvent implements CefMessageView, 
     public static final CefMessageDecoder<RequestHandlerOnBeforeBrowseEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "request");
         RemoteHandle request = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "userGesture");
         int userGesture = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isRedirect");
         int isRedirect = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RequestHandlerOnBeforeBrowseEvent");
         return new RequestHandlerOnBeforeBrowseEvent(browser, frame, request, userGesture, isRedirect);
     };
 }

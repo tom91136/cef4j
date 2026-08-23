@@ -67,6 +67,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -88,6 +94,29 @@
                                     <matches string="${cef.version}"
                                              pattern="^(14[4-9]|1[5-9][0-9]|[2-9][0-9]{2,})\..*"/>
                                 </condition>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-packaged-cef-api-version</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <loadresource property="packaged.cef.api.version">
+                                    <zipentry zipfile="${project.build.directory}/${project.build.finalName}.jar"
+                                              name="META-INF/cef4j/cef-api-version"/>
+                                    <filterchain>
+                                        <striplinebreaks/>
+                                    </filterchain>
+                                </loadresource>
+                                <condition property="packaged.cef.api.version.matches">
+                                    <equals arg1="${packaged.cef.api.version}" arg2="${cef.api.version}"/>
+                                </condition>
+                                <fail unless="packaged.cef.api.version.matches"
+                                      message="Packaged CEF API version metadata is missing or stale"/>
                             </target>
                         </configuration>
                     </execution>

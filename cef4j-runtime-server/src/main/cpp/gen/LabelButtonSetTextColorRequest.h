@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct LabelButtonSetTextColorRequest {
     static constexpr int32_t kMessageId = 1787085285;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     std::int32_t forState = 0;
@@ -69,6 +71,8 @@ struct LabelButtonSetTextColorRequest {
         requireAvailable(4);
         out.color = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+        if (pos != len)
+            throw std::invalid_argument("trailing LabelButtonSetTextColorRequest payload");
         return out;
     }
 };

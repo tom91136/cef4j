@@ -688,6 +688,58 @@ class CefScriptEngineTest extends CefTestBase {
         assertThat(pending2).isCompletedExceptionally();
     }
 
+    @Test
+    @Order(98)
+    void timeoutRemovesPendingRequestAndCallback() throws Exception {
+        CefScriptEngine disposable =
+                new CefScriptEngine(() -> browser.getMainFrame().orElse(null));
+
+        CompletableFuture<String> evaluation =
+                disposable.evaluate("new Promise(() => {})").orTimeout(1, TimeUnit.MILLISECONDS);
+        CompletableFuture<Integer> callback =
+                disposable.createCallback(arguments -> {}).orTimeout(1, TimeUnit.MILLISECONDS);
+        Thread.sleep(20);
+
+        assertThat(evaluation).isCompletedExceptionally();
+        assertThat(callback).isCompletedExceptionally();
+        assertThat(disposable.pendingRequestCount()).isZero();
+        assertThat(disposable.callbackCount()).isZero();
+        disposable.dispose();
+    }
+
+    @Test
+    @Order(50)
+    void handleOperationsAcceptArbitraryPropertyNames() throws Exception {
+        int handle = pumpAndGet(evaluator.evaluateHandle("({})"), 5_000);
+        String key = "quote'\\slash\nline\u2028separator";
+
+        pumpAndGet(evaluator.setProperty(handle, key, "41"), 5_000);
+        CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(handle, key, false), 5_000);
+
+        assertThat(result.json()).contains("41");
+        evaluator.release(handle);
+    }
+
+    @Test
+    @Order(51)
+    void callAcceptsArbitraryMethodNames() throws Exception {
+        String method = "quote'\\slash\nline\u2028separator";
+        int handle = pumpAndGet(evaluator.evaluateHandle("({[" + jsString(method) + "]: value => value + 1})"), 5_000);
+
+        CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, method, "[41]", false), 5_000);
+
+        assertThat(result.json()).contains("42");
+        evaluator.release(handle);
+    }
+
+    private static String jsString(String value) {
+        return "'"
+                + value.replace("\\", "\\\\")
+                        .replace("'", "\\'")
+                        .replace("\n", "\\n")
+                        .replace("\u2028", "\\u2028") + "'";
+    }
+
     private static <T> T pumpAndGet(CompletableFuture<T> future, long timeoutMs) throws Exception {
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (!future.isDone() && System.currentTimeMillis() < deadline) {

@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct BrowserHostRunFileDialogRequest {
     static constexpr int32_t kMessageId = 988926820;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     std::int32_t mode = 0;
@@ -114,6 +116,7 @@ struct BrowserHostRunFileDialogRequest {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for title");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for title");
             requireAvailable(static_cast<std::size_t>(n));
             out.title.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -123,6 +126,7 @@ struct BrowserHostRunFileDialogRequest {
             std::int32_t n = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (n < 0) throw std::invalid_argument("negative length for defaultFilePath");
+            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument("oversized length for defaultFilePath");
             requireAvailable(static_cast<std::size_t>(n));
             out.defaultFilePath.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));
             pos += static_cast<std::size_t>(n);
@@ -132,6 +136,7 @@ struct BrowserHostRunFileDialogRequest {
             std::int32_t cnt = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
             pos += 4;
             if (cnt < 0) throw std::invalid_argument("negative count for acceptFilters");
+            if (static_cast<std::size_t>(cnt) > kMaxCollectionItems) throw std::invalid_argument("oversized count for acceptFilters");
             if (static_cast<std::size_t>(cnt) > (len - pos) / 4) throw std::invalid_argument("invalid count for acceptFilters");
             out.acceptFilters.reserve(static_cast<std::size_t>(cnt));
             for (std::int32_t __i = 0; __i < cnt; ++__i) {
@@ -139,6 +144,7 @@ struct BrowserHostRunFileDialogRequest {
                 std::int32_t slen = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
                 pos += 4;
                 if (slen < 0) throw std::invalid_argument("negative string length for acceptFilters");
+                if (static_cast<std::size_t>(slen) > kMaxFieldBytes) throw std::invalid_argument("oversized string length for acceptFilters");
                 requireAvailable(static_cast<std::size_t>(slen));
                 out.acceptFilters.emplace_back(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(slen));
                 pos += static_cast<std::size_t>(slen);
@@ -147,6 +153,8 @@ struct BrowserHostRunFileDialogRequest {
         requireAvailable(4);
         out.callback = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
         pos += 4;
+        if (pos != len)
+            throw std::invalid_argument("trailing BrowserHostRunFileDialogRequest payload");
         return out;
     }
 };

@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_mouse_event_t}. Fields are immutable; pass instances
@@ -57,8 +58,11 @@ public final class MouseEvent {
       * configured the buffer.
       */
     public static MouseEvent decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "x");
         int x = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "y");
         int y = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "modifiers");
         int modifiers = __buf.getInt();
         return new MouseEvent(x, y, modifiers);
     }

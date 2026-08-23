@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_popup_features_t}. Fields are immutable; pass instances
@@ -106,15 +107,25 @@ public final class PopupFeatures {
       * configured the buffer.
       */
     public static PopupFeatures decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "x");
         int x = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "xSet");
         int xSet = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "y");
         int y = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "ySet");
         int ySet = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
         int width = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "widthSet");
         int widthSet = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
         int height = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "heightSet");
         int heightSet = __buf.getInt();
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isPopup");
         int isPopup = __buf.getInt();
         return new PopupFeatures(size, x, xSet, y, ySet, width, widthSet, height, heightSet, isPopup);
     }

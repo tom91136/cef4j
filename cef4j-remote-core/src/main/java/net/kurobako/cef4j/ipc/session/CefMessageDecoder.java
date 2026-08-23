@@ -4,10 +4,8 @@ import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 
 /**
- * Decodes a payload into a {@link CefMessageView}. Codegen produces concrete decoders in Slice D.
- *
- * <p>The buffer passed in covers exactly the payload (envelope header already consumed). Implementations must not
- * assume any particular {@link java.nio.ByteOrder}; set order explicitly if the format relies on it.
+ * Decodes one complete message payload. The buffer excludes the envelope header; implementations must select any
+ * required {@link java.nio.ByteOrder} explicitly.
  */
 @FunctionalInterface
 public interface CefMessageDecoder<T extends CefMessageView> {

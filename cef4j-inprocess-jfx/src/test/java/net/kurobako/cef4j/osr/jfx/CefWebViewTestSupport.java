@@ -80,14 +80,14 @@ final class CefWebViewTestSupport {
                     release.get(10, TimeUnit.SECONDS);
                 }
             }
-        } catch (IllegalStateException e) {
-            // Toolkit not initialized — @BeforeAll was skipped, nothing to clean up
+        } catch (IllegalStateException ignored) {
+            return;
         }
     }
 
     static void drainJavaFx() throws Exception {
-        // Browser close completion can enqueue final visibility/pulse work. Keep CEF
-        // alive until a marker behind that work has run.
+        // XXX: Browser close can enqueue JavaFX pulse work after its future completes; remove this marker when release
+        // completion is specified to run after all related JavaFX work and the teardown race test remains stable.
         Thread applicationThread = javaFxApplicationThread();
         if (applicationThread == null || !applicationThread.isAlive()) return;
         onFxThread(() -> {});

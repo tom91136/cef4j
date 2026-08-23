@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class V8AccessorSetEvent implements CefMessageView, CefMessageEncoder {
@@ -79,16 +80,19 @@ public final class V8AccessorSetEvent implements CefMessageView, CefMessageEncod
     public static final CefMessageDecoder<V8AccessorSetEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int nameLen = __buf.getInt();
+        int nameLen = WireDecoder.length(__buf, "name");
         byte[] nameBuf = new byte[nameLen];
         __buf.get(nameBuf);
         String name = new String(nameBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "object");
         RemoteHandle object = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "value");
         RemoteHandle value = new RemoteHandle(__buf.getInt());
-        int exceptionLen = __buf.getInt();
+        int exceptionLen = WireDecoder.length(__buf, "exception");
         byte[] exceptionBuf = new byte[exceptionLen];
         __buf.get(exceptionBuf);
         String exception = new String(exceptionBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "V8AccessorSetEvent");
         return new V8AccessorSetEvent(name, object, value, exception);
     };
 }

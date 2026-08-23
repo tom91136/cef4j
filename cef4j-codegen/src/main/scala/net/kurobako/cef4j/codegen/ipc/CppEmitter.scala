@@ -2,15 +2,20 @@ package net.kurobako.cef4j.codegen.ipc
 
 object CppEmitter {
 
-  def emit(spec: MessageSpec): String = {
+  def emit(spec: MessageSpec, exactPayload: Boolean = true): String = {
     val guardName = (spec.packageName.replace('.', '_').toUpperCase + "_" + camelToSnake(spec.className).toUpperCase
       + "_H_")
-    val ns             = spec.packageName.replace('.', '_').toLowerCase
-    val cls            = spec.className
-    val fields         = renderFields(spec)
-    val sizeBody       = renderEncodedSizeBody(spec)
-    val encBody        = renderEncodeBody(spec)
-    val decBody        = renderDecodeBody(spec)
+    val ns         = spec.packageName.replace('.', '_').toLowerCase
+    val cls        = spec.className
+    val fields     = renderFields(spec)
+    val sizeBody   = renderEncodedSizeBody(spec)
+    val encBody    = renderEncodeBody(spec)
+    val decBody    = renderDecodeBody(spec)
+    val exhaustion =
+      if (exactPayload)
+        s"""        if (pos != len)
+           |            throw std::invalid_argument("trailing ${spec.className} payload");""".stripMargin
+      else ""
     val decPos         = "        std::size_t pos = 0;"
     val nestedIncludes = spec.fields.collect {
       case FieldSpec(_, FieldType.DataStruct(cefName)) => SpecDeriver.cefStructToClassName(cefName)
@@ -31,6 +36,8 @@ object CppEmitter {
        |
        |struct $cls {
        |    static constexpr int32_t kMessageId = ${spec.messageId};
+       |    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+       |    static constexpr std::size_t kMaxCollectionItems = 1000000U;
        |
        |$fields
        |    /** Number of payload bytes that {@link encodeInto} writes for this instance. */
@@ -52,6 +59,7 @@ object CppEmitter {
        |                throw std::invalid_argument("truncated $cls payload");
        |        };
        |$decBody
+       |$exhaustion
        |        return out;
        |    }
        |};
@@ -198,6 +206,7 @@ object CppEmitter {
             s"            std::int32_t n = ${readI32("pos", "src")};",
             s"            pos += 4;",
             s"            if (n < 0) throw std::invalid_argument(\"negative length for ${f.name}\");",
+            s"            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument(\"oversized length for ${f.name}\");",
             s"            requireAvailable(static_cast<std::size_t>(n));",
             s"            out.${f.name}.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));",
             s"            pos += static_cast<std::size_t>(n);",
@@ -210,6 +219,7 @@ object CppEmitter {
             s"            std::int32_t n = ${readI32("pos", "src")};",
             s"            pos += 4;",
             s"            if (n < 0) throw std::invalid_argument(\"negative length for ${f.name}\");",
+            s"            if (static_cast<std::size_t>(n) > kMaxFieldBytes) throw std::invalid_argument(\"oversized length for ${f.name}\");",
             s"            requireAvailable(static_cast<std::size_t>(n));",
             s"            out.${f.name}.assign(src + pos, src + pos + n);",
             s"            pos += static_cast<std::size_t>(n);",
@@ -222,6 +232,7 @@ object CppEmitter {
             s"            std::int32_t cnt = ${readI32("pos", "src")};",
             s"            pos += 4;",
             s"            if (cnt < 0) throw std::invalid_argument(\"negative count for ${f.name}\");",
+            s"            if (static_cast<std::size_t>(cnt) > kMaxCollectionItems) throw std::invalid_argument(\"oversized count for ${f.name}\");",
             s"            if (static_cast<std::size_t>(cnt) > (len - pos) / 4) throw std::invalid_argument(\"invalid count for ${f.name}\");",
             s"            out.${f.name}.reserve(static_cast<std::size_t>(cnt));",
             s"            for (std::int32_t __i = 0; __i < cnt; ++__i) {",
@@ -229,6 +240,7 @@ object CppEmitter {
             s"                std::int32_t slen = ${readI32("pos", "src")};",
             s"                pos += 4;",
             s"                if (slen < 0) throw std::invalid_argument(\"negative string length for ${f.name}\");",
+            s"                if (static_cast<std::size_t>(slen) > kMaxFieldBytes) throw std::invalid_argument(\"oversized string length for ${f.name}\");",
             s"                requireAvailable(static_cast<std::size_t>(slen));",
             s"                out.${f.name}.emplace_back(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(slen));",
             s"                pos += static_cast<std::size_t>(slen);",

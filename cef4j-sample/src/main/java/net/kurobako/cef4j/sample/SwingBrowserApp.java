@@ -60,6 +60,7 @@ public final class SwingBrowserApp {
         cacheDir.toFile().deleteOnExit();
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         CefBrowserPanel.initialise(settings, List.of(), Optional.empty());
 
@@ -68,11 +69,7 @@ public final class SwingBrowserApp {
         shutdownLatch.await();
         CefBrowserPanel.terminate();
         log.info("Exiting");
-        // halt() instead of exit(): on macOS, System.exit() triggers JVM teardown
-        // which drains the CFRunLoop and fires CEF's registered observers after
-        // the message loop has stopped, causing a CHECK failure.  halt() does an
-        // immediate _exit() that avoids this.
-        Runtime.getRuntime().halt(0);
+        SampleShutdown.afterCefTermination();
     }
 
     private static void createUI() {
@@ -122,7 +119,6 @@ public final class SwingBrowserApp {
             }
         });
 
-        // Double-click on empty tab bar area to create new tab
         tabbedPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -143,7 +139,6 @@ public final class SwingBrowserApp {
             }
         });
 
-        // Global keyboard shortcuts
         int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
         InputMap inputMap = window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = window.getRootPane().getActionMap();
@@ -204,7 +199,6 @@ public final class SwingBrowserApp {
             tabbedPane.removeTabAt(index);
             tab.release();
         }
-        // Only the "+" placeholder tab remains - no real tabs left
         boolean noRealTabs = true;
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             if (tabbedPane.getComponentAt(i) instanceof BrowserTab) {
@@ -229,7 +223,6 @@ public final class SwingBrowserApp {
                 }
             }
             window.dispose();
-            // Signal the main thread to proceed with Cef.INSTANCE.terminate()
             shutdownLatch.countDown();
         };
         if (SwingUtilities.isEventDispatchThread()) {
@@ -294,7 +287,6 @@ public final class SwingBrowserApp {
             add(navBar, BorderLayout.NORTH);
             add(surface, BorderLayout.CENTER);
 
-            // Button actions
             backBtn.addActionListener(e -> {
                 CefBrowser b = browser;
                 if (b != null) b.goBack();
@@ -319,7 +311,6 @@ public final class SwingBrowserApp {
                 }
             });
 
-            // Keyboard shortcuts on the surface
             int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
             InputMap im = surface.getInputMap(JComponent.WHEN_FOCUSED);
             ActionMap am = surface.getActionMap();
@@ -381,7 +372,6 @@ public final class SwingBrowserApp {
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, shortcutMask), "zoomReset");
             am.put("zoomReset", action(() -> setZoom(1.0)));
 
-            // Create the browser
             createBrowser(initialUrl);
         }
 
@@ -408,8 +398,7 @@ public final class SwingBrowserApp {
                             });
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
-                        }) // v132+ overload
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"})
                         public boolean onBeforePopup(
                                 @javax.annotation.Nullable CefBrowser b,
                                 @javax.annotation.Nullable CefFrame frame,
@@ -432,8 +421,7 @@ public final class SwingBrowserApp {
                             return onBeforePopupCompat(targetUrl);
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
-                        }) // v109/v116/v117-v131 overload
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"})
                         public boolean onBeforePopup(
                                 @javax.annotation.Nullable CefBrowser b,
                                 @javax.annotation.Nullable CefFrame frame,
@@ -543,8 +531,7 @@ public final class SwingBrowserApp {
                             });
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
-                        }) // v109/v116 long cursor overload
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"})
                         public boolean onCursorChange(
                                 @javax.annotation.Nullable CefBrowser b,
                                 long cursor,
@@ -553,8 +540,7 @@ public final class SwingBrowserApp {
                             return onCursorChangeCompat(type);
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
-                        }) // v117+ int cursor overload
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"})
                         public boolean onCursorChange(
                                 @javax.annotation.Nullable CefBrowser b,
                                 int cursor,
@@ -583,7 +569,6 @@ public final class SwingBrowserApp {
                                 @javax.annotation.Nullable net.kurobako.cef4j.gen.CefMenuModel model,
                                 @javax.annotation.Nullable net.kurobako.cef4j.gen.CefRunContextMenuCallback callback) {
                             if (model == null || callback == null) return false;
-                            // Extract menu data on CEF thread - model/params invalid after return
                             List<MenuEntry> entries = extractMenuEntries(model);
                             int menuX = params != null ? params.getXCoord() : 0;
                             int menuY = params != null ? params.getYCoord() : 0;
@@ -730,7 +715,6 @@ public final class SwingBrowserApp {
             surface.release();
         }
 
-        // Plain data extracted from CefMenuModel on CEF thread (no Swing dependency)
         private static final class MenuEntry {
             enum Type {
                 SEPARATOR,
@@ -744,7 +728,7 @@ public final class SwingBrowserApp {
             final String label;
             final boolean enabled;
             final boolean checked;
-            final List<MenuEntry> children; // for SUBMENU
+            final List<MenuEntry> children;
 
             MenuEntry(
                     Type type,
@@ -762,7 +746,6 @@ public final class SwingBrowserApp {
             }
         }
 
-        /** Extract menu data from CefMenuModel on CEF thread (safe, no Swing). */
         private static List<MenuEntry> extractMenuEntries(net.kurobako.cef4j.gen.CefMenuModel model) {
             List<MenuEntry> entries = new ArrayList<>();
             long count = model.getCount();
@@ -805,7 +788,6 @@ public final class SwingBrowserApp {
             return entries;
         }
 
-        /** Build JPopupMenu from extracted data - must be called on EDT. */
         private static JPopupMenu buildPopupMenu(
                 List<MenuEntry> entries,
                 net.kurobako.cef4j.gen.CefRunContextMenuCallback callback,

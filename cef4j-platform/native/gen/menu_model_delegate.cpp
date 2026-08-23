@@ -5,7 +5,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
     JavaVM* jvm;

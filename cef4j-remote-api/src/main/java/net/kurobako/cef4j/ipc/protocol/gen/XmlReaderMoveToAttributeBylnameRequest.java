@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class XmlReaderMoveToAttributeBylnameRequest implements CefMessageView, CefMessageEncoder {
@@ -71,15 +72,17 @@ public final class XmlReaderMoveToAttributeBylnameRequest implements CefMessageV
     public static final CefMessageDecoder<XmlReaderMoveToAttributeBylnameRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int localNameLen = __buf.getInt();
+        int localNameLen = WireDecoder.length(__buf, "localName");
         byte[] localNameBuf = new byte[localNameLen];
         __buf.get(localNameBuf);
         String localName = new String(localNameBuf, StandardCharsets.UTF_8);
-        int namespaceURILen = __buf.getInt();
+        int namespaceURILen = WireDecoder.length(__buf, "namespaceURI");
         byte[] namespaceURIBuf = new byte[namespaceURILen];
         __buf.get(namespaceURIBuf);
         String namespaceURI = new String(namespaceURIBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "XmlReaderMoveToAttributeBylnameRequest");
         return new XmlReaderMoveToAttributeBylnameRequest(self, localName, namespaceURI);
     };
 }

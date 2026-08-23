@@ -5,7 +5,6 @@ repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 cd "${repo_root}"
 source "${repo_root}/.github/ci/build-env.sh"
 
-# XXX Required env: CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION.
 for name in CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION; do
     [ -n "${!name:-}" ] || { echo "${name} is required" >&2; exit 1; }
 done
@@ -44,7 +43,6 @@ if [ "${is_linux:-}" = 1 ]; then
     [ -d "${CMAKE_SYSROOT}/usr/include" ] || { echo "invalid CMAKE_SYSROOT: ${CMAKE_SYSROOT}" >&2; exit 1; }
 fi
 
-# XXX JavaFX version/gating is keyed on CEF_PLATFORM + JDK_VERSION.
 javafx_version() {
     case "${CEF_PLATFORM}" in
         linux64)
@@ -60,9 +58,16 @@ javafx_version() {
             case "${JDK_VERSION}" in 17) echo 17.0.15 ;; 21) echo 21.0.12 ;; 25) echo 25.0.4 ;; esac ;;
     esac
 }
-JAVAFX_VERSION=$(javafx_version)
-JAVAFX_TESTS=false
-[ -n "${JAVAFX_VERSION}" ] && JAVAFX_TESTS=true
+if [ -z "${JAVAFX_VERSION+x}" ]; then
+    JAVAFX_VERSION=$(javafx_version)
+fi
+if [ -z "${JAVAFX_TEST_VERSION+x}" ]; then
+    JAVAFX_TEST_VERSION=${JAVAFX_VERSION}
+fi
+if [ -z "${JAVAFX_TESTS+x}" ]; then
+    JAVAFX_TESTS=false
+    [ -n "${JAVAFX_VERSION}" ] && JAVAFX_TESTS=true
+fi
 JAVAFX_PLATFORM=""
 [ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
 EXTRA_ARGS=$(cef_extra_args "${CEF_PLATFORM}")
@@ -143,10 +148,11 @@ properties=(
     "-Dcef.version=${CEF_VERSION}"
     "-Dcef.api.version=${CEF_API}"
 )
-# XXX An empty -Djavafx.version= overrides the parent pom property and breaks project reads;
-# omit it when JavaFX is unavailable for the platform/JDK instead.
 if [ -n "${JAVAFX_VERSION}" ]; then
-    properties+=("-Djavafx.version=${JAVAFX_VERSION}" "-Djavafx.test.version=${JAVAFX_VERSION}")
+    properties+=("-Djavafx.version=${JAVAFX_VERSION}")
+fi
+if [ -n "${JAVAFX_TEST_VERSION}" ]; then
+    properties+=("-Djavafx.test.version=${JAVAFX_TEST_VERSION}")
 fi
 properties+=(
     "-Dcef4j.test.extraArgs=${EXTRA_ARGS}"

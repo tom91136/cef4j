@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_request_context_settings_t}. Fields are immutable; pass instances
@@ -87,20 +88,23 @@ public final class RequestContextSettings {
       * configured the buffer.
       */
     public static RequestContextSettings decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
-        int cachePathLen = __buf.getInt();
+        int cachePathLen = WireDecoder.length(__buf, "cachePath");
         byte[] cachePathBuf = new byte[cachePathLen];
         __buf.get(cachePathBuf);
         String cachePath = new String(cachePathBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "persistSessionCookies");
         int persistSessionCookies = __buf.getInt();
-        int acceptLanguageListLen = __buf.getInt();
+        int acceptLanguageListLen = WireDecoder.length(__buf, "acceptLanguageList");
         byte[] acceptLanguageListBuf = new byte[acceptLanguageListLen];
         __buf.get(acceptLanguageListBuf);
         String acceptLanguageList = new String(acceptLanguageListBuf, StandardCharsets.UTF_8);
-        int cookieableSchemesListLen = __buf.getInt();
+        int cookieableSchemesListLen = WireDecoder.length(__buf, "cookieableSchemesList");
         byte[] cookieableSchemesListBuf = new byte[cookieableSchemesListLen];
         __buf.get(cookieableSchemesListBuf);
         String cookieableSchemesList = new String(cookieableSchemesListBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "cookieableSchemesExcludeDefaults");
         int cookieableSchemesExcludeDefaults = __buf.getInt();
         return new RequestContextSettings(size, cachePath, persistSessionCookies, acceptLanguageList, cookieableSchemesList, cookieableSchemesExcludeDefaults);
     }

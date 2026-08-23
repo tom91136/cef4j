@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class RenderHandlerUpdateDragCursorEvent implements CefMessageView, CefMessageEncoder {
@@ -55,8 +56,11 @@ public final class RenderHandlerUpdateDragCursorEvent implements CefMessageView,
     public static final CefMessageDecoder<RenderHandlerUpdateDragCursorEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "operation");
         int operation = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "RenderHandlerUpdateDragCursorEvent");
         return new RenderHandlerUpdateDragCursorEvent(browser, operation);
     };
 }

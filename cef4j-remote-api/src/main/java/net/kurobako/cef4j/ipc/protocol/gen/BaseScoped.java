@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
  * Wire-format value type mirroring {@code cef_base_scoped_t}. Fields are immutable; pass instances
@@ -43,6 +44,7 @@ public final class BaseScoped {
       * configured the buffer.
       */
     public static BaseScoped decode(@Nonnull ByteBuffer __buf) {
+        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
         long size = __buf.getLong();
         return new BaseScoped(size);
     }

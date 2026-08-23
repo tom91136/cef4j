@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class FileDialogCallbackContRequest implements CefMessageView, CefMessageEncoder {
@@ -62,15 +63,17 @@ public final class FileDialogCallbackContRequest implements CefMessageView, CefM
     public static final CefMessageDecoder<FileDialogCallbackContRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int filePathsCount = __buf.getInt();
+        int filePathsCount = WireDecoder.count(__buf, "filePaths");
         String[] filePaths = new String[filePathsCount];
         for (int __i = 0; __i < filePathsCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "filePaths[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             filePaths[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "FileDialogCallbackContRequest");
         return new FileDialogCallbackContRequest(self, filePaths);
     };
 }

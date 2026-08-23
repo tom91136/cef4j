@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class TriggerInterceptResponse implements CefMessageView, CefMessageEncoder {
 
@@ -48,9 +49,10 @@ public final class TriggerInterceptResponse implements CefMessageView, CefMessag
     public static final CefMessageDecoder<TriggerInterceptResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int returnedPayloadLen = __buf.getInt();
+        int returnedPayloadLen = WireDecoder.length(__buf, "returnedPayload");
         byte[] returnedPayload = new byte[returnedPayloadLen];
         __buf.get(returnedPayload);
+        WireDecoder.requireFullyConsumed(__buf, "TriggerInterceptResponse");
         return new TriggerInterceptResponse(returnedPayload);
     };
 }

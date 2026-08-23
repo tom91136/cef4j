@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefV8ArrayBufferReleaseCallback : public cef_v8_array_buffer_release_callback_t {
     JavaVM* jvm;

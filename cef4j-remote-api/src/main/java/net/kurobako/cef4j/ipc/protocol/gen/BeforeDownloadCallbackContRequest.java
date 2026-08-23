@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class BeforeDownloadCallbackContRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class BeforeDownloadCallbackContRequest implements CefMessageView, 
     public static final CefMessageDecoder<BeforeDownloadCallbackContRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int downloadPathLen = __buf.getInt();
+        int downloadPathLen = WireDecoder.length(__buf, "downloadPath");
         byte[] downloadPathBuf = new byte[downloadPathLen];
         __buf.get(downloadPathBuf);
         String downloadPath = new String(downloadPathBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "showDialog");
         int showDialog = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "BeforeDownloadCallbackContRequest");
         return new BeforeDownloadCallbackContRequest(self, downloadPath, showDialog);
     };
 }

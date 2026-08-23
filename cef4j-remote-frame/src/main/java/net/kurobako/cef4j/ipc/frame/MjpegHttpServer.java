@@ -13,6 +13,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,8 +24,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,24 +39,41 @@ public final class MjpegHttpServer implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MjpegHttpServer.class);
     private static final String BOUNDARY = "cef4j-frame";
     private static final byte[] END = ("--" + BOUNDARY + "--\r\n").getBytes(StandardCharsets.US_ASCII);
-    private static final long CLIENT_STALL_TIMEOUT_NANOS = TimeUnit.SECONDS.toNanos(30);
-    private static final long WATCHDOG_INTERVAL_SECONDS = 5;
 
     private final HttpServer server;
     private final String path;
 
     private final Optional<String> bearerToken;
+    private final long clientStallTimeoutNanos;
 
     private final Set<Client> clients = ConcurrentHashMap.newKeySet();
+    private final Object attachLock = new Object();
+    private final Object sourceLock = new Object();
+    private final AtomicBoolean closed = new AtomicBoolean();
     private final AtomicReference<FrameTransport> source = new AtomicReference<>();
     private final AtomicReference<byte[]> latestPart = new AtomicReference<>();
-    private final EncodedFramePipeline pipeline;
+    private final Supplier<FrameCodec> codecFactory;
+
+    @Nullable
+    private EncodedFramePipeline pipeline;
+
+    private long sourceGeneration;
+
     private final ExecutorService httpExecutor;
     private final ScheduledExecutorService watchdog;
 
     private MjpegHttpServer(Configuration configuration) throws IOException {
+        this(
+                configuration,
+                () -> new JpegFrameCodecProvider()
+                        .newEncoder(Map.of("quality", Float.toString(configuration.quality))));
+    }
+
+    MjpegHttpServer(Configuration configuration, Supplier<FrameCodec> codecFactory) throws IOException {
         this.path = normalizePath(configuration.path);
         this.bearerToken = configuration.bearerToken;
+        this.clientStallTimeoutNanos = configuration.clientStallTimeout.toNanos();
+        this.codecFactory = Objects.requireNonNull(codecFactory, "codecFactory");
         validateExposure(configuration);
         if (configuration.sslContext.isEmpty()) {
             server = HttpServer.create(configuration.bindAddress, configuration.backlog);
@@ -71,13 +92,11 @@ public final class MjpegHttpServer implements AutoCloseable {
             thread.setDaemon(true);
             return thread;
         });
+        long watchdogInterval = Math.min(TimeUnit.SECONDS.toNanos(5), Math.max(1, clientStallTimeoutNanos / 2));
         watchdog.scheduleWithFixedDelay(
-                this::evictStalledClients, WATCHDOG_INTERVAL_SECONDS, WATCHDOG_INTERVAL_SECONDS, TimeUnit.SECONDS);
+                this::evictStalledClients, watchdogInterval, watchdogInterval, TimeUnit.NANOSECONDS);
         server.setExecutor(httpExecutor);
         server.createContext(path, this::serve);
-        FrameCodec codec =
-                new JpegFrameCodecProvider().newEncoder(Map.of("quality", Float.toString(configuration.quality)));
-        pipeline = new EncodedFramePipeline(codec, this::publish);
         server.start();
     }
 
@@ -89,9 +108,68 @@ public final class MjpegHttpServer implements AutoCloseable {
     /** Atomically swaps frame sources, useful when a supervised runtime server starts a new generation. */
     public void attach(@Nonnull FrameTransport next) {
         Objects.requireNonNull(next, "next");
-        next.onRawFrame(pipeline::submit);
-        FrameTransport previous = source.getAndSet(next);
-        if (previous != null && previous != next) previous.close();
+        synchronized (attachLock) {
+            if (closed.get()) throw new IllegalStateException("MJPEG server is closed");
+            long generation;
+            synchronized (sourceLock) {
+                generation = sourceGeneration + 1;
+            }
+            EncodedFramePipeline nextPipeline;
+            try {
+                nextPipeline = new EncodedFramePipeline(
+                        Objects.requireNonNull(codecFactory.get(), "codec factory returned null"),
+                        frame -> publish(generation, frame));
+            } catch (RuntimeException failure) {
+                try {
+                    next.close();
+                } catch (RuntimeException closeFailure) {
+                    failure.addSuppressed(closeFailure);
+                }
+                throw failure;
+            }
+            try {
+                next.onRawFrame(nextPipeline::submit);
+            } catch (RuntimeException failure) {
+                try {
+                    nextPipeline.close();
+                } catch (RuntimeException closeFailure) {
+                    failure.addSuppressed(closeFailure);
+                }
+                try {
+                    next.close();
+                } catch (RuntimeException closeFailure) {
+                    failure.addSuppressed(closeFailure);
+                }
+                throw failure;
+            }
+            FrameTransport previous;
+            EncodedFramePipeline previousPipeline;
+            synchronized (sourceLock) {
+                sourceGeneration = generation;
+                previous = source.getAndSet(next);
+                previousPipeline = pipeline;
+                pipeline = nextPipeline;
+                latestPart.set(null);
+                for (Client client : clients) client.clearPending();
+            }
+            RuntimeException closeFailure = null;
+            if (previous != null && previous != next) {
+                try {
+                    previous.close();
+                } catch (RuntimeException failure) {
+                    closeFailure = failure;
+                }
+            }
+            if (previousPipeline != null) {
+                try {
+                    previousPipeline.close();
+                } catch (RuntimeException failure) {
+                    if (closeFailure == null) closeFailure = failure;
+                    else closeFailure.addSuppressed(failure);
+                }
+            }
+            if (closeFailure != null) throw closeFailure;
+        }
     }
 
     @Nonnull
@@ -146,13 +224,13 @@ public final class MjpegHttpServer implements AutoCloseable {
     private void evictStalledClients() {
         long now = System.nanoTime();
         for (Client client : clients) {
-            if (!client.isStalled(now)) continue;
+            if (!client.isStalled(now, clientStallTimeoutNanos)) continue;
             LOG.debug("closing MJPEG client that has stopped making write progress");
             client.close();
         }
     }
 
-    private void publish(EncodedFrame frame) {
+    private void publish(long generation, EncodedFrame frame) {
         ByteBuffer payload = frame.payload();
         byte[] jpeg = new byte[payload.remaining()];
         payload.get(jpeg);
@@ -164,20 +242,48 @@ public final class MjpegHttpServer implements AutoCloseable {
         System.arraycopy(jpeg, 0, part, prefix.length, jpeg.length);
         part[part.length - 2] = '\r';
         part[part.length - 1] = '\n';
-        latestPart.set(part);
-        for (Client client : clients) client.offer(part);
+        synchronized (sourceLock) {
+            if (closed.get() || generation != sourceGeneration) return;
+            latestPart.set(part);
+            for (Client client : clients) client.offer(part);
+        }
     }
 
     @Override
     public void close() {
-        FrameTransport attached = source.getAndSet(null);
-        if (attached != null) attached.close();
-        pipeline.close();
-        for (Client client : clients) client.close();
-        clients.clear();
-        server.stop(0);
-        watchdog.shutdownNow();
-        httpExecutor.shutdownNow();
+        synchronized (attachLock) {
+            if (!closed.compareAndSet(false, true)) return;
+            FrameTransport attached;
+            EncodedFramePipeline attachedPipeline;
+            synchronized (sourceLock) {
+                sourceGeneration++;
+                attached = source.getAndSet(null);
+                attachedPipeline = pipeline;
+                pipeline = null;
+            }
+            RuntimeException closeFailure = null;
+            if (attached != null) {
+                try {
+                    attached.close();
+                } catch (RuntimeException failure) {
+                    closeFailure = failure;
+                }
+            }
+            if (attachedPipeline != null) {
+                try {
+                    attachedPipeline.close();
+                } catch (RuntimeException failure) {
+                    if (closeFailure == null) closeFailure = failure;
+                    else closeFailure.addSuppressed(failure);
+                }
+            }
+            for (Client client : clients) client.close();
+            clients.clear();
+            server.stop(0);
+            watchdog.shutdownNow();
+            httpExecutor.shutdownNow();
+            if (closeFailure != null) throw closeFailure;
+        }
     }
 
     private static String normalizePath(String value) {
@@ -203,7 +309,7 @@ public final class MjpegHttpServer implements AutoCloseable {
         private final OutputStream output;
         private final ArrayBlockingQueue<byte[]> latest = new ArrayBlockingQueue<>(1);
         private volatile boolean closed;
-        private volatile long lastWriteNanos = System.nanoTime();
+        private volatile long writeStartedNanos;
 
         private Client(OutputStream output) {
             this.output = output;
@@ -215,8 +321,13 @@ public final class MjpegHttpServer implements AutoCloseable {
             if (!latest.offer(frame)) throw new IllegalStateException("failed to replace queued MJPEG frame");
         }
 
-        boolean isStalled(long now) {
-            return !closed && now - lastWriteNanos > CLIENT_STALL_TIMEOUT_NANOS;
+        synchronized void clearPending() {
+            if (!closed) latest.clear();
+        }
+
+        boolean isStalled(long now, long timeoutNanos) {
+            long started = writeStartedNanos;
+            return !closed && started != 0 && now - started > timeoutNanos;
         }
 
         void run() throws IOException {
@@ -228,9 +339,13 @@ public final class MjpegHttpServer implements AutoCloseable {
                     Thread.currentThread().interrupt();
                     return;
                 }
-                output.write(frame);
-                output.flush();
-                lastWriteNanos = System.nanoTime();
+                writeStartedNanos = System.nanoTime();
+                try {
+                    output.write(frame);
+                    output.flush();
+                } finally {
+                    writeStartedNanos = 0;
+                }
                 if (frame == END) return;
             }
         }
@@ -258,6 +373,7 @@ public final class MjpegHttpServer implements AutoCloseable {
         private final Optional<SSLContext> sslContext;
 
         private final Optional<String> bearerToken;
+        private final Duration clientStallTimeout;
 
         public Configuration(
                 @Nonnull InetSocketAddress bindAddress,
@@ -267,17 +383,45 @@ public final class MjpegHttpServer implements AutoCloseable {
                 boolean allowRemote,
                 Optional<SSLContext> sslContext,
                 Optional<String> bearerToken) {
+            this(bearerToken, Duration.ofSeconds(30), bindAddress, path, backlog, quality, allowRemote, sslContext);
+        }
+
+        private Configuration(
+                Optional<String> bearerToken,
+                Duration clientStallTimeout,
+                InetSocketAddress bindAddress,
+                String path,
+                int backlog,
+                float quality,
+                boolean allowRemote,
+                Optional<SSLContext> sslContext) {
             this.bindAddress = Objects.requireNonNull(bindAddress, "bindAddress");
             this.path = Objects.requireNonNull(path, "path");
             if (backlog < 0) throw new IllegalArgumentException("backlog must not be negative");
             if (!(quality > 0.0f && quality <= 1.0f)) throw new IllegalArgumentException("quality must be in (0, 1]");
             if (bearerToken.isPresent() && bearerToken.get().isEmpty())
                 throw new IllegalArgumentException("bearerToken is empty");
+            if (clientStallTimeout.isZero() || clientStallTimeout.isNegative())
+                throw new IllegalArgumentException("clientStallTimeout must be positive");
             this.backlog = backlog;
             this.quality = quality;
             this.allowRemote = allowRemote;
             this.sslContext = sslContext;
             this.bearerToken = bearerToken;
+            this.clientStallTimeout = clientStallTimeout;
+        }
+
+        @Nonnull
+        public Configuration withClientStallTimeout(@Nonnull Duration timeout) {
+            return new Configuration(
+                    bearerToken,
+                    Objects.requireNonNull(timeout, "timeout"),
+                    bindAddress,
+                    path,
+                    backlog,
+                    quality,
+                    allowRemote,
+                    sslContext);
         }
 
         @Nonnull

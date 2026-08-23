@@ -1,7 +1,6 @@
 package net.kurobako.cef4j.ipc.session;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -28,18 +27,11 @@ import javax.annotation.Nullable;
 public final class JvmCallbackTable<T> {
 
     private final ConcurrentHashMap<Integer, T> entries = new ConcurrentHashMap<>();
-    // Start at 1 so 0 can serve as a "no callback" sentinel on the wire (mirrors RemoteHandle.NULL).
-    private final AtomicInteger next = new AtomicInteger(1);
+    private final IntIdAllocator ids = new IntIdAllocator();
 
     /** Registers {@code callback} and returns its int32 id. */
     public int register(@Nonnull T callback) {
-        // updateAndGet keeps the wrap atomic — naive check-then-reset lets two racers both observe a wrapped
-        // negative id, both reset to 2, and both return id=1, silently overwriting each other in `entries`.
-        // The lambda yields the new "next" value; the id we hand out is one less.
-        int updated = next.updateAndGet(prev -> (prev <= 0 ? 1 : prev) + 1);
-        int id = updated - 1;
-        entries.put(id, callback);
-        return id;
+        return ids.allocate(id -> entries.putIfAbsent(id, callback) == null);
     }
 
     /** Looks up a callback by id, or {@code null} if it's unknown / already released. */

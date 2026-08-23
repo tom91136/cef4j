@@ -12,7 +12,6 @@ public interface JsonCdpBrowser extends CdpBrowser {
     WebDriverJsonCodec jsonCodec();
 
     @Nonnull
-    // null params omit the JSON-RPC request body
     @SuppressWarnings("NullableForbidden")
     default CompletableFuture<JsonObject> send(@Nonnull String method, @Nullable JsonObject params) {
         byte[] encoded = params == null ? null : jsonCodec().encode(params);

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class PrintHandlerOnPrintResetEvent implements CefMessageView, CefMessageEncoder {
@@ -48,7 +49,9 @@ public final class PrintHandlerOnPrintResetEvent implements CefMessageView, CefM
     public static final CefMessageDecoder<PrintHandlerOnPrintResetEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireFullyConsumed(__buf, "PrintHandlerOnPrintResetEvent");
         return new PrintHandlerOnPrintResetEvent(browser);
     };
 }

@@ -13,6 +13,8 @@ namespace net_kurobako_cef4j_ipc_protocol_gen {
 
 struct LabelButtonSetMaximumSizeRequest {
     static constexpr int32_t kMessageId = 528477251;
+    static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
+    static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
     std::int32_t self = 0;
     Size size;
@@ -51,6 +53,8 @@ struct LabelButtonSetMaximumSizeRequest {
         out.size = Size::decode(src + pos, len - pos);
         requireAvailable(out.size.encodedSize());
         pos += out.size.encodedSize();
+        if (pos != len)
+            throw std::invalid_argument("trailing LabelButtonSetMaximumSizeRequest payload");
         return out;
     }
 };

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class JsFunctionCallEvent implements CefMessageView, CefMessageEncoder {
 
@@ -58,11 +59,13 @@ public final class JsFunctionCallEvent implements CefMessageView, CefMessageEnco
     public static final CefMessageDecoder<JsFunctionCallEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
         int callbackId = __buf.getInt();
-        int argsJsonLen = __buf.getInt();
+        int argsJsonLen = WireDecoder.length(__buf, "argsJson");
         byte[] argsJsonBuf = new byte[argsJsonLen];
         __buf.get(argsJsonBuf);
         String argsJson = new String(argsJsonBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "JsFunctionCallEvent");
         return new JsFunctionCallEvent(callbackId, argsJson);
     };
 }

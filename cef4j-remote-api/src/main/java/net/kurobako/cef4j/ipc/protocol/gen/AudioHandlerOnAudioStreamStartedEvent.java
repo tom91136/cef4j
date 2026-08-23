@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageView, CefMessageEncoder {
@@ -63,9 +64,12 @@ public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageVi
     public static final CefMessageDecoder<AudioHandlerOnAudioStreamStartedEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
         RemoteHandle browser = new RemoteHandle(__buf.getInt());
         AudioParameters params = AudioParameters.decode(__buf);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "channels");
         int channels = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "AudioHandlerOnAudioStreamStartedEvent");
         return new AudioHandlerOnAudioStreamStartedEvent(browser, params, channels);
     };
 }

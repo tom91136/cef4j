@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class PrintSettingsSetPrinterPrintableAreaRequest implements CefMessageView, CefMessageEncoder {
@@ -71,10 +72,13 @@ public final class PrintSettingsSetPrinterPrintableAreaRequest implements CefMes
     public static final CefMessageDecoder<PrintSettingsSetPrinterPrintableAreaRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
         Size physicalSizeDeviceUnits = Size.decode(__buf);
         Rect printableAreaDeviceUnits = Rect.decode(__buf);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "landscapeNeedsFlip");
         int landscapeNeedsFlip = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "PrintSettingsSetPrinterPrintableAreaRequest");
         return new PrintSettingsSetPrinterPrintableAreaRequest(self, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip);
     };
 }

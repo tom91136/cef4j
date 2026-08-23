@@ -24,11 +24,10 @@ import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 abstract class CefTestBase {
-    // CleanupMode.NEVER: CEF holds files in the cache dir open until JVM exit (cef_shutdown
-    // is skipped on macOS; see the platform notes in DEBUG.md), so JUnit's auto-cleanup throws
-    // DirectoryNotEmptyException at @AfterAll time. TestTempDirs deletes the dir at JVM exit.
+    // XXX: CEF 109-150 keeps cache files open until process exit on macOS; restore JUnit cleanup when macOS shutdown
+    // closes every cache handle before @AfterAll.
     @TempDir(cleanup = CleanupMode.NEVER)
-    @SuppressWarnings("NullAway.Init") // Populated by JUnit @TempDir before @Test methods run.
+    @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
     static void initCef(List<String> additionalArgs) throws Exception {
@@ -44,6 +43,9 @@ abstract class CefTestBase {
         Path reportDir = Files.createDirectories(Path.of("target", "surefire-reports"));
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.noSandbox = 1;
+        String helperPath = System.getProperty("cef4j.test.helper-path");
+        if (helperPath != null) settings.browserSubprocessPath = helperPath;
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.rootCachePath = cacheDir.toAbsolutePath().toString();
         settings.logFile = reportDir
@@ -52,8 +54,8 @@ abstract class CefTestBase {
                 .toString();
         settings.windowlessRenderingEnabled = 1;
         if (OS.isMacOS()) {
-            // macOS: use daemon thread path (externalMessagePump=0). externalMessagePump=1
-            // crashes with SIGTRAP on macOS.
+            // XXX: CEF 109-150 crashes with SIGTRAP under externalMessagePump on macOS; retry it when the minimum CEF
+            // version exceeds 150.
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;
         } else {

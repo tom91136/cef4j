@@ -5,18 +5,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
-/**
- * Transport seam for the URL handler. The default implementation wraps {@link net.kurobako.cef4j.gen.CefUrlRequest};
- * tests inject a fake to exercise the bridge without initialising CEF.
- *
- * <p>Deliberately CEF-agnostic: {@code byte[]} bodies, plain header maps.
- */
 interface CefHttpEngine {
 
-    /**
-     * Fire a request. The returned {@link Cancellation} is invoked by {@link java.net.HttpURLConnection#disconnect()}.
-     * Callbacks on {@code sink} may arrive on any thread; the connection synchronises internally.
-     */
     @Nonnull
     Cancellation send(@Nonnull RequestSpec spec, @Nonnull ResponseSink sink);
 

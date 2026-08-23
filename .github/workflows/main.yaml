@@ -128,7 +128,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # XXX Windows ARM uses Microsoft 11 for the smoke toolchain, Zulu for the build JDKs.
       - name: Set up JDK 11 (runtime smoke)
         id: jdk11
         uses: actions/setup-java@v5
@@ -184,7 +183,6 @@ jobs:
           platform: ${{ matrix.os.cef-platform }}
           save-cache: ${{ github.ref == 'refs/heads/main' }}
 
-      # XXX Per-JDK rebuild; JDK 17 also forks the JDK 11 runtime smoke.
       - name: JDK 17 (incl. JDK 11 runtime smoke)
         shell: bash
         env:
@@ -221,7 +219,6 @@ jobs:
   consumer:
     name: Consumer examples
     needs: maven-wrapper
-    if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -230,11 +227,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Verify consumer example consistency
+        run: ./examples/verify-consistency.sh
+
       - *setup-java
 
       - uses: ./.github/actions/maven-wrapper
 
-      # XXX Versions come from the poms so the consumer never targets a stale snapshot.
       - name: Resolve project versions
         shell: bash
         run: |
@@ -242,7 +241,6 @@ jobs:
           echo "PACKAGER_VERSION=$(./mvnw -q -f cef4j-runtime-packager/pom.xml help:evaluate -Dexpression=project.version -DforceStdout -DskipTests)" >> "${GITHUB_ENV}"
           echo "CONSUMER_CEF_VERSION=$(./mvnw -q help:evaluate -Dexpression=cef.version -DforceStdout -DskipTests)" >> "${GITHUB_ENV}"
 
-      # XXX cef-archives restores all three desktop dists codegen needs and the real linux64 archive.
       - name: Prepare CEF archive
         uses: ./.github/actions/cef-archives
         with:
@@ -268,24 +266,21 @@ jobs:
         run: >-
           ./mvnw -B -f examples/maven/pom.xml clean verify
           "-Dcef4j.version=${CEF4J_VERSION}"
-          -Dcef4j.platform.artifact=cef4j-platform
-          -Dcef4j.platform.classifier=linux-x86_64
+          -Dcef4j.runtime.platform=linux-x86_64
           "-Dcef4j.packager.version=${PACKAGER_VERSION}"
 
       - name: Test Gradle Groovy consumer
         run: >-
           gradle --no-daemon -p examples/gradle-groovy clean build run
           "-Pcef4jVersion=${CEF4J_VERSION}"
-          -Pcef4jPlatformArtifact=cef4j-platform
-          -Pcef4jPlatformClassifier=linux-x86_64
+          -Pcef4jRuntimePlatform=linux-x86_64
           "-Pcef4jPackagerVersion=${PACKAGER_VERSION}"
 
       - name: Test Gradle Kotlin consumer
         run: >-
           gradle --no-daemon -p examples/gradle-kotlin clean build run
           "-Pcef4jVersion=${CEF4J_VERSION}"
-          -Pcef4jPlatformArtifact=cef4j-platform
-          -Pcef4jPlatformClassifier=linux-x86_64
+          -Pcef4jRuntimePlatform=linux-x86_64
           "-Pcef4jPackagerVersion=${PACKAGER_VERSION}"
 
       - name: Test sbt consumer

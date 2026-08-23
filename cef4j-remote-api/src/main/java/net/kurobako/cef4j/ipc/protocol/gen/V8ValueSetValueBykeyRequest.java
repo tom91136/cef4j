@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class V8ValueSetValueBykeyRequest implements CefMessageView, CefMessageEncoder {
@@ -83,14 +84,19 @@ public final class V8ValueSetValueBykeyRequest implements CefMessageView, CefMes
     public static final CefMessageDecoder<V8ValueSetValueBykeyRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
         RemoteHandle frame = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int keyLen = __buf.getInt();
+        int keyLen = WireDecoder.length(__buf, "key");
         byte[] keyBuf = new byte[keyLen];
         __buf.get(keyBuf);
         String key = new String(keyBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "value");
         RemoteHandle value = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "attribute");
         int attribute = __buf.getInt();
+        WireDecoder.requireFullyConsumed(__buf, "V8ValueSetValueBykeyRequest");
         return new V8ValueSetValueBykeyRequest(frame, self, key, value, attribute);
     };
 }

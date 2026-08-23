@@ -147,6 +147,8 @@ public interface AutomationBackend extends AutoCloseable {
         return unsupported("delete all cookies");
     }
 
+    default void cancelPendingCommands(@Nonnull Throwable failure) {}
+
     @Nonnull
     static <T> CompletableFuture<T> unsupported(@Nonnull String command) {
         CompletableFuture<T> result = new CompletableFuture<>();

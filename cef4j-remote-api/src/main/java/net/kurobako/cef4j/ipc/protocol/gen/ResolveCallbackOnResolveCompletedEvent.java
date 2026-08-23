@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageView, CefMessageEncoder {
 
@@ -60,15 +61,17 @@ public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageV
     public static final CefMessageDecoder<ResolveCallbackOnResolveCompletedEvent> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "result");
         int result = __buf.getInt();
-        int resolvedIpsCount = __buf.getInt();
+        int resolvedIpsCount = WireDecoder.count(__buf, "resolvedIps");
         String[] resolvedIps = new String[resolvedIpsCount];
         for (int __i = 0; __i < resolvedIpsCount; __i++) {
-            int __slen = __buf.getInt();
+            int __slen = WireDecoder.length(__buf, "resolvedIps[" + __i + "]");
             byte[] __sb = new byte[__slen];
             __buf.get(__sb);
             resolvedIps[__i] = new String(__sb, StandardCharsets.UTF_8);
         }
+        WireDecoder.requireFullyConsumed(__buf, "ResolveCallbackOnResolveCompletedEvent");
         return new ResolveCallbackOnResolveCompletedEvent(result, resolvedIps);
     };
 }

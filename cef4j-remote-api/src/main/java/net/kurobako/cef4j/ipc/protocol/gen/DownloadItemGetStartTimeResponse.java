@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 public final class DownloadItemGetStartTimeResponse implements CefMessageView, CefMessageEncoder {
 
@@ -48,6 +49,7 @@ public final class DownloadItemGetStartTimeResponse implements CefMessageView, C
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
         Basetime result = Basetime.decode(__buf);
+        WireDecoder.requireFullyConsumed(__buf, "DownloadItemGetStartTimeResponse");
         return new DownloadItemGetStartTimeResponse(result);
     };
 }

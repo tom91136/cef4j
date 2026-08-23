@@ -42,6 +42,10 @@ final class TestPeer implements AutoCloseable {
         sendKind(Envelope.Kind.INTERCEPT, corrId, messageId, payload);
     }
 
+    void sendError(int corrId, int messageId, byte[] payload) throws CefTransportException {
+        sendKind(Envelope.Kind.ERROR, corrId, messageId, payload);
+    }
+
     @Nullable
     DecodedFrame poll(long timeout, TimeUnit unit) throws InterruptedException {
         return received.poll(timeout, unit);

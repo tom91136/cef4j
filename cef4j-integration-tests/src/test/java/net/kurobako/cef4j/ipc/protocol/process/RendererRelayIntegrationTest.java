@@ -59,15 +59,11 @@ class RendererRelayIntegrationTest {
             LinkedBlockingQueue<V8ContextCreatedEvent> events = new LinkedBlockingQueue<>();
             session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, events::offer);
 
-            // Bootstrap browser navigates to about:blank, which mints at least one V8 context (the main
-            // frame's). The renderer subprocess fires on_context_created once; the relay turns it into the
-            // event we're waiting for.
             V8ContextCreatedEvent ev = events.poll(20, TimeUnit.SECONDS);
             assertThat(ev)
                     .as("expected V8ContextCreatedEvent from the renderer relay")
                     .isNotNull();
             assertThat(ev.browser().id()).isPositive();
-            // about:blank's main frame URL is "about:blank" once the context is established.
             assertThat(ev.frameUrl()).isNotNull();
         }
     }

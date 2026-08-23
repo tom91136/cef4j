@@ -4,7 +4,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 struct JniCefSettingObserver : public cef_setting_observer_t {
     JavaVM* jvm;

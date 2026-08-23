@@ -11,7 +11,6 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "jni_util.h"
 
 extern "C" cef_load_handler_t* Create_JniCefLoadHandler(JNIEnv* env, jobject handler);
 

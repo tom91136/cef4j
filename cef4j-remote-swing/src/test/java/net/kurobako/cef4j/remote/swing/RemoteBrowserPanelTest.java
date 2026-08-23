@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -32,8 +33,9 @@ class RemoteBrowserPanelTest {
     void discoversBootstrapBrowserAndOwnsFrameTransport() {
         FakeSession session = new FakeSession();
         FakeFrameTransport frames = new FakeFrameTransport();
-        RemoteBrowserPanel panel = new RemoteBrowserPanel(connected -> {
+        RemoteBrowserPanel panel = new RemoteBrowserPanel((connected, browser) -> {
             assertThat(connected).isSameAs(session);
+            assertThat(browser).isEqualTo(new RemoteHandle(17));
             return frames;
         });
 
@@ -50,7 +52,7 @@ class RemoteBrowserPanelTest {
     void attachIsIdempotentOnlyForOriginalSession() {
         FakeSession first = new FakeSession();
         FakeSession second = new FakeSession();
-        RemoteBrowserPanel panel = new RemoteBrowserPanel(ignored -> new FakeFrameTransport());
+        RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
 
         panel.attach(first);
         panel.attach(first);
@@ -64,7 +66,7 @@ class RemoteBrowserPanelTest {
     @Test
     void explicitViewportResizeCompletesAfterRemoteAcknowledgement() {
         FakeSession session = new FakeSession();
-        RemoteBrowserPanel panel = new RemoteBrowserPanel(ignored -> new FakeFrameTransport());
+        RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
         panel.setSize(640, 480);
         panel.attach(session);
         session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
@@ -86,7 +88,7 @@ class RemoteBrowserPanelTest {
     @Test
     void explicitViewportResizeFollowsPendingComponentResize() throws Exception {
         FakeSession session = new FakeSession();
-        RemoteBrowserPanel panel = new RemoteBrowserPanel(ignored -> new FakeFrameTransport());
+        RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
         panel.setSize(640, 480);
         panel.attach(session);
         session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
@@ -109,14 +111,49 @@ class RemoteBrowserPanelTest {
         panel.release();
     }
 
+    @Test
+    void rejectsViewportOutsideSharedRuntimeBudget() {
+        RemoteBrowserPanel panel = new RemoteBrowserPanel();
+
+        assertThatThrownBy(() -> panel.resizeViewport(8193, 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> panel.resizeViewport(3840, 2161)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void failedFrameSubscriptionClosesPartialTransportAndCanBeRetried() {
+        FakeSession session = new FakeSession();
+        AtomicBoolean rejectFirst = new AtomicBoolean(true);
+        FakeFrameTransport rejected = new FakeFrameTransport();
+        FakeFrameTransport accepted = new FakeFrameTransport();
+        RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> {
+            if (!rejectFirst.getAndSet(false)) return accepted;
+            rejected.rejectConsumer = true;
+            return rejected;
+        });
+
+        panel.attach(session);
+        CompletableFuture<RemoteHandle> failedReady = panel.browserReady();
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(29)));
+        assertThat(failedReady).isCompletedExceptionally();
+        assertThat(rejected.closed).isTrue();
+
+        panel.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(31)));
+        assertThat(panel.browserReady()).isCompletedWithValue(new RemoteHandle(31));
+        panel.release();
+        assertThat(accepted.closed).isTrue();
+    }
+
     private static final class FakeFrameTransport implements FrameTransport {
         @Nullable
         private FrameConsumer consumer;
 
         private boolean closed;
+        private boolean rejectConsumer;
 
         @Override
         public void onFrame(@Nullable FrameConsumer consumer) {
+            if (rejectConsumer) throw new IllegalStateException("consumer rejected");
             this.consumer = consumer;
         }
 
@@ -160,7 +197,7 @@ class RemoteBrowserPanelTest {
 
         @SuppressWarnings("unchecked")
         private <E extends CefMessageView> void emit(E event) {
-            for (Consumer<?> handler : handlers.getOrDefault(event.messageId(), List.of())) {
+            for (Consumer<?> handler : new ArrayList<>(handlers.getOrDefault(event.messageId(), List.of()))) {
                 ((Consumer<E>) handler).accept(event);
             }
         }

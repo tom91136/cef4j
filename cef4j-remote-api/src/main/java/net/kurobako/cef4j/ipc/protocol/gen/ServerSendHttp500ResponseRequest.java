@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
+import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
 public final class ServerSendHttp500ResponseRequest implements CefMessageView, CefMessageEncoder {
@@ -67,12 +68,15 @@ public final class ServerSendHttp500ResponseRequest implements CefMessageView, C
     public static final CefMessageDecoder<ServerSendHttp500ResponseRequest> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
         RemoteHandle self = new RemoteHandle(__buf.getInt());
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "connectionId");
         int connectionId = __buf.getInt();
-        int errorMessageLen = __buf.getInt();
+        int errorMessageLen = WireDecoder.length(__buf, "errorMessage");
         byte[] errorMessageBuf = new byte[errorMessageLen];
         __buf.get(errorMessageBuf);
         String errorMessage = new String(errorMessageBuf, StandardCharsets.UTF_8);
+        WireDecoder.requireFullyConsumed(__buf, "ServerSendHttp500ResponseRequest");
         return new ServerSendHttp500ResponseRequest(self, connectionId, errorMessage);
     };
 }
