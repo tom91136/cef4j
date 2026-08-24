@@ -33,7 +33,7 @@ class SharedFileFrameTransportTest {
             MappedBufferCleaner.Mapping mapping = MappedBufferCleaner.map(channel, 4);
             try {
                 assertThat(mapping.buffer().get(0)).isEqualTo((byte) 1);
-                assertThat(mapping.isScoped()).isEqualTo(Runtime.version().feature() >= 22);
+                assertThat(mapping.isScoped()).isEqualTo(Runtime.version().feature() >= 21);
             } finally {
                 assertThat(mapping.close()).isTrue();
             }

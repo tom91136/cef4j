@@ -127,7 +127,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     assert(cpp.contains("#include <limits>"), cpp)
     assert(
       cpp.contains(
-        "static_cast<unsigned long long>(itemsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())"
+        "static_cast<unsigned long long>(itemsCount) > static_cast<unsigned long long>((std::numeric_limits<jsize>::max)())"
       ),
       cpp
     )

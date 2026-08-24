@@ -239,7 +239,7 @@ struct JniCefRenderHandler : public cef_render_handler_t {
         auto* h = reinterpret_cast<JniCefRenderHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(23) < 0) { return; }
-        if (static_cast<unsigned long long>(dirtyRectsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native dirtyRects count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
+        if (static_cast<unsigned long long>(dirtyRectsCount) > static_cast<unsigned long long>((std::numeric_limits<jsize>::max)())) { std::fprintf(stderr, "[cef4j] native dirtyRects count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
         if (dirtyRectsCount > 0 && !dirtyRects) { std::fprintf(stderr, "[cef4j] native dirtyRects array is null with a positive count\n"); env->PopLocalFrame(nullptr); return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
@@ -272,7 +272,7 @@ struct JniCefRenderHandler : public cef_render_handler_t {
         auto* h = reinterpret_cast<JniCefRenderHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(49) < 0) { return; }
-        if (static_cast<unsigned long long>(dirtyRectsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native dirtyRects count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
+        if (static_cast<unsigned long long>(dirtyRectsCount) > static_cast<unsigned long long>((std::numeric_limits<jsize>::max)())) { std::fprintf(stderr, "[cef4j] native dirtyRects count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
         if (dirtyRectsCount > 0 && !dirtyRects) { std::fprintf(stderr, "[cef4j] native dirtyRects array is null with a positive count\n"); env->PopLocalFrame(nullptr); return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
@@ -473,7 +473,7 @@ struct JniCefRenderHandler : public cef_render_handler_t {
         auto* h = reinterpret_cast<JniCefRenderHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(22) < 0) { return; }
-        if (static_cast<unsigned long long>(character_boundsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native characterBounds count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
+        if (static_cast<unsigned long long>(character_boundsCount) > static_cast<unsigned long long>((std::numeric_limits<jsize>::max)())) { std::fprintf(stderr, "[cef4j] native characterBounds count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
         if (character_boundsCount > 0 && !character_bounds) { std::fprintf(stderr, "[cef4j] native characterBounds array is null with a positive count\n"); env->PopLocalFrame(nullptr); return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }

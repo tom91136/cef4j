@@ -184,7 +184,7 @@ $callAndReturn$popAndReturn
           else {
             val negative = if (count.typ == CType.Int) s"${count.name} < 0 || " else ""
             List(
-              s"if (${negative}static_cast<unsigned long long>(${count.name}) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, \"[cef4j] native ${Naming.toCamelCase(p.name)} count exceeds Java array capacity\\n\"); env->PopLocalFrame(nullptr); $earlyReturn }",
+              s"if (${negative}static_cast<unsigned long long>(${count.name}) > static_cast<unsigned long long>((std::numeric_limits<jsize>::max)())) { std::fprintf(stderr, \"[cef4j] native ${Naming.toCamelCase(p.name)} count exceeds Java array capacity\\n\"); env->PopLocalFrame(nullptr); $earlyReturn }",
               s"if (${count.name} > 0 && !${p.name}) { std::fprintf(stderr, \"[cef4j] native ${Naming.toCamelCase(p.name)} array is null with a positive count\\n\"); env->PopLocalFrame(nullptr); $earlyReturn }"
             )
           }

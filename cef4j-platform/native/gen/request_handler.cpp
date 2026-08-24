@@ -198,7 +198,7 @@ struct JniCefRequestHandler : public cef_request_handler_t {
         auto* h = reinterpret_cast<JniCefRequestHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(31) < 0) { return false; }
-        if (static_cast<unsigned long long>(certificatesCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native certificates count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return false; }
+        if (static_cast<unsigned long long>(certificatesCount) > static_cast<unsigned long long>((std::numeric_limits<jsize>::max)())) { std::fprintf(stderr, "[cef4j] native certificates count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return false; }
         if (certificatesCount > 0 && !certificates) { std::fprintf(stderr, "[cef4j] native certificates array is null with a positive count\n"); env->PopLocalFrame(nullptr); return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
