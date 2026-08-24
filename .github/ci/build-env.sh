@@ -56,13 +56,24 @@ surefire_extra_arg() {
 }
 
 spotbugs_extra_arg() {
-    case "$1" in
-        linuxarm64)
-            # SpotBugs is platform-independent and already runs throughout the native x64 matrix. Its analysis JVM
-            # can make no progress on the emulated ARM64 runners and otherwise consumes the full 30-minute timeout.
-            printf '%s\n' '-Dspotbugs.skip=true'
-            ;;
-    esac
+    local platform=$1 jdk_version=$2
+    if [ "${jdk_version}" -ne 17 ] || [ "${platform}" = linuxarm64 ]; then
+        printf '%s\n' '-Dspotbugs.skip=true'
+    fi
+}
+
+test_reactor_exclusions() {
+    printf '%s\n' '!cef4j-platform,!cef4j-runtime-server'
+}
+
+verify_test_reactor_exclusions() {
+    local repo_root=$1 module
+    for module in cef4j-platform cef4j-runtime-server; do
+        if [ -n "$(find "${repo_root}/${module}/src/test" -type f -print -quit 2>/dev/null)" ]; then
+            echo "${module} has tests and cannot be excluded from the test reactor" >&2
+            return 1
+        fi
+    done
 }
 
 cef_java_preload_required() {

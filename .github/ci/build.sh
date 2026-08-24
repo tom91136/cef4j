@@ -72,7 +72,7 @@ JAVAFX_PLATFORM=""
 [ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
 EXTRA_ARGS=$(cef_extra_args "${CEF_PLATFORM}")
 SUREFIRE_EXTRA_ARG=$(surefire_extra_arg "${CEF_PLATFORM}" "${JDK_VERSION}")
-SPOTBUGS_EXTRA_ARG=$(spotbugs_extra_arg "${CEF_PLATFORM}")
+SPOTBUGS_EXTRA_ARG=$(spotbugs_extra_arg "${CEF_PLATFORM}" "${JDK_VERSION}")
 MAVEN_OPTS="${MAVEN_OPTS:+${MAVEN_OPTS} }$(maven_runtime_args "${JDK_VERSION}")"
 export MAVEN_OPTS
 
@@ -146,6 +146,8 @@ non_javafx_file=target/ci-non-javafx-modules.txt
     -Doutput="${non_javafx_file}"
 non_javafx=$(tr -d '\r\n' < "${non_javafx_file}")
 [ -n "${non_javafx}" ] || { echo "cef4j.nonJavafxModules evaluated to an empty value" >&2; exit 1; }
+test_exclusions=$(test_reactor_exclusions)
+verify_test_reactor_exclusions "${repo_root}"
 properties=(
     "-Dcef.version=${CEF_VERSION}"
     "-Dcef.api.version=${CEF_API}"
@@ -169,6 +171,14 @@ run_reactor() {
         "$@" -pl "${non_javafx}"
     else
         "$@"
+    fi
+}
+
+run_test_reactor() {
+    if [ "${JAVAFX_TESTS}" != true ]; then
+        "$@" -pl "${non_javafx},${test_exclusions}"
+    else
+        "$@" -pl "${test_exclusions}"
     fi
 }
 
@@ -207,7 +217,7 @@ fi
 # but do not initialize several native CEF runtimes at once inside one runner.
 # DisplayLock only coordinates annotated display tests; it cannot isolate native
 # runtime-server and in-process test modules from each other.
-run_reactor run_with_display ./mvnw -B -T1 test "${test_properties[@]}"
+run_test_reactor run_with_display ./mvnw -B -T1 test "${test_properties[@]}"
 
 if [ "${JAVA11_SMOKE:-false}" = true ]; then
     ./mvnw -B -pl cef4j-remote-core,cef4j-remote-frame,cef4j-cdp,cef4j-webdriver,cef4j-codecs-gson,cef4j-codecs-jackson,cef4j-remote-webdriver test \

@@ -55,10 +55,13 @@ actual=$(maven_runtime_args 25)
 [ "${actual}" = '--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow' ] \
     || fail "JDK 25 build tools must allow the legacy Unsafe calls used by dependencies: ${actual}"
 
-actual=$(spotbugs_extra_arg linuxarm64)
+actual=$(spotbugs_extra_arg linuxarm64 17)
 [ "${actual}" = '-Dspotbugs.skip=true' ] \
     || fail "Linux ARM64 must reuse platform-independent SpotBugs coverage from native x64 jobs: ${actual}"
-[ -z "$(spotbugs_extra_arg linux64)" ] || fail "native x64 jobs must retain SpotBugs coverage"
+actual=$(spotbugs_extra_arg linux64 21)
+[ "${actual}" = '-Dspotbugs.skip=true' ] \
+    || fail "JDK 21 must reuse JDK 17 SpotBugs coverage: ${actual}"
+[ -z "$(spotbugs_extra_arg linux64 17)" ] || fail "JDK 17 native x64 jobs must retain SpotBugs coverage"
 
 cef_java_preload_required linuxarm64 aarch64 138 \
     || fail "old-CEF Linux ARM64 test JVMs must preload CEF before Java starts"
@@ -85,6 +88,11 @@ grep -Fq 'exec /lib/loader\ with\ spaces --preload /cef/libcef\ with\ spaces.so 
     || fail "the CEF Java wrapper must preserve launcher paths and arguments"
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
+actual=$(test_reactor_exclusions)
+[ "${actual}" = '!cef4j-platform,!cef4j-runtime-server' ] \
+    || fail "unexpected test reactor exclusions: ${actual}"
+verify_test_reactor_exclusions "${repo_root}" \
+    || fail "test reactor exclusions must contain no tests"
 sed -n '/id: jdk21/,/cache-dependency-path/p' "${repo_root}/.github/workflows/release.yaml" \
     | grep -q "java-version: '21'" \
     || fail "release platform jobs must install the JDK 21 version exported to build.sh"
