@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.application.Platform;
@@ -84,7 +85,6 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         private final RemoteSurfaceSupport.NavigationProbe navigation;
         private final RemoteSurfaceSupport.FrameProbe frames = new RemoteSurfaceSupport.FrameProbe();
         private final RemoteWebView view;
-        private final StackPane root;
         private final Stage stage;
         private volatile int width;
         private volatile int height;
@@ -93,13 +93,13 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             this.width = config.width();
             this.height = config.height();
             AtomicReference<RemoteWebView> viewRef = new AtomicReference<>();
-            AtomicReference<StackPane> rootRef = new AtomicReference<>();
             AtomicReference<Stage> stageRef = new AtomicReference<>();
             onFxThread(() -> {
                 RemoteWebView nextView = new RemoteWebView((session, browser) -> frames.bind(session));
                 // Seed the remote viewport before attach instead of relying on the first visible-stage pulse.
                 // JavaFX 25 on macOS can defer that pulse until after CEF has emitted its bootstrap 1x1 paint,
                 // leaving legacy CEF releases at 1x1 indefinitely when no subsequent layout is requested.
+                nextView.setManaged(false);
                 nextView.resize(width, height);
                 StackPane nextRoot = new StackPane(nextView);
                 nextRoot.setPrefSize(width, height);
@@ -107,11 +107,9 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
                 nextStage.initStyle(StageStyle.UNDECORATED);
                 nextStage.setScene(new Scene(nextRoot, width, height));
                 viewRef.set(nextView);
-                rootRef.set(nextRoot);
                 stageRef.set(nextStage);
             });
             this.view = Objects.requireNonNull(viewRef.get(), "remote JavaFX view");
-            this.root = Objects.requireNonNull(rootRef.get(), "remote JavaFX root");
             this.stage = Objects.requireNonNull(stageRef.get(), "remote JavaFX stage");
             this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
             this.navigation = new RemoteSurfaceSupport.NavigationProbe(runtime.session);
@@ -153,20 +151,17 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
-            AtomicReference<CompletableFuture<Void>> result = new AtomicReference<>();
             try {
                 onFxThread(() -> {
-                    root.setPrefSize(width, height);
-                    stage.setWidth(width);
-                    stage.setHeight(height);
+                    view.resize(width, height);
                     this.width = width;
                     this.height = height;
-                    result.set(view.resizeViewport(width, height));
                 });
+                awaitViewSize(view, width, height);
             } catch (Exception e) {
                 return CompletableFuture.failedFuture(e);
             }
-            return Objects.requireNonNull(result.get(), "remote JavaFX resize");
+            return view.resizeViewport(width, height);
         }
 
         @Override
@@ -182,5 +177,20 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             navigation.close();
             runtime.close();
         }
+    }
+
+    private static void awaitViewSize(RemoteWebView view, int width, int height) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+        double[] actual = new double[2];
+        while (System.nanoTime() < deadline) {
+            onFxThread(() -> {
+                actual[0] = view.getWidth();
+                actual[1] = view.getHeight();
+            });
+            if ((int) actual[0] == width && (int) actual[1] == height) return;
+            Thread.sleep(10);
+        }
+        throw new TimeoutException(
+                "JavaFX view did not resize to " + width + "x" + height + "; last was " + actual[0] + "x" + actual[1]);
     }
 }
