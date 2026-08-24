@@ -131,7 +131,7 @@ grep -q '<junit.jupiter.execution.timeout.default>60 s</junit.jupiter.execution.
 grep -q '<forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>' \
     "${repo_root}/pom.xml" \
     || fail "Surefire forks must outlive the longest class-level CI timeout"
-grep -q 'run_reactor run_with_display ./mvnw -B -T1 test' \
+grep -q 'run_test_reactor run_with_display ./mvnw -B -T1 test' \
     "${repo_root}/.github/ci/build.sh" \
     || fail "native CEF test modules must run serially inside each matrix job"
 grep -q 'cef_java_preload_required "${CEF_PLATFORM}" "${ARCH}" "${CEF_API}"' \
@@ -149,6 +149,9 @@ if grep -Eq '(^|[[:space:]])(export[[:space:]]+)?(LD_PRELOAD|GLIBC_TUNABLES)=|pr
 fi
 if grep -q 'if:.*!cancelled()' "${repo_root}/.github/workflows/main.yaml"; then
     fail "later JDK builds must not run in a workspace contaminated by an earlier failed JDK"
+fi
+if grep -q '^concurrency:' "${repo_root}/.github/workflows/main.yaml"; then
+    fail "every pushed commit must retain its own CI run"
 fi
 grep -q 'DBUS_SESSION_BUS_ADDRESS=$(cef_dbus_session_bus_address "${CEF_PLATFORM}" "${DBUS_SESSION_BUS_ADDRESS:-}")' \
     "${repo_root}/.github/ci/build.sh" \
