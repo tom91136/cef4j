@@ -40,10 +40,20 @@ actual=$(cef_dbus_session_bus_address linuxarm64 'unix:path=/run/user/1000/bus')
     || fail "non-Linux CEF jobs must not synthesize a D-Bus address"
 
 actual=$(surefire_extra_arg windows64 25)
-[ "${actual}" = '-Djdk.net.URLClassPath.disableClassPathURLCheck=true' ] \
-    || fail "JDK 25 Windows tests must allow Surefire classpaths spanning drive roots: ${actual}"
-[ -z "$(surefire_extra_arg windowsarm64 21)" ] || fail "the Surefire compatibility switch is JDK 25-specific"
-[ -z "$(surefire_extra_arg linux64 25)" ] || fail "the Surefire compatibility switch is Windows-specific"
+[ "${actual}" = '--enable-native-access=ALL-UNNAMED -Djdk.net.URLClassPath.disableClassPathURLCheck=true' ] \
+    || fail "unexpected JDK 25 Windows Surefire arguments: ${actual}"
+actual=$(surefire_extra_arg windowsarm64 21)
+[ "${actual}" = '--enable-native-access=ALL-UNNAMED' ] \
+    || fail "JDK 21 tests must enable native access for classpath libraries: ${actual}"
+actual=$(surefire_extra_arg linux64 25)
+[ "${actual}" = '--enable-native-access=ALL-UNNAMED' ] \
+    || fail "JDK 25 tests must not suppress project Unsafe warnings: ${actual}"
+actual=$(java_runtime_args 17)
+[ "${actual}" = '--enable-native-access=ALL-UNNAMED' ] \
+    || fail "JDK 17 build tools must enable native access for classpath libraries: ${actual}"
+actual=$(maven_runtime_args 25)
+[ "${actual}" = '--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow' ] \
+    || fail "JDK 25 build tools must allow the legacy Unsafe calls used by dependencies: ${actual}"
 
 actual=$(spotbugs_extra_arg linuxarm64)
 [ "${actual}" = '-Dspotbugs.skip=true' ] \

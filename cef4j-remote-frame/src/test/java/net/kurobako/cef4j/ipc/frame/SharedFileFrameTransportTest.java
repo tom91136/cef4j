@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -24,6 +25,23 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import org.junit.jupiter.api.Test;
 
 class SharedFileFrameTransportTest {
+    @Test
+    void currentJdksUseScopedMappedMemory() throws Exception {
+        Path file = Files.createTempFile("cef4j-mapped-region-", ".frame");
+        Files.write(file, new byte[] {1, 2, 3, 4});
+        try (FileChannel channel = FileChannel.open(file)) {
+            MappedBufferCleaner.Mapping mapping = MappedBufferCleaner.map(channel, 4);
+            try {
+                assertThat(mapping.buffer().get(0)).isEqualTo((byte) 1);
+                assertThat(mapping.isScoped()).isEqualTo(Runtime.version().feature() >= 22);
+            } finally {
+                assertThat(mapping.close()).isTrue();
+            }
+        } finally {
+            Files.deleteIfExists(file);
+        }
+    }
+
     @Test
     void replaysLatestPaintWhenConsumerIsInstalledAfterBinding() throws Exception {
         Path frame = Path.of(

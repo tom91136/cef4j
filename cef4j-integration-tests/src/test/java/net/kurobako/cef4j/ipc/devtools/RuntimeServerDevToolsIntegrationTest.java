@@ -104,7 +104,7 @@ class RuntimeServerDevToolsIntegrationTest {
         Page.Client page = cdp.domains().page();
         Network.Client network = cdp.domains().network();
         Runtime.Client runtime = cdp.domains().runtime();
-        DOM.Client dom = cdp.domains().dOM();
+        DOM.Client dom = cdp.domains().dom();
         Input.Client input = cdp.domains().input();
         Fetch.Client fetch = cdp.domains().fetch();
 

@@ -176,7 +176,6 @@
                                 <argument>-DCMAKE_BUILD_TYPE=Release</argument>
                                 <argument>-DCMAKE_CXX_STANDARD=17</argument>
                                 <argument>-DCMAKE_CXX_STANDARD_REQUIRED=ON</argument>
-                                <argument>-DCEF4J_STATIC_RUNTIME=ON</argument>
                             </arguments>
                         </configuration>
                     </execution>

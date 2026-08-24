@@ -52,6 +52,27 @@ bool writeAll(int fd, const void* input, std::size_t length) {
     }
     return true;
 }
+
+bool signalWake(int fd) {
+    if (fd < 0) return false;
+    const std::uint8_t wake = 1;
+    for (;;) {
+        ssize_t result = ::write(fd, &wake, 1);
+        if (result == 1 || (result < 0 && errno == EAGAIN)) return true;
+        if (result < 0 && errno == EINTR) continue;
+        return false;
+    }
+}
+
+bool consumeWake(int fd) {
+    std::uint8_t buffer[64];
+    for (;;) {
+        ssize_t result = ::read(fd, buffer, sizeof(buffer));
+        if (result > 0) return true;
+        if (result < 0 && errno == EINTR) continue;
+        return false;
+    }
+}
 } // namespace
 
 UdsIpcServer::~UdsIpcServer() {
@@ -108,9 +129,9 @@ void UdsIpcServer::stop() {
         std::lock_guard<std::mutex> lock(clientMu_);
         if (clientFd_ >= 0) ::shutdown(clientFd_, SHUT_RDWR);
     }
-    if (wakeWriteFd_ >= 0) {
-        const std::uint8_t wake = 1;
-        (void)::write(wakeWriteFd_, &wake, 1);
+    if (wakeWriteFd_ >= 0 && !signalWake(wakeWriteFd_)) {
+        std::fprintf(stderr, "[cef4j-runtime-server] failed to wake UDS worker during shutdown: %s\n",
+                     std::strerror(errno));
     }
     if (worker_.joinable()) worker_.join();
 }
@@ -130,11 +151,7 @@ bool UdsIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId, std:
         queuedBytes_ += frame.size();
         outbound_.push_back(std::move(frame));
     }
-    const std::uint8_t wake = 1;
-    if (wakeWriteFd_ < 0) return false;
-    ssize_t wakeResult = ::write(wakeWriteFd_, &wake, 1);
-    // EAGAIN means an earlier wake is already queued; the worker will still drain this frame.
-    return wakeResult == 1 || (wakeResult < 0 && errno == EAGAIN);
+    return signalWake(wakeWriteFd_);
 }
 
 bool UdsIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t corrId, std::int32_t messageId,
@@ -157,9 +174,7 @@ bool UdsIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t corrId
         if (it == latest_.end()) latest_.emplace_back(streamId, std::move(frame));
         else it->second = std::move(frame);
     }
-    const std::uint8_t wake = 1;
-    ssize_t result = wakeWriteFd_ < 0 ? -1 : ::write(wakeWriteFd_, &wake, 1);
-    return result == 1 || (result < 0 && errno == EAGAIN);
+    return signalWake(wakeWriteFd_);
 }
 
 void UdsIpcServer::workerLoop() {
@@ -193,8 +208,7 @@ void UdsIpcServer::workerLoop() {
             }
         }
         if (descriptors[2].revents & POLLIN) {
-            std::uint8_t buffer[64];
-            (void)::read(wakeReadFd_, buffer, sizeof(buffer));
+            if (!consumeWake(wakeReadFd_)) break;
             (void)drainOutbound();
         }
     }

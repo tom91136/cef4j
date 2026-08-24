@@ -117,8 +117,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendWebSocketMessage0)(JNIEnv* env
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), create0)(JNIEnv* env, jclass clz, jstring address, jint port, jint backlog, jobject handler) {
+    if (port < 0 || port > 65535) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "port must be between 0 and 65535"); return; }
     auto _address_str = JStringToCefString(env, address);
     cef_server_handler_t* _handler_ptr = handler ? Create_JniCefServerHandler(env, handler) : nullptr;
-    cef_server_create(_address_str, port, backlog, _handler_ptr);
+    cef_server_create(_address_str, static_cast<uint16_t>(port), backlog, _handler_ptr);
     if (_address_str) cef_string_userfree_free(_address_str);
 }

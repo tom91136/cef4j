@@ -86,7 +86,7 @@ class JniCppHandlerTrampolineGen(
     val earlyReturn    = if (fn.ret == CType.Void) "return;" else s"return $defaultRetExpr;"
 
     val conversions  = fn.params.zipWithIndex.map { case (p, i) => convertNativeToJni(p, fn.params, i) }
-    val preCallLines = conversions.flatMap(_._1)
+    val preCallLines = renderNativeArrayChecks(fn.params, earlyReturn) ++ conversions.flatMap(_._1)
     val jniArgExprs  =
       fn.params.zip(conversions).collect {
         case (p, (_, expr, _)) if p.typ match {
@@ -173,6 +173,24 @@ $preCall        auto cls = env->GetObjectClass(h->javaHandler);
 $callAndReturn$popAndReturn
     }"""
   }
+
+  private def renderNativeArrayChecks(params: List[Param], earlyReturn: String): List[String] =
+    params.zipWithIndex.flatMap { case (p, idx) =>
+      p.typ match {
+        case CType.ObjectPtrArray(_) | CType.ByValueArray(_) if idx > 0 =>
+          val count            = params(idx - 1)
+          val countIsSupported = count.typ == CType.SizeT || count.typ == CType.UInt || count.typ == CType.Int
+          if (!countIsSupported) Nil
+          else {
+            val negative = if (count.typ == CType.Int) s"${count.name} < 0 || " else ""
+            List(
+              s"if (${negative}static_cast<unsigned long long>(${count.name}) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, \"[cef4j] native ${Naming.toCamelCase(p.name)} count exceeds Java array capacity\\n\"); env->PopLocalFrame(nullptr); $earlyReturn }",
+              s"if (${count.name} > 0 && !${p.name}) { std::fprintf(stderr, \"[cef4j] native ${Naming.toCamelCase(p.name)} array is null with a positive count\\n\"); env->PopLocalFrame(nullptr); $earlyReturn }"
+            )
+          }
+        case _ => Nil
+      }
+    }
 
   private def convertNativeToJni(
       p: Param,

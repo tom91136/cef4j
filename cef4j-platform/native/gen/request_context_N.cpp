@@ -194,7 +194,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setChromeColorScheme0)(JNI
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     if (!variant) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "variant must not be null"); return; }
-    s->set_chrome_color_scheme(s, static_cast<cef_color_variant_t>(env->GetLongField(variant, env->GetFieldID(env->GetObjectClass(variant), "value", "J"))), user_color);
+    s->set_chrome_color_scheme(s, static_cast<cef_color_variant_t>(env->GetLongField(variant, env->GetFieldID(env->GetObjectClass(variant), "value", "J"))), static_cast<cef_color_t>(user_color));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getChromeColorSchemeMode0)(JNIEnv* env, jobject obj, jlong self) {

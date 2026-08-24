@@ -162,9 +162,12 @@ final class RuntimeServerSupervisorTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
             CompletableFuture<RuntimeServerSupervisor.Connection> started = supervisor.start();
             assertThat(installing.await(300, TimeUnit.SECONDS)).isTrue();
-            try (AutoCloseable ignored = supervisor.onConnection(connection -> deliveries.incrementAndGet())) {
+            AutoCloseable registration = supervisor.onConnection(connection -> deliveries.incrementAndGet());
+            try {
                 started.get(300, TimeUnit.SECONDS);
                 assertThat(deliveries).hasValue(1);
+            } finally {
+                registration.close();
             }
         }
     }
@@ -264,6 +267,7 @@ final class RuntimeServerSupervisorTest {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             return () -> {};
         }

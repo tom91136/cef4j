@@ -11,7 +11,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaAccessCallback), release0)(JNIEnv* env
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaAccessCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jint allowed_permissions) {
     auto* s = reinterpret_cast<cef_media_access_callback_t*>(self);
     if (!s) return;
-    s->cont(s, allowed_permissions);
+    s->cont(s, static_cast<uint32_t>(allowed_permissions));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaAccessCallback), cancel0)(JNIEnv* env, jobject obj, jlong self) {

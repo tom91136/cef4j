@@ -87,11 +87,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintSettings), setPageRanges0)(JNIEnv* env
     auto* s = reinterpret_cast<cef_print_settings_t*>(self);
     if (!s) return;
     if (!ranges) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "ranges must not be null"); return; }
+    jsize _ranges_len = ranges ? env->GetArrayLength(ranges) : 0;
+    if (static_cast<unsigned long long>(rangesCount) > static_cast<unsigned long long>(_ranges_len)) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "ranges count exceeds array length"); return; }
     size_t _ranges_sz = static_cast<size_t>(rangesCount);
     cef_range_t* _ranges_arr = _ranges_sz > 0 ? new cef_range_t[_ranges_sz]() : nullptr;
     { auto _bvac = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
     for (size_t _i = 0; _i < _ranges_sz; _i++) {
-        auto _elem = env->GetObjectArrayElement(ranges, _i);
+        auto _elem = env->GetObjectArrayElement(ranges, static_cast<jsize>(_i));
         if (_elem) {
             _ranges_arr[_i].from = static_cast<decltype(_ranges_arr[_i].from)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "from", "I")));
             _ranges_arr[_i].to = static_cast<decltype(_ranges_arr[_i].to)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "to", "I")));

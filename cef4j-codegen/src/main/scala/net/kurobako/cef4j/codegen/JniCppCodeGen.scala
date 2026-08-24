@@ -177,6 +177,11 @@ struct Jni$javaName : public ${decl.name} {
       case _                                     => false
     })
     val vectorInclude = if (hasByValueArray) "\n#include <vector>" else ""
+    val hasJavaArray  = decl.fns.exists(_.params.exists {
+      case Param(_, CType.ByValueArray(_) | CType.ObjectPtrArray(_), _, _) => true
+      case _                                                               => false
+    })
+    val arrayIncludes = if (hasJavaArray) "\n#include <cstdio>\n#include <limits>" else ""
 
     val handlerPtrReturns = decl.fns.flatMap { fn =>
       val fromRet = if (isHandlerPtr(fn.ret)) {
@@ -200,7 +205,7 @@ struct Jni$javaName : public ${decl.name} {
 
     renderGeneratedCpp(
       s"""$includes
-#include <atomic>$vectorInclude
+#include <atomic>$arrayIncludes$vectorInclude
 """,
       s"""$forwardDeclBlock$structDef
 $trampolines
@@ -263,7 +268,8 @@ $headerIncludes
     val nullGuard = s"    if (!s) return${defaultReturn(fn.ret)};"
 
     val optionalParams = collectOptionalParams(fn.metaAttrs)
-    val npeChecks      = renderStrictNullChecks(fn.params, optionalParams, fn.ret)
+    val npeChecks      = renderStrictNullChecks(fn.params, optionalParams, fn.ret) ++
+      renderNarrowPrimitiveChecks(fn.params, fn.ret) ++ renderObjectArrayChecks(fn.params, fn.ret)
 
     val argConversions = fn.params.map { p =>
       val isOpt = optionalParams.contains(p.name)
@@ -277,7 +283,7 @@ $headerIncludes
             s"    $cefName* $arrVar = $sizeVar > 0 ? new $cefName[$sizeVar]() : nullptr;",
             s"""    { auto _bvac = FindClassCached(env, "${jniName(cefName)}");""",
             s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
-            s"        auto _elem = env->GetObjectArrayElement(${p.name}, _i);",
+            s"        auto _elem = env->GetObjectArrayElement(${p.name}, static_cast<jsize>(_i));",
             s"        if (_elem) {"
           ) ++ bv.bvReadFromJavaLines(cefName, s"$arrVar[_i]", "_elem", "_bvac").map(l => s"            $l") ++ List(
             "        }",
@@ -340,7 +346,7 @@ $headerIncludes
             s"""    auto _${p.name}_ctor = env->GetMethodID(_${p.name}_cls, "<init>", "(J)V");""",
             s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
             s"        auto _elem = $arrVar[_i] ? env->NewObject(_${p.name}_cls, _${p.name}_ctor, reinterpret_cast<jlong>($arrVar[_i])) : nullptr;",
-            s"        env->SetObjectArrayElement(${p.name}, _i, _elem);",
+            s"        env->SetObjectArrayElement(${p.name}, static_cast<jsize>(_i), _elem);",
             s"    }",
             s"    delete[] $arrVar;"
           )
@@ -559,7 +565,8 @@ $convertAndReturn"""
       }).mkString(", ")
 
     val optionalParams = collectOptionalParams(ff.metaAttrs)
-    val npeChecks      = renderStrictNullChecks(ff.params, optionalParams, ff.ret)
+    val npeChecks      = renderStrictNullChecks(ff.params, optionalParams, ff.ret) ++
+      renderNarrowPrimitiveChecks(ff.params, ff.ret)
 
     val argConversions = ff.params.map { p =>
       val isOpt = optionalParams.contains(p.name)
@@ -603,6 +610,33 @@ $convertAndReturn"""
         s"""    if (!${p.name}) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "$javaParamName must not be null"); return${defaultReturn(
             ret
           )}; }"""
+    }
+
+  private def renderNarrowPrimitiveChecks(params: List[Param], ret: CType): List[String] =
+    params.collect {
+      case p if Set("uint16", "uint16_t", "unsigned short").contains(p.rawCType.replaceAll("\\s+", " ").trim) =>
+        s"""    if (${p.name} < 0 || ${p.name} > 65535) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "${Naming.toCamelCase(
+            p.name
+          )} must be between 0 and 65535"); return${defaultReturn(ret)}; }"""
+    }
+
+  private def renderObjectArrayChecks(params: List[Param], ret: CType): List[String] =
+    params.flatMap { p =>
+      p.typ match {
+        case CType.ByValueArray(_) | CType.ObjectPtrArray(_) =>
+          val countParam = params.find(_.name.equalsIgnoreCase(s"${p.name}Count"))
+          val lenVar     = s"_${p.name}_len"
+          val javaName   = Naming.toCamelCase(p.name)
+          countParam.toList.flatMap {
+            case Param(_, CType.OutPrimitivePtr(_), _, _) => Nil
+            case count                                    =>
+              List(
+                s"    jsize $lenVar = ${p.name} ? env->GetArrayLength(${p.name}) : 0;",
+                s"    if (static_cast<unsigned long long>(${count.name}) > static_cast<unsigned long long>($lenVar)) { env->ThrowNew(FindClassCached(env, \"java/lang/IllegalArgumentException\"), \"$javaName count exceeds array length\"); return${defaultReturn(ret)}; }"
+              )
+          }
+        case _ => Nil
+      }
     }
 
   private def renderCallBlocks(
@@ -842,7 +876,12 @@ $convertAndReturn"""
             )}>(env->GetLongField(${p.name}, env->GetFieldID(env->GetObjectClass(${p.name}), "value", "J")))""",
           Nil
         )
-      case CType.Bool         => (Nil, s"static_cast<bool>(${p.name})", Nil)
+      case CType.Bool => (Nil, s"static_cast<bool>(${p.name})", Nil)
+      case CType.Int | CType.UInt | CType.Char | CType.Long | CType.SizeT | CType.Float | CType.Double =>
+        val rawType = p.rawCType.replaceAll("\\s+", " ").trim
+        val arg     =
+          if (rawType.nonEmpty && rawType != Naming.cType(p.typ)) s"static_cast<$rawType>(${p.name})" else p.name
+        (Nil, arg, Nil)
       case CType.OutOpaquePtr =>
         val valVar   = s"_${p.name}_val"
         val getVar   = s"_${p.name}_get"

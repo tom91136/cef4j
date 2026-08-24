@@ -142,7 +142,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextColor0)(JNIEnv* 
     auto _range_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
     _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_range_c, "from", "I")));
     _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_range_c, "to", "I")));
-    s->apply_text_color(s, color, &_range_val);
+    s->apply_text_color(s, static_cast<cef_color_t>(color), &_range_val);
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextStyle0)(JNIEnv* env, jobject obj, jlong self, jobject style, jboolean add, jobject range) {

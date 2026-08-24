@@ -1107,7 +1107,7 @@ object Main {
         val canonical = ident(domainField(name))
         val legacy    = ident(name.head.toLower +: name.tail)
         Option.when(canonical != legacy)(
-          s"    @Deprecated public $name.Client $legacy() { return $canonical(); }"
+          s"    @Deprecated @SuppressWarnings(\"InlineMeSuggester\") public $name.Client $legacy() { return $canonical(); }"
         )
       }
       (

@@ -382,6 +382,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getFunctionHandler0)(JNIEnv* e
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunction0)(JNIEnv* env, jobject obj, jlong self, jobject object, jlong argumentsCount, jobjectArray arguments) {
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return nullptr;
+    jsize _arguments_len = arguments ? env->GetArrayLength(arguments) : 0;
+    if (static_cast<unsigned long long>(argumentsCount) > static_cast<unsigned long long>(_arguments_len)) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "arguments count exceeds array length"); return nullptr; }
     cef_v8_value_t* _object_ptr = object ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J"))) : nullptr;
     if (_object_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_object_ptr); _b->add_ref(_b); }
     size_t _arguments_sz = static_cast<size_t>(argumentsCount);
@@ -391,7 +393,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunction0)(JNIEnv* env,
     auto _arguments_ctor = env->GetMethodID(_arguments_cls, "<init>", "(J)V");
     for (size_t _i = 0; _i < _arguments_sz; _i++) {
         auto _elem = _arguments_arr[_i] ? env->NewObject(_arguments_cls, _arguments_ctor, reinterpret_cast<jlong>(_arguments_arr[_i])) : nullptr;
-        env->SetObjectArrayElement(arguments, _i, _elem);
+        env->SetObjectArrayElement(arguments, static_cast<jsize>(_i), _elem);
     }
     delete[] _arguments_arr;
     if (!_r) return nullptr;
@@ -403,6 +405,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunction0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunctionWithContext0)(JNIEnv* env, jobject obj, jlong self, jobject context, jobject object, jlong argumentsCount, jobjectArray arguments) {
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return nullptr;
+    jsize _arguments_len = arguments ? env->GetArrayLength(arguments) : 0;
+    if (static_cast<unsigned long long>(argumentsCount) > static_cast<unsigned long long>(_arguments_len)) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "arguments count exceeds array length"); return nullptr; }
     cef_v8_context_t* _context_ptr = context ? reinterpret_cast<cef_v8_context_t*>(env->GetLongField(context, env->GetFieldID(env->GetObjectClass(context), "nativePtr", "J"))) : nullptr;
     if (_context_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_context_ptr); _b->add_ref(_b); }
     cef_v8_value_t* _object_ptr = object ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J"))) : nullptr;
@@ -414,7 +418,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunctionWithContext0)(J
     auto _arguments_ctor = env->GetMethodID(_arguments_cls, "<init>", "(J)V");
     for (size_t _i = 0; _i < _arguments_sz; _i++) {
         auto _elem = _arguments_arr[_i] ? env->NewObject(_arguments_cls, _arguments_ctor, reinterpret_cast<jlong>(_arguments_arr[_i])) : nullptr;
-        env->SetObjectArrayElement(arguments, _i, _elem);
+        env->SetObjectArrayElement(arguments, static_cast<jsize>(_i), _elem);
     }
     delete[] _arguments_arr;
     if (!_r) return nullptr;
@@ -466,7 +470,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createBool0)(JNIEnv* env, jcla
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createInt0)(JNIEnv* env, jclass clz, jint value) {
-    auto _r = cef_v8_value_create_int(value);
+    auto _r = cef_v8_value_create_int(static_cast<int32_t>(value));
     if (!_r) return nullptr;
     auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
@@ -474,7 +478,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createInt0)(JNIEnv* env, jclas
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createUint0)(JNIEnv* env, jclass clz, jint value) {
-    auto _r = cef_v8_value_create_uint(value);
+    auto _r = cef_v8_value_create_uint(static_cast<uint32_t>(value));
     if (!_r) return nullptr;
     auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");

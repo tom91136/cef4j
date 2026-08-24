@@ -7,6 +7,8 @@
 #include "jni_util.h"
 
 #include <atomic>
+#include <cstdio>
+#include <limits>
 #include <vector>
 
 struct JniCefDragHandler : public cef_drag_handler_t {
@@ -51,6 +53,8 @@ struct JniCefDragHandler : public cef_drag_handler_t {
         auto* h = reinterpret_cast<JniCefDragHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(25) < 0) { return; }
+        if (static_cast<unsigned long long>(regionsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native regions count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
+        if (regionsCount > 0 && !regions) { std::fprintf(stderr, "[cef4j] native regions array is null with a positive count\n"); env->PopLocalFrame(nullptr); return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");

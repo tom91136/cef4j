@@ -67,7 +67,7 @@ if(DEFINED CEF4J_CEF_API_VERSION AND NOT CEF4J_CEF_API_VERSION STREQUAL "")
 endif()
 
 set_source_files_properties(${GENERATED_SOURCES} PROPERTIES
-    COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter>"
+    COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter>;$<$<CXX_COMPILER_ID:MSVC>:/wd4100>"
 )
 
 if(WIN32)

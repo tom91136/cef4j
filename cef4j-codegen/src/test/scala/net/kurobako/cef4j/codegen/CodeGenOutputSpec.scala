@@ -65,6 +65,93 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
   }
 
+  test("object array indices use JNI widths") {
+    val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_test_t",
+      List(
+        FnPtr(
+          "set_items",
+          CType.Void,
+          List(Param("itemsCount", CType.SizeT), Param("items", CType.ObjectPtrArray("cef_browser_t")))
+        )
+      )
+    )
+
+    val cpp = codegen.emitToString(decl)
+    assert(cpp.contains("jsize _items_len = items ? env->GetArrayLength(items) : 0;"), cpp)
+    assert(
+      cpp.contains(
+        "static_cast<unsigned long long>(itemsCount) > static_cast<unsigned long long>(_items_len)"
+      ),
+      cpp
+    )
+    assert(cpp.contains("env->SetObjectArrayElement(items, static_cast<jsize>(_i), _elem);"), cpp)
+  }
+
+  test("by-value array counts are checked before JNI indexing") {
+    val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_test_t",
+      List(
+        FnPtr(
+          "set_sizes",
+          CType.Void,
+          List(Param("sizesCount", CType.SizeT), Param("sizes", CType.ByValueArray("cef_size_t")))
+        )
+      )
+    )
+
+    val cpp = byValueCodegen.emitToString(decl)
+    assert(cpp.contains("jsize _sizes_len = sizes ? env->GetArrayLength(sizes) : 0;"), cpp)
+    assert(
+      cpp.contains(
+        "static_cast<unsigned long long>(sizesCount) > static_cast<unsigned long long>(_sizes_len)"
+      ),
+      cpp
+    )
+    assert(cpp.contains("env->GetObjectArrayElement(sizes, static_cast<jsize>(_i));"), cpp)
+  }
+
+  test("handler arrays reject counts Java cannot represent") {
+    val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
+      "cef_test_handler_t",
+      List(
+        FnPtr(
+          "on_items",
+          CType.Bool,
+          List(Param("itemsCount", CType.SizeT), Param("items", CType.ObjectPtrArray("cef_browser_t")))
+        )
+      )
+    )
+
+    val cpp = codegen.emitHandlerToString(decl)
+    assert(cpp.contains("#include <limits>"), cpp)
+    assert(
+      cpp.contains(
+        "static_cast<unsigned long long>(itemsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())"
+      ),
+      cpp
+    )
+    assert(cpp.contains("itemsCount > 0 && !items"), cpp)
+    assert(cpp.contains("std::fprintf(stderr"), cpp)
+    assert(cpp.contains("env->PopLocalFrame(nullptr); return false;"), cpp)
+  }
+
+  test("raw primitive parameter widths use explicit C++ casts") {
+    val function: CefDecl.FreeFunction = CefDecl.FreeFunction(
+      cName = "cef_server_create",
+      ret = CType.Int,
+      params = List(Param("port", CType.Int, rawCType = "uint16_t")),
+      ownerStruct = "",
+      javaMethodName = "serverCreate",
+      sourceHeader = "cef_server_capi.h"
+    )
+
+    val cpp = codegen.renderFreeFunction("CefGlobals", function, isDirectClass = true)
+    assert(cpp.contains("if (port < 0 || port > 65535)"), cpp)
+    assert(cpp.contains("port must be between 0 and 65535"), cpp)
+    assert(cpp.contains("cef_server_create(static_cast<uint16_t>(port))"), cpp)
+  }
+
   test("handler codegen initialises ref-counting via InitRefCount") {
     val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct("cef_render_handler_t", Nil)
     val cpp                         = codegen.emitHandlerToString(decl)

@@ -64,13 +64,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefLabelButton), setTextColor0)(JNIEnv* 
     auto* s = reinterpret_cast<cef_label_button_t*>(self);
     if (!s) return;
     if (!for_state) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "forState must not be null"); return; }
-    s->set_text_color(s, static_cast<cef_button_state_t>(env->GetLongField(for_state, env->GetFieldID(env->GetObjectClass(for_state), "value", "J"))), color);
+    s->set_text_color(s, static_cast<cef_button_state_t>(env->GetLongField(for_state, env->GetFieldID(env->GetObjectClass(for_state), "value", "J"))), static_cast<cef_color_t>(color));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefLabelButton), setEnabledTextColors0)(JNIEnv* env, jobject obj, jlong self, jint color) {
     auto* s = reinterpret_cast<cef_label_button_t*>(self);
     if (!s) return;
-    s->set_enabled_text_colors(s, color);
+    s->set_enabled_text_colors(s, static_cast<cef_color_t>(color));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefLabelButton), setFontList0)(JNIEnv* env, jobject obj, jlong self, jstring font_list) {

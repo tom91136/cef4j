@@ -4,6 +4,8 @@
 #include "jni_util.h"
 
 #include <atomic>
+#include <cstdio>
+#include <limits>
 
 struct JniCefMediaObserver : public cef_media_observer_t {
     JavaVM* jvm;
@@ -23,6 +25,8 @@ struct JniCefMediaObserver : public cef_media_observer_t {
         auto* h = reinterpret_cast<JniCefMediaObserver*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(24) < 0) { return; }
+        if (static_cast<unsigned long long>(sinksCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native sinks count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
+        if (sinksCount > 0 && !sinks) { std::fprintf(stderr, "[cef4j] native sinks array is null with a positive count\n"); env->PopLocalFrame(nullptr); return; }
         auto j_sinks_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaSink$NativePeer");
         auto j_sinks_ctor = env->GetMethodID(j_sinks_cls, "<init>", "(J)V");
         jsize j_sinks_len = static_cast<jsize>(sinksCount);
@@ -45,6 +49,8 @@ struct JniCefMediaObserver : public cef_media_observer_t {
         auto* h = reinterpret_cast<JniCefMediaObserver*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(24) < 0) { return; }
+        if (static_cast<unsigned long long>(routesCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native routes count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return; }
+        if (routesCount > 0 && !routes) { std::fprintf(stderr, "[cef4j] native routes array is null with a positive count\n"); env->PopLocalFrame(nullptr); return; }
         auto j_routes_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaRoute$NativePeer");
         auto j_routes_ctor = env->GetMethodID(j_routes_cls, "<init>", "(J)V");
         jsize j_routes_len = static_cast<jsize>(routesCount);

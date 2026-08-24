@@ -387,7 +387,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefView), requestFocus0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefView), setBackgroundColor0)(JNIEnv* env, jobject obj, jlong self, jint color) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return;
-    s->set_background_color(s, color);
+    s->set_background_color(s, static_cast<cef_color_t>(color));
 }
 
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(views_CefView), getBackgroundColor0)(JNIEnv* env, jobject obj, jlong self) {

@@ -13,6 +13,7 @@
 #include <string.h>
 
 #if !defined(_WIN32)
+#include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 #if defined(__APPLE__) || defined(__linux__)
@@ -28,6 +29,20 @@ static int stderrReadFd = -1;
 // Set from Java after cef_initialize to hold the exact chrome_debug.log path.
 static char crashLogPath[4096] = {0};
 
+static void writeBestEffort(int fd, const char* buffer, size_t length) {
+    while (length > 0) {
+        const ssize_t written = write(fd, buffer, length);
+        if (written > 0) {
+            buffer += written;
+            length -= static_cast<size_t>(written);
+        } else if (written < 0 && errno == EINTR) {
+            continue;
+        } else {
+            break;
+        }
+    }
+}
+
 static void crashHandler(int sig) {
     if (origStderrFd >= 0) {
         // CEF's LOG(FATAL) writes to chrome_debug.log but NOT to stderr, so
@@ -35,19 +50,19 @@ static void crashHandler(int sig) {
         // and backtrace to the original stderr.
         if (crashLogPath[0] != '\0') {
             const char prefix[] = "\n[cef4j] Native crash detected. CEF log: ";
-            write(origStderrFd, prefix, sizeof(prefix) - 1);
-            write(origStderrFd, crashLogPath, strlen(crashLogPath));
-            write(origStderrFd, "\n", 1);
+            writeBestEffort(origStderrFd, prefix, sizeof(prefix) - 1);
+            writeBestEffort(origStderrFd, crashLogPath, strlen(crashLogPath));
+            writeBestEffort(origStderrFd, "\n", 1);
         } else {
             const char msg[] =
                 "\n[cef4j] Native crash detected. "
                 "Check chrome_debug.log in the CEF cache directory for details.\n";
-            write(origStderrFd, msg, sizeof(msg) - 1);
+            writeBestEffort(origStderrFd, msg, sizeof(msg) - 1);
         }
 
 #if defined(__APPLE__) || defined(__linux__)
         const char btMsg[] = "[cef4j] Native backtrace:\n";
-        write(origStderrFd, btMsg, sizeof(btMsg) - 1);
+        writeBestEffort(origStderrFd, btMsg, sizeof(btMsg) - 1);
         void* frames[64];
         int count = backtrace(frames, 64);
         backtrace_symbols_fd(frames, count, origStderrFd);
@@ -184,6 +199,7 @@ static void writeCrashMessage(const char* suffix) {
 }
 
 static LONG WINAPI crashExceptionFilter(EXCEPTION_POINTERS* ep) {
+    (void)ep;
     writeCrashMessage(NULL);
     return EXCEPTION_CONTINUE_SEARCH;
 }

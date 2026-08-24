@@ -32,15 +32,27 @@ cef_dbus_session_bus_address() {
     esac
 }
 
+java_runtime_args() {
+    printf '%s\n' '--enable-native-access=ALL-UNNAMED'
+}
+
+maven_runtime_args() {
+    local jdk_version=$1 args
+    args=$(java_runtime_args "${jdk_version}")
+    if [ "${jdk_version}" -ge 25 ]; then
+        args+=' --sun-misc-unsafe-memory-access=allow'
+    fi
+    printf '%s\n' "${args}"
+}
+
 surefire_extra_arg() {
     local platform=$1 jdk_version=$2
+    local args
+    args=$(java_runtime_args "${jdk_version}")
     case "${platform}:${jdk_version}" in
-        windows64:25|windowsarm64:25)
-            # JDK 25 rejects Surefire's manifest-only classpath when the checkout and dependency cache use different
-            # drive roots. This switch affects test JVM bootstrap only; Maven and published runtimes are unchanged.
-            printf '%s\n' '-Djdk.net.URLClassPath.disableClassPathURLCheck=true'
-            ;;
+        windows64:25|windowsarm64:25) args+=' -Djdk.net.URLClassPath.disableClassPathURLCheck=true' ;;
     esac
+    printf '%s\n' "${args}"
 }
 
 spotbugs_extra_arg() {

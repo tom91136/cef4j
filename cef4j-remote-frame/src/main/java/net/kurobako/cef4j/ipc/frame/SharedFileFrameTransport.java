@@ -75,7 +75,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private FileChannel mappedChannel;
 
     @Nullable
-    private ByteBuffer mappedBuffer;
+    private MappedBufferCleaner.Mapping mappedMapping;
 
     private long mappedSize;
 
@@ -227,10 +227,10 @@ public final class SharedFileFrameTransport implements FrameTransport {
                         LOG.warn("shared-frame file {} is empty for browser={}", realPath, browserIdForLog());
                         return null;
                     }
-                    ByteBuffer mapped = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
+                    MappedBufferCleaner.Mapping mapping = MappedBufferCleaner.map(ch, size);
                     this.mappedFile = raf;
                     this.mappedChannel = ch;
-                    this.mappedBuffer = mapped;
+                    this.mappedMapping = mapping;
                     this.mappedSize = size;
                     this.mappedShmName = name;
                     opened = true;
@@ -263,21 +263,20 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     browserIdForLog());
             return null;
         }
-        return mappedBuffer;
+        return mappedMapping == null ? null : mappedMapping.buffer();
     }
 
     private void disposeMappingLocked() {
-        ByteBuffer buffer = mappedBuffer;
+        MappedBufferCleaner.Mapping mapping = mappedMapping;
         FileChannel ch = mappedChannel;
         RandomAccessFile raf = mappedFile;
-        mappedBuffer = null;
+        mappedMapping = null;
         mappedChannel = null;
         mappedFile = null;
         mappedShmName = null;
         mappedSize = 0;
-        // XXX: Java 11 FileChannel.close leaves Windows mappings locked; remove when a supported explicit-unmap API is
-        // available or shared-frame files no longer rotate.
-        if (buffer != null && !MappedBufferCleaner.clean(buffer)) {
+        // XXX: Remove the Unsafe fallback when the minimum supported Java version provides scoped mapped memory.
+        if (mapping != null && !mapping.close()) {
             LOG.debug("explicit shared-frame unmap unavailable for browser={}", browserIdForLog());
         }
         try {

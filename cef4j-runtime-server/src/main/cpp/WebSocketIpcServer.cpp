@@ -75,6 +75,29 @@ bool interrupted(int error) {
 #endif
 }
 
+#ifndef _WIN32
+bool signalWake(int fd) {
+    if (fd < 0) return false;
+    const std::uint8_t wake = 1;
+    for (;;) {
+        ssize_t result = ::write(fd, &wake, 1);
+        if (result == 1 || (result < 0 && errno == EAGAIN)) return true;
+        if (result < 0 && errno == EINTR) continue;
+        return false;
+    }
+}
+
+bool consumeWake(int fd) {
+    std::uint8_t buffer[64];
+    for (;;) {
+        ssize_t result = ::read(fd, buffer, sizeof(buffer));
+        if (result > 0) return true;
+        if (result < 0 && errno == EINTR) continue;
+        return false;
+    }
+}
+#endif
+
 void closeSocket(SocketHandle socket) {
 #ifdef _WIN32
     if (socket != INVALID_SOCKET) ::closesocket(socket);
@@ -310,8 +333,10 @@ void WebSocketIpcServer::stop() {
         }
     }
 #ifndef _WIN32
-    const std::uint8_t wake = 1;
-    if (wakeWriteFd_ >= 0) (void)::write(wakeWriteFd_, &wake, 1);
+    if (wakeWriteFd_ >= 0 && !signalWake(wakeWriteFd_)) {
+        std::fprintf(stderr, "[cef4j-runtime-server] failed to wake WebSocket worker during shutdown: %s\n",
+                     std::strerror(errno));
+    }
 #endif
     if (worker_.joinable()) worker_.join();
 }
@@ -332,10 +357,7 @@ bool WebSocketIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId
 #ifdef _WIN32
     return true;
 #else
-    const std::uint8_t wake = 1;
-    if (wakeWriteFd_ < 0) return false;
-    ssize_t result = ::write(wakeWriteFd_, &wake, 1);
-    return result == 1 || (result < 0 && errno == EAGAIN);
+    return signalWake(wakeWriteFd_);
 #endif
 }
 
@@ -372,10 +394,7 @@ bool WebSocketIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t 
 #ifdef _WIN32
     return true;
 #else
-    const std::uint8_t wake = 1;
-    if (wakeWriteFd_ < 0) return false;
-    ssize_t result = ::write(wakeWriteFd_, &wake, 1);
-    return result == 1 || (result < 0 && errno == EAGAIN);
+    return signalWake(wakeWriteFd_);
 #endif
 }
 
@@ -416,8 +435,7 @@ void WebSocketIpcServer::workerLoop() {
         }
 #ifndef _WIN32
         if (descriptors[2].revents & POLLIN) {
-            std::uint8_t buffer[64];
-            (void)::read(wakeReadFd_, buffer, sizeof(buffer));
+            if (!consumeWake(wakeReadFd_)) break;
             if (!drainOutbound()) closeClient();
         }
 #else

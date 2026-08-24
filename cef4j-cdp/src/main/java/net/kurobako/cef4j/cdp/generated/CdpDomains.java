@@ -180,11 +180,11 @@ public final class CdpDomains {
     public Profiler.Client profiler() { return profiler; }
     public Runtime.Client runtime() { return runtime; }
     public Schema.Client schema() { return schema; }
-    @Deprecated public CSS.Client cSS() { return css(); }
-    @Deprecated public DOM.Client dOM() { return dom(); }
-    @Deprecated public DOMDebugger.Client dOMDebugger() { return domDebugger(); }
-    @Deprecated public DOMSnapshot.Client dOMSnapshot() { return domSnapshot(); }
-    @Deprecated public DOMStorage.Client dOMStorage() { return domStorage(); }
-    @Deprecated public IO.Client iO() { return io(); }
-    @Deprecated public PWA.Client pWA() { return pwa(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public CSS.Client cSS() { return css(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public DOM.Client dOM() { return dom(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public DOMDebugger.Client dOMDebugger() { return domDebugger(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public DOMSnapshot.Client dOMSnapshot() { return domSnapshot(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public DOMStorage.Client dOMStorage() { return domStorage(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public IO.Client iO() { return io(); }
+    @Deprecated @SuppressWarnings("InlineMeSuggester") public PWA.Client pWA() { return pwa(); }
 }

@@ -162,7 +162,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), downloadImage0)(JNIEnv* env, 
     if (!s) return;
     auto _image_url_str = JStringToCefString(env, image_url);
     cef_download_image_callback_t* _callback_ptr = callback ? Create_JniCefDownloadImageCallback(env, callback) : nullptr;
-    s->download_image(s, _image_url_str, static_cast<bool>(is_favicon), max_image_size, static_cast<bool>(bypass_cache), _callback_ptr);
+    s->download_image(s, _image_url_str, static_cast<bool>(is_favicon), static_cast<uint32_t>(max_image_size), static_cast<bool>(bypass_cache), _callback_ptr);
     if (_image_url_str) cef_string_userfree_free(_image_url_str);
 }
 
@@ -557,12 +557,14 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), imeSetComposition0)(JNIEnv* e
     if (!s) return;
     if (!replacement_range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "replacementRange must not be null"); return; }
     if (!selection_range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "selectionRange must not be null"); return; }
+    jsize _underlines_len = underlines ? env->GetArrayLength(underlines) : 0;
+    if (static_cast<unsigned long long>(underlinesCount) > static_cast<unsigned long long>(_underlines_len)) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "underlines count exceeds array length"); return; }
     auto _text_str = text ? JStringToCefString(env, text) : nullptr;
     size_t _underlines_sz = static_cast<size_t>(underlinesCount);
     cef_composition_underline_t* _underlines_arr = _underlines_sz > 0 ? new cef_composition_underline_t[_underlines_sz]() : nullptr;
     { auto _bvac = FindClassCached(env, "net/kurobako/cef4j/gen/CefCompositionUnderline");
     for (size_t _i = 0; _i < _underlines_sz; _i++) {
-        auto _elem = env->GetObjectArrayElement(underlines, _i);
+        auto _elem = env->GetObjectArrayElement(underlines, static_cast<jsize>(_i));
         if (_elem) {
             auto _rd_range = env->GetObjectField(_elem, env->GetFieldID(_bvac, "range", "Lnet/kurobako/cef4j/gen/CefRange;"));
             if (_rd_range) {

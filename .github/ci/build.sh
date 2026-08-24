@@ -73,6 +73,8 @@ JAVAFX_PLATFORM=""
 EXTRA_ARGS=$(cef_extra_args "${CEF_PLATFORM}")
 SUREFIRE_EXTRA_ARG=$(surefire_extra_arg "${CEF_PLATFORM}" "${JDK_VERSION}")
 SPOTBUGS_EXTRA_ARG=$(spotbugs_extra_arg "${CEF_PLATFORM}")
+MAVEN_OPTS="${MAVEN_OPTS:+${MAVEN_OPTS} }$(maven_runtime_args "${JDK_VERSION}")"
+export MAVEN_OPTS
 
 retry() {
     local attempt

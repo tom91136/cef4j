@@ -4,6 +4,8 @@
 #include "jni_util.h"
 
 #include <atomic>
+#include <cstdio>
+#include <limits>
 
 struct JniCefV8Handler : public cef_v8_handler_t {
     JavaVM* jvm;
@@ -20,6 +22,8 @@ struct JniCefV8Handler : public cef_v8_handler_t {
         auto* h = reinterpret_cast<JniCefV8Handler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(36) < 0) { return false; }
+        if (static_cast<unsigned long long>(argumentsCount) > static_cast<unsigned long long>(std::numeric_limits<jsize>::max())) { std::fprintf(stderr, "[cef4j] native arguments count exceeds Java array capacity\n"); env->PopLocalFrame(nullptr); return false; }
+        if (argumentsCount > 0 && !arguments) { std::fprintf(stderr, "[cef4j] native arguments array is null with a positive count\n"); env->PopLocalFrame(nullptr); return false; }
         auto j_name = CefStringToJString(env, name);
         cef_v8_value_t* _p_object = object;
         if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }

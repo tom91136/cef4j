@@ -263,11 +263,13 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getClientAreaBoundsInScre
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setDraggableRegions0)(JNIEnv* env, jobject obj, jlong self, jlong regionsCount, jobjectArray regions) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
+    jsize _regions_len = regions ? env->GetArrayLength(regions) : 0;
+    if (static_cast<unsigned long long>(regionsCount) > static_cast<unsigned long long>(_regions_len)) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "regions count exceeds array length"); return; }
     size_t _regions_sz = static_cast<size_t>(regionsCount);
     cef_draggable_region_t* _regions_arr = _regions_sz > 0 ? new cef_draggable_region_t[_regions_sz]() : nullptr;
     { auto _bvac = FindClassCached(env, "net/kurobako/cef4j/gen/CefDraggableRegion");
     for (size_t _i = 0; _i < _regions_sz; _i++) {
-        auto _elem = env->GetObjectArrayElement(regions, _i);
+        auto _elem = env->GetObjectArrayElement(regions, static_cast<jsize>(_i));
         if (_elem) {
             auto _rd_bounds = env->GetObjectField(_elem, env->GetFieldID(_bvac, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;"));
             if (_rd_bounds) {
@@ -293,7 +295,7 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(views_CefWindow), getWindowHandle0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), sendKeyPress0)(JNIEnv* env, jobject obj, jlong self, jint key_code, jint event_flags) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
-    s->send_key_press(s, key_code, event_flags);
+    s->send_key_press(s, key_code, static_cast<uint32_t>(event_flags));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), sendMouseMove0)(JNIEnv* env, jobject obj, jlong self, jint screen_x, jint screen_y) {
@@ -330,7 +332,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), removeAllAccelerators0)(JNIE
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setThemeColor0)(JNIEnv* env, jobject obj, jlong self, jint color_id, jint color) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
-    s->set_theme_color(s, color_id, color);
+    s->set_theme_color(s, color_id, static_cast<cef_color_t>(color));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), themeChanged0)(JNIEnv* env, jobject obj, jlong self) {

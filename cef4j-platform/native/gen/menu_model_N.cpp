@@ -406,7 +406,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColor0)(JNIEnv* env, job
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
-    auto _r = s->set_color(s, command_id, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), color);
+    auto _r = s->set_color(s, command_id, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), static_cast<cef_color_t>(color));
     return static_cast<jboolean>(_r);
 }
 
@@ -414,7 +414,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColorAt0)(JNIEnv* env, j
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
-    auto _r = s->set_color_at(s, index, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), color);
+    auto _r = s->set_color_at(s, index, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), static_cast<cef_color_t>(color));
     return static_cast<jboolean>(_r);
 }
 
