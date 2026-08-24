@@ -9,12 +9,16 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Assumptions;
 
 /** Shared behavioural contract run unchanged against in-process and Remote CEF browser surfaces. */
 public final class BrowserContract {
+    private static final Duration MAX_EVALUATION_ATTEMPT = Duration.ofSeconds(5);
+
     private BrowserContract() {}
 
     public static void verify(@Nonnull BrowserBackend backend) throws Exception {
@@ -108,15 +112,27 @@ public final class BrowserContract {
         assertThat(paint.byteCount).isEqualTo((long) width * height * 4L);
     }
 
-    private static void assertEventuallyEquals(
-            BrowserSession session, String expression, String expected, Duration timeout) throws Exception {
+    static void assertEventuallyEquals(BrowserSession session, String expression, String expected, Duration timeout)
+            throws Exception {
         long deadline = System.nanoTime() + timeout.toNanos();
+        long attemptTimeout = Math.max(1L, Math.min(MAX_EVALUATION_ATTEMPT.toNanos(), timeout.toNanos() / 4L));
         String value = null;
+        TimeoutException lastTimeout = null;
         while (System.nanoTime() < deadline) {
-            value = unquote(session.evaluateJavascript(expression).get(timeout.toSeconds(), TimeUnit.SECONDS));
+            long remaining = Math.max(1L, deadline - System.nanoTime());
+            CompletableFuture<String> evaluation = session.evaluateJavascript(expression);
+            try {
+                value = unquote(evaluation.get(Math.min(remaining, attemptTimeout), TimeUnit.NANOSECONDS));
+                lastTimeout = null;
+            } catch (TimeoutException timeoutException) {
+                evaluation.cancel(true);
+                lastTimeout = timeoutException;
+                continue;
+            }
             if (expected.equals(value)) return;
             Thread.sleep(50);
         }
+        if (lastTimeout != null) throw lastTimeout;
         assertThat(value).isEqualTo(expected);
     }
 

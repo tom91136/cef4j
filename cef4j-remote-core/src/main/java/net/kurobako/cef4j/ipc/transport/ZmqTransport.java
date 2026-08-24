@@ -44,12 +44,66 @@ public final class ZmqTransport implements CefTransport {
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
-    /**
-     * JeroMQ recommends one context per process. Workers close their own sockets and pollers without tearing down
-     * shadow contexts while the shared I/O infrastructure is processing socket termination.
-     */
     private static final class SharedContext {
-        private static final ZContext INSTANCE = new ZContext(1);
+        private static final Object LOCK = new Object();
+
+        @Nullable
+        private static ZContext context;
+
+        private static int references;
+        private static long generation;
+
+        private SharedContext() {}
+
+        private static Lease acquire() {
+            synchronized (LOCK) {
+                if (context == null) {
+                    context = new ZContext(1);
+                    generation++;
+                }
+                references++;
+                return new Lease(context);
+            }
+        }
+
+        private static long generation() {
+            synchronized (LOCK) {
+                return generation;
+            }
+        }
+
+        private static void release(ZContext acquired) {
+            synchronized (LOCK) {
+                if (context != acquired || references <= 0) {
+                    throw new IllegalStateException("JeroMQ context lease mismatch");
+                }
+                references--;
+                if (references == 0) {
+                    context = null;
+                    acquired.close();
+                }
+            }
+        }
+
+        private static final class Lease implements AutoCloseable {
+            private final ZContext context;
+            private boolean closed;
+
+            private Lease(ZContext context) {
+                this.context = context;
+            }
+
+            private ZContext context() {
+                return context;
+            }
+
+            @Override
+            public void close() {
+                if (closed) return;
+                closed = true;
+                release(context);
+            }
+        }
     }
 
     private volatile String endpoint;
@@ -93,6 +147,10 @@ public final class ZmqTransport implements CefTransport {
         return new ZmqTransport(false, endpoint, handshakeTimeoutMs);
     }
 
+    static long sharedContextGeneration() {
+        return SharedContext.generation();
+    }
+
     /** Resolved endpoint (for {@link #bind} this is the OS-assigned port; for {@link #connect} it is the input). */
     public String endpoint() {
         return endpoint;
@@ -118,9 +176,12 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
-        ZContext ctx = SharedContext.INSTANCE;
-        ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
+        SharedContext.Lease lease = SharedContext.acquire();
+        ZMQ.Socket main = null;
+        ZMQ.Poller poller = null;
         try {
+            ZContext ctx = lease.context();
+            main = ctx.createSocket(SocketType.DEALER);
             configureLiveness(main, handshakeTimeoutMs);
 
             int eventMask = ZMQ.EVENT_CONNECTED
@@ -138,16 +199,11 @@ public final class ZmqTransport implements CefTransport {
             } else {
                 main.connect(requestedEndpoint);
             }
-        } catch (RuntimeException e) {
-            setup.completeExceptionally(e);
-            main.close();
-            return;
-        }
-        ZMQ.Poller poller = ctx.createPoller(1);
-        poller.register(main, ZMQ.Poller.POLLIN);
-        setup.complete(endpoint);
-        LOG.debug("worker on {} started", endpoint);
-        try {
+
+            poller = ctx.createPoller(1);
+            poller.register(main, ZMQ.Poller.POLLIN);
+            setup.complete(endpoint);
+            LOG.debug("worker on {} started", endpoint);
             while (!closed) {
                 int n = poller.poll(POLL_TIMEOUT_MS);
                 if (n < 0) break;
@@ -158,18 +214,31 @@ public final class ZmqTransport implements CefTransport {
                 dispatchPendingIfReady();
             }
         } catch (ZMQException e) {
-            LOG.debug("worker on {} exiting due to {}", endpoint, e.toString());
+            if (!setup.completeExceptionally(e)) {
+                LOG.debug("worker on {} exiting due to {}", endpoint, e.toString());
+            }
+        } catch (RuntimeException e) {
+            if (!setup.completeExceptionally(e)) {
+                LOG.warn("worker on {} failed", endpoint, e);
+            }
         } finally {
-            if (!closed) {
+            if (setup.isDone() && !setup.isCompletedExceptionally() && !closed) {
                 disconnected = true;
                 fireDisconnectIfReady();
             }
-            poller.close();
             try {
-                main.setLinger(0);
-                main.close();
-            } catch (RuntimeException e) {
-                LOG.debug("socket close on {} threw {}", endpoint, e.toString());
+                if (poller != null) poller.close();
+            } finally {
+                try {
+                    if (main != null) {
+                        main.setLinger(0);
+                        main.close();
+                    }
+                } catch (RuntimeException e) {
+                    LOG.debug("socket close on {} threw {}", endpoint, e.toString());
+                } finally {
+                    lease.close();
+                }
             }
             LOG.debug(
                     "worker on {} stopped (closed={}, disconnected={}, sent={}, received={})",
