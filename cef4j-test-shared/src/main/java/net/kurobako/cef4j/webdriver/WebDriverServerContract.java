@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Test;
 
@@ -109,10 +111,9 @@ public abstract class WebDriverServerContract {
                             .DELETE()
                             .build(),
                     HttpResponse.BodyHandlers.ofString());
-            assertThat(backend.navigation.cancelObserved.await(5, TimeUnit.SECONDS))
-                    .isTrue();
+            assertThat(backend.cancelObserved.await(5, TimeUnit.SECONDS)).isTrue();
             assertThat(backend.closed).isFalse();
-            backend.navigation.allowCommandExit.countDown();
+            backend.allowCommandExit.countDown();
             HttpResponse<String> deleted = deletion.get(5, TimeUnit.SECONDS);
 
             assertThat(deleted.statusCode()).isEqualTo(200);
@@ -267,12 +268,16 @@ public abstract class WebDriverServerContract {
 
     private static final class BlockingBackend extends Backend {
         private final CountDownLatch started = new CountDownLatch(1);
-        private final BlockingFuture navigation = new BlockingFuture();
+        private final CountDownLatch cancelObserved = new CountDownLatch(1);
+        private final CountDownLatch allowCommandExit = new CountDownLatch(1);
+        private final AtomicReference<Consumer<Throwable>> cancelNavigation = new AtomicReference<>();
         private final AtomicBoolean cancelled = new AtomicBoolean();
         private final AtomicBoolean closed = new AtomicBoolean();
 
         @Override
         public CompletableFuture<Void> navigate(String url) {
+            BlockingFuture navigation = new BlockingFuture(cancelObserved, allowCommandExit);
+            cancelNavigation.set(navigation::completeExceptionally);
             started.countDown();
             return navigation;
         }
@@ -280,7 +285,8 @@ public abstract class WebDriverServerContract {
         @Override
         public void cancelPendingCommands(Throwable failure) {
             cancelled.set(true);
-            navigation.completeExceptionally(failure);
+            Consumer<Throwable> cancel = cancelNavigation.get();
+            if (cancel != null) cancel.accept(failure);
         }
 
         @Override
@@ -304,8 +310,13 @@ public abstract class WebDriverServerContract {
     }
 
     private static final class BlockingFuture extends CompletableFuture<Void> {
-        private final CountDownLatch cancelObserved = new CountDownLatch(1);
-        private final CountDownLatch allowCommandExit = new CountDownLatch(1);
+        private final CountDownLatch cancelObserved;
+        private final CountDownLatch allowCommandExit;
+
+        private BlockingFuture(CountDownLatch cancelObserved, CountDownLatch allowCommandExit) {
+            this.cancelObserved = cancelObserved;
+            this.allowCommandExit = allowCommandExit;
+        }
 
         @Override
         public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
