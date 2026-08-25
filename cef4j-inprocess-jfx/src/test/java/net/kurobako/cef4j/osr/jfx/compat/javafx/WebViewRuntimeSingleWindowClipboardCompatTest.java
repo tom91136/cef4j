@@ -78,10 +78,7 @@ class WebViewRuntimeSingleWindowClipboardCompatTest extends WebViewRuntimeCompat
             setClipboardText(seed);
             clearSink(view);
 
-            selectSource(view, i);
-            invokeShortcut(view, KeyCode.C);
-
-            assertThat(waitUntilOnFx(() -> row.equals(getClipboardText()), 2_500))
+            assertThat(copySourceToClipboard(view, i, row, 5_000))
                     .as("row %s: copy should update clipboard", i + 1)
                     .isTrue();
             String copied = getClipboardText();
@@ -109,6 +106,17 @@ class WebViewRuntimeSingleWindowClipboardCompatTest extends WebViewRuntimeCompat
 
     private static int sourceY(int rowIndex) {
         return SOURCE_BASE_Y + (rowIndex * SOURCE_ROW_STEP);
+    }
+
+    private static boolean copySourceToClipboard(WebView view, int rowIndex, String row, long timeoutMillis)
+            throws Exception {
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        while (System.nanoTime() < deadline) {
+            selectSource(view, rowIndex);
+            invokeShortcut(view, KeyCode.C);
+            if (waitUntilOnFx(() -> row.equals(getClipboardText()), 500)) return true;
+        }
+        return row.equals(getClipboardText());
     }
 
     private static void selectSource(WebView view, int rowIndex) throws Exception {

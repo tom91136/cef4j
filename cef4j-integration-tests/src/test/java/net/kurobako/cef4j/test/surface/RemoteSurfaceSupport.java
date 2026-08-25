@@ -71,7 +71,10 @@ final class RemoteSurfaceSupport {
     }
 
     static final class FrameProbe {
-        private final ArrayBlockingQueue<BrowserSession.PaintInfo> paints = new ArrayBlockingQueue<>(1);
+        private static final int PAINT_HISTORY_CAPACITY = 32;
+
+        private final ArrayBlockingQueue<BrowserSession.PaintInfo> paints =
+                new ArrayBlockingQueue<>(PAINT_HISTORY_CAPACITY);
 
         FrameTransport bind(CefSession session) {
             return new ProbedFrameTransport(SharedFileFrameTransport.bindAll(session), this);
@@ -90,7 +93,7 @@ final class RemoteSurfaceSupport {
                     + (last == null ? "" : "; last was " + last.width + "x" + last.height));
         }
 
-        private void accept(int width, int height, ByteBuffer pixels) {
+        void accept(int width, int height, ByteBuffer pixels) {
             BrowserSession.PaintInfo latest = new BrowserSession.PaintInfo(width, height, pixels.remaining());
             while (!paints.offer(latest)) paints.poll();
         }

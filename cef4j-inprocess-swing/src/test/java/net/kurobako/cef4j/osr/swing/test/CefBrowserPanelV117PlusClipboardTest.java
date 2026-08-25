@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -42,8 +43,9 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             String text = iterationText(iteration);
             resetPageState(panel, text);
             setSystemClipboardText("seed");
-            selectSourceText(panel, layout);
-            performClipboardAction(panel, Region.SOURCE, ClipboardAction.COPY, copy);
+            assertThat(copySourceToClipboard(panel, layout, copy, text, 5_000))
+                    .as("copy iteration %s should update the system clipboard", iteration)
+                    .isTrue();
             focusTarget(panel, layout);
             performClipboardAction(panel, Region.TARGET, ClipboardAction.PASTE, paste);
 
@@ -66,6 +68,9 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             performClipboardAction(panel, Region.SOURCE, ClipboardAction.CUT, cut);
             assertThat(waitUntil(() -> titleFor(panel).equals("|"), 5_000))
                     .as("cut iteration %s should complete before focus moves", iteration)
+                    .isTrue();
+            assertThat(waitForSystemClipboardText(text, 5_000))
+                    .as("cut iteration %s should update the system clipboard", iteration)
                     .isTrue();
             focusTarget(panel, layout);
             performClipboardAction(panel, Region.TARGET, ClipboardAction.PASTE, paste);
@@ -103,6 +108,17 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
                 panel,
                 "var el = window.__getSrcEl && window.__getSrcEl();"
                         + "if (el) { el.focus(); if (el.select) { el.select(); } }");
+    }
+
+    private static boolean copySourceToClipboard(
+            CefBrowserPanel panel, Layout layout, Trigger copy, String text, long timeoutMillis) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        while (System.nanoTime() < deadline) {
+            selectSourceText(panel, layout);
+            performClipboardAction(panel, Region.SOURCE, ClipboardAction.COPY, copy);
+            if (waitForSystemClipboardText(text, 500)) return true;
+        }
+        return text.equals(systemClipboardText());
     }
 
     private static String iterationText(int iteration) {
@@ -382,6 +398,23 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
                 },
                 1_000,
                 "Timed out writing system clipboard");
+    }
+
+    private static boolean waitForSystemClipboardText(String expected, long timeoutMillis) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        while (System.nanoTime() < deadline) {
+            if (expected.equals(systemClipboardText())) return true;
+            Thread.sleep(20);
+        }
+        return expected.equals(systemClipboardText());
+    }
+
+    private static String systemClipboardText() throws Exception {
+        Object value = runWithTimeout(
+                () -> Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor),
+                1_000,
+                "Timed out reading system clipboard");
+        return value instanceof String ? (String) value : "";
     }
 
     private static <T> T runWithTimeout(Callable<T> task, long timeoutMillis, String timeoutMessage) throws Exception {

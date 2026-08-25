@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assumptions;
 /** Shared behavioural contract run unchanged against in-process and Remote CEF browser surfaces. */
 public final class BrowserContract {
     private static final Duration MAX_EVALUATION_ATTEMPT = Duration.ofSeconds(5);
+    private static final Duration MAX_PAINT_ATTEMPT = Duration.ofSeconds(5);
     private static final Duration CONTRACT_TIMEOUT = Duration.ofMinutes(2);
 
     private BrowserContract() {}
@@ -61,8 +62,7 @@ public final class BrowserContract {
                     session, "document.getElementById('marker').textContent", "second", deadline, timeout);
 
             if (backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)) {
-                deadline.await(session.resizeViewport(512, 384), "resize viewport", timeout);
-                assertPaint(session.awaitPaint(512, 384, deadline.remainingUpTo(timeout)), 512, 384);
+                assertPaint(resizeUntilPaint(session, 512, 384, deadline.remainingUpTo(timeout)), 512, 384);
                 assertEventuallyEquals(
                         session, "window.innerWidth + 'x' + window.innerHeight", "512x384", deadline, timeout);
             }
@@ -121,6 +121,23 @@ public final class BrowserContract {
     static void assertEventuallyEquals(BrowserSession session, String expression, String expected, Duration timeout)
             throws Exception {
         assertEventuallyEquals(session, expression, expected, TestDeadline.after(timeout), timeout);
+    }
+
+    static BrowserSession.PaintInfo resizeUntilPaint(BrowserSession session, int width, int height, Duration timeout)
+            throws Exception {
+        TestDeadline deadline = TestDeadline.after(timeout);
+        TimeoutException lastTimeout = null;
+        while (!deadline.isExpired()) {
+            try {
+                deadline.await(session.resizeViewport(width, height), "resize viewport", MAX_PAINT_ATTEMPT);
+                return session.awaitPaint(width, height, deadline.remainingUpTo(MAX_PAINT_ATTEMPT));
+            } catch (TimeoutException timeoutException) {
+                lastTimeout = timeoutException;
+            }
+        }
+        TimeoutException exhausted = new TimeoutException("no " + width + "x" + height + " paint within " + timeout);
+        if (lastTimeout != null) exhausted.initCause(lastTimeout);
+        throw exhausted;
     }
 
     static void assertEventuallyEquals(

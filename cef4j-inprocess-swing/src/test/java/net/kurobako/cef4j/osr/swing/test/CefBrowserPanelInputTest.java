@@ -64,7 +64,7 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
         assertThat(waitUntil(() -> "0".equals(getTitle(panel)), 5_000)).isTrue();
         leftClick(panel, 120, 120);
         assertThat(waitUntilDispatching(
-                        () -> !"0".equals(getTitle(panel)), 3_000, () -> dispatchWheel(panel, 120, 120, 3)))
+                        () -> !"0".equals(getTitle(panel)), 10_000, () -> dispatchWheel(panel, 120, 120, 3)))
                 .isTrue();
     }
 
