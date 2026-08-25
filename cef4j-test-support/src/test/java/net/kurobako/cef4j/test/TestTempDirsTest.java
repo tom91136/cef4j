@@ -54,4 +54,16 @@ class TestTempDirsTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> TestTempDirs.cleanupAtExit(Path.of(System.getProperty("user.dir"))));
     }
+
+    @Test
+    void deletesNestedTreeAfterAChildWasAlreadyRemoved() throws Exception {
+        Path directory = Files.createTempDirectory("cef4j-cleanup-race-test-");
+        Path child = Files.createDirectories(directory.resolve("cache").resolve("nested"));
+        Files.writeString(child.resolve("data"), "test");
+        Files.delete(child.resolve("data"));
+
+        TestTempDirs.deleteTree(directory);
+
+        assertThat(directory).doesNotExist();
+    }
 }

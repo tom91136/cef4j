@@ -1,11 +1,13 @@
 package net.kurobako.cef4j.test;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
-import java.util.Comparator;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,13 +77,32 @@ public final class TestTempDirs {
         }
     }
 
-    private static void deleteTree(Path dir) {
-        try (var paths = Files.walk(dir)) {
-            paths.sorted(Comparator.reverseOrder()).forEach(path -> {
-                try {
-                    Files.deleteIfExists(path);
-                } catch (IOException ignored) {
-                    return;
+    static void deleteTree(Path dir) {
+        try {
+            Files.walkFileTree(dir, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
+                    deleteIfPresent(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException failure) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path directory, IOException failure) {
+                    deleteIfPresent(directory);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                private void deleteIfPresent(Path path) {
+                    try {
+                        Files.deleteIfExists(path);
+                    } catch (IOException ignored) {
+                        return;
+                    }
                 }
             });
         } catch (IOException ignored) {

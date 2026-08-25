@@ -57,12 +57,16 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         return !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
     }
 
-    private static int cefApiVersion() {
+    static int cefApiVersion() {
         String value = System.getProperty("cef.api.version", System.getProperty("cef4j.test.cefApiVersion"));
         if (value == null || value.isBlank()) value = System.getProperty("cef.version");
         if (value == null || value.isBlank()) return Integer.MAX_VALUE;
         int separator = value.indexOf('.');
         return Integer.parseInt((separator < 0 ? value : value.substring(0, separator)).trim());
+    }
+
+    static boolean hasReliableBrowserInfoHandshake(int apiVersion) {
+        return apiVersion < 138 || apiVersion >= 142;
     }
 
     @Override
