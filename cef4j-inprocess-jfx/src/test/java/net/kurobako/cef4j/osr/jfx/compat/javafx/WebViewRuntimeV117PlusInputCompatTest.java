@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
 class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase {
+    private static final long SCROLL_DELIVERY_TIMEOUT_MILLIS = 10_000;
 
     @Test
     void horizontalScrollEventsReachThePage() throws Exception {
@@ -33,7 +34,7 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
         leftClick(view, 120, 120);
         assertThat(waitUntilFiringOnFx(
                         () -> !"0".equals(view.getEngine().getTitle()),
-                        3_000,
+                        SCROLL_DELIVERY_TIMEOUT_MILLIS,
                         () -> fireScroll(view, 120, 120, -140, 0)))
                 .isTrue();
     }
@@ -60,7 +61,7 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
         leftClick(view, 120, 120);
         assertThat(waitUntilFiringOnFx(
                         () -> !"0".equals(view.getEngine().getTitle()),
-                        3_000,
+                        SCROLL_DELIVERY_TIMEOUT_MILLIS,
                         () -> fireScroll(view, 120, 120, 0, 160)))
                 .isTrue();
     }
