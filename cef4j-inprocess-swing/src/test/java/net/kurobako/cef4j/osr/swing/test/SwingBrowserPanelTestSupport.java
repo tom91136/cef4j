@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
@@ -64,6 +65,7 @@ final class SwingBrowserPanelTestSupport {
         volatile boolean canGoBack;
         volatile boolean canGoForward;
         volatile boolean loadEnded;
+        final AtomicInteger viewPaints = new AtomicInteger();
         final CountDownLatch browserReady = new CountDownLatch(1);
         final CountDownLatch browserClosed = new CountDownLatch(1);
     }
@@ -135,8 +137,13 @@ final class SwingBrowserPanelTestSupport {
         AtomicReference<PanelState> stateRef = new AtomicReference<>();
 
         onSwingThread(() -> {
-            CefBrowserPanel panel = new CefBrowserPanel();
             PanelState state = new PanelState();
+            CefBrowserPanel panel = new CefBrowserPanel() {
+                @Override
+                protected void onViewPainted(int width, int height) {
+                    state.viewPaints.incrementAndGet();
+                }
+            };
             STATES.put(panel, state);
             panelRef.set(panel);
             stateRef.set(state);
@@ -344,6 +351,11 @@ final class SwingBrowserPanelTestSupport {
     static boolean isLoading(CefBrowserPanel panel) {
         PanelState state = STATES.get(panel);
         return state != null && state.loading;
+    }
+
+    static int viewPaintCount(CefBrowserPanel panel) {
+        PanelState state = STATES.get(panel);
+        return state != null ? state.viewPaints.get() : 0;
     }
 
     static boolean waitForLoadEnd(CefBrowserPanel panel, long timeoutMillis) throws Exception {

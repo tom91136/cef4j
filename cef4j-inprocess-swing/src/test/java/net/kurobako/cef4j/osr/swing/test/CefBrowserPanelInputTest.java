@@ -62,6 +62,10 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
                         + "</body></html>");
 
         assertThat(waitUntil(() -> "0".equals(getTitle(panel)), 5_000)).isTrue();
+        int paintsBeforeBarrier = viewPaintCount(panel);
+        executeJavaScript(panel, "document.body.style.backgroundColor = 'rgb(1, 2, 3)'");
+        assertThat(waitUntil(() -> viewPaintCount(panel) > paintsBeforeBarrier, 5_000))
+                .isTrue();
         leftClick(panel, 120, 120);
         assertThat(waitUntilDispatching(
                         () -> !"0".equals(getTitle(panel)), 10_000, () -> dispatchWheel(panel, 120, 120, 3)))
