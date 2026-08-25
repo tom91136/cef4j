@@ -188,7 +188,6 @@ jobs:
         run: .github/ci/build.sh
 
       - name: JDK 21
-        if: ${{ !cancelled() && steps.jdk21.outcome == 'success' }}
         shell: bash
         env:
           JAVA_HOME: ${{ steps.jdk21.outputs.path }}
@@ -196,7 +195,6 @@ jobs:
         run: .github/ci/build.sh
 
       - name: JDK 25
-        if: ${{ !cancelled() && steps.jdk25.outcome == 'success' }}
         shell: bash
         env:
           JAVA_HOME: ${{ steps.jdk25.outputs.path }}
