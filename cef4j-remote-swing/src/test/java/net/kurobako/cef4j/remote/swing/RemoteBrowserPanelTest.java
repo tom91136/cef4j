@@ -112,6 +112,30 @@ class RemoteBrowserPanelTest {
     }
 
     @Test
+    void explicitViewportResizeOffEdtFollowsPendingComponentResize() throws Exception {
+        FakeSession session = new FakeSession();
+        RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
+        panel.setSize(640, 480);
+        panel.attach(session);
+        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+
+        SwingUtilities.invokeAndWait(() -> SwingUtilities.invokeLater(() -> panel.dispatchEvent(
+                new java.awt.event.ComponentEvent(panel, java.awt.event.ComponentEvent.COMPONENT_RESIZED))));
+        CompletableFuture<Void> resized = panel.resizeViewport(512, 384);
+        SwingUtilities.invokeAndWait(() -> {});
+
+        assertThat(session.requests.get(session.requests.size() - 1))
+                .isInstanceOfSatisfying(SetViewportSizeRequest.class, request -> {
+                    assertThat(request.width()).isEqualTo(512);
+                    assertThat(request.height()).isEqualTo(384);
+                });
+        assertThat(resized).isNotDone();
+        session.completeLast(new SetViewportSizeResponse());
+        assertThat(resized).isCompleted();
+        panel.release();
+    }
+
+    @Test
     void rejectsViewportOutsideSharedRuntimeBudget() {
         RemoteBrowserPanel panel = new RemoteBrowserPanel();
 

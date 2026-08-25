@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class X509Certificate {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_x509_certificate_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_x509_certificate_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,10 +44,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:105</a>
      */
     public CompletableFuture<X509CertPrincipal> getSubject() {
-        return session
-            .request(new X509CertificateGetSubjectRequest(handle), X509CertificateGetSubjectResponse.DECODER)
-            .thenApply(X509CertificateGetSubjectResponse::result)
-            .thenApply(__h -> new X509CertPrincipal(session, __h));
+        return CefFutures.map(
+            session.request(new X509CertificateGetSubjectRequest(handle), X509CertificateGetSubjectResponse.DECODER),
+            __r -> new X509CertPrincipal(session, __r.result()));
     }
 
     /**
@@ -55,10 +56,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:113</a>
      */
     public CompletableFuture<X509CertPrincipal> getIssuer() {
-        return session
-            .request(new X509CertificateGetIssuerRequest(handle), X509CertificateGetIssuerResponse.DECODER)
-            .thenApply(X509CertificateGetIssuerResponse::result)
-            .thenApply(__h -> new X509CertPrincipal(session, __h));
+        return CefFutures.map(
+            session.request(new X509CertificateGetIssuerRequest(handle), X509CertificateGetIssuerResponse.DECODER),
+            __r -> new X509CertPrincipal(session, __r.result()));
     }
 
     /**
@@ -68,10 +68,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:119</a>
      */
     public CompletableFuture<BinaryValue> getSerialNumber() {
-        return session
-            .request(new X509CertificateGetSerialNumberRequest(handle), X509CertificateGetSerialNumberResponse.DECODER)
-            .thenApply(X509CertificateGetSerialNumberResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new X509CertificateGetSerialNumberRequest(handle), X509CertificateGetSerialNumberResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -81,9 +80,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
      */
     public CompletableFuture<Basetime> getValidStart() {
-        return session
-            .request(new X509CertificateGetValidStartRequest(handle), X509CertificateGetValidStartResponse.DECODER)
-            .thenApply(X509CertificateGetValidStartResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertificateGetValidStartRequest(handle), X509CertificateGetValidStartResponse.DECODER),
+            X509CertificateGetValidStartResponse::result);
     }
 
     /**
@@ -93,9 +92,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
      */
     public CompletableFuture<Basetime> getValidExpiry() {
-        return session
-            .request(new X509CertificateGetValidExpiryRequest(handle), X509CertificateGetValidExpiryResponse.DECODER)
-            .thenApply(X509CertificateGetValidExpiryResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertificateGetValidExpiryRequest(handle), X509CertificateGetValidExpiryResponse.DECODER),
+            X509CertificateGetValidExpiryResponse::result);
     }
 
     /**
@@ -105,10 +104,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:140</a>
      */
     public CompletableFuture<BinaryValue> getDerencoded() {
-        return session
-            .request(new X509CertificateGetDerencodedRequest(handle), X509CertificateGetDerencodedResponse.DECODER)
-            .thenApply(X509CertificateGetDerencodedResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new X509CertificateGetDerencodedRequest(handle), X509CertificateGetDerencodedResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -118,10 +116,9 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:146</a>
      */
     public CompletableFuture<BinaryValue> getPemencoded() {
-        return session
-            .request(new X509CertificateGetPemencodedRequest(handle), X509CertificateGetPemencodedResponse.DECODER)
-            .thenApply(X509CertificateGetPemencodedResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new X509CertificateGetPemencodedRequest(handle), X509CertificateGetPemencodedResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -131,8 +128,8 @@ public final class X509Certificate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:152</a>
      */
     public CompletableFuture<Long> getIssuerChainSize() {
-        return session
-            .request(new X509CertificateGetIssuerChainSizeRequest(handle), X509CertificateGetIssuerChainSizeResponse.DECODER)
-            .thenApply(X509CertificateGetIssuerChainSizeResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertificateGetIssuerChainSizeRequest(handle), X509CertificateGetIssuerChainSizeResponse.DECODER),
+            X509CertificateGetIssuerChainSizeResponse::result);
     }
 }

@@ -47,6 +47,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.gen.CefGlobals;
+import net.kurobako.cef4j.gen.CefTask;
+import net.kurobako.cef4j.gen.CefThreadId;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -401,7 +405,7 @@ final class FxWebViewRuntimeTestSupport {
             fireMouseEvent(
                     view, MouseEvent.MOUSE_RELEASED, endX, endY, end.getX(), end.getY(), MouseButton.PRIMARY, false);
         });
-        Thread.sleep(100);
+        drainInputQueue();
     }
 
     static void invokeShortcut(WebView view, KeyCode key) throws Exception {
@@ -412,7 +416,7 @@ final class FxWebViewRuntimeTestSupport {
             fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", key, false, true);
             fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", KeyCode.CONTROL, false, false);
         });
-        Thread.sleep(75);
+        drainInputQueue();
     }
 
     static String title(WebView view) throws Exception {
@@ -461,7 +465,7 @@ final class FxWebViewRuntimeTestSupport {
             view.fireEvent(
                     new KeyEvent(KeyEvent.KEY_RELEASED, "", keyCode.getName(), keyCode, false, false, false, false));
         });
-        Thread.sleep(75);
+        drainInputQueue();
     }
 
     static boolean tryInvokeContextMenuItem(
@@ -474,7 +478,7 @@ final class FxWebViewRuntimeTestSupport {
             }
             Boolean activated = onFxThread(() -> activateMenuItem(itemText));
             if (Boolean.TRUE.equals(activated)) {
-                Thread.sleep(75);
+                drainInputQueue();
                 return true;
             }
         }
@@ -596,7 +600,21 @@ final class FxWebViewRuntimeTestSupport {
             fireMouseEvent(view, MouseEvent.MOUSE_RELEASED, x, y, point.getX(), point.getY(), button, false);
             fireMouseEvent(view, MouseEvent.MOUSE_CLICKED, x, y, point.getX(), point.getY(), button, false);
         });
-        Thread.sleep(75);
+        drainInputQueue();
+    }
+
+    static void drainInputQueue() throws Exception {
+        onFxThread(() -> {});
+        if (!isCefCompatHarness()) return;
+        CompletableFuture<Void> drained = new CompletableFuture<>();
+        boolean posted = CefGlobals.postTask(CefThreadId.of(CefThreadId.Kind.UI), new CefTask() {
+            @Override
+            public void execute() {
+                drained.complete(null);
+            }
+        });
+        if (!posted) throw new IllegalStateException("CEF UI queue rejected test barrier");
+        TestDeadline.after(java.time.Duration.ofSeconds(5)).await(drained, "drain CEF UI queue");
     }
 
     @Nullable

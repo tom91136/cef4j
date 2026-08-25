@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,85 +31,86 @@ public final class ViewDelegate {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_view_delegate_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_view_delegate_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_preferred_size} to the runtime server. */
     public CompletableFuture<Size> getPreferredSize(@Nonnull RemoteHandle view) {
-        return session
-            .request(new ViewDelegateGetPreferredSizeRequest(handle, view), ViewDelegateGetPreferredSizeResponse.DECODER)
-            .thenApply(ViewDelegateGetPreferredSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewDelegateGetPreferredSizeRequest(handle, view), ViewDelegateGetPreferredSizeResponse.DECODER),
+            ViewDelegateGetPreferredSizeResponse::result);
     }
 
     /** Dispatches {@code get_minimum_size} to the runtime server. */
     public CompletableFuture<Size> getMinimumSize(@Nonnull RemoteHandle view) {
-        return session
-            .request(new ViewDelegateGetMinimumSizeRequest(handle, view), ViewDelegateGetMinimumSizeResponse.DECODER)
-            .thenApply(ViewDelegateGetMinimumSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewDelegateGetMinimumSizeRequest(handle, view), ViewDelegateGetMinimumSizeResponse.DECODER),
+            ViewDelegateGetMinimumSizeResponse::result);
     }
 
     /** Dispatches {@code get_maximum_size} to the runtime server. */
     public CompletableFuture<Size> getMaximumSize(@Nonnull RemoteHandle view) {
-        return session
-            .request(new ViewDelegateGetMaximumSizeRequest(handle, view), ViewDelegateGetMaximumSizeResponse.DECODER)
-            .thenApply(ViewDelegateGetMaximumSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewDelegateGetMaximumSizeRequest(handle, view), ViewDelegateGetMaximumSizeResponse.DECODER),
+            ViewDelegateGetMaximumSizeResponse::result);
     }
 
     /** Dispatches {@code get_height_for_width} to the runtime server. */
     public CompletableFuture<Integer> getHeightForWidth(@Nonnull RemoteHandle view, int width) {
-        return session
-            .request(new ViewDelegateGetHeightForWidthRequest(handle, view, width), ViewDelegateGetHeightForWidthResponse.DECODER)
-            .thenApply(ViewDelegateGetHeightForWidthResponse::result);
+        return CefFutures.map(
+            session.request(new ViewDelegateGetHeightForWidthRequest(handle, view, width), ViewDelegateGetHeightForWidthResponse.DECODER),
+            ViewDelegateGetHeightForWidthResponse::result);
     }
 
     /** Dispatches {@code on_parent_view_changed} to the runtime server. */
     public CompletableFuture<Void> onParentViewChanged(@Nonnull RemoteHandle view, int added, @Nonnull RemoteHandle parent) {
-        return session
-            .request(new ViewDelegateOnParentViewChangedRequest(handle, view, added, parent), ViewDelegateOnParentViewChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnParentViewChangedRequest(handle, view, added, parent), ViewDelegateOnParentViewChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_child_view_changed} to the runtime server. */
     public CompletableFuture<Void> onChildViewChanged(@Nonnull RemoteHandle view, int added, @Nonnull RemoteHandle child) {
-        return session
-            .request(new ViewDelegateOnChildViewChangedRequest(handle, view, added, child), ViewDelegateOnChildViewChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnChildViewChangedRequest(handle, view, added, child), ViewDelegateOnChildViewChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_changed} to the runtime server. */
     public CompletableFuture<Void> onWindowChanged(@Nonnull RemoteHandle view, int added) {
-        return session
-            .request(new ViewDelegateOnWindowChangedRequest(handle, view, added), ViewDelegateOnWindowChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnWindowChangedRequest(handle, view, added), ViewDelegateOnWindowChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_layout_changed} to the runtime server. */
     public CompletableFuture<Void> onLayoutChanged(@Nonnull RemoteHandle view, Rect newBounds) {
-        return session
-            .request(new ViewDelegateOnLayoutChangedRequest(handle, view, newBounds), ViewDelegateOnLayoutChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnLayoutChangedRequest(handle, view, newBounds), ViewDelegateOnLayoutChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_focus} to the runtime server. */
     public CompletableFuture<Void> onFocus(@Nonnull RemoteHandle view) {
-        return session
-            .request(new ViewDelegateOnFocusRequest(handle, view), ViewDelegateOnFocusResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnFocusRequest(handle, view), ViewDelegateOnFocusResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_blur} to the runtime server. */
     public CompletableFuture<Void> onBlur(@Nonnull RemoteHandle view) {
-        return session
-            .request(new ViewDelegateOnBlurRequest(handle, view), ViewDelegateOnBlurResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnBlurRequest(handle, view), ViewDelegateOnBlurResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_theme_changed} to the runtime server. */
     public CompletableFuture<Void> onThemeChanged(@Nonnull RemoteHandle view) {
-        return session
-            .request(new ViewDelegateOnThemeChangedRequest(handle, view), ViewDelegateOnThemeChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewDelegateOnThemeChangedRequest(handle, view), ViewDelegateOnThemeChangedResponse.DECODER),
+            r -> null);
     }
 }

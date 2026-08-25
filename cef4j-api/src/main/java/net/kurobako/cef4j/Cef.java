@@ -219,7 +219,7 @@ public enum Cef {
                 throw new IllegalStateException("CEF has been shut down and cannot be reinitialized");
             }
 
-            log.info("Initializing CEF with args: {}", extraArgs);
+            log.debug("Initializing CEF with args: {}", extraArgs);
 
             if (!SystemBootstrap.isLoaded()) {
                 SystemBootstrap.load();
@@ -298,7 +298,7 @@ public enum Cef {
                         },
                         () -> {
                             int released = NativeCleaner.INSTANCE.releaseAll();
-                            log.info("Released {} outstanding NativePeers before shutdown", released);
+                            log.debug("Released {} outstanding NativePeers before shutdown", released);
                         });
                 Throwable err = initError.get();
                 if (err != null) {
@@ -335,18 +335,18 @@ public enum Cef {
                                             new RuntimeException("CefGlobals.initialize (cef_initialize) failed"));
                                     return;
                                 }
-                                log.info("CEF initialized on daemon thread");
+                                log.trace("CEF initialized on daemon thread");
                                 initLatch.countDown();
 
                                 CefGlobals.runMessageLoop();
 
-                                log.info("CEF message loop exited, shutting down");
+                                log.trace("CEF message loop exited, shutting down");
                                 int released = NativeCleaner.INSTANCE.releaseAll();
-                                log.info(
+                                log.debug(
                                         "Released {} outstanding NativePeers from daemon thread before shutdown",
                                         released);
                                 CefGlobals.shutdown();
-                                log.info("CEF terminated");
+                                log.trace("CEF terminated on daemon thread");
                             } catch (Throwable t) {
                                 initError.compareAndSet(null, t);
                             } finally {
@@ -372,7 +372,7 @@ public enum Cef {
                 daemonManaged = true;
             }
 
-            log.info("CEF initialized");
+            log.debug("CEF initialized");
             if (activeSettings != null && activeSettings.cachePath != null) {
                 NativeStderr.setCrashLogPath(activeSettings.cachePath);
             }
@@ -462,7 +462,7 @@ public enum Cef {
             isMacOs = macOsManaged;
             isDaemon = daemonManaged;
         }
-        log.info("CEF shutting down");
+        log.debug("CEF shutting down");
 
         if (isMacOs) {
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
@@ -471,14 +471,14 @@ public enum Cef {
             if (shutdownLatch != null) awaitUninterruptibly(shutdownLatch);
         } else {
             int released = NativeCleaner.INSTANCE.releaseAll();
-            log.info("Released {} outstanding NativePeers before shutdown", released);
+            log.debug("Released {} outstanding NativePeers before shutdown", released);
             CefGlobals.shutdown();
         }
 
         synchronized (lifecycleLock) {
             state = State.TERMINATED;
         }
-        log.info("CEF terminated");
+        log.debug("CEF terminated");
     }
 
     static void awaitUninterruptibly(CountDownLatch latch) {

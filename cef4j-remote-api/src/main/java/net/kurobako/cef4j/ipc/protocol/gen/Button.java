@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,24 +31,24 @@ public final class Button {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_button_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_button_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code as_label_button} to the runtime server. */
     public CompletableFuture<LabelButton> asLabelButton() {
-        return session
-            .request(new ButtonAsLabelButtonRequest(handle), ButtonAsLabelButtonResponse.DECODER)
-            .thenApply(ButtonAsLabelButtonResponse::result)
-            .thenApply(__h -> new LabelButton(session, __h));
+        return CefFutures.map(
+            session.request(new ButtonAsLabelButtonRequest(handle), ButtonAsLabelButtonResponse.DECODER),
+            __r -> new LabelButton(session, __r.result()));
     }
 
     /** Dispatches {@code set_state} to the runtime server. */
     public CompletableFuture<Void> setState(int state) {
-        return session
-            .request(new ButtonSetStateRequest(handle, state), ButtonSetStateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ButtonSetStateRequest(handle, state), ButtonSetStateResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -57,29 +58,29 @@ public final class Button {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
      */
     public CompletableFuture<Integer> getState() {
-        return session
-            .request(new ButtonGetStateRequest(handle), ButtonGetStateResponse.DECODER)
-            .thenApply(ButtonGetStateResponse::result);
+        return CefFutures.map(
+            session.request(new ButtonGetStateRequest(handle), ButtonGetStateResponse.DECODER),
+            ButtonGetStateResponse::result);
     }
 
     /** Dispatches {@code set_ink_drop_enabled} to the runtime server. */
     public CompletableFuture<Void> setInkDropEnabled(int enabled) {
-        return session
-            .request(new ButtonSetInkDropEnabledRequest(handle, enabled), ButtonSetInkDropEnabledResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ButtonSetInkDropEnabledRequest(handle, enabled), ButtonSetInkDropEnabledResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_tooltip_text} to the runtime server. */
     public CompletableFuture<Void> setTooltipText(@Nonnull String tooltipText) {
-        return session
-            .request(new ButtonSetTooltipTextRequest(handle, tooltipText), ButtonSetTooltipTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ButtonSetTooltipTextRequest(handle, tooltipText), ButtonSetTooltipTextResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_accessible_name} to the runtime server. */
     public CompletableFuture<Void> setAccessibleName(@Nonnull String name) {
-        return session
-            .request(new ButtonSetAccessibleNameRequest(handle, name), ButtonSetAccessibleNameResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ButtonSetAccessibleNameRequest(handle, name), ButtonSetAccessibleNameResponse.DECODER),
+            r -> null);
     }
 }

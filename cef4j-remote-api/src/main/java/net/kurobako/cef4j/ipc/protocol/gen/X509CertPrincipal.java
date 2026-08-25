@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class X509CertPrincipal {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_x509_cert_principal_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_x509_cert_principal_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:52</a>
      */
     public CompletableFuture<String> getDisplayName() {
-        return session
-            .request(new X509CertPrincipalGetDisplayNameRequest(handle), X509CertPrincipalGetDisplayNameResponse.DECODER)
-            .thenApply(X509CertPrincipalGetDisplayNameResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetDisplayNameRequest(handle), X509CertPrincipalGetDisplayNameResponse.DECODER),
+            X509CertPrincipalGetDisplayNameResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:60</a>
      */
     public CompletableFuture<String> getCommonName() {
-        return session
-            .request(new X509CertPrincipalGetCommonNameRequest(handle), X509CertPrincipalGetCommonNameResponse.DECODER)
-            .thenApply(X509CertPrincipalGetCommonNameResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetCommonNameRequest(handle), X509CertPrincipalGetCommonNameResponse.DECODER),
+            X509CertPrincipalGetCommonNameResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:66</a>
      */
     public CompletableFuture<String> getLocalityName() {
-        return session
-            .request(new X509CertPrincipalGetLocalityNameRequest(handle), X509CertPrincipalGetLocalityNameResponse.DECODER)
-            .thenApply(X509CertPrincipalGetLocalityNameResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetLocalityNameRequest(handle), X509CertPrincipalGetLocalityNameResponse.DECODER),
+            X509CertPrincipalGetLocalityNameResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:72</a>
      */
     public CompletableFuture<String> getStateOrProvinceName() {
-        return session
-            .request(new X509CertPrincipalGetStateOrProvinceNameRequest(handle), X509CertPrincipalGetStateOrProvinceNameResponse.DECODER)
-            .thenApply(X509CertPrincipalGetStateOrProvinceNameResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetStateOrProvinceNameRequest(handle), X509CertPrincipalGetStateOrProvinceNameResponse.DECODER),
+            X509CertPrincipalGetStateOrProvinceNameResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:78</a>
      */
     public CompletableFuture<String> getCountryName() {
-        return session
-            .request(new X509CertPrincipalGetCountryNameRequest(handle), X509CertPrincipalGetCountryNameResponse.DECODER)
-            .thenApply(X509CertPrincipalGetCountryNameResponse::result);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetCountryNameRequest(handle), X509CertPrincipalGetCountryNameResponse.DECODER),
+            X509CertPrincipalGetCountryNameResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
      */
     public CompletableFuture<Void> getOrganizationNames(String[] names) {
-        return session
-            .request(new X509CertPrincipalGetOrganizationNamesRequest(handle, names), X509CertPrincipalGetOrganizationNamesResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetOrganizationNamesRequest(handle, names), X509CertPrincipalGetOrganizationNamesResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -114,8 +116,8 @@ public final class X509CertPrincipal {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
      */
     public CompletableFuture<Void> getOrganizationUnitNames(String[] names) {
-        return session
-            .request(new X509CertPrincipalGetOrganizationUnitNamesRequest(handle, names), X509CertPrincipalGetOrganizationUnitNamesResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new X509CertPrincipalGetOrganizationUnitNamesRequest(handle, names), X509CertPrincipalGetOrganizationUnitNamesResponse.DECODER),
+            r -> null);
     }
 }

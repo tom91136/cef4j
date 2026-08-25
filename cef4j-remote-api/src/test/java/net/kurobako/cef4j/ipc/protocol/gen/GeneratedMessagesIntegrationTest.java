@@ -28,8 +28,6 @@ class GeneratedMessagesIntegrationTest {
     void navigateRequestRoundTripsThroughSession() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2))) {
-            // Peer side: respond to any REQUEST whose messageId matches NavigateRequest by sending back a
-            // NavigateResult with the same corrId.
             CefTransport peer = pair.b;
             peer.onReceive(frame -> {
                 try {
@@ -44,7 +42,7 @@ class GeneratedMessagesIntegrationTest {
                                         + req.url().length(),
                                 /*bytesLoaded*/ 4096L,
                                 /*ok*/ true);
-                        sendKind(peer, Envelope.Kind.RESPONSE, h.corrId, result);
+                        sendKind(peer, Envelope.Kind.RESPONSE, h.corrId, h.messageId, result);
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -66,11 +64,11 @@ class GeneratedMessagesIntegrationTest {
         }
     }
 
-    private static void sendKind(CefTransport peer, Envelope.Kind kind, int corrId, CefMessageEncoder enc)
-            throws Exception {
+    private static void sendKind(
+            CefTransport peer, Envelope.Kind kind, int corrId, int messageId, CefMessageEncoder enc) throws Exception {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, kind, /*flags*/ 0, corrId, enc.messageId(), enc.encodedSize());
+        Envelope.writeHeader(buf, kind, /*flags*/ 0, corrId, messageId, enc.encodedSize());
         enc.encodeInto(buf);
         buf.flip();
         peer.send(buf);

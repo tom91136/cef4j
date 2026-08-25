@@ -138,14 +138,11 @@ class SharedFileFrameTransportTest {
                     }
                     inFlight.decrementAndGet();
                 });
-                Thread a = new Thread(() -> session.fire(event0));
-                Thread b = new Thread(() -> session.fire(event1));
-                a.start();
-                b.start();
+                CompletableFuture<Void> a = CompletableFuture.runAsync(() -> session.fire(event0));
+                CompletableFuture<Void> b = CompletableFuture.runAsync(() -> session.fire(event1));
                 assertThat(firstEntered.await(5, TimeUnit.SECONDS)).isTrue();
                 release.countDown();
-                a.join();
-                b.join();
+                CompletableFuture.allOf(a, b).get(5, TimeUnit.SECONDS);
                 assertThat(overlapped).isFalse();
             }
         } finally {

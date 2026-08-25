@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class ContextMenuParams {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_context_menu_params_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_context_menu_params_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:207</a>
      */
     public CompletableFuture<Integer> getXcoord() {
-        return session
-            .request(new ContextMenuParamsGetXcoordRequest(handle), ContextMenuParamsGetXcoordResponse.DECODER)
-            .thenApply(ContextMenuParamsGetXcoordResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetXcoordRequest(handle), ContextMenuParamsGetXcoordResponse.DECODER),
+            ContextMenuParamsGetXcoordResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:214</a>
      */
     public CompletableFuture<Integer> getYcoord() {
-        return session
-            .request(new ContextMenuParamsGetYcoordRequest(handle), ContextMenuParamsGetYcoordResponse.DECODER)
-            .thenApply(ContextMenuParamsGetYcoordResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetYcoordRequest(handle), ContextMenuParamsGetYcoordResponse.DECODER),
+            ContextMenuParamsGetYcoordResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:221</a>
      */
     public CompletableFuture<Integer> getTypeFlags() {
-        return session
-            .request(new ContextMenuParamsGetTypeFlagsRequest(handle), ContextMenuParamsGetTypeFlagsResponse.DECODER)
-            .thenApply(ContextMenuParamsGetTypeFlagsResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetTypeFlagsRequest(handle), ContextMenuParamsGetTypeFlagsResponse.DECODER),
+            ContextMenuParamsGetTypeFlagsResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
      */
     public CompletableFuture<String> getLinkUrl() {
-        return session
-            .request(new ContextMenuParamsGetLinkUrlRequest(handle), ContextMenuParamsGetLinkUrlResponse.DECODER)
-            .thenApply(ContextMenuParamsGetLinkUrlResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetLinkUrlRequest(handle), ContextMenuParamsGetLinkUrlResponse.DECODER),
+            ContextMenuParamsGetLinkUrlResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:235</a>
      */
     public CompletableFuture<String> getUnfilteredLinkUrl() {
-        return session
-            .request(new ContextMenuParamsGetUnfilteredLinkUrlRequest(handle), ContextMenuParamsGetUnfilteredLinkUrlResponse.DECODER)
-            .thenApply(ContextMenuParamsGetUnfilteredLinkUrlResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetUnfilteredLinkUrlRequest(handle), ContextMenuParamsGetUnfilteredLinkUrlResponse.DECODER),
+            ContextMenuParamsGetUnfilteredLinkUrlResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:242</a>
      */
     public CompletableFuture<String> getSourceUrl() {
-        return session
-            .request(new ContextMenuParamsGetSourceUrlRequest(handle), ContextMenuParamsGetSourceUrlResponse.DECODER)
-            .thenApply(ContextMenuParamsGetSourceUrlResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetSourceUrlRequest(handle), ContextMenuParamsGetSourceUrlResponse.DECODER),
+            ContextMenuParamsGetSourceUrlResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:250</a>
      */
     public CompletableFuture<Integer> hasImageContents() {
-        return session
-            .request(new ContextMenuParamsHasImageContentsRequest(handle), ContextMenuParamsHasImageContentsResponse.DECODER)
-            .thenApply(ContextMenuParamsHasImageContentsResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsHasImageContentsRequest(handle), ContextMenuParamsHasImageContentsResponse.DECODER),
+            ContextMenuParamsHasImageContentsResponse::result);
     }
 
     /**
@@ -126,9 +128,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:257</a>
      */
     public CompletableFuture<String> getTitleText() {
-        return session
-            .request(new ContextMenuParamsGetTitleTextRequest(handle), ContextMenuParamsGetTitleTextResponse.DECODER)
-            .thenApply(ContextMenuParamsGetTitleTextResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetTitleTextRequest(handle), ContextMenuParamsGetTitleTextResponse.DECODER),
+            ContextMenuParamsGetTitleTextResponse::result);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:264</a>
      */
     public CompletableFuture<String> getPageUrl() {
-        return session
-            .request(new ContextMenuParamsGetPageUrlRequest(handle), ContextMenuParamsGetPageUrlResponse.DECODER)
-            .thenApply(ContextMenuParamsGetPageUrlResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetPageUrlRequest(handle), ContextMenuParamsGetPageUrlResponse.DECODER),
+            ContextMenuParamsGetPageUrlResponse::result);
     }
 
     /**
@@ -150,9 +152,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:271</a>
      */
     public CompletableFuture<String> getFrameUrl() {
-        return session
-            .request(new ContextMenuParamsGetFrameUrlRequest(handle), ContextMenuParamsGetFrameUrlResponse.DECODER)
-            .thenApply(ContextMenuParamsGetFrameUrlResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetFrameUrlRequest(handle), ContextMenuParamsGetFrameUrlResponse.DECODER),
+            ContextMenuParamsGetFrameUrlResponse::result);
     }
 
     /**
@@ -162,9 +164,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:277</a>
      */
     public CompletableFuture<String> getFrameCharset() {
-        return session
-            .request(new ContextMenuParamsGetFrameCharsetRequest(handle), ContextMenuParamsGetFrameCharsetResponse.DECODER)
-            .thenApply(ContextMenuParamsGetFrameCharsetResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetFrameCharsetRequest(handle), ContextMenuParamsGetFrameCharsetResponse.DECODER),
+            ContextMenuParamsGetFrameCharsetResponse::result);
     }
 
     /**
@@ -174,9 +176,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:284</a>
      */
     public CompletableFuture<Integer> getMediaType() {
-        return session
-            .request(new ContextMenuParamsGetMediaTypeRequest(handle), ContextMenuParamsGetMediaTypeResponse.DECODER)
-            .thenApply(ContextMenuParamsGetMediaTypeResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetMediaTypeRequest(handle), ContextMenuParamsGetMediaTypeResponse.DECODER),
+            ContextMenuParamsGetMediaTypeResponse::result);
     }
 
     /**
@@ -186,9 +188,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:290</a>
      */
     public CompletableFuture<Integer> getMediaStateFlags() {
-        return session
-            .request(new ContextMenuParamsGetMediaStateFlagsRequest(handle), ContextMenuParamsGetMediaStateFlagsResponse.DECODER)
-            .thenApply(ContextMenuParamsGetMediaStateFlagsResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetMediaStateFlagsRequest(handle), ContextMenuParamsGetMediaStateFlagsResponse.DECODER),
+            ContextMenuParamsGetMediaStateFlagsResponse::result);
     }
 
     /**
@@ -198,9 +200,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:297</a>
      */
     public CompletableFuture<String> getSelectionText() {
-        return session
-            .request(new ContextMenuParamsGetSelectionTextRequest(handle), ContextMenuParamsGetSelectionTextResponse.DECODER)
-            .thenApply(ContextMenuParamsGetSelectionTextResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetSelectionTextRequest(handle), ContextMenuParamsGetSelectionTextResponse.DECODER),
+            ContextMenuParamsGetSelectionTextResponse::result);
     }
 
     /**
@@ -210,9 +212,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:304</a>
      */
     public CompletableFuture<String> getMisspelledWord() {
-        return session
-            .request(new ContextMenuParamsGetMisspelledWordRequest(handle), ContextMenuParamsGetMisspelledWordResponse.DECODER)
-            .thenApply(ContextMenuParamsGetMisspelledWordResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetMisspelledWordRequest(handle), ContextMenuParamsGetMisspelledWordResponse.DECODER),
+            ContextMenuParamsGetMisspelledWordResponse::result);
     }
 
     /**
@@ -222,9 +224,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
      */
     public CompletableFuture<Integer> getDictionarySuggestions(String[] suggestions) {
-        return session
-            .request(new ContextMenuParamsGetDictionarySuggestionsRequest(handle, suggestions), ContextMenuParamsGetDictionarySuggestionsResponse.DECODER)
-            .thenApply(ContextMenuParamsGetDictionarySuggestionsResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetDictionarySuggestionsRequest(handle, suggestions), ContextMenuParamsGetDictionarySuggestionsResponse.DECODER),
+            ContextMenuParamsGetDictionarySuggestionsResponse::result);
     }
 
     /**
@@ -234,9 +236,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:319</a>
      */
     public CompletableFuture<Integer> isEditable() {
-        return session
-            .request(new ContextMenuParamsIsEditableRequest(handle), ContextMenuParamsIsEditableResponse.DECODER)
-            .thenApply(ContextMenuParamsIsEditableResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsIsEditableRequest(handle), ContextMenuParamsIsEditableResponse.DECODER),
+            ContextMenuParamsIsEditableResponse::result);
     }
 
     /**
@@ -246,9 +248,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:325</a>
      */
     public CompletableFuture<Integer> isSpellCheckEnabled() {
-        return session
-            .request(new ContextMenuParamsIsSpellCheckEnabledRequest(handle), ContextMenuParamsIsSpellCheckEnabledResponse.DECODER)
-            .thenApply(ContextMenuParamsIsSpellCheckEnabledResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsIsSpellCheckEnabledRequest(handle), ContextMenuParamsIsSpellCheckEnabledResponse.DECODER),
+            ContextMenuParamsIsSpellCheckEnabledResponse::result);
     }
 
     /**
@@ -258,9 +260,9 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:332</a>
      */
     public CompletableFuture<Integer> getEditStateFlags() {
-        return session
-            .request(new ContextMenuParamsGetEditStateFlagsRequest(handle), ContextMenuParamsGetEditStateFlagsResponse.DECODER)
-            .thenApply(ContextMenuParamsGetEditStateFlagsResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsGetEditStateFlagsRequest(handle), ContextMenuParamsGetEditStateFlagsResponse.DECODER),
+            ContextMenuParamsGetEditStateFlagsResponse::result);
     }
 
     /**
@@ -270,8 +272,8 @@ public final class ContextMenuParams {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:339</a>
      */
     public CompletableFuture<Integer> isCustomMenu() {
-        return session
-            .request(new ContextMenuParamsIsCustomMenuRequest(handle), ContextMenuParamsIsCustomMenuResponse.DECODER)
-            .thenApply(ContextMenuParamsIsCustomMenuResponse::result);
+        return CefFutures.map(
+            session.request(new ContextMenuParamsIsCustomMenuRequest(handle), ContextMenuParamsIsCustomMenuResponse.DECODER),
+            ContextMenuParamsIsCustomMenuResponse::result);
     }
 }

@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import net.kurobako.cef4j.remote.swing.RemoteBrowserPanel;
+import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
@@ -56,7 +57,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
 
     private static final class Session implements BrowserSession {
         private final RemoteSurfaceSupport.RuntimeFixture runtime;
-        private final RemoteSurfaceSupport.NavigationProbe navigation;
+        private final RemoteNavigationProbe navigation;
         private final RemoteSurfaceSupport.FrameProbe frames = new RemoteSurfaceSupport.FrameProbe();
         private final RemoteBrowserPanel panel;
         private final JFrame frame;
@@ -82,9 +83,8 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             this.panel = Objects.requireNonNull(panelRef.get(), "remote Swing panel");
             this.frame = Objects.requireNonNull(frameRef.get(), "remote Swing frame");
             this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
-            this.navigation = new RemoteSurfaceSupport.NavigationProbe(runtime.session);
+            this.navigation = new RemoteNavigationProbe(runtime.session);
             try {
-                // Attach before showing; browser-created is a one-shot session event.
                 panel.attach(runtime.session);
                 onEdt(() -> {
                     frame.setVisible(true);
@@ -114,7 +114,8 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException {
+        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout)
+                throws InterruptedException, java.util.concurrent.TimeoutException {
             return frames.await(width, height, timeout);
         }
 
@@ -144,7 +145,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
                     frame.dispose();
                 });
             } catch (Exception ignored) {
-                // Continue closing the server-side resources.
+                // Cleanup continues with independently owned resources.
             }
             navigation.close();
             runtime.close();

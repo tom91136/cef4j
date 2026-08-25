@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,22 +31,23 @@ public final class BoxLayout {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_box_layout_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_box_layout_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_flex_for_view} to the runtime server. */
     public CompletableFuture<Void> setFlexForView(@Nonnull RemoteHandle view, int flex) {
-        return session
-            .request(new BoxLayoutSetFlexForViewRequest(handle, view, flex), BoxLayoutSetFlexForViewResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new BoxLayoutSetFlexForViewRequest(handle, view, flex), BoxLayoutSetFlexForViewResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code clear_flex_for_view} to the runtime server. */
     public CompletableFuture<Void> clearFlexForView(@Nonnull RemoteHandle view) {
-        return session
-            .request(new BoxLayoutClearFlexForViewRequest(handle, view), BoxLayoutClearFlexForViewResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new BoxLayoutClearFlexForViewRequest(handle, view), BoxLayoutClearFlexForViewResponse.DECODER),
+            r -> null);
     }
 }

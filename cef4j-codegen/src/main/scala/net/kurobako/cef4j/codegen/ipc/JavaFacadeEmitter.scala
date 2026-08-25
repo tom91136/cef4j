@@ -62,24 +62,26 @@ object JavaFacadeEmitter {
       s"""    /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
          |      * ${spec.cefStructName} only exists in the renderer subprocess's table state. */
          |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-         |        return session
-         |            .request(
+         |        return CefFutures.map(
+         |            session.request(
          |                new RendererReleaseHandleRequest(frame, handle, "${spec.cefStructName}"),
-         |                RendererReleaseHandleResponse.DECODER)
-         |            .thenApply(r -> null);
+         |                RendererReleaseHandleResponse.DECODER),
+         |            r -> null);
          |    }""".stripMargin
     else
       s"""    /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
          |      * will fail with an empty / null-receiver response. */
          |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-         |        return session
-         |            .request(new ReleaseHandleRequest(handle, "${spec.cefStructName}"), ReleaseHandleResponse.DECODER)
-         |            .thenApply(r -> null);
+         |        return CefFutures.map(
+         |            session.request(
+         |                new ReleaseHandleRequest(handle, "${spec.cefStructName}"), ReleaseHandleResponse.DECODER),
+         |            r -> null);
          |    }""".stripMargin
 
   private def renderImports: String = List(
     "import java.util.concurrent.CompletableFuture;",
     "import javax.annotation.Nonnull;",
+    "import net.kurobako.cef4j.ipc.session.CefFutures;",
     "import net.kurobako.cef4j.ipc.session.CefSession;",
     "import net.kurobako.cef4j.ipc.session.RemoteHandle;"
   ).mkString("\n")
@@ -103,10 +105,10 @@ object JavaFacadeEmitter {
       facadeByCefStruct: Map[String, String],
       affinityByCefStruct: Map[String, ProcessAffinity]
   ): String = {
-    val frameLead                  = if (facade.affinity == ProcessAffinity.Renderer) List("frame") else Nil
-    val ctorArgs                   = (frameLead ++ ("handle" :: m.explicitParams.map(_.name))).mkString(", ")
-    val (returnType, mapperSuffix) = m.resultField match {
-      case None    => ("CompletableFuture<Void>", ".thenApply(r -> null)")
+    val frameLead            = if (facade.affinity == ProcessAffinity.Renderer) List("frame") else Nil
+    val ctorArgs             = (frameLead ++ ("handle" :: m.explicitParams.map(_.name))).mkString(", ")
+    val (returnType, mapper) = m.resultField match {
+      case None    => ("CompletableFuture<Void>", "r -> null")
       case Some(f) =>
         f.ty match {
           case FieldType.RemoteHandle =>
@@ -122,23 +124,19 @@ object JavaFacadeEmitter {
                   else if (facade.cefStructName == "cef_frame_t") Some("handle")
                   else None
                 if (childAffinity == ProcessAffinity.Renderer && frameExprForChild.isEmpty) {
-                  (s"CompletableFuture<RemoteHandle>", s".thenApply(${m.responseClassName}::${f.name})")
+                  (s"CompletableFuture<RemoteHandle>", s"${m.responseClassName}::${f.name}")
                 } else {
                   val childCtor = frameExprForChild match {
-                    case Some(frameExpr) => s"new $facadeCls(session, $frameExpr, __h)"
-                    case None            => s"new $facadeCls(session, __h)"
+                    case Some(frameExpr) => s"new $facadeCls(session, $frameExpr, __r.${f.name}())"
+                    case None            => s"new $facadeCls(session, __r.${f.name}())"
                   }
-                  (
-                    s"CompletableFuture<$facadeCls>",
-                    s".thenApply(${m.responseClassName}::${f.name})\n" +
-                      s"            .thenApply(__h -> $childCtor)"
-                  )
+                  (s"CompletableFuture<$facadeCls>", s"__r -> $childCtor")
                 }
               case None =>
-                (s"CompletableFuture<RemoteHandle>", s".thenApply(${m.responseClassName}::${f.name})")
+                (s"CompletableFuture<RemoteHandle>", s"${m.responseClassName}::${f.name}")
             }
           case _ =>
-            (s"CompletableFuture<${boxedType(f.ty)}>", s".thenApply(${m.responseClassName}::${f.name})")
+            (s"CompletableFuture<${boxedType(f.ty)}>", s"${m.responseClassName}::${f.name}")
         }
     }
     val paramAnnots = m.explicitParams.map { p =>
@@ -153,9 +151,9 @@ object JavaFacadeEmitter {
       else s"""    /** Dispatches {@code ${m.cefMethodName}} to the runtime server. */
               |""".stripMargin
     s"""$methodDoc    public $returnType ${m.methodName}($paramAnnots) {
-       |        return session
-       |            .request(new ${m.requestClassName}($ctorArgs), ${m.responseClassName}.DECODER)
-       |            $mapperSuffix;
+       |        return CefFutures.map(
+       |            session.request(new ${m.requestClassName}($ctorArgs), ${m.responseClassName}.DECODER),
+       |            $mapper);
        |    }""".stripMargin
   }
 

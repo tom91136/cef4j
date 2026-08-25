@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class ProcessMessage {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_process_message_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_process_message_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class ProcessMessage {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:59</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new ProcessMessageIsValidRequest(handle), ProcessMessageIsValidResponse.DECODER)
-            .thenApply(ProcessMessageIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new ProcessMessageIsValidRequest(handle), ProcessMessageIsValidResponse.DECODER),
+            ProcessMessageIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class ProcessMessage {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:66</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new ProcessMessageIsReadOnlyRequest(handle), ProcessMessageIsReadOnlyResponse.DECODER)
-            .thenApply(ProcessMessageIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new ProcessMessageIsReadOnlyRequest(handle), ProcessMessageIsReadOnlyResponse.DECODER),
+            ProcessMessageIsReadOnlyResponse::result);
     }
 
     /**
@@ -66,10 +68,9 @@ public final class ProcessMessage {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:73</a>
      */
     public CompletableFuture<ProcessMessage> copy() {
-        return session
-            .request(new ProcessMessageCopyRequest(handle), ProcessMessageCopyResponse.DECODER)
-            .thenApply(ProcessMessageCopyResponse::result)
-            .thenApply(__h -> new ProcessMessage(session, __h));
+        return CefFutures.map(
+            session.request(new ProcessMessageCopyRequest(handle), ProcessMessageCopyResponse.DECODER),
+            __r -> new ProcessMessage(session, __r.result()));
     }
 
     /**
@@ -79,9 +80,9 @@ public final class ProcessMessage {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:80</a>
      */
     public CompletableFuture<String> getName() {
-        return session
-            .request(new ProcessMessageGetNameRequest(handle), ProcessMessageGetNameResponse.DECODER)
-            .thenApply(ProcessMessageGetNameResponse::result);
+        return CefFutures.map(
+            session.request(new ProcessMessageGetNameRequest(handle), ProcessMessageGetNameResponse.DECODER),
+            ProcessMessageGetNameResponse::result);
     }
 
     /**
@@ -91,10 +92,9 @@ public final class ProcessMessage {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:86</a>
      */
     public CompletableFuture<ListValue> getArgumentList() {
-        return session
-            .request(new ProcessMessageGetArgumentListRequest(handle), ProcessMessageGetArgumentListResponse.DECODER)
-            .thenApply(ProcessMessageGetArgumentListResponse::result)
-            .thenApply(__h -> new ListValue(session, __h));
+        return CefFutures.map(
+            session.request(new ProcessMessageGetArgumentListRequest(handle), ProcessMessageGetArgumentListResponse.DECODER),
+            __r -> new ListValue(session, __r.result()));
     }
 
     /**
@@ -104,9 +104,8 @@ public final class ProcessMessage {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:93</a>
      */
     public CompletableFuture<SharedMemoryRegion> getSharedMemoryRegion() {
-        return session
-            .request(new ProcessMessageGetSharedMemoryRegionRequest(handle), ProcessMessageGetSharedMemoryRegionResponse.DECODER)
-            .thenApply(ProcessMessageGetSharedMemoryRegionResponse::result)
-            .thenApply(__h -> new SharedMemoryRegion(session, __h));
+        return CefFutures.map(
+            session.request(new ProcessMessageGetSharedMemoryRegionRequest(handle), ProcessMessageGetSharedMemoryRegionResponse.DECODER),
+            __r -> new SharedMemoryRegion(session, __r.result()));
     }
 }

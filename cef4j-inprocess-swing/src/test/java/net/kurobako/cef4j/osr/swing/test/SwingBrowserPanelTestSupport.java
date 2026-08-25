@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -34,14 +35,18 @@ import net.kurobako.cef4j.gen.CefCursorInfo;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
 import net.kurobako.cef4j.gen.CefFrame;
+import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.gen.CefTask;
+import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -355,6 +360,18 @@ final class SwingBrowserPanelTestSupport {
             Thread.sleep(20);
         }
         return condition.getAsBoolean();
+    }
+
+    static void drainCefUi() throws Exception {
+        CompletableFuture<Void> drained = new CompletableFuture<>();
+        boolean posted = CefGlobals.postTask(CefThreadId.of(CefThreadId.Kind.UI), new CefTask() {
+            @Override
+            public void execute() {
+                drained.complete(null);
+            }
+        });
+        if (!posted) throw new IllegalStateException("CEF UI queue rejected test barrier");
+        TestDeadline.after(java.time.Duration.ofSeconds(5)).await(drained, "drain CEF UI queue");
     }
 
     static LocalTestServer startServer(Map<String, String> routes) throws IOException {

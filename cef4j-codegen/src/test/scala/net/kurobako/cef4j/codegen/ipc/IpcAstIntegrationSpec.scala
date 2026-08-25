@@ -88,6 +88,8 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       val java = JavaFacadeEmitter.emit(f)
       assert(java.contains(s"class ${f.className}"), s"Java facade emit missing class for ${f.className}")
       assert(java.contains("CefSession"), s"Java facade ${f.className} missing CefSession reference")
+      assert(java.contains("CefFutures.map"), s"Java facade ${f.className} does not propagate cancellation")
+      assert(!java.contains(".thenApply"), s"Java facade ${f.className} bypasses cancellation propagation")
       assert(java.contains("RemoteHandle"), s"Java facade ${f.className} missing RemoteHandle reference")
       f.methods.foreach { m =>
         assert(

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class RequestContext {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_request_context_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_request_context_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:134</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle other) {
-        return session
-            .request(new RequestContextIsSameRequest(handle, other), RequestContextIsSameResponse.DECODER)
-            .thenApply(RequestContextIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextIsSameRequest(handle, other), RequestContextIsSameResponse.DECODER),
+            RequestContextIsSameResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:141</a>
      */
     public CompletableFuture<Integer> isSharingWith(@Nonnull RemoteHandle other) {
-        return session
-            .request(new RequestContextIsSharingWithRequest(handle, other), RequestContextIsSharingWithResponse.DECODER)
-            .thenApply(RequestContextIsSharingWithResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextIsSharingWithRequest(handle, other), RequestContextIsSharingWithResponse.DECODER),
+            RequestContextIsSharingWithResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:147</a>
      */
     public CompletableFuture<Integer> isGlobal() {
-        return session
-            .request(new RequestContextIsGlobalRequest(handle), RequestContextIsGlobalResponse.DECODER)
-            .thenApply(RequestContextIsGlobalResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextIsGlobalRequest(handle), RequestContextIsGlobalResponse.DECODER),
+            RequestContextIsGlobalResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:155</a>
      */
     public CompletableFuture<RemoteHandle> getHandler() {
-        return session
-            .request(new RequestContextGetHandlerRequest(handle), RequestContextGetHandlerResponse.DECODER)
-            .thenApply(RequestContextGetHandlerResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextGetHandlerRequest(handle), RequestContextGetHandlerResponse.DECODER),
+            RequestContextGetHandlerResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:161</a>
      */
     public CompletableFuture<String> getCachePath() {
-        return session
-            .request(new RequestContextGetCachePathRequest(handle), RequestContextGetCachePathResponse.DECODER)
-            .thenApply(RequestContextGetCachePathResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextGetCachePathRequest(handle), RequestContextGetCachePathResponse.DECODER),
+            RequestContextGetCachePathResponse::result);
     }
 
     /**
@@ -104,10 +106,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:168</a>
      */
     public CompletableFuture<CookieManager> getCookieManager(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextGetCookieManagerRequest(handle, callback), RequestContextGetCookieManagerResponse.DECODER)
-            .thenApply(RequestContextGetCookieManagerResponse::result)
-            .thenApply(__h -> new CookieManager(session, __h));
+        return CefFutures.map(
+            session.request(new RequestContextGetCookieManagerRequest(handle, callback), RequestContextGetCookieManagerResponse.DECODER),
+            __r -> new CookieManager(session, __r.result()));
     }
 
     /**
@@ -120,9 +121,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:177</a>
      */
     public CompletableFuture<Integer> registerSchemeHandlerFactory(@Nonnull String schemeName, @Nonnull String domainName, @Nonnull RemoteHandle factory) {
-        return session
-            .request(new RequestContextRegisterSchemeHandlerFactoryRequest(handle, schemeName, domainName, factory), RequestContextRegisterSchemeHandlerFactoryResponse.DECODER)
-            .thenApply(RequestContextRegisterSchemeHandlerFactoryResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextRegisterSchemeHandlerFactoryRequest(handle, schemeName, domainName, factory), RequestContextRegisterSchemeHandlerFactoryResponse.DECODER),
+            RequestContextRegisterSchemeHandlerFactoryResponse::result);
     }
 
     /**
@@ -132,9 +133,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:196</a>
      */
     public CompletableFuture<Integer> clearSchemeHandlerFactories() {
-        return session
-            .request(new RequestContextClearSchemeHandlerFactoriesRequest(handle), RequestContextClearSchemeHandlerFactoriesResponse.DECODER)
-            .thenApply(RequestContextClearSchemeHandlerFactoriesResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextClearSchemeHandlerFactoriesRequest(handle), RequestContextClearSchemeHandlerFactoriesResponse.DECODER),
+            RequestContextClearSchemeHandlerFactoriesResponse::result);
     }
 
     /**
@@ -146,9 +147,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:203</a>
      */
     public CompletableFuture<Void> clearCertificateExceptions(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextClearCertificateExceptionsRequest(handle, callback), RequestContextClearCertificateExceptionsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextClearCertificateExceptionsRequest(handle, callback), RequestContextClearCertificateExceptionsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -160,9 +161,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:224</a>
      */
     public CompletableFuture<Void> clearHttpAuthCredentials(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextClearHttpAuthCredentialsRequest(handle, callback), RequestContextClearHttpAuthCredentialsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextClearHttpAuthCredentialsRequest(handle, callback), RequestContextClearHttpAuthCredentialsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -174,9 +175,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:233</a>
      */
     public CompletableFuture<Void> closeAllConnections(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextCloseAllConnectionsRequest(handle, callback), RequestContextCloseAllConnectionsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextCloseAllConnectionsRequest(handle, callback), RequestContextCloseAllConnectionsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -186,9 +187,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:243</a>
      */
     public CompletableFuture<Void> resolveHost(@Nonnull String origin, @Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextResolveHostRequest(handle, origin, callback), RequestContextResolveHostResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextResolveHostRequest(handle, origin, callback), RequestContextResolveHostResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -200,10 +201,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:251</a>
      */
     public CompletableFuture<MediaRouter> getMediaRouter(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextGetMediaRouterRequest(handle, callback), RequestContextGetMediaRouterResponse.DECODER)
-            .thenApply(RequestContextGetMediaRouterResponse::result)
-            .thenApply(__h -> new MediaRouter(session, __h));
+        return CefFutures.map(
+            session.request(new RequestContextGetMediaRouterRequest(handle, callback), RequestContextGetMediaRouterResponse.DECODER),
+            __r -> new MediaRouter(session, __r.result()));
     }
 
     /**
@@ -216,10 +216,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:260</a>
      */
     public CompletableFuture<Value> getWebsiteSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType) {
-        return session
-            .request(new RequestContextGetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType), RequestContextGetWebsiteSettingResponse.DECODER)
-            .thenApply(RequestContextGetWebsiteSettingResponse::result)
-            .thenApply(__h -> new Value(session, __h));
+        return CefFutures.map(
+            session.request(new RequestContextGetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType), RequestContextGetWebsiteSettingResponse.DECODER),
+            __r -> new Value(session, __r.result()));
     }
 
     /**
@@ -235,9 +234,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:272</a>
      */
     public CompletableFuture<Void> setWebsiteSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType, @Nonnull RemoteHandle value) {
-        return session
-            .request(new RequestContextSetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), RequestContextSetWebsiteSettingResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextSetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), RequestContextSetWebsiteSettingResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -250,9 +249,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:293</a>
      */
     public CompletableFuture<Integer> getContentSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType) {
-        return session
-            .request(new RequestContextGetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType), RequestContextGetContentSettingResponse.DECODER)
-            .thenApply(RequestContextGetContentSettingResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextGetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType), RequestContextGetContentSettingResponse.DECODER),
+            RequestContextGetContentSettingResponse::result);
     }
 
     /**
@@ -267,9 +266,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:306</a>
      */
     public CompletableFuture<Void> setContentSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType, int value) {
-        return session
-            .request(new RequestContextSetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), RequestContextSetContentSettingResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextSetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), RequestContextSetContentSettingResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -279,9 +278,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:337</a>
      */
     public CompletableFuture<Void> setChromeColorScheme(int variant, int userColor) {
-        return session
-            .request(new RequestContextSetChromeColorSchemeRequest(handle, variant, userColor), RequestContextSetChromeColorSchemeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextSetChromeColorSchemeRequest(handle, variant, userColor), RequestContextSetChromeColorSchemeResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -291,9 +290,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:348</a>
      */
     public CompletableFuture<Integer> getChromeColorSchemeMode() {
-        return session
-            .request(new RequestContextGetChromeColorSchemeModeRequest(handle), RequestContextGetChromeColorSchemeModeResponse.DECODER)
-            .thenApply(RequestContextGetChromeColorSchemeModeResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextGetChromeColorSchemeModeRequest(handle), RequestContextGetChromeColorSchemeModeResponse.DECODER),
+            RequestContextGetChromeColorSchemeModeResponse::result);
     }
 
     /**
@@ -303,9 +302,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:355</a>
      */
     public CompletableFuture<Integer> getChromeColorSchemeColor() {
-        return session
-            .request(new RequestContextGetChromeColorSchemeColorRequest(handle), RequestContextGetChromeColorSchemeColorResponse.DECODER)
-            .thenApply(RequestContextGetChromeColorSchemeColorResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextGetChromeColorSchemeColorRequest(handle), RequestContextGetChromeColorSchemeColorResponse.DECODER),
+            RequestContextGetChromeColorSchemeColorResponse::result);
     }
 
     /**
@@ -315,9 +314,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:362</a>
      */
     public CompletableFuture<Integer> getChromeColorSchemeVariant() {
-        return session
-            .request(new RequestContextGetChromeColorSchemeVariantRequest(handle), RequestContextGetChromeColorSchemeVariantResponse.DECODER)
-            .thenApply(RequestContextGetChromeColorSchemeVariantResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextGetChromeColorSchemeVariantRequest(handle), RequestContextGetChromeColorSchemeVariantResponse.DECODER),
+            RequestContextGetChromeColorSchemeVariantResponse::result);
     }
 
     /**
@@ -328,9 +327,9 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:327</a>
      */
     public CompletableFuture<RemoteHandle> addSettingObserver(@Nonnull RemoteHandle observer) {
-        return session
-            .request(new RequestContextAddSettingObserverRequest(handle, observer), RequestContextAddSettingObserverResponse.DECODER)
-            .thenApply(RequestContextAddSettingObserverResponse::result);
+        return CefFutures.map(
+            session.request(new RequestContextAddSettingObserverRequest(handle, observer), RequestContextAddSettingObserverResponse.DECODER),
+            RequestContextAddSettingObserverResponse::result);
     }
 
     /**
@@ -343,8 +342,8 @@ public final class RequestContext {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:216</a>
      */
     public CompletableFuture<Void> clearHttpCache(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new RequestContextClearHttpCacheRequest(handle, callback), RequestContextClearHttpCacheResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RequestContextClearHttpCacheRequest(handle, callback), RequestContextClearHttpCacheResponse.DECODER),
+            r -> null);
     }
 }

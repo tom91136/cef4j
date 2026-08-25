@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,24 +31,24 @@ public final class LabelButton {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_label_button_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_label_button_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code as_menu_button} to the runtime server. */
     public CompletableFuture<MenuButton> asMenuButton() {
-        return session
-            .request(new LabelButtonAsMenuButtonRequest(handle), LabelButtonAsMenuButtonResponse.DECODER)
-            .thenApply(LabelButtonAsMenuButtonResponse::result)
-            .thenApply(__h -> new MenuButton(session, __h));
+        return CefFutures.map(
+            session.request(new LabelButtonAsMenuButtonRequest(handle), LabelButtonAsMenuButtonResponse.DECODER),
+            __r -> new MenuButton(session, __r.result()));
     }
 
     /** Dispatches {@code set_text} to the runtime server. */
     public CompletableFuture<Void> setText(@Nonnull String text) {
-        return session
-            .request(new LabelButtonSetTextRequest(handle, text), LabelButtonSetTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetTextRequest(handle, text), LabelButtonSetTextResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -57,16 +58,16 @@ public final class LabelButton {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     public CompletableFuture<String> getText() {
-        return session
-            .request(new LabelButtonGetTextRequest(handle), LabelButtonGetTextResponse.DECODER)
-            .thenApply(LabelButtonGetTextResponse::result);
+        return CefFutures.map(
+            session.request(new LabelButtonGetTextRequest(handle), LabelButtonGetTextResponse.DECODER),
+            LabelButtonGetTextResponse::result);
     }
 
     /** Dispatches {@code set_image} to the runtime server. */
     public CompletableFuture<Void> setImage(int buttonState, @Nonnull RemoteHandle image) {
-        return session
-            .request(new LabelButtonSetImageRequest(handle, buttonState, image), LabelButtonSetImageResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetImageRequest(handle, buttonState, image), LabelButtonSetImageResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -76,24 +77,23 @@ public final class LabelButton {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
      */
     public CompletableFuture<Image> getImage(int buttonState) {
-        return session
-            .request(new LabelButtonGetImageRequest(handle, buttonState), LabelButtonGetImageResponse.DECODER)
-            .thenApply(LabelButtonGetImageResponse::result)
-            .thenApply(__h -> new Image(session, __h));
+        return CefFutures.map(
+            session.request(new LabelButtonGetImageRequest(handle, buttonState), LabelButtonGetImageResponse.DECODER),
+            __r -> new Image(session, __r.result()));
     }
 
     /** Dispatches {@code set_text_color} to the runtime server. */
     public CompletableFuture<Void> setTextColor(int forState, int color) {
-        return session
-            .request(new LabelButtonSetTextColorRequest(handle, forState, color), LabelButtonSetTextColorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetTextColorRequest(handle, forState, color), LabelButtonSetTextColorResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_enabled_text_colors} to the runtime server. */
     public CompletableFuture<Void> setEnabledTextColors(int color) {
-        return session
-            .request(new LabelButtonSetEnabledTextColorsRequest(handle, color), LabelButtonSetEnabledTextColorsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetEnabledTextColorsRequest(handle, color), LabelButtonSetEnabledTextColorsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -119,29 +119,29 @@ public final class LabelButton {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Void> setFontList(@Nonnull String fontList) {
-        return session
-            .request(new LabelButtonSetFontListRequest(handle, fontList), LabelButtonSetFontListResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetFontListRequest(handle, fontList), LabelButtonSetFontListResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_horizontal_alignment} to the runtime server. */
     public CompletableFuture<Void> setHorizontalAlignment(int alignment) {
-        return session
-            .request(new LabelButtonSetHorizontalAlignmentRequest(handle, alignment), LabelButtonSetHorizontalAlignmentResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetHorizontalAlignmentRequest(handle, alignment), LabelButtonSetHorizontalAlignmentResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_minimum_size} to the runtime server. */
     public CompletableFuture<Void> setMinimumSize(Size size) {
-        return session
-            .request(new LabelButtonSetMinimumSizeRequest(handle, size), LabelButtonSetMinimumSizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetMinimumSizeRequest(handle, size), LabelButtonSetMinimumSizeResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_maximum_size} to the runtime server. */
     public CompletableFuture<Void> setMaximumSize(Size size) {
-        return session
-            .request(new LabelButtonSetMaximumSizeRequest(handle, size), LabelButtonSetMaximumSizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new LabelButtonSetMaximumSizeRequest(handle, size), LabelButtonSetMaximumSizeResponse.DECODER),
+            r -> null);
     }
 }

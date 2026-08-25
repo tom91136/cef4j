@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class UnresponsiveProcessCallback {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_unresponsive_process_callback_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_unresponsive_process_callback_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,8 +44,8 @@ public final class UnresponsiveProcessCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__unresponsive__process__callback_8h.html">cef_unresponsive_process_callback.h:55</a>
      */
     public CompletableFuture<Void> terminate() {
-        return session
-            .request(new UnresponsiveProcessCallbackTerminateRequest(handle), UnresponsiveProcessCallbackTerminateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new UnresponsiveProcessCallbackTerminateRequest(handle), UnresponsiveProcessCallbackTerminateResponse.DECODER),
+            r -> null);
     }
 }

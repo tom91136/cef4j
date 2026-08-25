@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class OverlayController {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_overlay_controller_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_overlay_controller_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class OverlayController {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:549</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new OverlayControllerIsValidRequest(handle), OverlayControllerIsValidResponse.DECODER)
-            .thenApply(OverlayControllerIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerIsValidRequest(handle), OverlayControllerIsValidResponse.DECODER),
+            OverlayControllerIsValidResponse::result);
     }
 
     /**
@@ -54,60 +56,58 @@ public final class OverlayController {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:571</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new OverlayControllerIsSameRequest(handle, that), OverlayControllerIsSameResponse.DECODER)
-            .thenApply(OverlayControllerIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerIsSameRequest(handle, that), OverlayControllerIsSameResponse.DECODER),
+            OverlayControllerIsSameResponse::result);
     }
 
     /** Dispatches {@code get_contents_view} to the runtime server. */
     public CompletableFuture<View> getContentsView() {
-        return session
-            .request(new OverlayControllerGetContentsViewRequest(handle), OverlayControllerGetContentsViewResponse.DECODER)
-            .thenApply(OverlayControllerGetContentsViewResponse::result)
-            .thenApply(__h -> new View(session, __h));
+        return CefFutures.map(
+            session.request(new OverlayControllerGetContentsViewRequest(handle), OverlayControllerGetContentsViewResponse.DECODER),
+            __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code get_window} to the runtime server. */
     public CompletableFuture<Window> getWindow() {
-        return session
-            .request(new OverlayControllerGetWindowRequest(handle), OverlayControllerGetWindowResponse.DECODER)
-            .thenApply(OverlayControllerGetWindowResponse::result)
-            .thenApply(__h -> new Window(session, __h));
+        return CefFutures.map(
+            session.request(new OverlayControllerGetWindowRequest(handle), OverlayControllerGetWindowResponse.DECODER),
+            __r -> new Window(session, __r.result()));
     }
 
     /** Dispatches {@code get_docking_mode} to the runtime server. */
     public CompletableFuture<Integer> getDockingMode() {
-        return session
-            .request(new OverlayControllerGetDockingModeRequest(handle), OverlayControllerGetDockingModeResponse.DECODER)
-            .thenApply(OverlayControllerGetDockingModeResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerGetDockingModeRequest(handle), OverlayControllerGetDockingModeResponse.DECODER),
+            OverlayControllerGetDockingModeResponse::result);
     }
 
     /** Dispatches {@code destroy} to the runtime server. */
     public CompletableFuture<Void> destroy() {
-        return session
-            .request(new OverlayControllerDestroyRequest(handle), OverlayControllerDestroyResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerDestroyRequest(handle), OverlayControllerDestroyResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_bounds} to the runtime server. */
     public CompletableFuture<Void> setBounds(Rect bounds) {
-        return session
-            .request(new OverlayControllerSetBoundsRequest(handle, bounds), OverlayControllerSetBoundsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerSetBoundsRequest(handle, bounds), OverlayControllerSetBoundsResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_bounds} to the runtime server. */
     public CompletableFuture<Rect> getBounds() {
-        return session
-            .request(new OverlayControllerGetBoundsRequest(handle), OverlayControllerGetBoundsResponse.DECODER)
-            .thenApply(OverlayControllerGetBoundsResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerGetBoundsRequest(handle), OverlayControllerGetBoundsResponse.DECODER),
+            OverlayControllerGetBoundsResponse::result);
     }
 
     /** Dispatches {@code get_bounds_in_screen} to the runtime server. */
     public CompletableFuture<Rect> getBoundsInScreen() {
-        return session
-            .request(new OverlayControllerGetBoundsInScreenRequest(handle), OverlayControllerGetBoundsInScreenResponse.DECODER)
-            .thenApply(OverlayControllerGetBoundsInScreenResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerGetBoundsInScreenRequest(handle), OverlayControllerGetBoundsInScreenResponse.DECODER),
+            OverlayControllerGetBoundsInScreenResponse::result);
     }
 
     /**
@@ -117,9 +117,9 @@ public final class OverlayController {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
     public CompletableFuture<Void> setSize(Size size) {
-        return session
-            .request(new OverlayControllerSetSizeRequest(handle, size), OverlayControllerSetSizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerSetSizeRequest(handle, size), OverlayControllerSetSizeResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -129,44 +129,44 @@ public final class OverlayController {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
     public CompletableFuture<Size> getSize() {
-        return session
-            .request(new OverlayControllerGetSizeRequest(handle), OverlayControllerGetSizeResponse.DECODER)
-            .thenApply(OverlayControllerGetSizeResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerGetSizeRequest(handle), OverlayControllerGetSizeResponse.DECODER),
+            OverlayControllerGetSizeResponse::result);
     }
 
     /** Dispatches {@code set_position} to the runtime server. */
     public CompletableFuture<Void> setPosition(Point position) {
-        return session
-            .request(new OverlayControllerSetPositionRequest(handle, position), OverlayControllerSetPositionResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerSetPositionRequest(handle, position), OverlayControllerSetPositionResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_position} to the runtime server. */
     public CompletableFuture<Point> getPosition() {
-        return session
-            .request(new OverlayControllerGetPositionRequest(handle), OverlayControllerGetPositionResponse.DECODER)
-            .thenApply(OverlayControllerGetPositionResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerGetPositionRequest(handle), OverlayControllerGetPositionResponse.DECODER),
+            OverlayControllerGetPositionResponse::result);
     }
 
     /** Dispatches {@code set_insets} to the runtime server. */
     public CompletableFuture<Void> setInsets(Insets insets) {
-        return session
-            .request(new OverlayControllerSetInsetsRequest(handle, insets), OverlayControllerSetInsetsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerSetInsetsRequest(handle, insets), OverlayControllerSetInsetsResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_insets} to the runtime server. */
     public CompletableFuture<Insets> getInsets() {
-        return session
-            .request(new OverlayControllerGetInsetsRequest(handle), OverlayControllerGetInsetsResponse.DECODER)
-            .thenApply(OverlayControllerGetInsetsResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerGetInsetsRequest(handle), OverlayControllerGetInsetsResponse.DECODER),
+            OverlayControllerGetInsetsResponse::result);
     }
 
     /** Dispatches {@code size_to_preferred_size} to the runtime server. */
     public CompletableFuture<Void> sizeToPreferredSize() {
-        return session
-            .request(new OverlayControllerSizeToPreferredSizeRequest(handle), OverlayControllerSizeToPreferredSizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerSizeToPreferredSizeRequest(handle), OverlayControllerSizeToPreferredSizeResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -176,9 +176,9 @@ public final class OverlayController {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Void> setVisible(int visible) {
-        return session
-            .request(new OverlayControllerSetVisibleRequest(handle, visible), OverlayControllerSetVisibleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new OverlayControllerSetVisibleRequest(handle, visible), OverlayControllerSetVisibleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -188,15 +188,15 @@ public final class OverlayController {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
      */
     public CompletableFuture<Integer> isVisible() {
-        return session
-            .request(new OverlayControllerIsVisibleRequest(handle), OverlayControllerIsVisibleResponse.DECODER)
-            .thenApply(OverlayControllerIsVisibleResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerIsVisibleRequest(handle), OverlayControllerIsVisibleResponse.DECODER),
+            OverlayControllerIsVisibleResponse::result);
     }
 
     /** Dispatches {@code is_drawn} to the runtime server. */
     public CompletableFuture<Integer> isDrawn() {
-        return session
-            .request(new OverlayControllerIsDrawnRequest(handle), OverlayControllerIsDrawnResponse.DECODER)
-            .thenApply(OverlayControllerIsDrawnResponse::result);
+        return CefFutures.map(
+            session.request(new OverlayControllerIsDrawnRequest(handle), OverlayControllerIsDrawnResponse.DECODER),
+            OverlayControllerIsDrawnResponse::result);
     }
 }

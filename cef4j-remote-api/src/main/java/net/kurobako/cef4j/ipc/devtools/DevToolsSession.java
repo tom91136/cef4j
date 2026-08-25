@@ -23,6 +23,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAttachResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsDetachRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsDetachResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import org.slf4j.Logger;
@@ -83,11 +84,11 @@ public final class DevToolsSession implements CdpTransport {
         Objects.requireNonNull(host, "host");
         Objects.requireNonNull(codec, "codec");
         DevToolsSession devTools = new DevToolsSession(session, browser, host, codec);
-        return session.request(new DevToolsAttachRequest(browser), DevToolsAttachResponse.DECODER)
-                .thenApply(ignored -> devTools)
-                .whenComplete((ignored, failure) -> {
-                    if (failure != null) devTools.failAndClose(failure);
-                });
+        CompletableFuture<DevToolsSession> attached = CefFutures.map(
+                session.request(new DevToolsAttachRequest(browser), DevToolsAttachResponse.DECODER),
+                ignored -> devTools);
+        CefFutures.observeFailure(attached, devTools::failAndClose);
+        return attached;
     }
 
     /** Sends a CDP method and completes with its result object. */

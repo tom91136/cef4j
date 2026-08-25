@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,128 +31,129 @@ public final class WindowDelegate {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_window_delegate_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_window_delegate_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_created} to the runtime server. */
     public CompletableFuture<Void> onWindowCreated(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateOnWindowCreatedRequest(handle, window), WindowDelegateOnWindowCreatedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnWindowCreatedRequest(handle, window), WindowDelegateOnWindowCreatedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_closing} to the runtime server. */
     public CompletableFuture<Void> onWindowClosing(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateOnWindowClosingRequest(handle, window), WindowDelegateOnWindowClosingResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnWindowClosingRequest(handle, window), WindowDelegateOnWindowClosingResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_destroyed} to the runtime server. */
     public CompletableFuture<Void> onWindowDestroyed(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateOnWindowDestroyedRequest(handle, window), WindowDelegateOnWindowDestroyedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnWindowDestroyedRequest(handle, window), WindowDelegateOnWindowDestroyedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_activation_changed} to the runtime server. */
     public CompletableFuture<Void> onWindowActivationChanged(@Nonnull RemoteHandle window, int active) {
-        return session
-            .request(new WindowDelegateOnWindowActivationChangedRequest(handle, window, active), WindowDelegateOnWindowActivationChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnWindowActivationChangedRequest(handle, window, active), WindowDelegateOnWindowActivationChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_bounds_changed} to the runtime server. */
     public CompletableFuture<Void> onWindowBoundsChanged(@Nonnull RemoteHandle window, Rect newBounds) {
-        return session
-            .request(new WindowDelegateOnWindowBoundsChangedRequest(handle, window, newBounds), WindowDelegateOnWindowBoundsChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnWindowBoundsChangedRequest(handle, window, newBounds), WindowDelegateOnWindowBoundsChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_window_fullscreen_transition} to the runtime server. */
     public CompletableFuture<Void> onWindowFullscreenTransition(@Nonnull RemoteHandle window, int isCompleted) {
-        return session
-            .request(new WindowDelegateOnWindowFullscreenTransitionRequest(handle, window, isCompleted), WindowDelegateOnWindowFullscreenTransitionResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnWindowFullscreenTransitionRequest(handle, window, isCompleted), WindowDelegateOnWindowFullscreenTransitionResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_window_modal_dialog} to the runtime server. */
     public CompletableFuture<Integer> isWindowModalDialog(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateIsWindowModalDialogRequest(handle, window), WindowDelegateIsWindowModalDialogResponse.DECODER)
-            .thenApply(WindowDelegateIsWindowModalDialogResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateIsWindowModalDialogRequest(handle, window), WindowDelegateIsWindowModalDialogResponse.DECODER),
+            WindowDelegateIsWindowModalDialogResponse::result);
     }
 
     /** Dispatches {@code get_initial_bounds} to the runtime server. */
     public CompletableFuture<Rect> getInitialBounds(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateGetInitialBoundsRequest(handle, window), WindowDelegateGetInitialBoundsResponse.DECODER)
-            .thenApply(WindowDelegateGetInitialBoundsResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateGetInitialBoundsRequest(handle, window), WindowDelegateGetInitialBoundsResponse.DECODER),
+            WindowDelegateGetInitialBoundsResponse::result);
     }
 
     /** Dispatches {@code get_initial_show_state} to the runtime server. */
     public CompletableFuture<Integer> getInitialShowState(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateGetInitialShowStateRequest(handle, window), WindowDelegateGetInitialShowStateResponse.DECODER)
-            .thenApply(WindowDelegateGetInitialShowStateResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateGetInitialShowStateRequest(handle, window), WindowDelegateGetInitialShowStateResponse.DECODER),
+            WindowDelegateGetInitialShowStateResponse::result);
     }
 
     /** Dispatches {@code is_frameless} to the runtime server. */
     public CompletableFuture<Integer> isFrameless(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateIsFramelessRequest(handle, window), WindowDelegateIsFramelessResponse.DECODER)
-            .thenApply(WindowDelegateIsFramelessResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateIsFramelessRequest(handle, window), WindowDelegateIsFramelessResponse.DECODER),
+            WindowDelegateIsFramelessResponse::result);
     }
 
     /** Dispatches {@code with_standard_window_buttons} to the runtime server. */
     public CompletableFuture<Integer> withStandardWindowButtons(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateWithStandardWindowButtonsRequest(handle, window), WindowDelegateWithStandardWindowButtonsResponse.DECODER)
-            .thenApply(WindowDelegateWithStandardWindowButtonsResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateWithStandardWindowButtonsRequest(handle, window), WindowDelegateWithStandardWindowButtonsResponse.DECODER),
+            WindowDelegateWithStandardWindowButtonsResponse::result);
     }
 
     /** Dispatches {@code accepts_first_mouse} to the runtime server. */
     public CompletableFuture<Integer> acceptsFirstMouse(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateAcceptsFirstMouseRequest(handle, window), WindowDelegateAcceptsFirstMouseResponse.DECODER)
-            .thenApply(WindowDelegateAcceptsFirstMouseResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateAcceptsFirstMouseRequest(handle, window), WindowDelegateAcceptsFirstMouseResponse.DECODER),
+            WindowDelegateAcceptsFirstMouseResponse::result);
     }
 
     /** Dispatches {@code can_resize} to the runtime server. */
     public CompletableFuture<Integer> canResize(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateCanResizeRequest(handle, window), WindowDelegateCanResizeResponse.DECODER)
-            .thenApply(WindowDelegateCanResizeResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateCanResizeRequest(handle, window), WindowDelegateCanResizeResponse.DECODER),
+            WindowDelegateCanResizeResponse::result);
     }
 
     /** Dispatches {@code can_maximize} to the runtime server. */
     public CompletableFuture<Integer> canMaximize(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateCanMaximizeRequest(handle, window), WindowDelegateCanMaximizeResponse.DECODER)
-            .thenApply(WindowDelegateCanMaximizeResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateCanMaximizeRequest(handle, window), WindowDelegateCanMaximizeResponse.DECODER),
+            WindowDelegateCanMaximizeResponse::result);
     }
 
     /** Dispatches {@code can_minimize} to the runtime server. */
     public CompletableFuture<Integer> canMinimize(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateCanMinimizeRequest(handle, window), WindowDelegateCanMinimizeResponse.DECODER)
-            .thenApply(WindowDelegateCanMinimizeResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateCanMinimizeRequest(handle, window), WindowDelegateCanMinimizeResponse.DECODER),
+            WindowDelegateCanMinimizeResponse::result);
     }
 
     /** Dispatches {@code can_close} to the runtime server. */
     public CompletableFuture<Integer> canClose(@Nonnull RemoteHandle window) {
-        return session
-            .request(new WindowDelegateCanCloseRequest(handle, window), WindowDelegateCanCloseResponse.DECODER)
-            .thenApply(WindowDelegateCanCloseResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateCanCloseRequest(handle, window), WindowDelegateCanCloseResponse.DECODER),
+            WindowDelegateCanCloseResponse::result);
     }
 
     /** Dispatches {@code on_accelerator} to the runtime server. */
     public CompletableFuture<Integer> onAccelerator(@Nonnull RemoteHandle window, int commandId) {
-        return session
-            .request(new WindowDelegateOnAcceleratorRequest(handle, window, commandId), WindowDelegateOnAcceleratorResponse.DECODER)
-            .thenApply(WindowDelegateOnAcceleratorResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnAcceleratorRequest(handle, window, commandId), WindowDelegateOnAcceleratorResponse.DECODER),
+            WindowDelegateOnAcceleratorResponse::result);
     }
 
     /**
@@ -161,22 +163,22 @@ public final class WindowDelegate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
     public CompletableFuture<Integer> onKeyEvent(@Nonnull RemoteHandle window, KeyEvent event) {
-        return session
-            .request(new WindowDelegateOnKeyEventRequest(handle, window, event), WindowDelegateOnKeyEventResponse.DECODER)
-            .thenApply(WindowDelegateOnKeyEventResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnKeyEventRequest(handle, window, event), WindowDelegateOnKeyEventResponse.DECODER),
+            WindowDelegateOnKeyEventResponse::result);
     }
 
     /** Dispatches {@code on_theme_colors_changed} to the runtime server. */
     public CompletableFuture<Void> onThemeColorsChanged(@Nonnull RemoteHandle window, int chromeTheme) {
-        return session
-            .request(new WindowDelegateOnThemeColorsChangedRequest(handle, window, chromeTheme), WindowDelegateOnThemeColorsChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDelegateOnThemeColorsChangedRequest(handle, window, chromeTheme), WindowDelegateOnThemeColorsChangedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_window_runtime_style} to the runtime server. */
     public CompletableFuture<Integer> getWindowRuntimeStyle() {
-        return session
-            .request(new WindowDelegateGetWindowRuntimeStyleRequest(handle), WindowDelegateGetWindowRuntimeStyleResponse.DECODER)
-            .thenApply(WindowDelegateGetWindowRuntimeStyleResponse::result);
+        return CefFutures.map(
+            session.request(new WindowDelegateGetWindowRuntimeStyleRequest(handle), WindowDelegateGetWindowRuntimeStyleResponse.DECODER),
+            WindowDelegateGetWindowRuntimeStyleResponse::result);
     }
 }

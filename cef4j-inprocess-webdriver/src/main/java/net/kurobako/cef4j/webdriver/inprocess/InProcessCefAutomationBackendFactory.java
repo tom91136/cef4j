@@ -2,7 +2,9 @@ package net.kurobako.cef4j.webdriver.inprocess;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -31,11 +33,53 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
     @Override
     @Nonnull
     public CompletableFuture<? extends AutomationBackend> create(@Nonnull JsonObject requestedCapabilities) {
-        return runtimeFactory
-                .create()
-                .thenCompose(runtime -> InProcessCdpBrowser.attach(runtime, jsonCodec)
-                        .thenCompose(CdpAutomationBackend::create)
-                        .thenApply(backend -> (AutomationBackend) backend));
+        return flatMap(
+                runtimeFactory.create(),
+                runtime -> flatMap(InProcessCdpBrowser.attach(runtime, jsonCodec), adapter -> {
+                    CompletableFuture<AutomationBackend> backend = flatMap(
+                            CdpAutomationBackend.create(adapter), value -> CompletableFuture.completedFuture(value));
+                    observeFailure(backend, failure -> adapter.close());
+                    return backend;
+                }));
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    private static <S, T> CompletableFuture<T> flatMap(
+            CompletableFuture<? extends S> source,
+            Function<? super S, ? extends CompletableFuture<? extends T>> mapper) {
+        AtomicReference<CompletableFuture<?>> active = new AtomicReference<>(source);
+        PropagatingFuture<T> result = new PropagatingFuture<>(mayInterrupt ->
+                Objects.requireNonNull(active.get(), "active future").cancel(mayInterrupt));
+        source.whenComplete((value, failure) -> {
+            if (failure != null) {
+                result.completeExceptionally(failure);
+                return;
+            }
+            if (result.isDone()) return;
+            CompletableFuture<? extends T> next;
+            try {
+                next = Objects.requireNonNull(mapper.apply(value), "future mapper returned null");
+            } catch (Throwable mappingFailure) {
+                result.completeExceptionally(mappingFailure);
+                return;
+            }
+            if (!active.compareAndSet(source, next) || result.isDone()) {
+                next.cancel(false);
+                return;
+            }
+            next.whenComplete((mapped, nextFailure) -> {
+                if (nextFailure != null) result.completeExceptionally(nextFailure);
+                else result.complete(mapped);
+            });
+        });
+        return result;
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    private static void observeFailure(CompletableFuture<?> future, Consumer<? super Throwable> observer) {
+        future.whenComplete((ignored, failure) -> {
+            if (failure != null) observer.accept(failure);
+        });
     }
 
     private static final class InProcessCdpBrowser implements JsonCdpBrowser {
@@ -59,11 +103,12 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
                 InProcessBrowserRuntime runtime, WebDriverJsonCodec jsonCodec) {
             try {
                 CefBrowser browser = Objects.requireNonNull(runtime.browser(), "runtime.browser()");
-                return InProcessDevToolsSession.attach(browser, jsonCodec)
-                        .thenApply(devTools -> new InProcessCdpBrowser(runtime, browser, devTools, jsonCodec))
-                        .whenComplete((ignored, failure) -> {
-                            if (failure != null) runtime.close();
-                        });
+                CompletableFuture<InProcessCdpBrowser> attached = flatMap(
+                        InProcessDevToolsSession.attach(browser, jsonCodec),
+                        devTools -> CompletableFuture.completedFuture(
+                                new InProcessCdpBrowser(runtime, browser, devTools, jsonCodec)));
+                observeFailure(attached, failure -> runtime.close());
+                return attached;
             } catch (RuntimeException failure) {
                 runtime.close();
                 return failed(failure);
@@ -87,13 +132,14 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
 
         @Override
         public CompletableFuture<Void> loadUrl(String url) {
-            return InProcessDevToolsSession.onUiThread(() -> {
+            return flatMap(
+                    InProcessDevToolsSession.onUiThread(() -> {
                         browser.getMainFrame()
                                 .orElseThrow(() -> new IllegalStateException("in-process browser has no main frame"))
                                 .loadUrl(url);
                         return Boolean.TRUE;
-                    })
-                    .thenAccept(ignored -> {});
+                    }),
+                    ignored -> CompletableFuture.completedFuture(null));
         }
 
         @Override
@@ -134,5 +180,21 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
         CompletableFuture<T> result = new CompletableFuture<>();
         result.completeExceptionally(failure);
         return result;
+    }
+
+    @SuppressWarnings("serial")
+    private static final class PropagatingFuture<T> extends CompletableFuture<T> {
+        private final Consumer<Boolean> cancellation;
+
+        private PropagatingFuture(Consumer<Boolean> cancellation) {
+            this.cancellation = cancellation;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            boolean cancelled = super.cancel(mayInterruptIfRunning);
+            if (cancelled) cancellation.accept(mayInterruptIfRunning);
+            return cancelled;
+        }
     }
 }

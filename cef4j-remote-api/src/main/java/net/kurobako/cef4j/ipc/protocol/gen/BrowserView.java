@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class BrowserView {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_browser_view_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_browser_view_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,25 +44,23 @@ public final class BrowserView {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:163</a>
      */
     public CompletableFuture<Browser> getBrowser() {
-        return session
-            .request(new BrowserViewGetBrowserRequest(handle), BrowserViewGetBrowserResponse.DECODER)
-            .thenApply(BrowserViewGetBrowserResponse::result)
-            .thenApply(__h -> new Browser(session, __h));
+        return CefFutures.map(
+            session.request(new BrowserViewGetBrowserRequest(handle), BrowserViewGetBrowserResponse.DECODER),
+            __r -> new Browser(session, __r.result()));
     }
 
     /** Dispatches {@code get_chrome_toolbar} to the runtime server. */
     public CompletableFuture<View> getChromeToolbar() {
-        return session
-            .request(new BrowserViewGetChromeToolbarRequest(handle), BrowserViewGetChromeToolbarResponse.DECODER)
-            .thenApply(BrowserViewGetChromeToolbarResponse::result)
-            .thenApply(__h -> new View(session, __h));
+        return CefFutures.map(
+            session.request(new BrowserViewGetChromeToolbarRequest(handle), BrowserViewGetChromeToolbarResponse.DECODER),
+            __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code set_prefer_accelerators} to the runtime server. */
     public CompletableFuture<Void> setPreferAccelerators(int preferAccelerators) {
-        return session
-            .request(new BrowserViewSetPreferAcceleratorsRequest(handle, preferAccelerators), BrowserViewSetPreferAcceleratorsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new BrowserViewSetPreferAcceleratorsRequest(handle, preferAccelerators), BrowserViewSetPreferAcceleratorsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -70,8 +70,8 @@ public final class BrowserView {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1069</a>
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
-        return session
-            .request(new BrowserViewGetRuntimeStyleRequest(handle), BrowserViewGetRuntimeStyleResponse.DECODER)
-            .thenApply(BrowserViewGetRuntimeStyleResponse::result);
+        return CefFutures.map(
+            session.request(new BrowserViewGetRuntimeStyleRequest(handle), BrowserViewGetRuntimeStyleResponse.DECODER),
+            BrowserViewGetRuntimeStyleResponse::result);
     }
 }

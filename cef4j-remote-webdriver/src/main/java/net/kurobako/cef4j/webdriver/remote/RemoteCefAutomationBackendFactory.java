@@ -13,6 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntime;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntimeFactory;
 import net.kurobako.cef4j.webdriver.AutomationBackend;
@@ -48,27 +49,34 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
     @Override
     @Nonnull
     public CompletableFuture<? extends AutomationBackend> create(@Nonnull JsonObject requestedCapabilities) {
-        return runtimeFactory.create().thenCompose(runtime -> {
+        return CefFutures.flatMap(runtimeFactory.create(), runtime -> {
             Browser browser = new Browser(runtime.session(), runtime.browser());
             AtomicBoolean adapterOwnsRuntime = new AtomicBoolean();
-            return browser.getHost()
-                    .thenCompose(host -> devToolsFactory
-                            .attach(runtime.session(), runtime.browser(), host)
-                            .thenCompose(devTools -> {
-                                RemoteCdpBrowser adapter = new RemoteCdpBrowser(runtime, browser, devTools, jsonCodec);
-                                adapterOwnsRuntime.set(true);
-                                try {
-                                    return CdpAutomationBackend.create(adapter)
-                                            .thenApply(backend -> (AutomationBackend) backend);
-                                } catch (RuntimeException failure) {
-                                    adapter.close();
-                                    return failed(failure);
-                                }
-                            }))
-                    .whenComplete((backend, failure) -> {
-                        if (failure != null && !adapterOwnsRuntime.get()) runtime.close();
-                    });
+            CompletableFuture<AutomationBackend> creation = CefFutures.flatMap(
+                    browser.getHost(),
+                    host -> CefFutures.flatMap(
+                            devToolsFactory.attach(runtime.session(), runtime.browser(), host),
+                            devTools -> createBackend(runtime, browser, devTools, adapterOwnsRuntime)));
+            CefFutures.observeFailure(creation, failure -> {
+                if (!adapterOwnsRuntime.get()) runtime.close();
+            });
+            return creation;
         });
+    }
+
+    private CompletableFuture<AutomationBackend> createBackend(
+            RemoteBrowserRuntime runtime, Browser browser, CdpTransport devTools, AtomicBoolean adapterOwnsRuntime) {
+        RemoteCdpBrowser adapter = new RemoteCdpBrowser(runtime, browser, devTools, jsonCodec);
+        adapterOwnsRuntime.set(true);
+        try {
+            CompletableFuture<AutomationBackend> backend =
+                    CefFutures.map(CdpAutomationBackend.create(adapter), value -> value);
+            CefFutures.observeFailure(backend, failure -> adapter.close());
+            return backend;
+        } catch (RuntimeException failure) {
+            adapter.close();
+            return failed(failure);
+        }
     }
 
     private static final class RemoteCdpBrowser implements JsonCdpBrowser {
@@ -103,12 +111,12 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
 
         @Override
         public CompletableFuture<Void> loadUrl(String url) {
-            return browser.getMainFrame().thenCompose(frame -> frame.loadUrl(url));
+            return CefFutures.flatMap(browser.getMainFrame(), frame -> frame.loadUrl(url));
         }
 
         @Override
         public CompletableFuture<Boolean> canGoBack() {
-            return browser.canGoBack().thenApply(value -> value != 0);
+            return CefFutures.map(browser.canGoBack(), value -> value != 0);
         }
 
         @Override
@@ -118,7 +126,7 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
 
         @Override
         public CompletableFuture<Boolean> canGoForward() {
-            return browser.canGoForward().thenApply(value -> value != 0);
+            return CefFutures.map(browser.canGoForward(), value -> value != 0);
         }
 
         @Override
@@ -128,7 +136,7 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
 
         @Override
         public CompletableFuture<Boolean> loading() {
-            return browser.isLoading().thenApply(value -> value != 0);
+            return CefFutures.map(browser.isLoading(), value -> value != 0);
         }
 
         @Override

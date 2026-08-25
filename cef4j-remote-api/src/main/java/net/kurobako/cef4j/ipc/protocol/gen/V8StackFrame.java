@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -38,11 +39,11 @@ public final class V8StackFrame {
     /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
       * cef_v8_stack_frame_t only exists in the renderer subprocess's table state. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(
+        return CefFutures.map(
+            session.request(
                 new RendererReleaseHandleRequest(frame, handle, "cef_v8_stack_frame_t"),
-                RendererReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+                RendererReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -52,9 +53,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1080</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new V8StackFrameIsValidRequest(frame, handle), V8StackFrameIsValidResponse.DECODER)
-            .thenApply(V8StackFrameIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameIsValidRequest(frame, handle), V8StackFrameIsValidResponse.DECODER),
+            V8StackFrameIsValidResponse::result);
     }
 
     /**
@@ -64,9 +65,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1088</a>
      */
     public CompletableFuture<String> getScriptName() {
-        return session
-            .request(new V8StackFrameGetScriptNameRequest(frame, handle), V8StackFrameGetScriptNameResponse.DECODER)
-            .thenApply(V8StackFrameGetScriptNameResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameGetScriptNameRequest(frame, handle), V8StackFrameGetScriptNameResponse.DECODER),
+            V8StackFrameGetScriptNameResponse::result);
     }
 
     /**
@@ -76,9 +77,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1094</a>
      */
     public CompletableFuture<String> getScriptNameOrSourceUrl() {
-        return session
-            .request(new V8StackFrameGetScriptNameOrSourceUrlRequest(frame, handle), V8StackFrameGetScriptNameOrSourceUrlResponse.DECODER)
-            .thenApply(V8StackFrameGetScriptNameOrSourceUrlResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameGetScriptNameOrSourceUrlRequest(frame, handle), V8StackFrameGetScriptNameOrSourceUrlResponse.DECODER),
+            V8StackFrameGetScriptNameOrSourceUrlResponse::result);
     }
 
     /**
@@ -88,9 +89,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1102</a>
      */
     public CompletableFuture<String> getFunctionName() {
-        return session
-            .request(new V8StackFrameGetFunctionNameRequest(frame, handle), V8StackFrameGetFunctionNameResponse.DECODER)
-            .thenApply(V8StackFrameGetFunctionNameResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameGetFunctionNameRequest(frame, handle), V8StackFrameGetFunctionNameResponse.DECODER),
+            V8StackFrameGetFunctionNameResponse::result);
     }
 
     /**
@@ -100,9 +101,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1108</a>
      */
     public CompletableFuture<Integer> getLineNumber() {
-        return session
-            .request(new V8StackFrameGetLineNumberRequest(frame, handle), V8StackFrameGetLineNumberResponse.DECODER)
-            .thenApply(V8StackFrameGetLineNumberResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameGetLineNumberRequest(frame, handle), V8StackFrameGetLineNumberResponse.DECODER),
+            V8StackFrameGetLineNumberResponse::result);
     }
 
     /**
@@ -112,9 +113,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1114</a>
      */
     public CompletableFuture<Integer> getColumn() {
-        return session
-            .request(new V8StackFrameGetColumnRequest(frame, handle), V8StackFrameGetColumnResponse.DECODER)
-            .thenApply(V8StackFrameGetColumnResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameGetColumnRequest(frame, handle), V8StackFrameGetColumnResponse.DECODER),
+            V8StackFrameGetColumnResponse::result);
     }
 
     /**
@@ -124,9 +125,9 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1121</a>
      */
     public CompletableFuture<Integer> isEval() {
-        return session
-            .request(new V8StackFrameIsEvalRequest(frame, handle), V8StackFrameIsEvalResponse.DECODER)
-            .thenApply(V8StackFrameIsEvalResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameIsEvalRequest(frame, handle), V8StackFrameIsEvalResponse.DECODER),
+            V8StackFrameIsEvalResponse::result);
     }
 
     /**
@@ -136,8 +137,8 @@ public final class V8StackFrame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1127</a>
      */
     public CompletableFuture<Integer> isConstructor() {
-        return session
-            .request(new V8StackFrameIsConstructorRequest(frame, handle), V8StackFrameIsConstructorResponse.DECODER)
-            .thenApply(V8StackFrameIsConstructorResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackFrameIsConstructorRequest(frame, handle), V8StackFrameIsConstructorResponse.DECODER),
+            V8StackFrameIsConstructorResponse::result);
     }
 }

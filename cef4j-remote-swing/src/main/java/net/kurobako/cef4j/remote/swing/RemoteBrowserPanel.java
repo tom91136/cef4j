@@ -198,9 +198,6 @@ public final class RemoteBrowserPanel extends JPanel {
         RemoteViewportConstraints.validate(width, height);
         long desired = packSize(width, height);
         desiredSize.set(desired);
-        if (!SwingUtilities.isEventDispatchThread()) {
-            return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, desired));
-        }
         CompletableFuture<Void> pendingComponentEvents = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> pendingComponentEvents.complete(null));
         return pendingComponentEvents.thenCompose(

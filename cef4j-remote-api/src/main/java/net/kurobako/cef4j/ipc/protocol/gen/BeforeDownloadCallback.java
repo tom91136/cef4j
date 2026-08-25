@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class BeforeDownloadCallback {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_before_download_callback_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_before_download_callback_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -44,8 +46,8 @@ public final class BeforeDownloadCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(@Nonnull String downloadPath, int showDialog) {
-        return session
-            .request(new BeforeDownloadCallbackContRequest(handle, downloadPath, showDialog), BeforeDownloadCallbackContResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new BeforeDownloadCallbackContRequest(handle, downloadPath, showDialog), BeforeDownloadCallbackContResponse.DECODER),
+            r -> null);
     }
 }

@@ -33,8 +33,9 @@ public interface CefSession extends Closeable {
             int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler);
 
     /**
-     * Subscribe and immediately replay the most recently received event for this message id, if any. Use for
-     * state-announcement events such as browser creation; ordinary edge-triggered events should use {@link #on}.
+     * Subscribe and immediately replay the most recently received event for this message id, if any. Replay is
+     * session-wide, not partitioned by browser or frame. Use it only for session-global state announcements or when the
+     * handler deliberately accepts every source; scoped and edge-triggered events should use {@link #on}.
      */
     @Nonnull
     default <E extends CefMessageView> HandlerRegistration onLatest(

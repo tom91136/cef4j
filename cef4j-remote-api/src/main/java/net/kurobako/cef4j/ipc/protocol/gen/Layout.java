@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,24 +31,24 @@ public final class Layout {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_layout_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_layout_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code as_box_layout} to the runtime server. */
     public CompletableFuture<BoxLayout> asBoxLayout() {
-        return session
-            .request(new LayoutAsBoxLayoutRequest(handle), LayoutAsBoxLayoutResponse.DECODER)
-            .thenApply(LayoutAsBoxLayoutResponse::result)
-            .thenApply(__h -> new BoxLayout(session, __h));
+        return CefFutures.map(
+            session.request(new LayoutAsBoxLayoutRequest(handle), LayoutAsBoxLayoutResponse.DECODER),
+            __r -> new BoxLayout(session, __r.result()));
     }
 
     /** Dispatches {@code as_fill_layout} to the runtime server. */
     public CompletableFuture<RemoteHandle> asFillLayout() {
-        return session
-            .request(new LayoutAsFillLayoutRequest(handle), LayoutAsFillLayoutResponse.DECODER)
-            .thenApply(LayoutAsFillLayoutResponse::result);
+        return CefFutures.map(
+            session.request(new LayoutAsFillLayoutRequest(handle), LayoutAsFillLayoutResponse.DECODER),
+            LayoutAsFillLayoutResponse::result);
     }
 
     /**
@@ -57,8 +58,8 @@ public final class Layout {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:549</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new LayoutIsValidRequest(handle), LayoutIsValidResponse.DECODER)
-            .thenApply(LayoutIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new LayoutIsValidRequest(handle), LayoutIsValidResponse.DECODER),
+            LayoutIsValidResponse::result);
     }
 }

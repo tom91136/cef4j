@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class MediaRoute {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_media_route_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_media_route_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class MediaRoute {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:168</a>
      */
     public CompletableFuture<String> getId() {
-        return session
-            .request(new MediaRouteGetIdRequest(handle), MediaRouteGetIdResponse.DECODER)
-            .thenApply(MediaRouteGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new MediaRouteGetIdRequest(handle), MediaRouteGetIdResponse.DECODER),
+            MediaRouteGetIdResponse::result);
     }
 
     /**
@@ -54,10 +56,9 @@ public final class MediaRoute {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:174</a>
      */
     public CompletableFuture<MediaSource> getSource() {
-        return session
-            .request(new MediaRouteGetSourceRequest(handle), MediaRouteGetSourceResponse.DECODER)
-            .thenApply(MediaRouteGetSourceResponse::result)
-            .thenApply(__h -> new MediaSource(session, __h));
+        return CefFutures.map(
+            session.request(new MediaRouteGetSourceRequest(handle), MediaRouteGetSourceResponse.DECODER),
+            __r -> new MediaSource(session, __r.result()));
     }
 
     /**
@@ -67,10 +68,9 @@ public final class MediaRoute {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:180</a>
      */
     public CompletableFuture<MediaSink> getSink() {
-        return session
-            .request(new MediaRouteGetSinkRequest(handle), MediaRouteGetSinkResponse.DECODER)
-            .thenApply(MediaRouteGetSinkResponse::result)
-            .thenApply(__h -> new MediaSink(session, __h));
+        return CefFutures.map(
+            session.request(new MediaRouteGetSinkRequest(handle), MediaRouteGetSinkResponse.DECODER),
+            __r -> new MediaSink(session, __r.result()));
     }
 
     /**
@@ -83,9 +83,9 @@ public final class MediaRoute {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:186</a>
      */
     public CompletableFuture<Void> sendRouteMessage(@Nonnull byte[] message) {
-        return session
-            .request(new MediaRouteSendRouteMessageRequest(handle, message), MediaRouteSendRouteMessageResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MediaRouteSendRouteMessageRequest(handle, message), MediaRouteSendRouteMessageResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -95,8 +95,8 @@ public final class MediaRoute {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:192</a>
      */
     public CompletableFuture<Void> terminate() {
-        return session
-            .request(new MediaRouteTerminateRequest(handle), MediaRouteTerminateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MediaRouteTerminateRequest(handle), MediaRouteTerminateResponse.DECODER),
+            r -> null);
     }
 }

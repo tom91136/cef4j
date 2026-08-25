@@ -70,6 +70,17 @@ class CppEmitterSpec extends TempDirectorySuite {
     assert(src.contains("namespace net_kurobako_cef4j_ipc_protocol_gen"))
   }
 
+  test("dispatcher reports CEF UI task submission failures") {
+    val src = CppDispatcherEmitter.emit(
+      CppDispatcherEmitter.DispatchInputs(Nil, Nil, Nil, sampleSpec.packageName)
+    )
+
+    assert(src.contains("inline bool postUiTask"))
+    assert(src.contains("cef4j::ipc::ErrorCode::TaskRejected"))
+    assert(!src.contains("cef_post_task(TID_UI, new LambdaTask"))
+    assert(!src.contains("auto* task = new LambdaTask"))
+  }
+
   test("Specs.all produces both Java and C++ output without overlap") {
     val specs = Specs.all("net.kurobako.cef4j.ipc.protocol.gen")
     specs.foreach { s =>

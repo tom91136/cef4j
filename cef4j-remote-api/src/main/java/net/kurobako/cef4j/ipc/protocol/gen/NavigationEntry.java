@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class NavigationEntry {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_navigation_entry_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_navigation_entry_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:52</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new NavigationEntryIsValidRequest(handle), NavigationEntryIsValidResponse.DECODER)
-            .thenApply(NavigationEntryIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryIsValidRequest(handle), NavigationEntryIsValidResponse.DECODER),
+            NavigationEntryIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
-        return session
-            .request(new NavigationEntryGetUrlRequest(handle), NavigationEntryGetUrlResponse.DECODER)
-            .thenApply(NavigationEntryGetUrlResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetUrlRequest(handle), NavigationEntryGetUrlResponse.DECODER),
+            NavigationEntryGetUrlResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:66</a>
      */
     public CompletableFuture<String> getDisplayUrl() {
-        return session
-            .request(new NavigationEntryGetDisplayUrlRequest(handle), NavigationEntryGetDisplayUrlResponse.DECODER)
-            .thenApply(NavigationEntryGetDisplayUrlResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetDisplayUrlRequest(handle), NavigationEntryGetDisplayUrlResponse.DECODER),
+            NavigationEntryGetDisplayUrlResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:149</a>
      */
     public CompletableFuture<String> getOriginalUrl() {
-        return session
-            .request(new NavigationEntryGetOriginalUrlRequest(handle), NavigationEntryGetOriginalUrlResponse.DECODER)
-            .thenApply(NavigationEntryGetOriginalUrlResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetOriginalUrlRequest(handle), NavigationEntryGetOriginalUrlResponse.DECODER),
+            NavigationEntryGetOriginalUrlResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
      */
     public CompletableFuture<String> getTitle() {
-        return session
-            .request(new NavigationEntryGetTitleRequest(handle), NavigationEntryGetTitleResponse.DECODER)
-            .thenApply(NavigationEntryGetTitleResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetTitleRequest(handle), NavigationEntryGetTitleResponse.DECODER),
+            NavigationEntryGetTitleResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:85</a>
      */
     public CompletableFuture<Integer> getTransitionType() {
-        return session
-            .request(new NavigationEntryGetTransitionTypeRequest(handle), NavigationEntryGetTransitionTypeResponse.DECODER)
-            .thenApply(NavigationEntryGetTransitionTypeResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetTransitionTypeRequest(handle), NavigationEntryGetTransitionTypeResponse.DECODER),
+            NavigationEntryGetTransitionTypeResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:92</a>
      */
     public CompletableFuture<Integer> hasPostData() {
-        return session
-            .request(new NavigationEntryHasPostDataRequest(handle), NavigationEntryHasPostDataResponse.DECODER)
-            .thenApply(NavigationEntryHasPostDataResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryHasPostDataRequest(handle), NavigationEntryHasPostDataResponse.DECODER),
+            NavigationEntryHasPostDataResponse::result);
     }
 
     /**
@@ -126,9 +128,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:98</a>
      */
     public CompletableFuture<Basetime> getCompletionTime() {
-        return session
-            .request(new NavigationEntryGetCompletionTimeRequest(handle), NavigationEntryGetCompletionTimeResponse.DECODER)
-            .thenApply(NavigationEntryGetCompletionTimeResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetCompletionTimeRequest(handle), NavigationEntryGetCompletionTimeResponse.DECODER),
+            NavigationEntryGetCompletionTimeResponse::result);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:106</a>
      */
     public CompletableFuture<Integer> getHttpStatusCode() {
-        return session
-            .request(new NavigationEntryGetHttpStatusCodeRequest(handle), NavigationEntryGetHttpStatusCodeResponse.DECODER)
-            .thenApply(NavigationEntryGetHttpStatusCodeResponse::result);
+        return CefFutures.map(
+            session.request(new NavigationEntryGetHttpStatusCodeRequest(handle), NavigationEntryGetHttpStatusCodeResponse.DECODER),
+            NavigationEntryGetHttpStatusCodeResponse::result);
     }
 
     /**
@@ -150,9 +152,8 @@ public final class NavigationEntry {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:114</a>
      */
     public CompletableFuture<Sslstatus> getSslstatus() {
-        return session
-            .request(new NavigationEntryGetSslstatusRequest(handle), NavigationEntryGetSslstatusResponse.DECODER)
-            .thenApply(NavigationEntryGetSslstatusResponse::result)
-            .thenApply(__h -> new Sslstatus(session, __h));
+        return CefFutures.map(
+            session.request(new NavigationEntryGetSslstatusRequest(handle), NavigationEntryGetSslstatusResponse.DECODER),
+            __r -> new Sslstatus(session, __r.result()));
     }
 }

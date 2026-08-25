@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,15 +31,16 @@ public final class MenuButtonDelegate {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_menu_button_delegate_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_menu_button_delegate_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_menu_button_pressed} to the runtime server. */
     public CompletableFuture<Void> onMenuButtonPressed(@Nonnull RemoteHandle menuButton, Point screenPoint, @Nonnull RemoteHandle buttonPressedLock) {
-        return session
-            .request(new MenuButtonDelegateOnMenuButtonPressedRequest(handle, menuButton, screenPoint, buttonPressedLock), MenuButtonDelegateOnMenuButtonPressedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MenuButtonDelegateOnMenuButtonPressedRequest(handle, menuButton, screenPoint, buttonPressedLock), MenuButtonDelegateOnMenuButtonPressedResponse.DECODER),
+            r -> null);
     }
 }

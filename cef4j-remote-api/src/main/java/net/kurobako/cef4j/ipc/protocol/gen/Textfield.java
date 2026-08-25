@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,30 +31,31 @@ public final class Textfield {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_textfield_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_textfield_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_password_input} to the runtime server. */
     public CompletableFuture<Void> setPasswordInput(int passwordInput) {
-        return session
-            .request(new TextfieldSetPasswordInputRequest(handle, passwordInput), TextfieldSetPasswordInputResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSetPasswordInputRequest(handle, passwordInput), TextfieldSetPasswordInputResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_password_input} to the runtime server. */
     public CompletableFuture<Integer> isPasswordInput() {
-        return session
-            .request(new TextfieldIsPasswordInputRequest(handle), TextfieldIsPasswordInputResponse.DECODER)
-            .thenApply(TextfieldIsPasswordInputResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldIsPasswordInputRequest(handle), TextfieldIsPasswordInputResponse.DECODER),
+            TextfieldIsPasswordInputResponse::result);
     }
 
     /** Dispatches {@code set_read_only} to the runtime server. */
     public CompletableFuture<Void> setReadOnly(int readOnly) {
-        return session
-            .request(new TextfieldSetReadOnlyRequest(handle, readOnly), TextfieldSetReadOnlyResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSetReadOnlyRequest(handle, readOnly), TextfieldSetReadOnlyResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -63,9 +65,9 @@ public final class Textfield {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:564</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new TextfieldIsReadOnlyRequest(handle), TextfieldIsReadOnlyResponse.DECODER)
-            .thenApply(TextfieldIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldIsReadOnlyRequest(handle), TextfieldIsReadOnlyResponse.DECODER),
+            TextfieldIsReadOnlyResponse::result);
     }
 
     /**
@@ -75,30 +77,30 @@ public final class Textfield {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     public CompletableFuture<String> getText() {
-        return session
-            .request(new TextfieldGetTextRequest(handle), TextfieldGetTextResponse.DECODER)
-            .thenApply(TextfieldGetTextResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldGetTextRequest(handle), TextfieldGetTextResponse.DECODER),
+            TextfieldGetTextResponse::result);
     }
 
     /** Dispatches {@code set_text} to the runtime server. */
     public CompletableFuture<Void> setText(@Nonnull String text) {
-        return session
-            .request(new TextfieldSetTextRequest(handle, text), TextfieldSetTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSetTextRequest(handle, text), TextfieldSetTextResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code append_text} to the runtime server. */
     public CompletableFuture<Void> appendText(@Nonnull String text) {
-        return session
-            .request(new TextfieldAppendTextRequest(handle, text), TextfieldAppendTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldAppendTextRequest(handle, text), TextfieldAppendTextResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code insert_or_replace_text} to the runtime server. */
     public CompletableFuture<Void> insertOrReplaceText(@Nonnull String text) {
-        return session
-            .request(new TextfieldInsertOrReplaceTextRequest(handle, text), TextfieldInsertOrReplaceTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldInsertOrReplaceTextRequest(handle, text), TextfieldInsertOrReplaceTextResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -108,16 +110,16 @@ public final class Textfield {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:117</a>
      */
     public CompletableFuture<Integer> hasSelection() {
-        return session
-            .request(new TextfieldHasSelectionRequest(handle), TextfieldHasSelectionResponse.DECODER)
-            .thenApply(TextfieldHasSelectionResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldHasSelectionRequest(handle), TextfieldHasSelectionResponse.DECODER),
+            TextfieldHasSelectionResponse::result);
     }
 
     /** Dispatches {@code get_selected_text} to the runtime server. */
     public CompletableFuture<String> getSelectedText() {
-        return session
-            .request(new TextfieldGetSelectedTextRequest(handle), TextfieldGetSelectedTextResponse.DECODER)
-            .thenApply(TextfieldGetSelectedTextResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldGetSelectedTextRequest(handle), TextfieldGetSelectedTextResponse.DECODER),
+            TextfieldGetSelectedTextResponse::result);
     }
 
     /**
@@ -127,37 +129,37 @@ public final class Textfield {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:110</a>
      */
     public CompletableFuture<Void> selectAll(int reversed) {
-        return session
-            .request(new TextfieldSelectAllRequest(handle, reversed), TextfieldSelectAllResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSelectAllRequest(handle, reversed), TextfieldSelectAllResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code clear_selection} to the runtime server. */
     public CompletableFuture<Void> clearSelection() {
-        return session
-            .request(new TextfieldClearSelectionRequest(handle), TextfieldClearSelectionResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldClearSelectionRequest(handle), TextfieldClearSelectionResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_selected_range} to the runtime server. */
     public CompletableFuture<Range> getSelectedRange() {
-        return session
-            .request(new TextfieldGetSelectedRangeRequest(handle), TextfieldGetSelectedRangeResponse.DECODER)
-            .thenApply(TextfieldGetSelectedRangeResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldGetSelectedRangeRequest(handle), TextfieldGetSelectedRangeResponse.DECODER),
+            TextfieldGetSelectedRangeResponse::result);
     }
 
     /** Dispatches {@code select_range} to the runtime server. */
     public CompletableFuture<Void> selectRange(Range range) {
-        return session
-            .request(new TextfieldSelectRangeRequest(handle, range), TextfieldSelectRangeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSelectRangeRequest(handle, range), TextfieldSelectRangeResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_cursor_position} to the runtime server. */
     public CompletableFuture<Long> getCursorPosition() {
-        return session
-            .request(new TextfieldGetCursorPositionRequest(handle), TextfieldGetCursorPositionResponse.DECODER)
-            .thenApply(TextfieldGetCursorPositionResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldGetCursorPositionRequest(handle), TextfieldGetCursorPositionResponse.DECODER),
+            TextfieldGetCursorPositionResponse::result);
     }
 
     /**
@@ -183,30 +185,30 @@ public final class Textfield {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Void> setFontList(@Nonnull String fontList) {
-        return session
-            .request(new TextfieldSetFontListRequest(handle, fontList), TextfieldSetFontListResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSetFontListRequest(handle, fontList), TextfieldSetFontListResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code apply_text_color} to the runtime server. */
     public CompletableFuture<Void> applyTextColor(int color, Range range) {
-        return session
-            .request(new TextfieldApplyTextColorRequest(handle, color, range), TextfieldApplyTextColorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldApplyTextColorRequest(handle, color, range), TextfieldApplyTextColorResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code apply_text_style} to the runtime server. */
     public CompletableFuture<Void> applyTextStyle(int style, int add, Range range) {
-        return session
-            .request(new TextfieldApplyTextStyleRequest(handle, style, add, range), TextfieldApplyTextStyleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldApplyTextStyleRequest(handle, style, add, range), TextfieldApplyTextStyleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_command_enabled} to the runtime server. */
     public CompletableFuture<Integer> isCommandEnabled(int commandId) {
-        return session
-            .request(new TextfieldIsCommandEnabledRequest(handle, commandId), TextfieldIsCommandEnabledResponse.DECODER)
-            .thenApply(TextfieldIsCommandEnabledResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldIsCommandEnabledRequest(handle, commandId), TextfieldIsCommandEnabledResponse.DECODER),
+            TextfieldIsCommandEnabledResponse::result);
     }
 
     /**
@@ -216,36 +218,36 @@ public final class Textfield {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
     public CompletableFuture<Void> executeCommand(int commandId) {
-        return session
-            .request(new TextfieldExecuteCommandRequest(handle, commandId), TextfieldExecuteCommandResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldExecuteCommandRequest(handle, commandId), TextfieldExecuteCommandResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code clear_edit_history} to the runtime server. */
     public CompletableFuture<Void> clearEditHistory() {
-        return session
-            .request(new TextfieldClearEditHistoryRequest(handle), TextfieldClearEditHistoryResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldClearEditHistoryRequest(handle), TextfieldClearEditHistoryResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_placeholder_text} to the runtime server. */
     public CompletableFuture<Void> setPlaceholderText(@Nonnull String text) {
-        return session
-            .request(new TextfieldSetPlaceholderTextRequest(handle, text), TextfieldSetPlaceholderTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSetPlaceholderTextRequest(handle, text), TextfieldSetPlaceholderTextResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_placeholder_text} to the runtime server. */
     public CompletableFuture<String> getPlaceholderText() {
-        return session
-            .request(new TextfieldGetPlaceholderTextRequest(handle), TextfieldGetPlaceholderTextResponse.DECODER)
-            .thenApply(TextfieldGetPlaceholderTextResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldGetPlaceholderTextRequest(handle), TextfieldGetPlaceholderTextResponse.DECODER),
+            TextfieldGetPlaceholderTextResponse::result);
     }
 
     /** Dispatches {@code set_accessible_name} to the runtime server. */
     public CompletableFuture<Void> setAccessibleName(@Nonnull String name) {
-        return session
-            .request(new TextfieldSetAccessibleNameRequest(handle, name), TextfieldSetAccessibleNameResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldSetAccessibleNameRequest(handle, name), TextfieldSetAccessibleNameResponse.DECODER),
+            r -> null);
     }
 }

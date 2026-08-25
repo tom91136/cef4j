@@ -25,4 +25,29 @@ final class RuntimeServerProcessTest {
                         "--disable-gpu",
                         "--disable-software-rasterizer");
     }
+
+    @Test
+    void classifiesRoutineChildDiagnosticsBelowInfo() {
+        assertThat(RuntimeServerProcess.stderrLevel("[cef4j-runtime-server] shutdown: stopping IPC transport"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.TRACE);
+        assertThat(RuntimeServerProcess.stderrLevel(
+                        "[cef4j-runtime-server] CEF context initialized; publishing endpoint"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.TRACE);
+        assertThat(RuntimeServerProcess.stderrLevel("[cef4j-runtime-server] zmq_send failed: Host unreachable"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.DEBUG);
+        assertThat(RuntimeServerProcess.stderrLevel("[123:456:INFO:component.cc:1] ready"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.DEBUG);
+    }
+
+    @Test
+    void keepsUnexpectedChildFailuresAtWarn() {
+        assertThat(RuntimeServerProcess.stderrLevel(
+                        "[cef4j-runtime-server] zmq_bind(tcp://127.0.0.1:1) failed: Address in use"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.WARN);
+        assertThat(RuntimeServerProcess.stderrLevel(
+                        "[cef4j-runtime-server] macOS application bootstrap: unexpected NSApp class BrokenApp"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.WARN);
+        assertThat(RuntimeServerProcess.stderrLevel("[123:456:ERROR:component.cc:1] crashed"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.WARN);
+    }
 }

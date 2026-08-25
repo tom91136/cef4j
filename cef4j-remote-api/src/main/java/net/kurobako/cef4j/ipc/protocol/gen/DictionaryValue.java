@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class DictionaryValue {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_dictionary_value_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_dictionary_value_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:320</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new DictionaryValueIsValidRequest(handle), DictionaryValueIsValidResponse.DECODER)
-            .thenApply(DictionaryValueIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueIsValidRequest(handle), DictionaryValueIsValidResponse.DECODER),
+            DictionaryValueIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:329</a>
      */
     public CompletableFuture<Integer> isOwned() {
-        return session
-            .request(new DictionaryValueIsOwnedRequest(handle), DictionaryValueIsOwnedResponse.DECODER)
-            .thenApply(DictionaryValueIsOwnedResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueIsOwnedRequest(handle), DictionaryValueIsOwnedResponse.DECODER),
+            DictionaryValueIsOwnedResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:335</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new DictionaryValueIsReadOnlyRequest(handle), DictionaryValueIsReadOnlyResponse.DECODER)
-            .thenApply(DictionaryValueIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueIsReadOnlyRequest(handle), DictionaryValueIsReadOnlyResponse.DECODER),
+            DictionaryValueIsReadOnlyResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:342</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new DictionaryValueIsSameRequest(handle, that), DictionaryValueIsSameResponse.DECODER)
-            .thenApply(DictionaryValueIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueIsSameRequest(handle, that), DictionaryValueIsSameResponse.DECODER),
+            DictionaryValueIsSameResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:350</a>
      */
     public CompletableFuture<Integer> isEqual(@Nonnull RemoteHandle that) {
-        return session
-            .request(new DictionaryValueIsEqualRequest(handle, that), DictionaryValueIsEqualResponse.DECODER)
-            .thenApply(DictionaryValueIsEqualResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueIsEqualRequest(handle, that), DictionaryValueIsEqualResponse.DECODER),
+            DictionaryValueIsEqualResponse::result);
     }
 
     /**
@@ -102,10 +104,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:357</a>
      */
     public CompletableFuture<DictionaryValue> copy(int excludeEmptyChildren) {
-        return session
-            .request(new DictionaryValueCopyRequest(handle, excludeEmptyChildren), DictionaryValueCopyResponse.DECODER)
-            .thenApply(DictionaryValueCopyResponse::result)
-            .thenApply(__h -> new DictionaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new DictionaryValueCopyRequest(handle, excludeEmptyChildren), DictionaryValueCopyResponse.DECODER),
+            __r -> new DictionaryValue(session, __r.result()));
     }
 
     /**
@@ -115,9 +116,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:364</a>
      */
     public CompletableFuture<Long> getSize() {
-        return session
-            .request(new DictionaryValueGetSizeRequest(handle), DictionaryValueGetSizeResponse.DECODER)
-            .thenApply(DictionaryValueGetSizeResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueGetSizeRequest(handle), DictionaryValueGetSizeResponse.DECODER),
+            DictionaryValueGetSizeResponse::result);
     }
 
     /**
@@ -127,9 +128,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:370</a>
      */
     public CompletableFuture<Integer> clear() {
-        return session
-            .request(new DictionaryValueClearRequest(handle), DictionaryValueClearResponse.DECODER)
-            .thenApply(DictionaryValueClearResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueClearRequest(handle), DictionaryValueClearResponse.DECODER),
+            DictionaryValueClearResponse::result);
     }
 
     /**
@@ -139,9 +140,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:376</a>
      */
     public CompletableFuture<Integer> hasKey(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueHasKeyRequest(handle, key), DictionaryValueHasKeyResponse.DECODER)
-            .thenApply(DictionaryValueHasKeyResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueHasKeyRequest(handle, key), DictionaryValueHasKeyResponse.DECODER),
+            DictionaryValueHasKeyResponse::result);
     }
 
     /**
@@ -151,9 +152,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:382</a>
      */
     public CompletableFuture<Integer> getKeys(String[] keys) {
-        return session
-            .request(new DictionaryValueGetKeysRequest(handle, keys), DictionaryValueGetKeysResponse.DECODER)
-            .thenApply(DictionaryValueGetKeysResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueGetKeysRequest(handle, keys), DictionaryValueGetKeysResponse.DECODER),
+            DictionaryValueGetKeysResponse::result);
     }
 
     /**
@@ -163,9 +164,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:388</a>
      */
     public CompletableFuture<Integer> remove(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueRemoveRequest(handle, key), DictionaryValueRemoveResponse.DECODER)
-            .thenApply(DictionaryValueRemoveResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueRemoveRequest(handle, key), DictionaryValueRemoveResponse.DECODER),
+            DictionaryValueRemoveResponse::result);
     }
 
     /**
@@ -175,9 +176,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:395</a>
      */
     public CompletableFuture<Integer> getType(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetTypeRequest(handle, key), DictionaryValueGetTypeResponse.DECODER)
-            .thenApply(DictionaryValueGetTypeResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueGetTypeRequest(handle, key), DictionaryValueGetTypeResponse.DECODER),
+            DictionaryValueGetTypeResponse::result);
     }
 
     /**
@@ -187,10 +188,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:401</a>
      */
     public CompletableFuture<Value> getValue(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetValueRequest(handle, key), DictionaryValueGetValueResponse.DECODER)
-            .thenApply(DictionaryValueGetValueResponse::result)
-            .thenApply(__h -> new Value(session, __h));
+        return CefFutures.map(
+            session.request(new DictionaryValueGetValueRequest(handle, key), DictionaryValueGetValueResponse.DECODER),
+            __r -> new Value(session, __r.result()));
     }
 
     /**
@@ -200,9 +200,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:411</a>
      */
     public CompletableFuture<Integer> getBool(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetBoolRequest(handle, key), DictionaryValueGetBoolResponse.DECODER)
-            .thenApply(DictionaryValueGetBoolResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueGetBoolRequest(handle, key), DictionaryValueGetBoolResponse.DECODER),
+            DictionaryValueGetBoolResponse::result);
     }
 
     /**
@@ -212,9 +212,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:417</a>
      */
     public CompletableFuture<Integer> getInt(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetIntRequest(handle, key), DictionaryValueGetIntResponse.DECODER)
-            .thenApply(DictionaryValueGetIntResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueGetIntRequest(handle, key), DictionaryValueGetIntResponse.DECODER),
+            DictionaryValueGetIntResponse::result);
     }
 
     /**
@@ -224,9 +224,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:429</a>
      */
     public CompletableFuture<String> getString(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetStringRequest(handle, key), DictionaryValueGetStringResponse.DECODER)
-            .thenApply(DictionaryValueGetStringResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueGetStringRequest(handle, key), DictionaryValueGetStringResponse.DECODER),
+            DictionaryValueGetStringResponse::result);
     }
 
     /**
@@ -236,10 +236,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:435</a>
      */
     public CompletableFuture<BinaryValue> getBinary(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetBinaryRequest(handle, key), DictionaryValueGetBinaryResponse.DECODER)
-            .thenApply(DictionaryValueGetBinaryResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new DictionaryValueGetBinaryRequest(handle, key), DictionaryValueGetBinaryResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -249,10 +248,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:442</a>
      */
     public CompletableFuture<DictionaryValue> getDictionary(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetDictionaryRequest(handle, key), DictionaryValueGetDictionaryResponse.DECODER)
-            .thenApply(DictionaryValueGetDictionaryResponse::result)
-            .thenApply(__h -> new DictionaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new DictionaryValueGetDictionaryRequest(handle, key), DictionaryValueGetDictionaryResponse.DECODER),
+            __r -> new DictionaryValue(session, __r.result()));
     }
 
     /**
@@ -262,10 +260,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:450</a>
      */
     public CompletableFuture<ListValue> getList(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueGetListRequest(handle, key), DictionaryValueGetListResponse.DECODER)
-            .thenApply(DictionaryValueGetListResponse::result)
-            .thenApply(__h -> new ListValue(session, __h));
+        return CefFutures.map(
+            session.request(new DictionaryValueGetListRequest(handle, key), DictionaryValueGetListResponse.DECODER),
+            __r -> new ListValue(session, __r.result()));
     }
 
     /**
@@ -275,9 +272,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:458</a>
      */
     public CompletableFuture<Integer> setValue(@Nonnull String key, @Nonnull RemoteHandle value) {
-        return session
-            .request(new DictionaryValueSetValueRequest(handle, key, value), DictionaryValueSetValueResponse.DECODER)
-            .thenApply(DictionaryValueSetValueResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetValueRequest(handle, key, value), DictionaryValueSetValueResponse.DECODER),
+            DictionaryValueSetValueResponse::result);
     }
 
     /**
@@ -287,9 +284,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:469</a>
      */
     public CompletableFuture<Integer> setNull(@Nonnull String key) {
-        return session
-            .request(new DictionaryValueSetNullRequest(handle, key), DictionaryValueSetNullResponse.DECODER)
-            .thenApply(DictionaryValueSetNullResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetNullRequest(handle, key), DictionaryValueSetNullResponse.DECODER),
+            DictionaryValueSetNullResponse::result);
     }
 
     /**
@@ -299,9 +296,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:476</a>
      */
     public CompletableFuture<Integer> setBool(@Nonnull String key, int value) {
-        return session
-            .request(new DictionaryValueSetBoolRequest(handle, key, value), DictionaryValueSetBoolResponse.DECODER)
-            .thenApply(DictionaryValueSetBoolResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetBoolRequest(handle, key, value), DictionaryValueSetBoolResponse.DECODER),
+            DictionaryValueSetBoolResponse::result);
     }
 
     /**
@@ -311,9 +308,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:483</a>
      */
     public CompletableFuture<Integer> setInt(@Nonnull String key, int value) {
-        return session
-            .request(new DictionaryValueSetIntRequest(handle, key, value), DictionaryValueSetIntResponse.DECODER)
-            .thenApply(DictionaryValueSetIntResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetIntRequest(handle, key, value), DictionaryValueSetIntResponse.DECODER),
+            DictionaryValueSetIntResponse::result);
     }
 
     /**
@@ -325,9 +322,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:497</a>
      */
     public CompletableFuture<Integer> setString(@Nonnull String key, @Nonnull String value) {
-        return session
-            .request(new DictionaryValueSetStringRequest(handle, key, value), DictionaryValueSetStringResponse.DECODER)
-            .thenApply(DictionaryValueSetStringResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetStringRequest(handle, key, value), DictionaryValueSetStringResponse.DECODER),
+            DictionaryValueSetStringResponse::result);
     }
 
     /**
@@ -337,9 +334,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:504</a>
      */
     public CompletableFuture<Integer> setBinary(@Nonnull String key, @Nonnull RemoteHandle value) {
-        return session
-            .request(new DictionaryValueSetBinaryRequest(handle, key, value), DictionaryValueSetBinaryResponse.DECODER)
-            .thenApply(DictionaryValueSetBinaryResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetBinaryRequest(handle, key, value), DictionaryValueSetBinaryResponse.DECODER),
+            DictionaryValueSetBinaryResponse::result);
     }
 
     /**
@@ -349,9 +346,9 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:515</a>
      */
     public CompletableFuture<Integer> setDictionary(@Nonnull String key, @Nonnull RemoteHandle value) {
-        return session
-            .request(new DictionaryValueSetDictionaryRequest(handle, key, value), DictionaryValueSetDictionaryResponse.DECODER)
-            .thenApply(DictionaryValueSetDictionaryResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetDictionaryRequest(handle, key, value), DictionaryValueSetDictionaryResponse.DECODER),
+            DictionaryValueSetDictionaryResponse::result);
     }
 
     /**
@@ -361,8 +358,8 @@ public final class DictionaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:526</a>
      */
     public CompletableFuture<Integer> setList(@Nonnull String key, @Nonnull RemoteHandle value) {
-        return session
-            .request(new DictionaryValueSetListRequest(handle, key, value), DictionaryValueSetListResponse.DECODER)
-            .thenApply(DictionaryValueSetListResponse::result);
+        return CefFutures.map(
+            session.request(new DictionaryValueSetListRequest(handle, key, value), DictionaryValueSetListResponse.DECODER),
+            DictionaryValueSetListResponse::result);
     }
 }

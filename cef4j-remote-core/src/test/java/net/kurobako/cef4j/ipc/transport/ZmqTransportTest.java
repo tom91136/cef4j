@@ -85,11 +85,13 @@ final class ZmqTransportTest extends CefTransportContractTest {
         long firstGeneration;
         try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
                 ZmqTransport client = ZmqTransport.connect(server.endpoint())) {
+            assertThat(client.endpoint()).isEqualTo(server.endpoint());
             firstGeneration = ZmqTransport.sharedContextGeneration();
         }
 
         try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
                 ZmqTransport client = ZmqTransport.connect(server.endpoint())) {
+            assertThat(client.endpoint()).isEqualTo(server.endpoint());
             assertThat(ZmqTransport.sharedContextGeneration()).isGreaterThan(firstGeneration);
         }
     }

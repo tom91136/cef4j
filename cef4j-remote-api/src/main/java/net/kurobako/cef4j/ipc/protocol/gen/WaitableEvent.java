@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class WaitableEvent {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_waitable_event_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_waitable_event_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class WaitableEvent {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
      */
     public CompletableFuture<Void> reset() {
-        return session
-            .request(new WaitableEventResetRequest(handle), WaitableEventResetResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WaitableEventResetRequest(handle), WaitableEventResetResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class WaitableEvent {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
      */
     public CompletableFuture<Void> signal() {
-        return session
-            .request(new WaitableEventSignalRequest(handle), WaitableEventSignalResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WaitableEventSignalRequest(handle), WaitableEventSignalResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class WaitableEvent {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:82</a>
      */
     public CompletableFuture<Integer> isSignaled() {
-        return session
-            .request(new WaitableEventIsSignaledRequest(handle), WaitableEventIsSignaledResponse.DECODER)
-            .thenApply(WaitableEventIsSignaledResponse::result);
+        return CefFutures.map(
+            session.request(new WaitableEventIsSignaledRequest(handle), WaitableEventIsSignaledResponse.DECODER),
+            WaitableEventIsSignaledResponse::result);
     }
 
     /**
@@ -78,8 +80,8 @@ public final class WaitableEvent {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:98</a>
      */
     public CompletableFuture<Integer> timedWait(long maxMs) {
-        return session
-            .request(new WaitableEventTimedWaitRequest(handle, maxMs), WaitableEventTimedWaitResponse.DECODER)
-            .thenApply(WaitableEventTimedWaitResponse::result);
+        return CefFutures.map(
+            session.request(new WaitableEventTimedWaitRequest(handle, maxMs), WaitableEventTimedWaitResponse.DECODER),
+            WaitableEventTimedWaitResponse::result);
     }
 }

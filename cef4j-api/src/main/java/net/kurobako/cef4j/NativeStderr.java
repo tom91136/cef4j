@@ -45,7 +45,6 @@ final class NativeStderr {
         FileInputStream fis = (FileInputStream) result[0];
         FileOutputStream originalStderr = (FileOutputStream) result[1];
 
-        // Reassign System.err to the original stderr so Java output is unaffected
         System.setErr(new PrintStream(originalStderr, true, StandardCharsets.UTF_8));
 
         Thread reader = new Thread(
@@ -53,7 +52,7 @@ final class NativeStderr {
                     try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
                         String line;
                         while ((line = br.readLine()) != null) {
-                            if (line.contains("ERROR:") || line.contains("WARNING:")) {
+                            if (isActionable(line)) {
                                 log.warn("{}", line);
                             } else {
                                 log.debug("{}", line);
@@ -68,6 +67,13 @@ final class NativeStderr {
         reader.start();
 
         installed = true;
+    }
+
+    static boolean isActionable(String line) {
+        if (line.contains("Default dialog implementation requires a parent window handle")) return false;
+        if (line.contains("Add application/vnd.portal.filetransfer to kAtomsToCache")) return false;
+        if (line.contains("Add application/vnd.portal.files to kAtomsToCache")) return false;
+        return line.contains("ERROR:") || line.contains("WARNING:");
     }
 
     /**

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class PrintSettings {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_print_settings_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_print_settings_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:61</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new PrintSettingsIsValidRequest(handle), PrintSettingsIsValidResponse.DECODER)
-            .thenApply(PrintSettingsIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsIsValidRequest(handle), PrintSettingsIsValidResponse.DECODER),
+            PrintSettingsIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new PrintSettingsIsReadOnlyRequest(handle), PrintSettingsIsReadOnlyResponse.DECODER)
-            .thenApply(PrintSettingsIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsIsReadOnlyRequest(handle), PrintSettingsIsReadOnlyResponse.DECODER),
+            PrintSettingsIsReadOnlyResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:75</a>
      */
     public CompletableFuture<Void> setOrientation(int landscape) {
-        return session
-            .request(new PrintSettingsSetOrientationRequest(handle, landscape), PrintSettingsSetOrientationResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetOrientationRequest(handle, landscape), PrintSettingsSetOrientationResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:81</a>
      */
     public CompletableFuture<Integer> isLandscape() {
-        return session
-            .request(new PrintSettingsIsLandscapeRequest(handle), PrintSettingsIsLandscapeResponse.DECODER)
-            .thenApply(PrintSettingsIsLandscapeResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsIsLandscapeRequest(handle), PrintSettingsIsLandscapeResponse.DECODER),
+            PrintSettingsIsLandscapeResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
      */
     public CompletableFuture<Void> setPrinterPrintableArea(Size physicalSizeDeviceUnits, Rect printableAreaDeviceUnits, int landscapeNeedsFlip) {
-        return session
-            .request(new PrintSettingsSetPrinterPrintableAreaRequest(handle, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip), PrintSettingsSetPrinterPrintableAreaResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetPrinterPrintableAreaRequest(handle, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip), PrintSettingsSetPrinterPrintableAreaResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -104,9 +106,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:98</a>
      */
     public CompletableFuture<Void> setDeviceName(@Nonnull String name) {
-        return session
-            .request(new PrintSettingsSetDeviceNameRequest(handle, name), PrintSettingsSetDeviceNameResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetDeviceNameRequest(handle, name), PrintSettingsSetDeviceNameResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -116,9 +118,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:104</a>
      */
     public CompletableFuture<String> getDeviceName() {
-        return session
-            .request(new PrintSettingsGetDeviceNameRequest(handle), PrintSettingsGetDeviceNameResponse.DECODER)
-            .thenApply(PrintSettingsGetDeviceNameResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsGetDeviceNameRequest(handle), PrintSettingsGetDeviceNameResponse.DECODER),
+            PrintSettingsGetDeviceNameResponse::result);
     }
 
     /**
@@ -128,9 +130,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:110</a>
      */
     public CompletableFuture<Void> setDpi(int dpi) {
-        return session
-            .request(new PrintSettingsSetDpiRequest(handle, dpi), PrintSettingsSetDpiResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetDpiRequest(handle, dpi), PrintSettingsSetDpiResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -140,9 +142,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:116</a>
      */
     public CompletableFuture<Integer> getDpi() {
-        return session
-            .request(new PrintSettingsGetDpiRequest(handle), PrintSettingsGetDpiResponse.DECODER)
-            .thenApply(PrintSettingsGetDpiResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsGetDpiRequest(handle), PrintSettingsGetDpiResponse.DECODER),
+            PrintSettingsGetDpiResponse::result);
     }
 
     /**
@@ -152,9 +154,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:128</a>
      */
     public CompletableFuture<Long> getPageRangesCount() {
-        return session
-            .request(new PrintSettingsGetPageRangesCountRequest(handle), PrintSettingsGetPageRangesCountResponse.DECODER)
-            .thenApply(PrintSettingsGetPageRangesCountResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsGetPageRangesCountRequest(handle), PrintSettingsGetPageRangesCountResponse.DECODER),
+            PrintSettingsGetPageRangesCountResponse::result);
     }
 
     /**
@@ -164,9 +166,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:140</a>
      */
     public CompletableFuture<Void> setSelectionOnly(int selectionOnly) {
-        return session
-            .request(new PrintSettingsSetSelectionOnlyRequest(handle, selectionOnly), PrintSettingsSetSelectionOnlyResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetSelectionOnlyRequest(handle, selectionOnly), PrintSettingsSetSelectionOnlyResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -176,9 +178,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:146</a>
      */
     public CompletableFuture<Integer> isSelectionOnly() {
-        return session
-            .request(new PrintSettingsIsSelectionOnlyRequest(handle), PrintSettingsIsSelectionOnlyResponse.DECODER)
-            .thenApply(PrintSettingsIsSelectionOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsIsSelectionOnlyRequest(handle), PrintSettingsIsSelectionOnlyResponse.DECODER),
+            PrintSettingsIsSelectionOnlyResponse::result);
     }
 
     /**
@@ -188,9 +190,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:152</a>
      */
     public CompletableFuture<Void> setCollate(int collate) {
-        return session
-            .request(new PrintSettingsSetCollateRequest(handle, collate), PrintSettingsSetCollateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetCollateRequest(handle, collate), PrintSettingsSetCollateResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -200,9 +202,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:158</a>
      */
     public CompletableFuture<Integer> willCollate() {
-        return session
-            .request(new PrintSettingsWillCollateRequest(handle), PrintSettingsWillCollateResponse.DECODER)
-            .thenApply(PrintSettingsWillCollateResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsWillCollateRequest(handle), PrintSettingsWillCollateResponse.DECODER),
+            PrintSettingsWillCollateResponse::result);
     }
 
     /**
@@ -212,9 +214,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
      */
     public CompletableFuture<Void> setColorModel(int model) {
-        return session
-            .request(new PrintSettingsSetColorModelRequest(handle, model), PrintSettingsSetColorModelResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetColorModelRequest(handle, model), PrintSettingsSetColorModelResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -224,9 +226,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:170</a>
      */
     public CompletableFuture<Integer> getColorModel() {
-        return session
-            .request(new PrintSettingsGetColorModelRequest(handle), PrintSettingsGetColorModelResponse.DECODER)
-            .thenApply(PrintSettingsGetColorModelResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsGetColorModelRequest(handle), PrintSettingsGetColorModelResponse.DECODER),
+            PrintSettingsGetColorModelResponse::result);
     }
 
     /**
@@ -236,9 +238,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:176</a>
      */
     public CompletableFuture<Void> setCopies(int copies) {
-        return session
-            .request(new PrintSettingsSetCopiesRequest(handle, copies), PrintSettingsSetCopiesResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetCopiesRequest(handle, copies), PrintSettingsSetCopiesResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -248,9 +250,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:182</a>
      */
     public CompletableFuture<Integer> getCopies() {
-        return session
-            .request(new PrintSettingsGetCopiesRequest(handle), PrintSettingsGetCopiesResponse.DECODER)
-            .thenApply(PrintSettingsGetCopiesResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsGetCopiesRequest(handle), PrintSettingsGetCopiesResponse.DECODER),
+            PrintSettingsGetCopiesResponse::result);
     }
 
     /**
@@ -260,9 +262,9 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
      */
     public CompletableFuture<Void> setDuplexMode(int mode) {
-        return session
-            .request(new PrintSettingsSetDuplexModeRequest(handle, mode), PrintSettingsSetDuplexModeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintSettingsSetDuplexModeRequest(handle, mode), PrintSettingsSetDuplexModeResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -272,8 +274,8 @@ public final class PrintSettings {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:194</a>
      */
     public CompletableFuture<Integer> getDuplexMode() {
-        return session
-            .request(new PrintSettingsGetDuplexModeRequest(handle), PrintSettingsGetDuplexModeResponse.DECODER)
-            .thenApply(PrintSettingsGetDuplexModeResponse::result);
+        return CefFutures.map(
+            session.request(new PrintSettingsGetDuplexModeRequest(handle), PrintSettingsGetDuplexModeResponse.DECODER),
+            PrintSettingsGetDuplexModeResponse::result);
     }
 }

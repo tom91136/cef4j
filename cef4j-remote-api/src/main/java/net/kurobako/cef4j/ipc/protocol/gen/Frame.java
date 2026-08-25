@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Frame {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_frame_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_frame_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:62</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new FrameIsValidRequest(handle), FrameIsValidResponse.DECODER)
-            .thenApply(FrameIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new FrameIsValidRequest(handle), FrameIsValidResponse.DECODER),
+            FrameIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:68</a>
      */
     public CompletableFuture<Void> undo() {
-        return session
-            .request(new FrameUndoRequest(handle), FrameUndoResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameUndoRequest(handle), FrameUndoResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:74</a>
      */
     public CompletableFuture<Void> redo() {
-        return session
-            .request(new FrameRedoRequest(handle), FrameRedoResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameRedoRequest(handle), FrameRedoResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:80</a>
      */
     public CompletableFuture<Void> cut() {
-        return session
-            .request(new FrameCutRequest(handle), FrameCutResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameCutRequest(handle), FrameCutResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:86</a>
      */
     public CompletableFuture<Void> copy() {
-        return session
-            .request(new FrameCopyRequest(handle), FrameCopyResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameCopyRequest(handle), FrameCopyResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:92</a>
      */
     public CompletableFuture<Void> paste() {
-        return session
-            .request(new FramePasteRequest(handle), FramePasteResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FramePasteRequest(handle), FramePasteResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:98</a>
      */
     public CompletableFuture<Void> pasteAndMatchStyle() {
-        return session
-            .request(new FramePasteAndMatchStyleRequest(handle), FramePasteAndMatchStyleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FramePasteAndMatchStyleRequest(handle), FramePasteAndMatchStyleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -126,9 +128,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:104</a>
      */
     public CompletableFuture<Void> del() {
-        return session
-            .request(new FrameDelRequest(handle), FrameDelResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameDelRequest(handle), FrameDelResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:110</a>
      */
     public CompletableFuture<Void> selectAll() {
-        return session
-            .request(new FrameSelectAllRequest(handle), FrameSelectAllResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameSelectAllRequest(handle), FrameSelectAllResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -150,9 +152,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:116</a>
      */
     public CompletableFuture<Void> viewSource() {
-        return session
-            .request(new FrameViewSourceRequest(handle), FrameViewSourceResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameViewSourceRequest(handle), FrameViewSourceResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -162,9 +164,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:124</a>
      */
     public CompletableFuture<Void> getSource(@Nonnull RemoteHandle visitor) {
-        return session
-            .request(new FrameGetSourceRequest(handle, visitor), FrameGetSourceResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameGetSourceRequest(handle, visitor), FrameGetSourceResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -174,9 +176,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     public CompletableFuture<Void> getText(@Nonnull RemoteHandle visitor) {
-        return session
-            .request(new FrameGetTextRequest(handle, visitor), FrameGetTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameGetTextRequest(handle, visitor), FrameGetTextResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -188,9 +190,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:138</a>
      */
     public CompletableFuture<Void> loadRequest(@Nonnull RemoteHandle request) {
-        return session
-            .request(new FrameLoadRequestRequest(handle, request), FrameLoadRequestResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameLoadRequestRequest(handle, request), FrameLoadRequestResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -200,9 +202,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:148</a>
      */
     public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-        return session
-            .request(new FrameLoadUrlRequest(handle, url), FrameLoadUrlResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameLoadUrlRequest(handle, url), FrameLoadUrlResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -214,9 +216,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:154</a>
      */
     public CompletableFuture<Void> executeJavaScript(@Nonnull String code, @Nonnull String scriptUrl, int startLine) {
-        return session
-            .request(new FrameExecuteJavaScriptRequest(handle, code, scriptUrl, startLine), FrameExecuteJavaScriptResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameExecuteJavaScriptRequest(handle, code, scriptUrl, startLine), FrameExecuteJavaScriptResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -226,9 +228,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:166</a>
      */
     public CompletableFuture<Integer> isMain() {
-        return session
-            .request(new FrameIsMainRequest(handle), FrameIsMainResponse.DECODER)
-            .thenApply(FrameIsMainResponse::result);
+        return CefFutures.map(
+            session.request(new FrameIsMainRequest(handle), FrameIsMainResponse.DECODER),
+            FrameIsMainResponse::result);
     }
 
     /**
@@ -238,9 +240,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:172</a>
      */
     public CompletableFuture<Integer> isFocused() {
-        return session
-            .request(new FrameIsFocusedRequest(handle), FrameIsFocusedResponse.DECODER)
-            .thenApply(FrameIsFocusedResponse::result);
+        return CefFutures.map(
+            session.request(new FrameIsFocusedRequest(handle), FrameIsFocusedResponse.DECODER),
+            FrameIsFocusedResponse::result);
     }
 
     /**
@@ -250,9 +252,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:178</a>
      */
     public CompletableFuture<String> getName() {
-        return session
-            .request(new FrameGetNameRequest(handle), FrameGetNameResponse.DECODER)
-            .thenApply(FrameGetNameResponse::result);
+        return CefFutures.map(
+            session.request(new FrameGetNameRequest(handle), FrameGetNameResponse.DECODER),
+            FrameGetNameResponse::result);
     }
 
     /**
@@ -262,9 +264,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:188</a>
      */
     public CompletableFuture<String> getIdentifier() {
-        return session
-            .request(new FrameGetIdentifierRequest(handle), FrameGetIdentifierResponse.DECODER)
-            .thenApply(FrameGetIdentifierResponse::result);
+        return CefFutures.map(
+            session.request(new FrameGetIdentifierRequest(handle), FrameGetIdentifierResponse.DECODER),
+            FrameGetIdentifierResponse::result);
     }
 
     /**
@@ -274,10 +276,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:195</a>
      */
     public CompletableFuture<Frame> getParent() {
-        return session
-            .request(new FrameGetParentRequest(handle), FrameGetParentResponse.DECODER)
-            .thenApply(FrameGetParentResponse::result)
-            .thenApply(__h -> new Frame(session, __h));
+        return CefFutures.map(
+            session.request(new FrameGetParentRequest(handle), FrameGetParentResponse.DECODER),
+            __r -> new Frame(session, __r.result()));
     }
 
     /**
@@ -287,9 +288,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
-        return session
-            .request(new FrameGetUrlRequest(handle), FrameGetUrlResponse.DECODER)
-            .thenApply(FrameGetUrlResponse::result);
+        return CefFutures.map(
+            session.request(new FrameGetUrlRequest(handle), FrameGetUrlResponse.DECODER),
+            FrameGetUrlResponse::result);
     }
 
     /**
@@ -299,10 +300,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:208</a>
      */
     public CompletableFuture<Browser> getBrowser() {
-        return session
-            .request(new FrameGetBrowserRequest(handle), FrameGetBrowserResponse.DECODER)
-            .thenApply(FrameGetBrowserResponse::result)
-            .thenApply(__h -> new Browser(session, __h));
+        return CefFutures.map(
+            session.request(new FrameGetBrowserRequest(handle), FrameGetBrowserResponse.DECODER),
+            __r -> new Browser(session, __r.result()));
     }
 
     /**
@@ -312,10 +312,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:214</a>
      */
     public CompletableFuture<V8Context> getV8Context() {
-        return session
-            .request(new FrameGetV8ContextRequest(handle), FrameGetV8ContextResponse.DECODER)
-            .thenApply(FrameGetV8ContextResponse::result)
-            .thenApply(__h -> new V8Context(session, handle, __h));
+        return CefFutures.map(
+            session.request(new FrameGetV8ContextRequest(handle), FrameGetV8ContextResponse.DECODER),
+            __r -> new V8Context(session, handle, __r.result()));
     }
 
     /**
@@ -325,9 +324,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:221</a>
      */
     public CompletableFuture<Void> visitDom(@Nonnull RemoteHandle visitor) {
-        return session
-            .request(new FrameVisitDomRequest(handle, visitor), FrameVisitDomResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameVisitDomRequest(handle, visitor), FrameVisitDomResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -347,10 +346,9 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:228</a>
      */
     public CompletableFuture<Urlrequest> createUrlrequest(@Nonnull RemoteHandle request, @Nonnull RemoteHandle client) {
-        return session
-            .request(new FrameCreateUrlrequestRequest(handle, request, client), FrameCreateUrlrequestResponse.DECODER)
-            .thenApply(FrameCreateUrlrequestResponse::result)
-            .thenApply(__h -> new Urlrequest(session, __h));
+        return CefFutures.map(
+            session.request(new FrameCreateUrlrequestRequest(handle, request, client), FrameCreateUrlrequestResponse.DECODER),
+            __r -> new Urlrequest(session, __r.result()));
     }
 
     /**
@@ -360,8 +358,8 @@ public final class Frame {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:248</a>
      */
     public CompletableFuture<Void> sendProcessMessage(int targetProcess, @Nonnull RemoteHandle message) {
-        return session
-            .request(new FrameSendProcessMessageRequest(handle, targetProcess, message), FrameSendProcessMessageResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FrameSendProcessMessageRequest(handle, targetProcess, message), FrameSendProcessMessageResponse.DECODER),
+            r -> null);
     }
 }

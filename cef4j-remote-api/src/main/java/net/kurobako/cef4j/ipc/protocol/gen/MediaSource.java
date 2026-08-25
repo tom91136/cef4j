@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class MediaSource {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_media_source_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_media_source_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class MediaSource {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     public CompletableFuture<String> getId() {
-        return session
-            .request(new MediaSourceGetIdRequest(handle), MediaSourceGetIdResponse.DECODER)
-            .thenApply(MediaSourceGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSourceGetIdRequest(handle), MediaSourceGetIdResponse.DECODER),
+            MediaSourceGetIdResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class MediaSource {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:305</a>
      */
     public CompletableFuture<Integer> isCastSource() {
-        return session
-            .request(new MediaSourceIsCastSourceRequest(handle), MediaSourceIsCastSourceResponse.DECODER)
-            .thenApply(MediaSourceIsCastSourceResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSourceIsCastSourceRequest(handle), MediaSourceIsCastSourceResponse.DECODER),
+            MediaSourceIsCastSourceResponse::result);
     }
 
     /**
@@ -66,8 +68,8 @@ public final class MediaSource {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:311</a>
      */
     public CompletableFuture<Integer> isDialSource() {
-        return session
-            .request(new MediaSourceIsDialSourceRequest(handle), MediaSourceIsDialSourceResponse.DECODER)
-            .thenApply(MediaSourceIsDialSourceResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSourceIsDialSourceRequest(handle), MediaSourceIsDialSourceResponse.DECODER),
+            MediaSourceIsDialSourceResponse::result);
     }
 }

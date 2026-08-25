@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,6 +16,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.remote.jfx.RemoteWebView;
+import net.kurobako.cef4j.test.RemoteNavigationProbe;
+import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
@@ -54,35 +55,32 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
 
     private static synchronized void startJavaFx() throws Exception {
         if (FX_STARTED.get()) return;
-        CountDownLatch started = new CountDownLatch(1);
-        Platform.startup(() -> {
-            Platform.setImplicitExit(false);
-            FX_STARTED.set(true);
-            started.countDown();
-        });
-        if (!started.await(15, TimeUnit.SECONDS)) throw new IllegalStateException("JavaFX startup timed out");
+        CompletableFuture<Void> started = new CompletableFuture<>();
+        Runnable configure = () -> {
+            try {
+                Platform.setImplicitExit(false);
+                FX_STARTED.set(true);
+                started.complete(null);
+            } catch (Throwable failure) {
+                started.completeExceptionally(failure);
+            }
+        };
+        try {
+            Platform.startup(configure);
+        } catch (IllegalStateException alreadyStarted) {
+            Platform.runLater(configure);
+        }
+        TestDeadline.after(Duration.ofSeconds(15)).await(started, "start JavaFX");
     }
 
     private static void onFxThread(Runnable action) throws Exception {
-        if (Platform.isFxApplicationThread()) {
-            action.run();
-            return;
-        }
-        CompletableFuture<Void> done = new CompletableFuture<>();
-        Platform.runLater(() -> {
-            try {
-                action.run();
-                done.complete(null);
-            } catch (Throwable failure) {
-                done.completeExceptionally(failure);
-            }
-        });
-        done.get(15, TimeUnit.SECONDS);
+        TestDeadline.after(Duration.ofSeconds(15))
+                .runOn(Platform.isFxApplicationThread(), Platform::runLater, action, "run JavaFX test action");
     }
 
     private static final class Session implements BrowserSession {
         private final RemoteSurfaceSupport.RuntimeFixture runtime;
-        private final RemoteSurfaceSupport.NavigationProbe navigation;
+        private final RemoteNavigationProbe navigation;
         private final RemoteSurfaceSupport.FrameProbe frames = new RemoteSurfaceSupport.FrameProbe();
         private final RemoteWebView view;
         private final Stage stage;
@@ -96,9 +94,8 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             AtomicReference<Stage> stageRef = new AtomicReference<>();
             onFxThread(() -> {
                 RemoteWebView nextView = new RemoteWebView((session, browser) -> frames.bind(session));
-                // Seed the remote viewport before attach instead of relying on the first visible-stage pulse.
-                // JavaFX 25 on macOS can defer that pulse until after CEF has emitted its bootstrap 1x1 paint,
-                // leaving legacy CEF releases at 1x1 indefinitely when no subsequent layout is requested.
+                // XXX: Remove the pre-attach resize when JavaFX no longer defers the first macOS stage pulse past
+                // bootstrap paint for the minimum supported CEF release.
                 nextView.setManaged(false);
                 nextView.resize(width, height);
                 StackPane nextRoot = new StackPane(nextView);
@@ -112,9 +109,8 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             this.view = Objects.requireNonNull(viewRef.get(), "remote JavaFX view");
             this.stage = Objects.requireNonNull(stageRef.get(), "remote JavaFX stage");
             this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
-            this.navigation = new RemoteSurfaceSupport.NavigationProbe(runtime.session);
+            this.navigation = new RemoteNavigationProbe(runtime.session);
             try {
-                // Attach without another UI-queue round trip: browser-created is a one-shot event.
                 view.attach(runtime.session);
                 onFxThread(() -> {
                     stage.show();
@@ -144,7 +140,8 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException {
+        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout)
+                throws InterruptedException, java.util.concurrent.TimeoutException {
             return frames.await(width, height, timeout);
         }
 
@@ -172,7 +169,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
                     stage.close();
                 });
             } catch (Exception ignored) {
-                // Continue closing the server-side resources.
+                // Cleanup continues with independently owned resources.
             }
             navigation.close();
             runtime.close();

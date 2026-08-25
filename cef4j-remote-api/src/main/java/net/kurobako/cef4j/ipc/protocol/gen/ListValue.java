@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class ListValue {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_list_value_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_list_value_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:549</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new ListValueIsValidRequest(handle), ListValueIsValidResponse.DECODER)
-            .thenApply(ListValueIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueIsValidRequest(handle), ListValueIsValidResponse.DECODER),
+            ListValueIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:558</a>
      */
     public CompletableFuture<Integer> isOwned() {
-        return session
-            .request(new ListValueIsOwnedRequest(handle), ListValueIsOwnedResponse.DECODER)
-            .thenApply(ListValueIsOwnedResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueIsOwnedRequest(handle), ListValueIsOwnedResponse.DECODER),
+            ListValueIsOwnedResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:564</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new ListValueIsReadOnlyRequest(handle), ListValueIsReadOnlyResponse.DECODER)
-            .thenApply(ListValueIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueIsReadOnlyRequest(handle), ListValueIsReadOnlyResponse.DECODER),
+            ListValueIsReadOnlyResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:571</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new ListValueIsSameRequest(handle, that), ListValueIsSameResponse.DECODER)
-            .thenApply(ListValueIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueIsSameRequest(handle, that), ListValueIsSameResponse.DECODER),
+            ListValueIsSameResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:579</a>
      */
     public CompletableFuture<Integer> isEqual(@Nonnull RemoteHandle that) {
-        return session
-            .request(new ListValueIsEqualRequest(handle, that), ListValueIsEqualResponse.DECODER)
-            .thenApply(ListValueIsEqualResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueIsEqualRequest(handle, that), ListValueIsEqualResponse.DECODER),
+            ListValueIsEqualResponse::result);
     }
 
     /**
@@ -102,10 +104,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:586</a>
      */
     public CompletableFuture<ListValue> copy() {
-        return session
-            .request(new ListValueCopyRequest(handle), ListValueCopyResponse.DECODER)
-            .thenApply(ListValueCopyResponse::result)
-            .thenApply(__h -> new ListValue(session, __h));
+        return CefFutures.map(
+            session.request(new ListValueCopyRequest(handle), ListValueCopyResponse.DECODER),
+            __r -> new ListValue(session, __r.result()));
     }
 
     /**
@@ -115,9 +116,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
     public CompletableFuture<Integer> setSize(long size) {
-        return session
-            .request(new ListValueSetSizeRequest(handle, size), ListValueSetSizeResponse.DECODER)
-            .thenApply(ListValueSetSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetSizeRequest(handle, size), ListValueSetSizeResponse.DECODER),
+            ListValueSetSizeResponse::result);
     }
 
     /**
@@ -127,9 +128,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
     public CompletableFuture<Long> getSize() {
-        return session
-            .request(new ListValueGetSizeRequest(handle), ListValueGetSizeResponse.DECODER)
-            .thenApply(ListValueGetSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueGetSizeRequest(handle), ListValueGetSizeResponse.DECODER),
+            ListValueGetSizeResponse::result);
     }
 
     /**
@@ -139,9 +140,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:605</a>
      */
     public CompletableFuture<Integer> clear() {
-        return session
-            .request(new ListValueClearRequest(handle), ListValueClearResponse.DECODER)
-            .thenApply(ListValueClearResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueClearRequest(handle), ListValueClearResponse.DECODER),
+            ListValueClearResponse::result);
     }
 
     /**
@@ -151,9 +152,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:611</a>
      */
     public CompletableFuture<Integer> remove(long index) {
-        return session
-            .request(new ListValueRemoveRequest(handle, index), ListValueRemoveResponse.DECODER)
-            .thenApply(ListValueRemoveResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueRemoveRequest(handle, index), ListValueRemoveResponse.DECODER),
+            ListValueRemoveResponse::result);
     }
 
     /**
@@ -163,9 +164,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:617</a>
      */
     public CompletableFuture<Integer> getType(long index) {
-        return session
-            .request(new ListValueGetTypeRequest(handle, index), ListValueGetTypeResponse.DECODER)
-            .thenApply(ListValueGetTypeResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueGetTypeRequest(handle, index), ListValueGetTypeResponse.DECODER),
+            ListValueGetTypeResponse::result);
     }
 
     /**
@@ -175,10 +176,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:623</a>
      */
     public CompletableFuture<Value> getValue(long index) {
-        return session
-            .request(new ListValueGetValueRequest(handle, index), ListValueGetValueResponse.DECODER)
-            .thenApply(ListValueGetValueResponse::result)
-            .thenApply(__h -> new Value(session, __h));
+        return CefFutures.map(
+            session.request(new ListValueGetValueRequest(handle, index), ListValueGetValueResponse.DECODER),
+            __r -> new Value(session, __r.result()));
     }
 
     /**
@@ -188,9 +188,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:633</a>
      */
     public CompletableFuture<Integer> getBool(long index) {
-        return session
-            .request(new ListValueGetBoolRequest(handle, index), ListValueGetBoolResponse.DECODER)
-            .thenApply(ListValueGetBoolResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueGetBoolRequest(handle, index), ListValueGetBoolResponse.DECODER),
+            ListValueGetBoolResponse::result);
     }
 
     /**
@@ -200,9 +200,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:639</a>
      */
     public CompletableFuture<Integer> getInt(long index) {
-        return session
-            .request(new ListValueGetIntRequest(handle, index), ListValueGetIntResponse.DECODER)
-            .thenApply(ListValueGetIntResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueGetIntRequest(handle, index), ListValueGetIntResponse.DECODER),
+            ListValueGetIntResponse::result);
     }
 
     /**
@@ -212,10 +212,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:657</a>
      */
     public CompletableFuture<BinaryValue> getBinary(long index) {
-        return session
-            .request(new ListValueGetBinaryRequest(handle, index), ListValueGetBinaryResponse.DECODER)
-            .thenApply(ListValueGetBinaryResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new ListValueGetBinaryRequest(handle, index), ListValueGetBinaryResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -225,10 +224,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:664</a>
      */
     public CompletableFuture<DictionaryValue> getDictionary(long index) {
-        return session
-            .request(new ListValueGetDictionaryRequest(handle, index), ListValueGetDictionaryResponse.DECODER)
-            .thenApply(ListValueGetDictionaryResponse::result)
-            .thenApply(__h -> new DictionaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new ListValueGetDictionaryRequest(handle, index), ListValueGetDictionaryResponse.DECODER),
+            __r -> new DictionaryValue(session, __r.result()));
     }
 
     /**
@@ -238,10 +236,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:672</a>
      */
     public CompletableFuture<ListValue> getList(long index) {
-        return session
-            .request(new ListValueGetListRequest(handle, index), ListValueGetListResponse.DECODER)
-            .thenApply(ListValueGetListResponse::result)
-            .thenApply(__h -> new ListValue(session, __h));
+        return CefFutures.map(
+            session.request(new ListValueGetListRequest(handle, index), ListValueGetListResponse.DECODER),
+            __r -> new ListValue(session, __r.result()));
     }
 
     /**
@@ -251,9 +248,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:680</a>
      */
     public CompletableFuture<Integer> setValue(long index, @Nonnull RemoteHandle value) {
-        return session
-            .request(new ListValueSetValueRequest(handle, index, value), ListValueSetValueResponse.DECODER)
-            .thenApply(ListValueSetValueResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetValueRequest(handle, index, value), ListValueSetValueResponse.DECODER),
+            ListValueSetValueResponse::result);
     }
 
     /**
@@ -263,9 +260,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:691</a>
      */
     public CompletableFuture<Integer> setNull(long index) {
-        return session
-            .request(new ListValueSetNullRequest(handle, index), ListValueSetNullResponse.DECODER)
-            .thenApply(ListValueSetNullResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetNullRequest(handle, index), ListValueSetNullResponse.DECODER),
+            ListValueSetNullResponse::result);
     }
 
     /**
@@ -275,9 +272,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:698</a>
      */
     public CompletableFuture<Integer> setBool(long index, int value) {
-        return session
-            .request(new ListValueSetBoolRequest(handle, index, value), ListValueSetBoolResponse.DECODER)
-            .thenApply(ListValueSetBoolResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetBoolRequest(handle, index, value), ListValueSetBoolResponse.DECODER),
+            ListValueSetBoolResponse::result);
     }
 
     /**
@@ -287,9 +284,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:705</a>
      */
     public CompletableFuture<Integer> setInt(long index, int value) {
-        return session
-            .request(new ListValueSetIntRequest(handle, index, value), ListValueSetIntResponse.DECODER)
-            .thenApply(ListValueSetIntResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetIntRequest(handle, index, value), ListValueSetIntResponse.DECODER),
+            ListValueSetIntResponse::result);
     }
 
     /**
@@ -301,9 +298,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:719</a>
      */
     public CompletableFuture<Integer> setString(long index, @Nonnull String value) {
-        return session
-            .request(new ListValueSetStringRequest(handle, index, value), ListValueSetStringResponse.DECODER)
-            .thenApply(ListValueSetStringResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetStringRequest(handle, index, value), ListValueSetStringResponse.DECODER),
+            ListValueSetStringResponse::result);
     }
 
     /**
@@ -313,9 +310,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:726</a>
      */
     public CompletableFuture<Integer> setBinary(long index, @Nonnull RemoteHandle value) {
-        return session
-            .request(new ListValueSetBinaryRequest(handle, index, value), ListValueSetBinaryResponse.DECODER)
-            .thenApply(ListValueSetBinaryResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetBinaryRequest(handle, index, value), ListValueSetBinaryResponse.DECODER),
+            ListValueSetBinaryResponse::result);
     }
 
     /**
@@ -325,9 +322,9 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:736</a>
      */
     public CompletableFuture<Integer> setDictionary(long index, @Nonnull RemoteHandle value) {
-        return session
-            .request(new ListValueSetDictionaryRequest(handle, index, value), ListValueSetDictionaryResponse.DECODER)
-            .thenApply(ListValueSetDictionaryResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetDictionaryRequest(handle, index, value), ListValueSetDictionaryResponse.DECODER),
+            ListValueSetDictionaryResponse::result);
     }
 
     /**
@@ -337,8 +334,8 @@ public final class ListValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:747</a>
      */
     public CompletableFuture<Integer> setList(long index, @Nonnull RemoteHandle value) {
-        return session
-            .request(new ListValueSetListRequest(handle, index, value), ListValueSetListResponse.DECODER)
-            .thenApply(ListValueSetListResponse::result);
+        return CefFutures.map(
+            session.request(new ListValueSetListRequest(handle, index, value), ListValueSetListResponse.DECODER),
+            ListValueSetListResponse::result);
     }
 }

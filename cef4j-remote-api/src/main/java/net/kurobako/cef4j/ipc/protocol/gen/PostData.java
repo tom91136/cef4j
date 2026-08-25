@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class PostData {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_post_data_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_post_data_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class PostData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:239</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new PostDataIsReadOnlyRequest(handle), PostDataIsReadOnlyResponse.DECODER)
-            .thenApply(PostDataIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new PostDataIsReadOnlyRequest(handle), PostDataIsReadOnlyResponse.DECODER),
+            PostDataIsReadOnlyResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class PostData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:245</a>
      */
     public CompletableFuture<Integer> hasExcludedElements() {
-        return session
-            .request(new PostDataHasExcludedElementsRequest(handle), PostDataHasExcludedElementsResponse.DECODER)
-            .thenApply(PostDataHasExcludedElementsResponse::result);
+        return CefFutures.map(
+            session.request(new PostDataHasExcludedElementsRequest(handle), PostDataHasExcludedElementsResponse.DECODER),
+            PostDataHasExcludedElementsResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class PostData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:254</a>
      */
     public CompletableFuture<Long> getElementCount() {
-        return session
-            .request(new PostDataGetElementCountRequest(handle), PostDataGetElementCountResponse.DECODER)
-            .thenApply(PostDataGetElementCountResponse::result);
+        return CefFutures.map(
+            session.request(new PostDataGetElementCountRequest(handle), PostDataGetElementCountResponse.DECODER),
+            PostDataGetElementCountResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class PostData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:266</a>
      */
     public CompletableFuture<Integer> removeElement(@Nonnull RemoteHandle element) {
-        return session
-            .request(new PostDataRemoveElementRequest(handle, element), PostDataRemoveElementResponse.DECODER)
-            .thenApply(PostDataRemoveElementResponse::result);
+        return CefFutures.map(
+            session.request(new PostDataRemoveElementRequest(handle, element), PostDataRemoveElementResponse.DECODER),
+            PostDataRemoveElementResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class PostData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:273</a>
      */
     public CompletableFuture<Integer> addElement(@Nonnull RemoteHandle element) {
-        return session
-            .request(new PostDataAddElementRequest(handle, element), PostDataAddElementResponse.DECODER)
-            .thenApply(PostDataAddElementResponse::result);
+        return CefFutures.map(
+            session.request(new PostDataAddElementRequest(handle, element), PostDataAddElementResponse.DECODER),
+            PostDataAddElementResponse::result);
     }
 
     /**
@@ -102,8 +104,8 @@ public final class PostData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:279</a>
      */
     public CompletableFuture<Void> removeElements() {
-        return session
-            .request(new PostDataRemoveElementsRequest(handle), PostDataRemoveElementsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PostDataRemoveElementsRequest(handle), PostDataRemoveElementsResponse.DECODER),
+            r -> null);
     }
 }

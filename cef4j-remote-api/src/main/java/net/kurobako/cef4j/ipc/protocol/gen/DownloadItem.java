@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class DownloadItem {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_download_item_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_download_item_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:49</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new DownloadItemIsValidRequest(handle), DownloadItemIsValidResponse.DECODER)
-            .thenApply(DownloadItemIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemIsValidRequest(handle), DownloadItemIsValidResponse.DECODER),
+            DownloadItemIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:56</a>
      */
     public CompletableFuture<Integer> isInProgress() {
-        return session
-            .request(new DownloadItemIsInProgressRequest(handle), DownloadItemIsInProgressResponse.DECODER)
-            .thenApply(DownloadItemIsInProgressResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemIsInProgressRequest(handle), DownloadItemIsInProgressResponse.DECODER),
+            DownloadItemIsInProgressResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:62</a>
      */
     public CompletableFuture<Integer> isComplete() {
-        return session
-            .request(new DownloadItemIsCompleteRequest(handle), DownloadItemIsCompleteResponse.DECODER)
-            .thenApply(DownloadItemIsCompleteResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemIsCompleteRequest(handle), DownloadItemIsCompleteResponse.DECODER),
+            DownloadItemIsCompleteResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:68</a>
      */
     public CompletableFuture<Integer> isCanceled() {
-        return session
-            .request(new DownloadItemIsCanceledRequest(handle), DownloadItemIsCanceledResponse.DECODER)
-            .thenApply(DownloadItemIsCanceledResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemIsCanceledRequest(handle), DownloadItemIsCanceledResponse.DECODER),
+            DownloadItemIsCanceledResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:74</a>
      */
     public CompletableFuture<Integer> isInterrupted() {
-        return session
-            .request(new DownloadItemIsInterruptedRequest(handle), DownloadItemIsInterruptedResponse.DECODER)
-            .thenApply(DownloadItemIsInterruptedResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemIsInterruptedRequest(handle), DownloadItemIsInterruptedResponse.DECODER),
+            DownloadItemIsInterruptedResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:88</a>
      */
     public CompletableFuture<Integer> getInterruptReason() {
-        return session
-            .request(new DownloadItemGetInterruptReasonRequest(handle), DownloadItemGetInterruptReasonResponse.DECODER)
-            .thenApply(DownloadItemGetInterruptReasonResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetInterruptReasonRequest(handle), DownloadItemGetInterruptReasonResponse.DECODER),
+            DownloadItemGetInterruptReasonResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:94</a>
      */
     public CompletableFuture<Long> getCurrentSpeed() {
-        return session
-            .request(new DownloadItemGetCurrentSpeedRequest(handle), DownloadItemGetCurrentSpeedResponse.DECODER)
-            .thenApply(DownloadItemGetCurrentSpeedResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetCurrentSpeedRequest(handle), DownloadItemGetCurrentSpeedResponse.DECODER),
+            DownloadItemGetCurrentSpeedResponse::result);
     }
 
     /**
@@ -126,9 +128,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:100</a>
      */
     public CompletableFuture<Integer> getPercentComplete() {
-        return session
-            .request(new DownloadItemGetPercentCompleteRequest(handle), DownloadItemGetPercentCompleteResponse.DECODER)
-            .thenApply(DownloadItemGetPercentCompleteResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetPercentCompleteRequest(handle), DownloadItemGetPercentCompleteResponse.DECODER),
+            DownloadItemGetPercentCompleteResponse::result);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:107</a>
      */
     public CompletableFuture<Long> getTotalBytes() {
-        return session
-            .request(new DownloadItemGetTotalBytesRequest(handle), DownloadItemGetTotalBytesResponse.DECODER)
-            .thenApply(DownloadItemGetTotalBytesResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetTotalBytesRequest(handle), DownloadItemGetTotalBytesResponse.DECODER),
+            DownloadItemGetTotalBytesResponse::result);
     }
 
     /**
@@ -150,9 +152,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:113</a>
      */
     public CompletableFuture<Long> getReceivedBytes() {
-        return session
-            .request(new DownloadItemGetReceivedBytesRequest(handle), DownloadItemGetReceivedBytesResponse.DECODER)
-            .thenApply(DownloadItemGetReceivedBytesResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetReceivedBytesRequest(handle), DownloadItemGetReceivedBytesResponse.DECODER),
+            DownloadItemGetReceivedBytesResponse::result);
     }
 
     /**
@@ -162,9 +164,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:119</a>
      */
     public CompletableFuture<Basetime> getStartTime() {
-        return session
-            .request(new DownloadItemGetStartTimeRequest(handle), DownloadItemGetStartTimeResponse.DECODER)
-            .thenApply(DownloadItemGetStartTimeResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetStartTimeRequest(handle), DownloadItemGetStartTimeResponse.DECODER),
+            DownloadItemGetStartTimeResponse::result);
     }
 
     /**
@@ -174,9 +176,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:125</a>
      */
     public CompletableFuture<Basetime> getEndTime() {
-        return session
-            .request(new DownloadItemGetEndTimeRequest(handle), DownloadItemGetEndTimeResponse.DECODER)
-            .thenApply(DownloadItemGetEndTimeResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetEndTimeRequest(handle), DownloadItemGetEndTimeResponse.DECODER),
+            DownloadItemGetEndTimeResponse::result);
     }
 
     /**
@@ -186,9 +188,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:131</a>
      */
     public CompletableFuture<String> getFullPath() {
-        return session
-            .request(new DownloadItemGetFullPathRequest(handle), DownloadItemGetFullPathResponse.DECODER)
-            .thenApply(DownloadItemGetFullPathResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetFullPathRequest(handle), DownloadItemGetFullPathResponse.DECODER),
+            DownloadItemGetFullPathResponse::result);
     }
 
     /**
@@ -198,9 +200,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:137</a>
      */
     public CompletableFuture<Integer> getId() {
-        return session
-            .request(new DownloadItemGetIdRequest(handle), DownloadItemGetIdResponse.DECODER)
-            .thenApply(DownloadItemGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetIdRequest(handle), DownloadItemGetIdResponse.DECODER),
+            DownloadItemGetIdResponse::result);
     }
 
     /**
@@ -210,9 +212,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
-        return session
-            .request(new DownloadItemGetUrlRequest(handle), DownloadItemGetUrlResponse.DECODER)
-            .thenApply(DownloadItemGetUrlResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetUrlRequest(handle), DownloadItemGetUrlResponse.DECODER),
+            DownloadItemGetUrlResponse::result);
     }
 
     /**
@@ -222,9 +224,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:149</a>
      */
     public CompletableFuture<String> getOriginalUrl() {
-        return session
-            .request(new DownloadItemGetOriginalUrlRequest(handle), DownloadItemGetOriginalUrlResponse.DECODER)
-            .thenApply(DownloadItemGetOriginalUrlResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetOriginalUrlRequest(handle), DownloadItemGetOriginalUrlResponse.DECODER),
+            DownloadItemGetOriginalUrlResponse::result);
     }
 
     /**
@@ -234,9 +236,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:155</a>
      */
     public CompletableFuture<String> getSuggestedFileName() {
-        return session
-            .request(new DownloadItemGetSuggestedFileNameRequest(handle), DownloadItemGetSuggestedFileNameResponse.DECODER)
-            .thenApply(DownloadItemGetSuggestedFileNameResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetSuggestedFileNameRequest(handle), DownloadItemGetSuggestedFileNameResponse.DECODER),
+            DownloadItemGetSuggestedFileNameResponse::result);
     }
 
     /**
@@ -246,9 +248,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:161</a>
      */
     public CompletableFuture<String> getContentDisposition() {
-        return session
-            .request(new DownloadItemGetContentDispositionRequest(handle), DownloadItemGetContentDispositionResponse.DECODER)
-            .thenApply(DownloadItemGetContentDispositionResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetContentDispositionRequest(handle), DownloadItemGetContentDispositionResponse.DECODER),
+            DownloadItemGetContentDispositionResponse::result);
     }
 
     /**
@@ -258,9 +260,9 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:167</a>
      */
     public CompletableFuture<String> getMimeType() {
-        return session
-            .request(new DownloadItemGetMimeTypeRequest(handle), DownloadItemGetMimeTypeResponse.DECODER)
-            .thenApply(DownloadItemGetMimeTypeResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemGetMimeTypeRequest(handle), DownloadItemGetMimeTypeResponse.DECODER),
+            DownloadItemGetMimeTypeResponse::result);
     }
 
     /**
@@ -271,8 +273,8 @@ public final class DownloadItem {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:81</a>
      */
     public CompletableFuture<Integer> isPaused() {
-        return session
-            .request(new DownloadItemIsPausedRequest(handle), DownloadItemIsPausedResponse.DECODER)
-            .thenApply(DownloadItemIsPausedResponse::result);
+        return CefFutures.map(
+            session.request(new DownloadItemIsPausedRequest(handle), DownloadItemIsPausedResponse.DECODER),
+            DownloadItemIsPausedResponse::result);
     }
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
@@ -20,6 +21,7 @@ import javafx.stage.StageStyle;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
@@ -125,14 +127,9 @@ public final class NativeBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException {
-            long deadline = System.nanoTime() + timeout.toNanos();
-            while (webView.framesPainted.sum() == 0) {
-                if (System.nanoTime() > deadline) {
-                    throw new InterruptedException("no native paint within " + timeout);
-                }
-                Thread.sleep(50);
-            }
+        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+            TestDeadline.after(timeout)
+                    .until(() -> webView.framesPainted.sum() > 0, Duration.ofMillis(50), "await native paint");
             int w = (int) stage.getScene().getWidth();
             int h = (int) stage.getScene().getHeight();
             return new PaintInfo(w, h, (long) w * h * 4);

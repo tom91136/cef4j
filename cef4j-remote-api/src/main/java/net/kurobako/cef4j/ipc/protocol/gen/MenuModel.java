@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class MenuModel {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_menu_model_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_menu_model_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:62</a>
      */
     public CompletableFuture<Integer> isSubMenu() {
-        return session
-            .request(new MenuModelIsSubMenuRequest(handle), MenuModelIsSubMenuResponse.DECODER)
-            .thenApply(MenuModelIsSubMenuResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsSubMenuRequest(handle), MenuModelIsSubMenuResponse.DECODER),
+            MenuModelIsSubMenuResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
      */
     public CompletableFuture<Integer> clear() {
-        return session
-            .request(new MenuModelClearRequest(handle), MenuModelClearResponse.DECODER)
-            .thenApply(MenuModelClearResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelClearRequest(handle), MenuModelClearResponse.DECODER),
+            MenuModelClearResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
      */
     public CompletableFuture<Long> getCount() {
-        return session
-            .request(new MenuModelGetCountRequest(handle), MenuModelGetCountResponse.DECODER)
-            .thenApply(MenuModelGetCountResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetCountRequest(handle), MenuModelGetCountResponse.DECODER),
+            MenuModelGetCountResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:80</a>
      */
     public CompletableFuture<Integer> addSeparator() {
-        return session
-            .request(new MenuModelAddSeparatorRequest(handle), MenuModelAddSeparatorResponse.DECODER)
-            .thenApply(MenuModelAddSeparatorResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelAddSeparatorRequest(handle), MenuModelAddSeparatorResponse.DECODER),
+            MenuModelAddSeparatorResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
      */
     public CompletableFuture<Integer> addItem(int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelAddItemRequest(handle, commandId, label), MenuModelAddItemResponse.DECODER)
-            .thenApply(MenuModelAddItemResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelAddItemRequest(handle, commandId, label), MenuModelAddItemResponse.DECODER),
+            MenuModelAddItemResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
      */
     public CompletableFuture<Integer> addCheckItem(int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelAddCheckItemRequest(handle, commandId, label), MenuModelAddCheckItemResponse.DECODER)
-            .thenApply(MenuModelAddCheckItemResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelAddCheckItemRequest(handle, commandId, label), MenuModelAddCheckItemResponse.DECODER),
+            MenuModelAddCheckItemResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
      */
     public CompletableFuture<Integer> addRadioItem(int commandId, @Nonnull String label, int groupId) {
-        return session
-            .request(new MenuModelAddRadioItemRequest(handle, commandId, label, groupId), MenuModelAddRadioItemResponse.DECODER)
-            .thenApply(MenuModelAddRadioItemResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelAddRadioItemRequest(handle, commandId, label, groupId), MenuModelAddRadioItemResponse.DECODER),
+            MenuModelAddRadioItemResponse::result);
     }
 
     /**
@@ -126,10 +128,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
      */
     public CompletableFuture<MenuModel> addSubMenu(int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelAddSubMenuRequest(handle, commandId, label), MenuModelAddSubMenuResponse.DECODER)
-            .thenApply(MenuModelAddSubMenuResponse::result)
-            .thenApply(__h -> new MenuModel(session, __h));
+        return CefFutures.map(
+            session.request(new MenuModelAddSubMenuRequest(handle, commandId, label), MenuModelAddSubMenuResponse.DECODER),
+            __r -> new MenuModel(session, __r.result()));
     }
 
     /**
@@ -139,9 +140,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:113</a>
      */
     public CompletableFuture<Integer> insertSeparatorAt(long index) {
-        return session
-            .request(new MenuModelInsertSeparatorAtRequest(handle, index), MenuModelInsertSeparatorAtResponse.DECODER)
-            .thenApply(MenuModelInsertSeparatorAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelInsertSeparatorAtRequest(handle, index), MenuModelInsertSeparatorAtResponse.DECODER),
+            MenuModelInsertSeparatorAtResponse::result);
     }
 
     /**
@@ -151,9 +152,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
      */
     public CompletableFuture<Integer> insertItemAt(long index, int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelInsertItemAtRequest(handle, index, commandId, label), MenuModelInsertItemAtResponse.DECODER)
-            .thenApply(MenuModelInsertItemAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelInsertItemAtRequest(handle, index, commandId, label), MenuModelInsertItemAtResponse.DECODER),
+            MenuModelInsertItemAtResponse::result);
     }
 
     /**
@@ -163,9 +164,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
      */
     public CompletableFuture<Integer> insertCheckItemAt(long index, int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelInsertCheckItemAtRequest(handle, index, commandId, label), MenuModelInsertCheckItemAtResponse.DECODER)
-            .thenApply(MenuModelInsertCheckItemAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelInsertCheckItemAtRequest(handle, index, commandId, label), MenuModelInsertCheckItemAtResponse.DECODER),
+            MenuModelInsertCheckItemAtResponse::result);
     }
 
     /**
@@ -175,9 +176,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
      */
     public CompletableFuture<Integer> insertRadioItemAt(long index, int commandId, @Nonnull String label, int groupId) {
-        return session
-            .request(new MenuModelInsertRadioItemAtRequest(handle, index, commandId, label, groupId), MenuModelInsertRadioItemAtResponse.DECODER)
-            .thenApply(MenuModelInsertRadioItemAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelInsertRadioItemAtRequest(handle, index, commandId, label, groupId), MenuModelInsertRadioItemAtResponse.DECODER),
+            MenuModelInsertRadioItemAtResponse::result);
     }
 
     /**
@@ -187,10 +188,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
      */
     public CompletableFuture<MenuModel> insertSubMenuAt(long index, int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelInsertSubMenuAtRequest(handle, index, commandId, label), MenuModelInsertSubMenuAtResponse.DECODER)
-            .thenApply(MenuModelInsertSubMenuAtResponse::result)
-            .thenApply(__h -> new MenuModel(session, __h));
+        return CefFutures.map(
+            session.request(new MenuModelInsertSubMenuAtRequest(handle, index, commandId, label), MenuModelInsertSubMenuAtResponse.DECODER),
+            __r -> new MenuModel(session, __r.result()));
     }
 
     /**
@@ -200,9 +200,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
      */
     public CompletableFuture<Integer> remove(int commandId) {
-        return session
-            .request(new MenuModelRemoveRequest(handle, commandId), MenuModelRemoveResponse.DECODER)
-            .thenApply(MenuModelRemoveResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelRemoveRequest(handle, commandId), MenuModelRemoveResponse.DECODER),
+            MenuModelRemoveResponse::result);
     }
 
     /**
@@ -212,9 +212,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:164</a>
      */
     public CompletableFuture<Integer> removeAt(long index) {
-        return session
-            .request(new MenuModelRemoveAtRequest(handle, index), MenuModelRemoveAtResponse.DECODER)
-            .thenApply(MenuModelRemoveAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelRemoveAtRequest(handle, index), MenuModelRemoveAtResponse.DECODER),
+            MenuModelRemoveAtResponse::result);
     }
 
     /**
@@ -224,9 +224,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:170</a>
      */
     public CompletableFuture<Integer> getIndexOf(int commandId) {
-        return session
-            .request(new MenuModelGetIndexOfRequest(handle, commandId), MenuModelGetIndexOfResponse.DECODER)
-            .thenApply(MenuModelGetIndexOfResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetIndexOfRequest(handle, commandId), MenuModelGetIndexOfResponse.DECODER),
+            MenuModelGetIndexOfResponse::result);
     }
 
     /**
@@ -236,9 +236,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:177</a>
      */
     public CompletableFuture<Integer> getCommandIdAt(long index) {
-        return session
-            .request(new MenuModelGetCommandIdAtRequest(handle, index), MenuModelGetCommandIdAtResponse.DECODER)
-            .thenApply(MenuModelGetCommandIdAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetCommandIdAtRequest(handle, index), MenuModelGetCommandIdAtResponse.DECODER),
+            MenuModelGetCommandIdAtResponse::result);
     }
 
     /**
@@ -248,9 +248,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
      */
     public CompletableFuture<Integer> setCommandIdAt(long index, int commandId) {
-        return session
-            .request(new MenuModelSetCommandIdAtRequest(handle, index, commandId), MenuModelSetCommandIdAtResponse.DECODER)
-            .thenApply(MenuModelSetCommandIdAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetCommandIdAtRequest(handle, index, commandId), MenuModelSetCommandIdAtResponse.DECODER),
+            MenuModelSetCommandIdAtResponse::result);
     }
 
     /**
@@ -260,9 +260,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:190</a>
      */
     public CompletableFuture<String> getLabel(int commandId) {
-        return session
-            .request(new MenuModelGetLabelRequest(handle, commandId), MenuModelGetLabelResponse.DECODER)
-            .thenApply(MenuModelGetLabelResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetLabelRequest(handle, commandId), MenuModelGetLabelResponse.DECODER),
+            MenuModelGetLabelResponse::result);
     }
 
     /**
@@ -272,9 +272,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
      */
     public CompletableFuture<Integer> setLabel(int commandId, @Nonnull String label) {
-        return session
-            .request(new MenuModelSetLabelRequest(handle, commandId, label), MenuModelSetLabelResponse.DECODER)
-            .thenApply(MenuModelSetLabelResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetLabelRequest(handle, commandId, label), MenuModelSetLabelResponse.DECODER),
+            MenuModelSetLabelResponse::result);
     }
 
     /**
@@ -284,9 +284,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
      */
     public CompletableFuture<Integer> setLabelAt(long index, @Nonnull String label) {
-        return session
-            .request(new MenuModelSetLabelAtRequest(handle, index, label), MenuModelSetLabelAtResponse.DECODER)
-            .thenApply(MenuModelSetLabelAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetLabelAtRequest(handle, index, label), MenuModelSetLabelAtResponse.DECODER),
+            MenuModelSetLabelAtResponse::result);
     }
 
     /**
@@ -296,9 +296,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
      */
     public CompletableFuture<Integer> getType(int commandId) {
-        return session
-            .request(new MenuModelGetTypeRequest(handle, commandId), MenuModelGetTypeResponse.DECODER)
-            .thenApply(MenuModelGetTypeResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetTypeRequest(handle, commandId), MenuModelGetTypeResponse.DECODER),
+            MenuModelGetTypeResponse::result);
     }
 
     /**
@@ -308,9 +308,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
      */
     public CompletableFuture<Integer> getGroupId(int commandId) {
-        return session
-            .request(new MenuModelGetGroupIdRequest(handle, commandId), MenuModelGetGroupIdResponse.DECODER)
-            .thenApply(MenuModelGetGroupIdResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetGroupIdRequest(handle, commandId), MenuModelGetGroupIdResponse.DECODER),
+            MenuModelGetGroupIdResponse::result);
     }
 
     /**
@@ -320,9 +320,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:233</a>
      */
     public CompletableFuture<Integer> getGroupIdAt(long index) {
-        return session
-            .request(new MenuModelGetGroupIdAtRequest(handle, index), MenuModelGetGroupIdAtResponse.DECODER)
-            .thenApply(MenuModelGetGroupIdAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetGroupIdAtRequest(handle, index), MenuModelGetGroupIdAtResponse.DECODER),
+            MenuModelGetGroupIdAtResponse::result);
     }
 
     /**
@@ -332,9 +332,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
     public CompletableFuture<Integer> setGroupId(int commandId, int groupId) {
-        return session
-            .request(new MenuModelSetGroupIdRequest(handle, commandId, groupId), MenuModelSetGroupIdResponse.DECODER)
-            .thenApply(MenuModelSetGroupIdResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetGroupIdRequest(handle, commandId, groupId), MenuModelSetGroupIdResponse.DECODER),
+            MenuModelSetGroupIdResponse::result);
     }
 
     /**
@@ -344,9 +344,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
      */
     public CompletableFuture<Integer> setGroupIdAt(long index, int groupId) {
-        return session
-            .request(new MenuModelSetGroupIdAtRequest(handle, index, groupId), MenuModelSetGroupIdAtResponse.DECODER)
-            .thenApply(MenuModelSetGroupIdAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetGroupIdAtRequest(handle, index, groupId), MenuModelSetGroupIdAtResponse.DECODER),
+            MenuModelSetGroupIdAtResponse::result);
     }
 
     /**
@@ -356,10 +356,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:251</a>
      */
     public CompletableFuture<MenuModel> getSubMenu(int commandId) {
-        return session
-            .request(new MenuModelGetSubMenuRequest(handle, commandId), MenuModelGetSubMenuResponse.DECODER)
-            .thenApply(MenuModelGetSubMenuResponse::result)
-            .thenApply(__h -> new MenuModel(session, __h));
+        return CefFutures.map(
+            session.request(new MenuModelGetSubMenuRequest(handle, commandId), MenuModelGetSubMenuResponse.DECODER),
+            __r -> new MenuModel(session, __r.result()));
     }
 
     /**
@@ -369,10 +368,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:257</a>
      */
     public CompletableFuture<MenuModel> getSubMenuAt(long index) {
-        return session
-            .request(new MenuModelGetSubMenuAtRequest(handle, index), MenuModelGetSubMenuAtResponse.DECODER)
-            .thenApply(MenuModelGetSubMenuAtResponse::result)
-            .thenApply(__h -> new MenuModel(session, __h));
+        return CefFutures.map(
+            session.request(new MenuModelGetSubMenuAtRequest(handle, index), MenuModelGetSubMenuAtResponse.DECODER),
+            __r -> new MenuModel(session, __r.result()));
     }
 
     /**
@@ -382,9 +380,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
      */
     public CompletableFuture<Integer> isVisible(int commandId) {
-        return session
-            .request(new MenuModelIsVisibleRequest(handle, commandId), MenuModelIsVisibleResponse.DECODER)
-            .thenApply(MenuModelIsVisibleResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsVisibleRequest(handle, commandId), MenuModelIsVisibleResponse.DECODER),
+            MenuModelIsVisibleResponse::result);
     }
 
     /**
@@ -394,9 +392,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:269</a>
      */
     public CompletableFuture<Integer> isVisibleAt(long index) {
-        return session
-            .request(new MenuModelIsVisibleAtRequest(handle, index), MenuModelIsVisibleAtResponse.DECODER)
-            .thenApply(MenuModelIsVisibleAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsVisibleAtRequest(handle, index), MenuModelIsVisibleAtResponse.DECODER),
+            MenuModelIsVisibleAtResponse::result);
     }
 
     /**
@@ -406,9 +404,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Integer> setVisible(int commandId, int visible) {
-        return session
-            .request(new MenuModelSetVisibleRequest(handle, commandId, visible), MenuModelSetVisibleResponse.DECODER)
-            .thenApply(MenuModelSetVisibleResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetVisibleRequest(handle, commandId, visible), MenuModelSetVisibleResponse.DECODER),
+            MenuModelSetVisibleResponse::result);
     }
 
     /**
@@ -418,9 +416,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
      */
     public CompletableFuture<Integer> setVisibleAt(long index, int visible) {
-        return session
-            .request(new MenuModelSetVisibleAtRequest(handle, index, visible), MenuModelSetVisibleAtResponse.DECODER)
-            .thenApply(MenuModelSetVisibleAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetVisibleAtRequest(handle, index, visible), MenuModelSetVisibleAtResponse.DECODER),
+            MenuModelSetVisibleAtResponse::result);
     }
 
     /**
@@ -430,9 +428,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
      */
     public CompletableFuture<Integer> isEnabled(int commandId) {
-        return session
-            .request(new MenuModelIsEnabledRequest(handle, commandId), MenuModelIsEnabledResponse.DECODER)
-            .thenApply(MenuModelIsEnabledResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsEnabledRequest(handle, commandId), MenuModelIsEnabledResponse.DECODER),
+            MenuModelIsEnabledResponse::result);
     }
 
     /**
@@ -442,9 +440,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:294</a>
      */
     public CompletableFuture<Integer> isEnabledAt(long index) {
-        return session
-            .request(new MenuModelIsEnabledAtRequest(handle, index), MenuModelIsEnabledAtResponse.DECODER)
-            .thenApply(MenuModelIsEnabledAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsEnabledAtRequest(handle, index), MenuModelIsEnabledAtResponse.DECODER),
+            MenuModelIsEnabledAtResponse::result);
     }
 
     /**
@@ -454,9 +452,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
      */
     public CompletableFuture<Integer> setEnabled(int commandId, int enabled) {
-        return session
-            .request(new MenuModelSetEnabledRequest(handle, commandId, enabled), MenuModelSetEnabledResponse.DECODER)
-            .thenApply(MenuModelSetEnabledResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetEnabledRequest(handle, commandId, enabled), MenuModelSetEnabledResponse.DECODER),
+            MenuModelSetEnabledResponse::result);
     }
 
     /**
@@ -466,9 +464,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
      */
     public CompletableFuture<Integer> setEnabledAt(long index, int enabled) {
-        return session
-            .request(new MenuModelSetEnabledAtRequest(handle, index, enabled), MenuModelSetEnabledAtResponse.DECODER)
-            .thenApply(MenuModelSetEnabledAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetEnabledAtRequest(handle, index, enabled), MenuModelSetEnabledAtResponse.DECODER),
+            MenuModelSetEnabledAtResponse::result);
     }
 
     /**
@@ -478,9 +476,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:314</a>
      */
     public CompletableFuture<Integer> isChecked(int commandId) {
-        return session
-            .request(new MenuModelIsCheckedRequest(handle, commandId), MenuModelIsCheckedResponse.DECODER)
-            .thenApply(MenuModelIsCheckedResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsCheckedRequest(handle, commandId), MenuModelIsCheckedResponse.DECODER),
+            MenuModelIsCheckedResponse::result);
     }
 
     /**
@@ -490,9 +488,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:321</a>
      */
     public CompletableFuture<Integer> isCheckedAt(long index) {
-        return session
-            .request(new MenuModelIsCheckedAtRequest(handle, index), MenuModelIsCheckedAtResponse.DECODER)
-            .thenApply(MenuModelIsCheckedAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelIsCheckedAtRequest(handle, index), MenuModelIsCheckedAtResponse.DECODER),
+            MenuModelIsCheckedAtResponse::result);
     }
 
     /**
@@ -502,9 +500,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
      */
     public CompletableFuture<Integer> setChecked(int commandId, int checked) {
-        return session
-            .request(new MenuModelSetCheckedRequest(handle, commandId, checked), MenuModelSetCheckedResponse.DECODER)
-            .thenApply(MenuModelSetCheckedResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetCheckedRequest(handle, commandId, checked), MenuModelSetCheckedResponse.DECODER),
+            MenuModelSetCheckedResponse::result);
     }
 
     /**
@@ -514,9 +512,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
      */
     public CompletableFuture<Integer> setCheckedAt(long index, int checked) {
-        return session
-            .request(new MenuModelSetCheckedAtRequest(handle, index, checked), MenuModelSetCheckedAtResponse.DECODER)
-            .thenApply(MenuModelSetCheckedAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetCheckedAtRequest(handle, index, checked), MenuModelSetCheckedAtResponse.DECODER),
+            MenuModelSetCheckedAtResponse::result);
     }
 
     /**
@@ -526,9 +524,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:342</a>
      */
     public CompletableFuture<Integer> hasAccelerator(int commandId) {
-        return session
-            .request(new MenuModelHasAcceleratorRequest(handle, commandId), MenuModelHasAcceleratorResponse.DECODER)
-            .thenApply(MenuModelHasAcceleratorResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelHasAcceleratorRequest(handle, commandId), MenuModelHasAcceleratorResponse.DECODER),
+            MenuModelHasAcceleratorResponse::result);
     }
 
     /**
@@ -538,9 +536,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:349</a>
      */
     public CompletableFuture<Integer> hasAcceleratorAt(long index) {
-        return session
-            .request(new MenuModelHasAcceleratorAtRequest(handle, index), MenuModelHasAcceleratorAtResponse.DECODER)
-            .thenApply(MenuModelHasAcceleratorAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelHasAcceleratorAtRequest(handle, index), MenuModelHasAcceleratorAtResponse.DECODER),
+            MenuModelHasAcceleratorAtResponse::result);
     }
 
     /**
@@ -550,9 +548,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
     public CompletableFuture<Integer> setAccelerator(int commandId, int keyCode, int shiftPressed, int ctrlPressed, int altPressed) {
-        return session
-            .request(new MenuModelSetAcceleratorRequest(handle, commandId, keyCode, shiftPressed, ctrlPressed, altPressed), MenuModelSetAcceleratorResponse.DECODER)
-            .thenApply(MenuModelSetAcceleratorResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetAcceleratorRequest(handle, commandId, keyCode, shiftPressed, ctrlPressed, altPressed), MenuModelSetAcceleratorResponse.DECODER),
+            MenuModelSetAcceleratorResponse::result);
     }
 
     /**
@@ -562,9 +560,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
      */
     public CompletableFuture<Integer> setAcceleratorAt(long index, int keyCode, int shiftPressed, int ctrlPressed, int altPressed) {
-        return session
-            .request(new MenuModelSetAcceleratorAtRequest(handle, index, keyCode, shiftPressed, ctrlPressed, altPressed), MenuModelSetAcceleratorAtResponse.DECODER)
-            .thenApply(MenuModelSetAcceleratorAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetAcceleratorAtRequest(handle, index, keyCode, shiftPressed, ctrlPressed, altPressed), MenuModelSetAcceleratorAtResponse.DECODER),
+            MenuModelSetAcceleratorAtResponse::result);
     }
 
     /**
@@ -574,9 +572,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
      */
     public CompletableFuture<Integer> removeAccelerator(int commandId) {
-        return session
-            .request(new MenuModelRemoveAcceleratorRequest(handle, commandId), MenuModelRemoveAcceleratorResponse.DECODER)
-            .thenApply(MenuModelRemoveAcceleratorResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelRemoveAcceleratorRequest(handle, commandId), MenuModelRemoveAcceleratorResponse.DECODER),
+            MenuModelRemoveAcceleratorResponse::result);
     }
 
     /**
@@ -586,9 +584,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:384</a>
      */
     public CompletableFuture<Integer> removeAcceleratorAt(long index) {
-        return session
-            .request(new MenuModelRemoveAcceleratorAtRequest(handle, index), MenuModelRemoveAcceleratorAtResponse.DECODER)
-            .thenApply(MenuModelRemoveAcceleratorAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelRemoveAcceleratorAtRequest(handle, index), MenuModelRemoveAcceleratorAtResponse.DECODER),
+            MenuModelRemoveAcceleratorAtResponse::result);
     }
 
     /**
@@ -598,9 +596,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
      */
     public CompletableFuture<Integer> setColor(int commandId, int colorType, int color) {
-        return session
-            .request(new MenuModelSetColorRequest(handle, commandId, colorType, color), MenuModelSetColorResponse.DECODER)
-            .thenApply(MenuModelSetColorResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetColorRequest(handle, commandId, colorType, color), MenuModelSetColorResponse.DECODER),
+            MenuModelSetColorResponse::result);
     }
 
     /**
@@ -610,9 +608,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
      */
     public CompletableFuture<Integer> setColorAt(int index, int colorType, int color) {
-        return session
-            .request(new MenuModelSetColorAtRequest(handle, index, colorType, color), MenuModelSetColorAtResponse.DECODER)
-            .thenApply(MenuModelSetColorAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetColorAtRequest(handle, index, colorType, color), MenuModelSetColorAtResponse.DECODER),
+            MenuModelSetColorAtResponse::result);
     }
 
     /**
@@ -622,9 +620,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
      */
     public CompletableFuture<Integer> getColor(int commandId, int colorType, @Nonnull RemoteHandle color) {
-        return session
-            .request(new MenuModelGetColorRequest(handle, commandId, colorType, color), MenuModelGetColorResponse.DECODER)
-            .thenApply(MenuModelGetColorResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetColorRequest(handle, commandId, colorType, color), MenuModelGetColorResponse.DECODER),
+            MenuModelGetColorResponse::result);
     }
 
     /**
@@ -634,9 +632,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
      */
     public CompletableFuture<Integer> getColorAt(int index, int colorType, @Nonnull RemoteHandle color) {
-        return session
-            .request(new MenuModelGetColorAtRequest(handle, index, colorType, color), MenuModelGetColorAtResponse.DECODER)
-            .thenApply(MenuModelGetColorAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelGetColorAtRequest(handle, index, colorType, color), MenuModelGetColorAtResponse.DECODER),
+            MenuModelGetColorAtResponse::result);
     }
 
     /**
@@ -662,9 +660,9 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Integer> setFontList(int commandId, @Nonnull String fontList) {
-        return session
-            .request(new MenuModelSetFontListRequest(handle, commandId, fontList), MenuModelSetFontListResponse.DECODER)
-            .thenApply(MenuModelSetFontListResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetFontListRequest(handle, commandId, fontList), MenuModelSetFontListResponse.DECODER),
+            MenuModelSetFontListResponse::result);
     }
 
     /**
@@ -690,8 +688,8 @@ public final class MenuModel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
      */
     public CompletableFuture<Integer> setFontListAt(int index, @Nonnull String fontList) {
-        return session
-            .request(new MenuModelSetFontListAtRequest(handle, index, fontList), MenuModelSetFontListAtResponse.DECODER)
-            .thenApply(MenuModelSetFontListAtResponse::result);
+        return CefFutures.map(
+            session.request(new MenuModelSetFontListAtRequest(handle, index, fontList), MenuModelSetFontListAtResponse.DECODER),
+            MenuModelSetFontListAtResponse::result);
     }
 }

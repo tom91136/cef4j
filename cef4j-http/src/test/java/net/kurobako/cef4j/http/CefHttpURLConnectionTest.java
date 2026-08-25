@@ -80,18 +80,17 @@ class CefHttpURLConnectionTest {
         FakeCefHttpEngine engine = new FakeCefHttpEngine();
         CefHttpURLConnection c = conn("http://example.com/", engine);
         c.connect();
-        Thread t = new Thread(() -> {
+        CompletableFuture<Void> response = CompletableFuture.runAsync(() -> {
             engine.capturedSink().onResponse(200, "OK", Map.of());
             engine.capturedSink().onData("one ".getBytes(StandardCharsets.UTF_8));
             engine.capturedSink().onData("two ".getBytes(StandardCharsets.UTF_8));
             engine.capturedSink().onData("three".getBytes(StandardCharsets.UTF_8));
             engine.capturedSink().onComplete();
         });
-        t.start();
         try (InputStream in = c.getInputStream()) {
             assertThat(new String(in.readAllBytes(), StandardCharsets.UTF_8)).isEqualTo("one two three");
         }
-        t.join();
+        response.get(5, TimeUnit.SECONDS);
     }
 
     @Test

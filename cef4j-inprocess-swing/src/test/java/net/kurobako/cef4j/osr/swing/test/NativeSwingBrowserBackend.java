@@ -9,10 +9,12 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,7 +94,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
     }
 
     private static final class Session implements BrowserSession {
-        private final LinkedBlockingQueue<PaintInfo> paints = new LinkedBlockingQueue<>();
+        private final BlockingQueue<PaintInfo> paints = new ArrayBlockingQueue<>(1);
         private final AtomicReference<CefBrowser> browser = new AtomicReference<>();
         private final AtomicReference<CompletableFuture<Void>> pendingLoad = new AtomicReference<>();
         private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
@@ -210,7 +212,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException {
+        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
             long deadline = System.nanoTime() + timeout.toNanos();
             PaintInfo last = null;
             while (System.nanoTime() < deadline) {
@@ -229,7 +231,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                 }
             }
             String observed = last == null ? "none" : last.width + "x" + last.height;
-            throw new InterruptedException("no " + width + "x" + height + " native Swing paint within " + timeout
+            throw new TimeoutException("no " + width + "x" + height + " native Swing paint within " + timeout
                     + "; last observed paint=" + observed);
         }
 
@@ -268,9 +270,9 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
     private static final class ObservedPanel extends CefBrowserPanel {
         private static final long serialVersionUID = 1L;
-        private final LinkedBlockingQueue<BrowserSession.PaintInfo> paints;
+        private final transient BlockingQueue<BrowserSession.PaintInfo> paints;
 
-        ObservedPanel(LinkedBlockingQueue<BrowserSession.PaintInfo> paints) {
+        ObservedPanel(BlockingQueue<BrowserSession.PaintInfo> paints) {
             this.paints = paints;
         }
 
@@ -281,7 +283,8 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
         @Override
         protected void onViewPainted(int width, int height) {
-            paints.offer(new BrowserSession.PaintInfo(width, height, (long) width * height * 4L));
+            BrowserSession.PaintInfo latest = new BrowserSession.PaintInfo(width, height, (long) width * height * 4L);
+            while (!paints.offer(latest)) paints.poll();
         }
     }
 }

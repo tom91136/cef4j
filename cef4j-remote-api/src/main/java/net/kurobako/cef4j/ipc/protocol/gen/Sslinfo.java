@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Sslinfo {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_sslinfo_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_sslinfo_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class Sslinfo {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:51</a>
      */
     public CompletableFuture<Integer> getCertStatus() {
-        return session
-            .request(new SslinfoGetCertStatusRequest(handle), SslinfoGetCertStatusResponse.DECODER)
-            .thenApply(SslinfoGetCertStatusResponse::result);
+        return CefFutures.map(
+            session.request(new SslinfoGetCertStatusRequest(handle), SslinfoGetCertStatusResponse.DECODER),
+            SslinfoGetCertStatusResponse::result);
     }
 
     /**
@@ -54,9 +56,8 @@ public final class Sslinfo {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:58</a>
      */
     public CompletableFuture<X509Certificate> getX509Certificate() {
-        return session
-            .request(new SslinfoGetX509CertificateRequest(handle), SslinfoGetX509CertificateResponse.DECODER)
-            .thenApply(SslinfoGetX509CertificateResponse::result)
-            .thenApply(__h -> new X509Certificate(session, __h));
+        return CefFutures.map(
+            session.request(new SslinfoGetX509CertificateRequest(handle), SslinfoGetX509CertificateResponse.DECODER),
+            __r -> new X509Certificate(session, __r.result()));
     }
 }

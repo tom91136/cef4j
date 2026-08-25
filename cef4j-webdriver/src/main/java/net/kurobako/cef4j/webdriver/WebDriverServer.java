@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -558,6 +559,8 @@ public final class WebDriverServer implements AutoCloseable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new WebDriverException(WebDriverError.UNKNOWN_ERROR, "command interrupted", e);
+        } catch (CancellationException e) {
+            throw new WebDriverException(fallback, "backend command cancelled", e);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof WebDriverException) throw (WebDriverException) cause;
@@ -955,7 +958,15 @@ public final class WebDriverServer implements AutoCloseable {
 
         @Override
         public void close() {
-            if (closed.compareAndSet(false, true)) closeQuietly(backend);
+            if (!closed.compareAndSet(false, true)) return;
+            try {
+                backend.cancelPendingCommands(new CancellationException("session closed"));
+            } catch (RuntimeException failure) {
+                LOG.debug("automation backend command cancellation failed: {}", failure.toString());
+            }
+            synchronized (commandLock) {
+                closeQuietly(backend);
+            }
         }
     }
 }

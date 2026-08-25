@@ -113,7 +113,7 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
                     1,
                     wheelRotation));
         });
-        Thread.sleep(75);
+        drainCefUi();
     }
 
     private static void dispatchMouse(
@@ -133,7 +133,7 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
             long now = System.currentTimeMillis();
             panel.dispatchEvent(new MouseEvent(panel, id, now, modifiersEx, px, py, clickCount, popupTrigger, button));
         });
-        Thread.sleep(75);
+        drainCefUi();
     }
 
     private static void prepareFocus(CefBrowserPanel panel) {

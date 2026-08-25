@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class SchemeRegistrar {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_scheme_registrar_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_scheme_registrar_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -46,8 +48,8 @@ public final class SchemeRegistrar {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:85</a>
      */
     public CompletableFuture<Integer> addCustomScheme(@Nonnull String schemeName, int options) {
-        return session
-            .request(new SchemeRegistrarAddCustomSchemeRequest(handle, schemeName, options), SchemeRegistrarAddCustomSchemeResponse.DECODER)
-            .thenApply(SchemeRegistrarAddCustomSchemeResponse::result);
+        return CefFutures.map(
+            session.request(new SchemeRegistrarAddCustomSchemeRequest(handle, schemeName, options), SchemeRegistrarAddCustomSchemeResponse.DECODER),
+            SchemeRegistrarAddCustomSchemeResponse::result);
     }
 }

@@ -2066,6 +2066,23 @@ struct LambdaTask : cef_task_t {
     }
 };
 
+inline bool postUiTask(cef_task_t* task) {
+    if (cef_post_task(TID_UI, task)) return true;
+    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(task);
+    base->release(base);
+    return false;
+}
+
+inline void sendTaskRejected(cef4j::ipc::IpcServer* ipc, std::int32_t corrId, std::int32_t messageId) {
+    constexpr std::int32_t code = cef4j::ipc::ErrorCode::TaskRejected;
+    static const std::uint8_t kTaskRejectedPayload[8] = {
+            static_cast<std::uint8_t>(code), static_cast<std::uint8_t>(code >> 8),
+            static_cast<std::uint8_t>(code >> 16), static_cast<std::uint8_t>(code >> 24),
+            0x00, 0x00, 0x00, 0x00};
+    if (ipc) ipc->send(cef4j::ipc::Kind::Error, 0, corrId, messageId,
+                       kTaskRejectedPayload, sizeof(kTaskRejectedPayload));
+}
+
 /** Relays a renderer-affinity Request to the renderer subprocess via cef_process_message. Decodes the
   * leading int32 frame handle from the wire payload (renderer-affinity Requests have `frame: RemoteHandle`
   * as their first field, see SpecDeriver.deriveOne), looks the frame up in `tables::frame`, and ships the
@@ -2093,7 +2110,7 @@ inline bool relayToRenderer(const DispatcherContext& ctx, const cef4j::ipc::Head
     std::int32_t corrId    = h.corrId;
     std::int32_t messageId = h.messageId;
     std::vector<std::uint8_t> payloadCopy = payload;
-    cef_post_task(TID_UI, new LambdaTask([frame, corrId, messageId, payloadCopy]() {
+    auto* uiTask = new LambdaTask([frame, corrId, messageId, payloadCopy]() {
         cef_string_t name{};
         cef_string_utf8_to_utf16("cef4j_renderer_req", 18, &name);
         cef_process_message_t* msg = cef_process_message_create(&name);
@@ -2117,7 +2134,12 @@ inline bool relayToRenderer(const DispatcherContext& ctx, const cef4j::ipc::Head
         }
         auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
         base->release(base);
-    }));
+    });
+    if (!postUiTask(uiTask)) {
+        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
+        base->release(base);
+        sendTaskRejected(ctx.ipc, corrId, messageId);
+    }
     return true;
 }
 
@@ -2140,7 +2162,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2152,7 +2174,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueIsOwnedRequest::kMessageId: {
@@ -2167,7 +2194,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_owned(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2179,7 +2206,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueIsReadOnlyRequest::kMessageId: {
@@ -2194,7 +2226,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2206,7 +2238,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueIsSameRequest::kMessageId: {
@@ -2222,7 +2259,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_value_t* that_ptr = that != 0 ? tables::value.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2239,7 +2276,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueIsEqualRequest::kMessageId: {
@@ -2255,7 +2297,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_value_t* that_ptr = that != 0 ? tables::value.retain(that) : nullptr;
                 auto rawResult = receiver->is_equal(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2272,7 +2314,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueCopyRequest::kMessageId: {
@@ -2287,7 +2334,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->copy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2299,7 +2346,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetTypeRequest::kMessageId: {
@@ -2314,7 +2366,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2326,7 +2378,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetBoolRequest::kMessageId: {
@@ -2341,7 +2398,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_bool(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2353,7 +2410,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetIntRequest::kMessageId: {
@@ -2368,7 +2430,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_int(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2380,7 +2442,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetStringRequest::kMessageId: {
@@ -2395,7 +2462,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_string(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2407,7 +2474,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetBinaryRequest::kMessageId: {
@@ -2422,7 +2494,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_binary(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2434,7 +2506,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetDictionaryRequest::kMessageId: {
@@ -2449,7 +2526,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_dictionary(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2461,7 +2538,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueGetListRequest::kMessageId: {
@@ -2476,7 +2558,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_list(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2488,7 +2570,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetNullRequest::kMessageId: {
@@ -2503,7 +2590,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->set_null(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2515,7 +2602,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetBoolRequest::kMessageId: {
@@ -2531,7 +2623,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, value]() {
                 auto rawResult = receiver->set_bool(receiver, cefArg<decltype(receiver->set_bool), 1>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2543,7 +2635,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetIntRequest::kMessageId: {
@@ -2559,7 +2656,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, value]() {
                 auto rawResult = receiver->set_int(receiver, cefArg<decltype(receiver->set_int), 1>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2571,7 +2668,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetStringRequest::kMessageId: {
@@ -2587,7 +2689,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, value]() {
                 ScopedCefString value_cef(value);
                 auto rawResult = receiver->set_string(receiver, value_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2600,7 +2702,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetBinaryRequest::kMessageId: {
@@ -2616,7 +2723,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, value]() {
                 cef_binary_value_t* value_ptr = value != 0 ? tables::binaryValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_binary(receiver, value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2633,7 +2740,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetDictionaryRequest::kMessageId: {
@@ -2649,7 +2761,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, value]() {
                 cef_dictionary_value_t* value_ptr = value != 0 ? tables::dictionaryValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_dictionary(receiver, value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2666,7 +2778,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ValueSetListRequest::kMessageId: {
@@ -2682,7 +2799,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, value]() {
                 cef_list_value_t* value_ptr = value != 0 ? tables::listValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_list(receiver, value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2699,7 +2816,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BinaryValueIsValidRequest::kMessageId: {
@@ -2714,7 +2836,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2726,7 +2848,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BinaryValueIsOwnedRequest::kMessageId: {
@@ -2741,7 +2868,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_owned(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2753,7 +2880,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BinaryValueIsSameRequest::kMessageId: {
@@ -2769,7 +2901,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_binary_value_t* that_ptr = that != 0 ? tables::binaryValue.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2786,7 +2918,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BinaryValueIsEqualRequest::kMessageId: {
@@ -2802,7 +2939,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_binary_value_t* that_ptr = that != 0 ? tables::binaryValue.retain(that) : nullptr;
                 auto rawResult = receiver->is_equal(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2819,7 +2956,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BinaryValueCopyRequest::kMessageId: {
@@ -2834,7 +2976,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->copy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2846,7 +2988,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BinaryValueGetSizeRequest::kMessageId: {
@@ -2861,7 +3008,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2873,7 +3020,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueIsValidRequest::kMessageId: {
@@ -2888,7 +3040,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2900,7 +3052,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueIsOwnedRequest::kMessageId: {
@@ -2915,7 +3072,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_owned(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2927,7 +3084,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueIsReadOnlyRequest::kMessageId: {
@@ -2942,7 +3104,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -2954,7 +3116,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueIsSameRequest::kMessageId: {
@@ -2970,7 +3137,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_dictionary_value_t* that_ptr = that != 0 ? tables::dictionaryValue.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2987,7 +3154,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueIsEqualRequest::kMessageId: {
@@ -3003,7 +3175,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_dictionary_value_t* that_ptr = that != 0 ? tables::dictionaryValue.retain(that) : nullptr;
                 auto rawResult = receiver->is_equal(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3020,7 +3192,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueCopyRequest::kMessageId: {
@@ -3036,7 +3213,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t excludeEmptyChildren = req.excludeEmptyChildren;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, excludeEmptyChildren]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, excludeEmptyChildren]() {
                 auto rawResult = receiver->copy(receiver, cefArg<decltype(receiver->copy), 1>(excludeEmptyChildren));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3048,7 +3225,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetSizeRequest::kMessageId: {
@@ -3063,7 +3245,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3075,7 +3257,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueClearRequest::kMessageId: {
@@ -3090,7 +3277,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->clear(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3102,7 +3289,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueHasKeyRequest::kMessageId: {
@@ -3118,7 +3310,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->has_key(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3131,7 +3323,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetKeysRequest::kMessageId: {
@@ -3147,7 +3344,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> keys = std::move(req.keys);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, keys]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, keys]() {
                 cef_string_list_t keys_list = cef_string_list_alloc();
                 for (const auto& __s : keys) {
                     cef_string_t __cs{};
@@ -3167,7 +3364,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueRemoveRequest::kMessageId: {
@@ -3183,7 +3385,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->remove(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3196,7 +3398,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetTypeRequest::kMessageId: {
@@ -3212,7 +3419,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_type(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3225,7 +3432,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetValueRequest::kMessageId: {
@@ -3241,7 +3453,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_value(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3254,7 +3466,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetBoolRequest::kMessageId: {
@@ -3270,7 +3487,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_bool(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3283,7 +3500,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetIntRequest::kMessageId: {
@@ -3299,7 +3521,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_int(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3312,7 +3534,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetStringRequest::kMessageId: {
@@ -3328,7 +3555,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_string(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3341,7 +3568,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetBinaryRequest::kMessageId: {
@@ -3357,7 +3589,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_binary(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3370,7 +3602,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetDictionaryRequest::kMessageId: {
@@ -3386,7 +3623,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_dictionary(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3399,7 +3636,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueGetListRequest::kMessageId: {
@@ -3415,7 +3657,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->get_list(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3428,7 +3670,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetValueRequest::kMessageId: {
@@ -3445,7 +3692,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 cef_value_t* value_ptr = value != 0 ? tables::value.retain(value) : nullptr;
                 auto rawResult = receiver->set_value(receiver, key_cef.get(), value_ptr);
@@ -3463,7 +3710,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetNullRequest::kMessageId: {
@@ -3479,7 +3731,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string key = req.key;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->set_null(receiver, key_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3492,7 +3744,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetBoolRequest::kMessageId: {
@@ -3509,7 +3766,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->set_bool(receiver, key_cef.get(), cefArg<decltype(receiver->set_bool), 2>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3522,7 +3779,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetIntRequest::kMessageId: {
@@ -3539,7 +3801,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 auto rawResult = receiver->set_int(receiver, key_cef.get(), cefArg<decltype(receiver->set_int), 2>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3552,7 +3814,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetStringRequest::kMessageId: {
@@ -3569,7 +3836,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::string value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 ScopedCefString value_cef(value);
                 auto rawResult = receiver->set_string(receiver, key_cef.get(), value_cef.get());
@@ -3583,7 +3850,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetBinaryRequest::kMessageId: {
@@ -3600,7 +3872,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 cef_binary_value_t* value_ptr = value != 0 ? tables::binaryValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_binary(receiver, key_cef.get(), value_ptr);
@@ -3618,7 +3890,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetDictionaryRequest::kMessageId: {
@@ -3635,7 +3912,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 cef_dictionary_value_t* value_ptr = value != 0 ? tables::dictionaryValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_dictionary(receiver, key_cef.get(), value_ptr);
@@ -3653,7 +3930,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DictionaryValueSetListRequest::kMessageId: {
@@ -3670,7 +3952,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string key = req.key;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, key, value]() {
                 ScopedCefString key_cef(key);
                 cef_list_value_t* value_ptr = value != 0 ? tables::listValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_list(receiver, key_cef.get(), value_ptr);
@@ -3688,7 +3970,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueIsValidRequest::kMessageId: {
@@ -3703,7 +3990,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3715,7 +4002,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueIsOwnedRequest::kMessageId: {
@@ -3730,7 +4022,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_owned(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3742,7 +4034,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueIsReadOnlyRequest::kMessageId: {
@@ -3757,7 +4054,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3769,7 +4066,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueIsSameRequest::kMessageId: {
@@ -3785,7 +4087,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_list_value_t* that_ptr = that != 0 ? tables::listValue.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3802,7 +4104,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueIsEqualRequest::kMessageId: {
@@ -3818,7 +4125,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_list_value_t* that_ptr = that != 0 ? tables::listValue.retain(that) : nullptr;
                 auto rawResult = receiver->is_equal(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -3835,7 +4142,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueCopyRequest::kMessageId: {
@@ -3850,7 +4162,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->copy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3862,7 +4174,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetSizeRequest::kMessageId: {
@@ -3878,7 +4195,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t size = req.size;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, size]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, size]() {
                 auto rawResult = receiver->set_size(receiver, cefArg<decltype(receiver->set_size), 1>(size));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3890,7 +4207,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetSizeRequest::kMessageId: {
@@ -3905,7 +4227,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3917,7 +4239,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueClearRequest::kMessageId: {
@@ -3932,7 +4259,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->clear(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3944,7 +4271,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueRemoveRequest::kMessageId: {
@@ -3960,7 +4292,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->remove(receiver, cefArg<decltype(receiver->remove), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -3972,7 +4304,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetTypeRequest::kMessageId: {
@@ -3988,7 +4325,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_type(receiver, cefArg<decltype(receiver->get_type), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4000,7 +4337,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetValueRequest::kMessageId: {
@@ -4016,7 +4358,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_value(receiver, cefArg<decltype(receiver->get_value), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4028,7 +4370,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetBoolRequest::kMessageId: {
@@ -4044,7 +4391,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_bool(receiver, cefArg<decltype(receiver->get_bool), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4056,7 +4403,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetIntRequest::kMessageId: {
@@ -4072,7 +4424,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_int(receiver, cefArg<decltype(receiver->get_int), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4084,7 +4436,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetBinaryRequest::kMessageId: {
@@ -4100,7 +4457,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_binary(receiver, cefArg<decltype(receiver->get_binary), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4112,7 +4469,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetDictionaryRequest::kMessageId: {
@@ -4128,7 +4490,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_dictionary(receiver, cefArg<decltype(receiver->get_dictionary), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4140,7 +4502,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueGetListRequest::kMessageId: {
@@ -4156,7 +4523,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_list(receiver, cefArg<decltype(receiver->get_list), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4168,7 +4535,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetValueRequest::kMessageId: {
@@ -4185,7 +4557,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 cef_value_t* value_ptr = value != 0 ? tables::value.retain(value) : nullptr;
                 auto rawResult = receiver->set_value(receiver, cefArg<decltype(receiver->set_value), 1>(index), value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -4202,7 +4574,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetNullRequest::kMessageId: {
@@ -4218,7 +4595,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->set_null(receiver, cefArg<decltype(receiver->set_null), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4230,7 +4607,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetBoolRequest::kMessageId: {
@@ -4247,7 +4629,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 auto rawResult = receiver->set_bool(receiver, cefArg<decltype(receiver->set_bool), 1>(index), cefArg<decltype(receiver->set_bool), 2>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4259,7 +4641,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetIntRequest::kMessageId: {
@@ -4276,7 +4663,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 auto rawResult = receiver->set_int(receiver, cefArg<decltype(receiver->set_int), 1>(index), cefArg<decltype(receiver->set_int), 2>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4288,7 +4675,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetStringRequest::kMessageId: {
@@ -4305,7 +4697,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::string value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 ScopedCefString value_cef(value);
                 auto rawResult = receiver->set_string(receiver, cefArg<decltype(receiver->set_string), 1>(index), value_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -4318,7 +4710,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetBinaryRequest::kMessageId: {
@@ -4335,7 +4732,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 cef_binary_value_t* value_ptr = value != 0 ? tables::binaryValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_binary(receiver, cefArg<decltype(receiver->set_binary), 1>(index), value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -4352,7 +4749,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetDictionaryRequest::kMessageId: {
@@ -4369,7 +4771,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 cef_dictionary_value_t* value_ptr = value != 0 ? tables::dictionaryValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_dictionary(receiver, cefArg<decltype(receiver->set_dictionary), 1>(index), value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -4386,7 +4788,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ListValueSetListRequest::kMessageId: {
@@ -4403,7 +4810,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, value]() {
                 cef_list_value_t* value_ptr = value != 0 ? tables::listValue.retain(value) : nullptr;
                 auto rawResult = receiver->set_list(receiver, cefArg<decltype(receiver->set_list), 1>(index), value_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -4420,7 +4827,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ImageIsEmptyRequest::kMessageId: {
@@ -4435,7 +4847,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_empty(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4447,7 +4859,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ImageIsSameRequest::kMessageId: {
@@ -4463,7 +4880,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_image_t* that_ptr = that != 0 ? tables::image.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -4480,7 +4897,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ImageGetWidthRequest::kMessageId: {
@@ -4495,7 +4917,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_width(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4507,7 +4929,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ImageGetHeightRequest::kMessageId: {
@@ -4522,7 +4949,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_height(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4534,7 +4961,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamReaderSeekRequest::kMessageId: {
@@ -4551,7 +4983,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t offset = req.offset;
             std::int32_t whence = req.whence;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, offset, whence]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, offset, whence]() {
                 auto rawResult = receiver->seek(receiver, cefArg<decltype(receiver->seek), 1>(offset), cefArg<decltype(receiver->seek), 2>(whence));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4563,7 +4995,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamReaderTellRequest::kMessageId: {
@@ -4578,7 +5015,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->tell(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4590,7 +5027,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamReaderEofRequest::kMessageId: {
@@ -4605,7 +5047,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->eof(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4617,7 +5059,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamReaderMayBlockRequest::kMessageId: {
@@ -4632,7 +5079,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->may_block(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4644,7 +5091,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamWriterWriteRequest::kMessageId: {
@@ -4661,7 +5113,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::vector<std::uint8_t> ptr = std::move(req.ptr);
             std::int64_t n = req.n;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, ptr, n]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, ptr, n]() {
                 auto rawResult = receiver->write(receiver, ptr.data(), static_cast<size_t>(ptr.size()), cefArg<decltype(receiver->write), 3>(n));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4673,7 +5125,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamWriterSeekRequest::kMessageId: {
@@ -4690,7 +5147,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t offset = req.offset;
             std::int32_t whence = req.whence;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, offset, whence]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, offset, whence]() {
                 auto rawResult = receiver->seek(receiver, cefArg<decltype(receiver->seek), 1>(offset), cefArg<decltype(receiver->seek), 2>(whence));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4702,7 +5159,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamWriterTellRequest::kMessageId: {
@@ -4717,7 +5179,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->tell(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4729,7 +5191,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamWriterFlushRequest::kMessageId: {
@@ -4744,7 +5211,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->flush(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4756,7 +5223,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::StreamWriterMayBlockRequest::kMessageId: {
@@ -4771,7 +5243,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->may_block(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4783,7 +5255,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataIsReadOnlyRequest::kMessageId: {
@@ -4798,7 +5275,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4810,7 +5287,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataIsLinkRequest::kMessageId: {
@@ -4825,7 +5307,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_link(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4837,7 +5319,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataIsFragmentRequest::kMessageId: {
@@ -4852,7 +5339,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_fragment(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4864,7 +5351,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataIsFileRequest::kMessageId: {
@@ -4879,7 +5371,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_file(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4891,7 +5383,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetLinkUrlRequest::kMessageId: {
@@ -4906,7 +5403,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_link_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4918,7 +5415,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetLinkTitleRequest::kMessageId: {
@@ -4933,7 +5435,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_link_title(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4945,7 +5447,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetLinkMetadataRequest::kMessageId: {
@@ -4960,7 +5467,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_link_metadata(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4972,7 +5479,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFragmentTextRequest::kMessageId: {
@@ -4987,7 +5499,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_fragment_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -4999,7 +5511,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFragmentHtmlRequest::kMessageId: {
@@ -5014,7 +5531,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_fragment_html(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5026,7 +5543,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFragmentBaseUrlRequest::kMessageId: {
@@ -5041,7 +5563,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_fragment_base_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5053,7 +5575,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFileNameRequest::kMessageId: {
@@ -5068,7 +5595,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_file_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5080,7 +5607,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFileContentsRequest::kMessageId: {
@@ -5096,7 +5628,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t writer = req.writer;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, writer]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, writer]() {
                 cef_stream_writer_t* writer_ptr = writer != 0 ? tables::streamWriter.retain(writer) : nullptr;
                 auto rawResult = receiver->get_file_contents(receiver, writer_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -5113,7 +5645,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFileNamesRequest::kMessageId: {
@@ -5129,7 +5666,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> names = std::move(req.names);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, names]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, names]() {
                 cef_string_list_t names_list = cef_string_list_alloc();
                 for (const auto& __s : names) {
                     cef_string_t __cs{};
@@ -5149,7 +5686,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetFilePathsRequest::kMessageId: {
@@ -5165,7 +5707,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> paths = std::move(req.paths);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, paths]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, paths]() {
                 cef_string_list_t paths_list = cef_string_list_alloc();
                 for (const auto& __s : paths) {
                     cef_string_t __cs{};
@@ -5185,7 +5727,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataSetLinkUrlRequest::kMessageId: {
@@ -5201,13 +5748,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string url = req.url;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url]() {
                 ScopedCefString url_cef(url);
                 receiver->set_link_url(receiver, url_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataSetLinkTitleRequest::kMessageId: {
@@ -5223,13 +5775,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string title = req.title;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, title]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, title]() {
                 ScopedCefString title_cef(title);
                 receiver->set_link_title(receiver, title_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataSetLinkMetadataRequest::kMessageId: {
@@ -5245,13 +5802,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string data = req.data;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, data]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, data]() {
                 ScopedCefString data_cef(data);
                 receiver->set_link_metadata(receiver, data_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataSetFragmentTextRequest::kMessageId: {
@@ -5267,13 +5829,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string text = req.text;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text]() {
                 ScopedCefString text_cef(text);
                 receiver->set_fragment_text(receiver, text_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataSetFragmentHtmlRequest::kMessageId: {
@@ -5289,13 +5856,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string html = req.html;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, html]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, html]() {
                 ScopedCefString html_cef(html);
                 receiver->set_fragment_html(receiver, html_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataSetFragmentBaseUrlRequest::kMessageId: {
@@ -5311,13 +5883,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string baseUrl = req.baseUrl;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, baseUrl]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, baseUrl]() {
                 ScopedCefString baseUrl_cef(baseUrl);
                 receiver->set_fragment_base_url(receiver, baseUrl_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataResetFileContentsRequest::kMessageId: {
@@ -5332,12 +5909,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->reset_file_contents(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataAddFileRequest::kMessageId: {
@@ -5354,14 +5936,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string path = req.path;
             std::string displayName = req.displayName;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, path, displayName]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, path, displayName]() {
                 ScopedCefString path_cef(path);
                 ScopedCefString displayName_cef(displayName);
                 receiver->add_file(receiver, path_cef.get(), displayName_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataClearFilenamesRequest::kMessageId: {
@@ -5376,12 +5963,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->clear_filenames(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetImageRequest::kMessageId: {
@@ -5396,7 +5988,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_image(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5408,7 +6000,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataGetImageHotspotRequest::kMessageId: {
@@ -5423,7 +6020,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_point_t rawResult = receiver->get_image_hotspot(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5436,7 +6033,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DragDataHasImageRequest::kMessageId: {
@@ -5451,7 +6053,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_image(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5463,7 +6065,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SharedMemoryRegionIsValidRequest::kMessageId: {
@@ -5478,7 +6085,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5490,7 +6097,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SharedMemoryRegionSizeRequest::kMessageId: {
@@ -5505,7 +6117,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5517,7 +6129,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ProcessMessageIsValidRequest::kMessageId: {
@@ -5532,7 +6149,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5544,7 +6161,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ProcessMessageIsReadOnlyRequest::kMessageId: {
@@ -5559,7 +6181,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5571,7 +6193,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ProcessMessageCopyRequest::kMessageId: {
@@ -5586,7 +6213,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->copy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5598,7 +6225,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ProcessMessageGetNameRequest::kMessageId: {
@@ -5613,7 +6245,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5625,7 +6257,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ProcessMessageGetArgumentListRequest::kMessageId: {
@@ -5640,7 +6277,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_argument_list(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5652,7 +6289,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ProcessMessageGetSharedMemoryRegionRequest::kMessageId: {
@@ -5667,7 +6309,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_shared_memory_region(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5679,7 +6321,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestIsReadOnlyRequest::kMessageId: {
@@ -5694,7 +6341,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5706,7 +6353,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetUrlRequest::kMessageId: {
@@ -5721,7 +6373,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5733,7 +6385,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetUrlRequest::kMessageId: {
@@ -5749,13 +6406,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string url = req.url;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url]() {
                 ScopedCefString url_cef(url);
                 receiver->set_url(receiver, url_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetMethodRequest::kMessageId: {
@@ -5770,7 +6432,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_method(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5782,7 +6444,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetMethodRequest::kMessageId: {
@@ -5798,13 +6465,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string method = req.method;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, method]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, method]() {
                 ScopedCefString method_cef(method);
                 receiver->set_method(receiver, method_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetReferrerRequest::kMessageId: {
@@ -5821,13 +6493,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string referrerUrl = req.referrerUrl;
             std::int32_t policy = req.policy;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, referrerUrl, policy]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, referrerUrl, policy]() {
                 ScopedCefString referrerUrl_cef(referrerUrl);
                 receiver->set_referrer(receiver, referrerUrl_cef.get(), cefArg<decltype(receiver->set_referrer), 2>(policy));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetReferrerUrlRequest::kMessageId: {
@@ -5842,7 +6519,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_referrer_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5854,7 +6531,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetReferrerPolicyRequest::kMessageId: {
@@ -5869,7 +6551,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_referrer_policy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5881,7 +6563,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetPostDataRequest::kMessageId: {
@@ -5896,7 +6583,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_post_data(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -5908,7 +6595,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetPostDataRequest::kMessageId: {
@@ -5924,7 +6616,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t postData = req.postData;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, postData]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, postData]() {
                 cef_post_data_t* postData_ptr = postData != 0 ? tables::postData.retain(postData) : nullptr;
                 receiver->set_post_data(receiver, postData_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -5934,7 +6626,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     postData_base->release(postData_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetHeaderByNameRequest::kMessageId: {
@@ -5950,7 +6647,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->get_header_by_name(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -5963,7 +6660,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetHeaderByNameRequest::kMessageId: {
@@ -5981,14 +6683,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string name = req.name;
             std::string value = req.value;
             std::int32_t overwrite = req.overwrite;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name, value, overwrite]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name, value, overwrite]() {
                 ScopedCefString name_cef(name);
                 ScopedCefString value_cef(value);
                 receiver->set_header_by_name(receiver, name_cef.get(), value_cef.get(), cefArg<decltype(receiver->set_header_by_name), 3>(overwrite));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetFlagsRequest::kMessageId: {
@@ -6003,7 +6710,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_flags(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6015,7 +6722,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetFlagsRequest::kMessageId: {
@@ -6031,12 +6743,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t flags = req.flags;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, flags]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, flags]() {
                 receiver->set_flags(receiver, cefArg<decltype(receiver->set_flags), 1>(flags));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetFirstPartyForCookiesRequest::kMessageId: {
@@ -6051,7 +6768,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_first_party_for_cookies(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6063,7 +6780,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestSetFirstPartyForCookiesRequest::kMessageId: {
@@ -6079,13 +6801,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string url = req.url;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url]() {
                 ScopedCefString url_cef(url);
                 receiver->set_first_party_for_cookies(receiver, url_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetResourceTypeRequest::kMessageId: {
@@ -6100,7 +6827,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_resource_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6112,7 +6839,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetTransitionTypeRequest::kMessageId: {
@@ -6127,7 +6859,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_transition_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6139,7 +6871,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestGetIdentifierRequest::kMessageId: {
@@ -6154,7 +6891,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_identifier(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6166,7 +6903,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataIsReadOnlyRequest::kMessageId: {
@@ -6181,7 +6923,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6193,7 +6935,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataHasExcludedElementsRequest::kMessageId: {
@@ -6208,7 +6955,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_excluded_elements(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6220,7 +6967,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataGetElementCountRequest::kMessageId: {
@@ -6235,7 +6987,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_element_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6247,7 +6999,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataRemoveElementRequest::kMessageId: {
@@ -6263,7 +7020,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t element = req.element;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, element]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, element]() {
                 cef_post_data_element_t* element_ptr = element != 0 ? tables::postDataElement.retain(element) : nullptr;
                 auto rawResult = receiver->remove_element(receiver, element_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -6280,7 +7037,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataAddElementRequest::kMessageId: {
@@ -6296,7 +7058,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t element = req.element;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, element]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, element]() {
                 cef_post_data_element_t* element_ptr = element != 0 ? tables::postDataElement.retain(element) : nullptr;
                 auto rawResult = receiver->add_element(receiver, element_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -6313,7 +7075,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataRemoveElementsRequest::kMessageId: {
@@ -6328,12 +7095,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->remove_elements(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementIsReadOnlyRequest::kMessageId: {
@@ -6348,7 +7120,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6360,7 +7132,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementSetToEmptyRequest::kMessageId: {
@@ -6375,12 +7152,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->set_to_empty(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementSetToFileRequest::kMessageId: {
@@ -6396,13 +7178,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string fileName = req.fileName;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, fileName]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, fileName]() {
                 ScopedCefString fileName_cef(fileName);
                 receiver->set_to_file(receiver, fileName_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementSetToBytesRequest::kMessageId: {
@@ -6418,12 +7205,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::uint8_t> bytes = std::move(req.bytes);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, bytes]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, bytes]() {
                 receiver->set_to_bytes(receiver, static_cast<size_t>(bytes.size()), bytes.data());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementGetTypeRequest::kMessageId: {
@@ -6438,7 +7230,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6450,7 +7242,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementGetFileRequest::kMessageId: {
@@ -6465,7 +7262,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_file(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6477,7 +7274,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PostDataElementGetBytesCountRequest::kMessageId: {
@@ -6492,7 +7294,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_bytes_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6504,7 +7306,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameIsValidRequest::kMessageId: {
@@ -6519,7 +7326,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6531,7 +7338,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameUndoRequest::kMessageId: {
@@ -6546,12 +7358,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->undo(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameRedoRequest::kMessageId: {
@@ -6566,12 +7383,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->redo(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameCutRequest::kMessageId: {
@@ -6586,12 +7408,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cut(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameCopyRequest::kMessageId: {
@@ -6606,12 +7433,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->copy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FramePasteRequest::kMessageId: {
@@ -6626,12 +7458,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->paste(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FramePasteAndMatchStyleRequest::kMessageId: {
@@ -6646,12 +7483,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->paste_and_match_style(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameDelRequest::kMessageId: {
@@ -6666,12 +7508,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->del(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameSelectAllRequest::kMessageId: {
@@ -6686,12 +7533,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->select_all(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameViewSourceRequest::kMessageId: {
@@ -6706,12 +7558,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->view_source(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetSourceRequest::kMessageId: {
@@ -6727,7 +7584,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t visitor = req.visitor;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, visitor]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, visitor]() {
                 cef_string_visitor_t* visitor_ptr = visitor != 0 ?
                         reinterpret_cast<cef_string_visitor_t*>(new genvisitors::JvmStringVisitor(visitor, ipc)) :
                         nullptr;
@@ -6735,7 +7592,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetTextRequest::kMessageId: {
@@ -6751,7 +7613,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t visitor = req.visitor;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, visitor]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, visitor]() {
                 cef_string_visitor_t* visitor_ptr = visitor != 0 ?
                         reinterpret_cast<cef_string_visitor_t*>(new genvisitors::JvmStringVisitor(visitor, ipc)) :
                         nullptr;
@@ -6759,7 +7621,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameLoadRequestRequest::kMessageId: {
@@ -6775,7 +7642,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t request = req.request;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, request]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, request]() {
                 cef_request_t* request_ptr = request != 0 ? tables::request.retain(request) : nullptr;
                 receiver->load_request(receiver, request_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -6785,7 +7652,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     request_base->release(request_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameLoadUrlRequest::kMessageId: {
@@ -6801,13 +7673,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string url = req.url;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url]() {
                 ScopedCefString url_cef(url);
                 receiver->load_url(receiver, url_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameExecuteJavaScriptRequest::kMessageId: {
@@ -6825,14 +7702,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string code = req.code;
             std::string scriptUrl = req.scriptUrl;
             std::int32_t startLine = req.startLine;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, code, scriptUrl, startLine]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, code, scriptUrl, startLine]() {
                 ScopedCefString code_cef(code);
                 ScopedCefString scriptUrl_cef(scriptUrl);
                 receiver->execute_java_script(receiver, code_cef.get(), scriptUrl_cef.get(), cefArg<decltype(receiver->execute_java_script), 3>(startLine));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameIsMainRequest::kMessageId: {
@@ -6847,7 +7729,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_main(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6859,7 +7741,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameIsFocusedRequest::kMessageId: {
@@ -6874,7 +7761,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_focused(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6886,7 +7773,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetNameRequest::kMessageId: {
@@ -6901,7 +7793,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6913,7 +7805,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetIdentifierRequest::kMessageId: {
@@ -6928,7 +7825,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_identifier(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6940,7 +7837,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetParentRequest::kMessageId: {
@@ -6955,7 +7857,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_parent(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6967,7 +7869,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetUrlRequest::kMessageId: {
@@ -6982,7 +7889,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -6994,7 +7901,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameGetBrowserRequest::kMessageId: {
@@ -7009,7 +7921,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_browser(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7021,7 +7933,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FrameSendProcessMessageRequest::kMessageId: {
@@ -7038,7 +7955,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t targetProcess = req.targetProcess;
             std::int32_t message = req.message;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, targetProcess, message]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, targetProcess, message]() {
                 cef_process_message_t* message_ptr = message != 0 ? tables::processMessage.retain(message) : nullptr;
                 receiver->send_process_message(receiver, cefArg<decltype(receiver->send_process_message), 1>(targetProcess), message_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -7048,7 +7965,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     message_base->release(message_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetDisplayNameRequest::kMessageId: {
@@ -7063,7 +7985,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_display_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7075,7 +7997,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetCommonNameRequest::kMessageId: {
@@ -7090,7 +8017,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_common_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7102,7 +8029,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetLocalityNameRequest::kMessageId: {
@@ -7117,7 +8049,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_locality_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7129,7 +8061,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetStateOrProvinceNameRequest::kMessageId: {
@@ -7144,7 +8081,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_state_or_province_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7156,7 +8093,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetCountryNameRequest::kMessageId: {
@@ -7171,7 +8113,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_country_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7183,7 +8125,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetOrganizationNamesRequest::kMessageId: {
@@ -7199,7 +8146,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> names = std::move(req.names);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, names]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, names]() {
                 cef_string_list_t names_list = cef_string_list_alloc();
                 for (const auto& __s : names) {
                     cef_string_t __cs{};
@@ -7212,7 +8159,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(names_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertPrincipalGetOrganizationUnitNamesRequest::kMessageId: {
@@ -7228,7 +8180,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> names = std::move(req.names);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, names]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, names]() {
                 cef_string_list_t names_list = cef_string_list_alloc();
                 for (const auto& __s : names) {
                     cef_string_t __cs{};
@@ -7241,7 +8193,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(names_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetSubjectRequest::kMessageId: {
@@ -7256,7 +8213,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_subject(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7268,7 +8225,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetIssuerRequest::kMessageId: {
@@ -7283,7 +8245,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_issuer(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7295,7 +8257,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetSerialNumberRequest::kMessageId: {
@@ -7310,7 +8277,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_serial_number(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7322,7 +8289,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetValidStartRequest::kMessageId: {
@@ -7337,7 +8309,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_basetime_t rawResult = receiver->get_valid_start(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7349,7 +8321,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetValidExpiryRequest::kMessageId: {
@@ -7364,7 +8341,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_basetime_t rawResult = receiver->get_valid_expiry(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7376,7 +8353,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetDerencodedRequest::kMessageId: {
@@ -7391,7 +8373,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_derencoded(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7403,7 +8385,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetPemencodedRequest::kMessageId: {
@@ -7418,7 +8405,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_pemencoded(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7430,7 +8417,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::X509CertificateGetIssuerChainSizeRequest::kMessageId: {
@@ -7445,7 +8437,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_issuer_chain_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7457,7 +8449,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslstatusIsSecureConnectionRequest::kMessageId: {
@@ -7472,7 +8469,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_secure_connection(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7484,7 +8481,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslstatusGetCertStatusRequest::kMessageId: {
@@ -7499,7 +8501,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_cert_status(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7511,7 +8513,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslstatusGetSslversionRequest::kMessageId: {
@@ -7526,7 +8533,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_sslversion(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7538,7 +8545,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslstatusGetContentStatusRequest::kMessageId: {
@@ -7553,7 +8565,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_content_status(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7565,7 +8577,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslstatusGetX509CertificateRequest::kMessageId: {
@@ -7580,7 +8597,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_x509_certificate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7592,7 +8609,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryIsValidRequest::kMessageId: {
@@ -7607,7 +8629,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7619,7 +8641,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetUrlRequest::kMessageId: {
@@ -7634,7 +8661,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7646,7 +8673,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetDisplayUrlRequest::kMessageId: {
@@ -7661,7 +8693,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_display_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7673,7 +8705,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetOriginalUrlRequest::kMessageId: {
@@ -7688,7 +8725,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_original_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7700,7 +8737,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetTitleRequest::kMessageId: {
@@ -7715,7 +8757,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_title(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7727,7 +8769,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetTransitionTypeRequest::kMessageId: {
@@ -7742,7 +8789,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_transition_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7754,7 +8801,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryHasPostDataRequest::kMessageId: {
@@ -7769,7 +8821,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_post_data(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7781,7 +8833,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetCompletionTimeRequest::kMessageId: {
@@ -7796,7 +8853,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_basetime_t rawResult = receiver->get_completion_time(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7808,7 +8865,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetHttpStatusCodeRequest::kMessageId: {
@@ -7823,7 +8885,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_http_status_code(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7835,7 +8897,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::NavigationEntryGetSslstatusRequest::kMessageId: {
@@ -7850,7 +8917,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_sslstatus(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -7862,7 +8929,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CallbackContRequest::kMessageId: {
@@ -7877,12 +8949,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cont(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CallbackCancelRequest::kMessageId: {
@@ -7897,12 +8974,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CookieManagerDeleteCookiesRequest::kMessageId: {
@@ -7920,7 +9002,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string url = req.url;
             std::string cookieName = req.cookieName;
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url, cookieName, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url, cookieName, callback]() {
                 ScopedCefString url_cef(url);
                 ScopedCefString cookieName_cef(cookieName);
                 cef_delete_cookies_callback_t* callback_ptr = callback != 0 ?
@@ -7937,7 +9019,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CookieManagerFlushStoreRequest::kMessageId: {
@@ -7953,7 +9040,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -7968,7 +9055,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouterGetSourceRequest::kMessageId: {
@@ -7984,7 +9076,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string urn = req.urn;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, urn]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, urn]() {
                 ScopedCefString urn_cef(urn);
                 auto rawResult = receiver->get_source(receiver, urn_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -7997,7 +9089,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouterNotifyCurrentSinksRequest::kMessageId: {
@@ -8012,12 +9109,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->notify_current_sinks(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouterNotifyCurrentRoutesRequest::kMessageId: {
@@ -8032,12 +9134,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->notify_current_routes(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouteGetIdRequest::kMessageId: {
@@ -8052,7 +9159,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8064,7 +9171,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouteGetSourceRequest::kMessageId: {
@@ -8079,7 +9191,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_source(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8091,7 +9203,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouteGetSinkRequest::kMessageId: {
@@ -8106,7 +9223,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_sink(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8118,7 +9235,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouteSendRouteMessageRequest::kMessageId: {
@@ -8134,12 +9256,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::uint8_t> message = std::move(req.message);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, message]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, message]() {
                 receiver->send_route_message(receiver, message.data(), static_cast<size_t>(message.size()));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaRouteTerminateRequest::kMessageId: {
@@ -8154,12 +9281,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->terminate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSinkGetIdRequest::kMessageId: {
@@ -8174,7 +9306,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8186,7 +9318,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSinkGetNameRequest::kMessageId: {
@@ -8201,7 +9338,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8213,7 +9350,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSinkGetIconTypeRequest::kMessageId: {
@@ -8228,7 +9370,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_icon_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8240,7 +9382,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSinkIsCastSinkRequest::kMessageId: {
@@ -8255,7 +9402,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_cast_sink(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8267,7 +9414,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSinkIsDialSinkRequest::kMessageId: {
@@ -8282,7 +9434,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_dial_sink(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8294,7 +9446,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSinkIsCompatibleWithRequest::kMessageId: {
@@ -8310,7 +9467,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t source = req.source;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, source]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, source]() {
                 cef_media_source_t* source_ptr = source != 0 ? tables::mediaSource.retain(source) : nullptr;
                 auto rawResult = receiver->is_compatible_with(receiver, source_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -8327,7 +9484,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSourceGetIdRequest::kMessageId: {
@@ -8342,7 +9504,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8354,7 +9516,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSourceIsCastSourceRequest::kMessageId: {
@@ -8369,7 +9536,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_cast_source(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8381,7 +9548,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaSourceIsDialSourceRequest::kMessageId: {
@@ -8396,7 +9568,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_dial_source(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8408,7 +9580,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PreferenceRegistrarAddPreferenceRequest::kMessageId: {
@@ -8425,7 +9602,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string name = req.name;
             std::int32_t defaultValue = req.defaultValue;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name, defaultValue]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name, defaultValue]() {
                 ScopedCefString name_cef(name);
                 cef_value_t* defaultValue_ptr = defaultValue != 0 ? tables::value.retain(defaultValue) : nullptr;
                 auto rawResult = receiver->add_preference(receiver, name_cef.get(), defaultValue_ptr);
@@ -8443,7 +9620,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PreferenceManagerHasPreferenceRequest::kMessageId: {
@@ -8459,7 +9641,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->has_preference(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -8472,7 +9654,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PreferenceManagerGetPreferenceRequest::kMessageId: {
@@ -8488,7 +9675,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->get_preference(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -8501,7 +9688,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PreferenceManagerGetAllPreferencesRequest::kMessageId: {
@@ -8517,7 +9709,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t includeDefaults = req.includeDefaults;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, includeDefaults]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, includeDefaults]() {
                 auto rawResult = receiver->get_all_preferences(receiver, cefArg<decltype(receiver->get_all_preferences), 1>(includeDefaults));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8529,7 +9721,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PreferenceManagerCanSetPreferenceRequest::kMessageId: {
@@ -8545,7 +9742,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->can_set_preference(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -8558,7 +9755,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PreferenceManagerSetPreferenceRequest::kMessageId: {
@@ -8576,7 +9778,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string name = req.name;
             std::int32_t value = req.value;
             std::string error = req.error;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name, value, error]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name, value, error]() {
                 ScopedCefString name_cef(name);
                 cef_value_t* value_ptr = value != 0 ? tables::value.retain(value) : nullptr;
                 ScopedCefString error_cef(error);
@@ -8595,7 +9797,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextIsSameRequest::kMessageId: {
@@ -8611,7 +9818,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t other = req.other;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, other]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, other]() {
                 cef_request_context_t* other_ptr = other != 0 ? tables::requestContext.retain(other) : nullptr;
                 auto rawResult = receiver->is_same(receiver, other_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -8628,7 +9835,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextIsSharingWithRequest::kMessageId: {
@@ -8644,7 +9856,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t other = req.other;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, other]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, other]() {
                 cef_request_context_t* other_ptr = other != 0 ? tables::requestContext.retain(other) : nullptr;
                 auto rawResult = receiver->is_sharing_with(receiver, other_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -8661,7 +9873,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextIsGlobalRequest::kMessageId: {
@@ -8676,7 +9893,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_global(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8688,7 +9905,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetCachePathRequest::kMessageId: {
@@ -8703,7 +9925,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_cache_path(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8715,7 +9937,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetCookieManagerRequest::kMessageId: {
@@ -8731,7 +9958,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -8746,7 +9973,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextClearSchemeHandlerFactoriesRequest::kMessageId: {
@@ -8761,7 +9993,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->clear_scheme_handler_factories(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -8773,7 +10005,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextClearCertificateExceptionsRequest::kMessageId: {
@@ -8789,7 +10026,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -8797,7 +10034,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextClearHttpAuthCredentialsRequest::kMessageId: {
@@ -8813,7 +10055,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -8821,7 +10063,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextCloseAllConnectionsRequest::kMessageId: {
@@ -8837,7 +10084,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -8845,7 +10092,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetMediaRouterRequest::kMessageId: {
@@ -8861,7 +10113,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -8876,7 +10128,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetWebsiteSettingRequest::kMessageId: {
@@ -8894,7 +10151,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string requestingUrl = req.requestingUrl;
             std::string topLevelUrl = req.topLevelUrl;
             std::int32_t contentType = req.contentType;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType]() {
                 ScopedCefString requestingUrl_cef(requestingUrl);
                 ScopedCefString topLevelUrl_cef(topLevelUrl);
                 auto rawResult = receiver->get_website_setting(receiver, requestingUrl_cef.get(), topLevelUrl_cef.get(), cefArg<decltype(receiver->get_website_setting), 3>(contentType));
@@ -8908,7 +10165,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextSetWebsiteSettingRequest::kMessageId: {
@@ -8927,7 +10189,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string topLevelUrl = req.topLevelUrl;
             std::int32_t contentType = req.contentType;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType, value]() {
                 ScopedCefString requestingUrl_cef(requestingUrl);
                 ScopedCefString topLevelUrl_cef(topLevelUrl);
                 cef_value_t* value_ptr = value != 0 ? tables::value.retain(value) : nullptr;
@@ -8939,7 +10201,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     value_base->release(value_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetContentSettingRequest::kMessageId: {
@@ -8957,7 +10224,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string requestingUrl = req.requestingUrl;
             std::string topLevelUrl = req.topLevelUrl;
             std::int32_t contentType = req.contentType;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType]() {
                 ScopedCefString requestingUrl_cef(requestingUrl);
                 ScopedCefString topLevelUrl_cef(topLevelUrl);
                 auto rawResult = receiver->get_content_setting(receiver, requestingUrl_cef.get(), topLevelUrl_cef.get(), cefArg<decltype(receiver->get_content_setting), 3>(contentType));
@@ -8971,7 +10238,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextSetContentSettingRequest::kMessageId: {
@@ -8990,14 +10262,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string topLevelUrl = req.topLevelUrl;
             std::int32_t contentType = req.contentType;
             std::int32_t value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, requestingUrl, topLevelUrl, contentType, value]() {
                 ScopedCefString requestingUrl_cef(requestingUrl);
                 ScopedCefString topLevelUrl_cef(topLevelUrl);
                 receiver->set_content_setting(receiver, requestingUrl_cef.get(), topLevelUrl_cef.get(), cefArg<decltype(receiver->set_content_setting), 3>(contentType), cefArg<decltype(receiver->set_content_setting), 4>(value));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextSetChromeColorSchemeRequest::kMessageId: {
@@ -9014,12 +10291,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t variant = req.variant;
             std::int32_t userColor = req.userColor;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, variant, userColor]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, variant, userColor]() {
                 receiver->set_chrome_color_scheme(receiver, cefArg<decltype(receiver->set_chrome_color_scheme), 1>(variant), cefArg<decltype(receiver->set_chrome_color_scheme), 2>(userColor));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetChromeColorSchemeModeRequest::kMessageId: {
@@ -9034,7 +10316,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_chrome_color_scheme_mode(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9046,7 +10328,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetChromeColorSchemeColorRequest::kMessageId: {
@@ -9061,7 +10348,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_chrome_color_scheme_color(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9073,7 +10360,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextGetChromeColorSchemeVariantRequest::kMessageId: {
@@ -9088,7 +10380,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_chrome_color_scheme_variant(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9100,7 +10392,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RequestContextClearHttpCacheRequest::kMessageId: {
@@ -9116,7 +10413,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, callback]() {
                 cef_completion_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_completion_callback_t*>(new genvisitors::JvmCompletionCallback(callback, ipc)) :
                         nullptr;
@@ -9124,7 +10421,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserIsValidRequest::kMessageId: {
@@ -9139,7 +10441,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9151,7 +10453,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetHostRequest::kMessageId: {
@@ -9166,7 +10473,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_host(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9178,7 +10485,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserCanGoBackRequest::kMessageId: {
@@ -9193,7 +10505,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->can_go_back(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9205,7 +10517,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGoBackRequest::kMessageId: {
@@ -9220,12 +10537,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->go_back(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserCanGoForwardRequest::kMessageId: {
@@ -9240,7 +10562,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->can_go_forward(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9252,7 +10574,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGoForwardRequest::kMessageId: {
@@ -9267,12 +10594,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->go_forward(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserIsLoadingRequest::kMessageId: {
@@ -9287,7 +10619,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_loading(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9299,7 +10631,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserReloadRequest::kMessageId: {
@@ -9314,12 +10651,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->reload(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserReloadIgnoreCacheRequest::kMessageId: {
@@ -9334,12 +10676,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->reload_ignore_cache(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserStopLoadRequest::kMessageId: {
@@ -9354,12 +10701,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->stop_load(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetIdentifierRequest::kMessageId: {
@@ -9374,7 +10726,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_identifier(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9386,7 +10738,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserIsSameRequest::kMessageId: {
@@ -9402,7 +10759,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_browser_t* that_ptr = that != 0 ? tables::browser.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -9419,7 +10776,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserIsPopupRequest::kMessageId: {
@@ -9434,7 +10796,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_popup(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9446,7 +10808,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHasDocumentRequest::kMessageId: {
@@ -9461,7 +10828,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_document(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9473,7 +10840,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetMainFrameRequest::kMessageId: {
@@ -9488,7 +10860,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_main_frame(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9500,7 +10872,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetFocusedFrameRequest::kMessageId: {
@@ -9515,7 +10892,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_focused_frame(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9527,7 +10904,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetFrameByIdentifierRequest::kMessageId: {
@@ -9543,7 +10925,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string identifier = req.identifier;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, identifier]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, identifier]() {
                 ScopedCefString identifier_cef(identifier);
                 auto rawResult = receiver->get_frame_by_identifier(receiver, identifier_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -9556,7 +10938,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetFrameByNameRequest::kMessageId: {
@@ -9572,7 +10959,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->get_frame_by_name(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -9585,7 +10972,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetFrameCountRequest::kMessageId: {
@@ -9600,7 +10992,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_frame_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9612,7 +11004,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetFrameIdentifiersRequest::kMessageId: {
@@ -9628,7 +11025,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> identifiers = std::move(req.identifiers);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, identifiers]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, identifiers]() {
                 cef_string_list_t identifiers_list = cef_string_list_alloc();
                 for (const auto& __s : identifiers) {
                     cef_string_t __cs{};
@@ -9641,7 +11038,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(identifiers_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserGetFrameNamesRequest::kMessageId: {
@@ -9657,7 +11059,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> names = std::move(req.names);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, names]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, names]() {
                 cef_string_list_t names_list = cef_string_list_alloc();
                 for (const auto& __s : names) {
                     cef_string_t __cs{};
@@ -9670,7 +11072,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(names_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetBrowserRequest::kMessageId: {
@@ -9685,7 +11092,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_browser(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9697,7 +11104,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostCloseBrowserRequest::kMessageId: {
@@ -9713,12 +11125,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t forceClose = req.forceClose;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, forceClose]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, forceClose]() {
                 receiver->close_browser(receiver, cefArg<decltype(receiver->close_browser), 1>(forceClose));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostTryCloseBrowserRequest::kMessageId: {
@@ -9733,7 +11150,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->try_close_browser(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9745,7 +11162,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostIsReadyToBeClosedRequest::kMessageId: {
@@ -9760,7 +11182,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_ready_to_be_closed(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9772,7 +11194,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSetFocusRequest::kMessageId: {
@@ -9788,12 +11215,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t focus = req.focus;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, focus]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, focus]() {
                 receiver->set_focus(receiver, cefArg<decltype(receiver->set_focus), 1>(focus));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetWindowHandleRequest::kMessageId: {
@@ -9808,7 +11240,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window_handle(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9820,7 +11252,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetOpenerWindowHandleRequest::kMessageId: {
@@ -9835,7 +11272,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_opener_window_handle(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9847,7 +11284,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetOpenerIdentifierRequest::kMessageId: {
@@ -9862,7 +11304,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_opener_identifier(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9874,7 +11316,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostHasViewRequest::kMessageId: {
@@ -9889,7 +11336,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9901,7 +11348,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetRequestContextRequest::kMessageId: {
@@ -9916,7 +11368,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_request_context(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9928,7 +11380,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostCanZoomRequest::kMessageId: {
@@ -9944,7 +11401,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t command = req.command;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, command]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, command]() {
                 auto rawResult = receiver->can_zoom(receiver, cefArg<decltype(receiver->can_zoom), 1>(command));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -9956,7 +11413,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostZoomRequest::kMessageId: {
@@ -9972,12 +11434,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t command = req.command;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, command]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, command]() {
                 receiver->zoom(receiver, cefArg<decltype(receiver->zoom), 1>(command));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostStartDownloadRequest::kMessageId: {
@@ -9993,13 +11460,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string url = req.url;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url]() {
                 ScopedCefString url_cef(url);
                 receiver->start_download(receiver, url_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostPrintRequest::kMessageId: {
@@ -10014,12 +11486,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->print(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostFindRequest::kMessageId: {
@@ -10038,13 +11515,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t forward = req.forward;
             std::int32_t matchCase = req.matchCase;
             std::int32_t findNext = req.findNext;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, searchText, forward, matchCase, findNext]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, searchText, forward, matchCase, findNext]() {
                 ScopedCefString searchText_cef(searchText);
                 receiver->find(receiver, searchText_cef.get(), cefArg<decltype(receiver->find), 2>(forward), cefArg<decltype(receiver->find), 3>(matchCase), cefArg<decltype(receiver->find), 4>(findNext));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostStopFindingRequest::kMessageId: {
@@ -10060,12 +11542,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t clearSelection = req.clearSelection;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, clearSelection]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, clearSelection]() {
                 receiver->stop_finding(receiver, cefArg<decltype(receiver->stop_finding), 1>(clearSelection));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostCloseDevToolsRequest::kMessageId: {
@@ -10080,12 +11567,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->close_dev_tools(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostHasDevToolsRequest::kMessageId: {
@@ -10100,7 +11592,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_dev_tools(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10112,7 +11604,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendDevToolsMessageRequest::kMessageId: {
@@ -10128,7 +11625,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::uint8_t> message = std::move(req.message);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, message]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, message]() {
                 auto rawResult = receiver->send_dev_tools_message(receiver, message.data(), static_cast<size_t>(message.size()));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10140,7 +11637,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostExecuteDevToolsMethodRequest::kMessageId: {
@@ -10158,7 +11660,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t messageId_ = req.messageId_;
             std::string method = req.method;
             std::int32_t params = req.params;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, messageId_, method, params]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, messageId_, method, params]() {
                 ScopedCefString method_cef(method);
                 cef_dictionary_value_t* params_ptr = params != 0 ? tables::dictionaryValue.retain(params) : nullptr;
                 auto rawResult = receiver->execute_dev_tools_method(receiver, cefArg<decltype(receiver->execute_dev_tools_method), 1>(messageId_), method_cef.get(), params_ptr);
@@ -10176,7 +11678,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostReplaceMisspellingRequest::kMessageId: {
@@ -10192,13 +11699,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string word = req.word;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, word]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, word]() {
                 ScopedCefString word_cef(word);
                 receiver->replace_misspelling(receiver, word_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostAddWordToDictionaryRequest::kMessageId: {
@@ -10214,13 +11726,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string word = req.word;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, word]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, word]() {
                 ScopedCefString word_cef(word);
                 receiver->add_word_to_dictionary(receiver, word_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostIsWindowRenderingDisabledRequest::kMessageId: {
@@ -10235,7 +11752,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_window_rendering_disabled(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10247,7 +11764,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostWasResizedRequest::kMessageId: {
@@ -10262,12 +11784,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->was_resized(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostWasHiddenRequest::kMessageId: {
@@ -10283,12 +11810,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t hidden = req.hidden;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, hidden]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, hidden]() {
                 receiver->was_hidden(receiver, cefArg<decltype(receiver->was_hidden), 1>(hidden));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostNotifyScreenInfoChangedRequest::kMessageId: {
@@ -10303,12 +11835,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->notify_screen_info_changed(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostInvalidateRequest::kMessageId: {
@@ -10324,12 +11861,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t type = req.type;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, type]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, type]() {
                 receiver->invalidate(receiver, cefArg<decltype(receiver->invalidate), 1>(type));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendExternalBeginFrameRequest::kMessageId: {
@@ -10344,12 +11886,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->send_external_begin_frame(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendKeyEventRequest::kMessageId: {
@@ -10365,7 +11912,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::KeyEvent event = std::move(req.event);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, event]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, event]() {
                 cef_key_event_t event_native{};
                 event_native.size = sizeof(event_native);
                 event_native.type = static_cast<decltype(event_native.type)>(event.type);
@@ -10380,7 +11927,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendMouseClickEventRequest::kMessageId: {
@@ -10399,7 +11951,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t type = req.type;
             std::int32_t mouseUp = req.mouseUp;
             std::int32_t clickCount = req.clickCount;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, event, type, mouseUp, clickCount]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, event, type, mouseUp, clickCount]() {
                 cef_mouse_event_t event_native{};
                 event_native.x = static_cast<decltype(event_native.x)>(event.x);
                 event_native.y = static_cast<decltype(event_native.y)>(event.y);
@@ -10408,7 +11960,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendMouseMoveEventRequest::kMessageId: {
@@ -10425,7 +11982,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             gen::MouseEvent event = std::move(req.event);
             std::int32_t mouseLeave = req.mouseLeave;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, event, mouseLeave]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, event, mouseLeave]() {
                 cef_mouse_event_t event_native{};
                 event_native.x = static_cast<decltype(event_native.x)>(event.x);
                 event_native.y = static_cast<decltype(event_native.y)>(event.y);
@@ -10434,7 +11991,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendMouseWheelEventRequest::kMessageId: {
@@ -10452,7 +12014,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             gen::MouseEvent event = std::move(req.event);
             std::int32_t deltaX = req.deltaX;
             std::int32_t deltaY = req.deltaY;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, event, deltaX, deltaY]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, event, deltaX, deltaY]() {
                 cef_mouse_event_t event_native{};
                 event_native.x = static_cast<decltype(event_native.x)>(event.x);
                 event_native.y = static_cast<decltype(event_native.y)>(event.y);
@@ -10461,7 +12023,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSendCaptureLostEventRequest::kMessageId: {
@@ -10476,12 +12043,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->send_capture_lost_event(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostNotifyMoveOrResizeStartedRequest::kMessageId: {
@@ -10496,12 +12068,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->notify_move_or_resize_started(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetWindowlessFrameRateRequest::kMessageId: {
@@ -10516,7 +12093,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_windowless_frame_rate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10528,7 +12105,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSetWindowlessFrameRateRequest::kMessageId: {
@@ -10544,12 +12126,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t frameRate = req.frameRate;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, frameRate]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, frameRate]() {
                 receiver->set_windowless_frame_rate(receiver, cefArg<decltype(receiver->set_windowless_frame_rate), 1>(frameRate));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostImeCommitTextRequest::kMessageId: {
@@ -10567,7 +12154,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string text = req.text;
             gen::Range replacementRange = std::move(req.replacementRange);
             std::int32_t relativeCursorPos = req.relativeCursorPos;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text, replacementRange, relativeCursorPos]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text, replacementRange, relativeCursorPos]() {
                 ScopedCefString text_cef(text);
                 cef_range_t replacementRange_native{};
                 replacementRange_native.from = static_cast<decltype(replacementRange_native.from)>(replacementRange.from);
@@ -10576,7 +12163,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostImeFinishComposingTextRequest::kMessageId: {
@@ -10592,12 +12184,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t keepSelection = req.keepSelection;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, keepSelection]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, keepSelection]() {
                 receiver->ime_finish_composing_text(receiver, cefArg<decltype(receiver->ime_finish_composing_text), 1>(keepSelection));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostImeCancelCompositionRequest::kMessageId: {
@@ -10612,12 +12209,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->ime_cancel_composition(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostDragTargetDragEnterRequest::kMessageId: {
@@ -10635,7 +12237,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t dragData = req.dragData;
             gen::MouseEvent event = std::move(req.event);
             std::int32_t allowedOps = req.allowedOps;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, dragData, event, allowedOps]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, dragData, event, allowedOps]() {
                 cef_drag_data_t* dragData_ptr = dragData != 0 ? tables::dragData.retain(dragData) : nullptr;
                 cef_mouse_event_t event_native{};
                 event_native.x = static_cast<decltype(event_native.x)>(event.x);
@@ -10649,7 +12251,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     dragData_base->release(dragData_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostDragTargetDragOverRequest::kMessageId: {
@@ -10666,7 +12273,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             gen::MouseEvent event = std::move(req.event);
             std::int32_t allowedOps = req.allowedOps;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, event, allowedOps]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, event, allowedOps]() {
                 cef_mouse_event_t event_native{};
                 event_native.x = static_cast<decltype(event_native.x)>(event.x);
                 event_native.y = static_cast<decltype(event_native.y)>(event.y);
@@ -10675,7 +12282,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostDragTargetDragLeaveRequest::kMessageId: {
@@ -10690,12 +12302,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->drag_target_drag_leave(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostDragTargetDropRequest::kMessageId: {
@@ -10711,7 +12328,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::MouseEvent event = std::move(req.event);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, event]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, event]() {
                 cef_mouse_event_t event_native{};
                 event_native.x = static_cast<decltype(event_native.x)>(event.x);
                 event_native.y = static_cast<decltype(event_native.y)>(event.y);
@@ -10720,7 +12337,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostDragSourceEndedAtRequest::kMessageId: {
@@ -10738,12 +12360,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t x = req.x;
             std::int32_t y = req.y;
             std::int32_t op = req.op;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, x, y, op]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, x, y, op]() {
                 receiver->drag_source_ended_at(receiver, cefArg<decltype(receiver->drag_source_ended_at), 1>(x), cefArg<decltype(receiver->drag_source_ended_at), 2>(y), cefArg<decltype(receiver->drag_source_ended_at), 3>(op));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostDragSourceSystemDragEndedRequest::kMessageId: {
@@ -10758,12 +12385,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->drag_source_system_drag_ended(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetVisibleNavigationEntryRequest::kMessageId: {
@@ -10778,7 +12410,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_visible_navigation_entry(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10790,7 +12422,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSetAccessibilityStateRequest::kMessageId: {
@@ -10806,12 +12443,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t accessibilityState = req.accessibilityState;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, accessibilityState]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, accessibilityState]() {
                 receiver->set_accessibility_state(receiver, cefArg<decltype(receiver->set_accessibility_state), 1>(accessibilityState));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSetAutoResizeEnabledRequest::kMessageId: {
@@ -10829,7 +12471,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t enabled = req.enabled;
             gen::Size minSize = std::move(req.minSize);
             gen::Size maxSize = std::move(req.maxSize);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, enabled, minSize, maxSize]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, enabled, minSize, maxSize]() {
                 cef_size_t minSize_native{};
                 minSize_native.width = static_cast<decltype(minSize_native.width)>(minSize.width);
                 minSize_native.height = static_cast<decltype(minSize_native.height)>(minSize.height);
@@ -10840,7 +12482,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostSetAudioMutedRequest::kMessageId: {
@@ -10856,12 +12503,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t mute = req.mute;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, mute]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, mute]() {
                 receiver->set_audio_muted(receiver, cefArg<decltype(receiver->set_audio_muted), 1>(mute));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostIsAudioMutedRequest::kMessageId: {
@@ -10876,7 +12528,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_audio_muted(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10888,7 +12540,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostIsFullscreenRequest::kMessageId: {
@@ -10903,7 +12560,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_fullscreen(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10915,7 +12572,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostExitFullscreenRequest::kMessageId: {
@@ -10931,12 +12593,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t willCauseResize = req.willCauseResize;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, willCauseResize]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, willCauseResize]() {
                 receiver->exit_fullscreen(receiver, cefArg<decltype(receiver->exit_fullscreen), 1>(willCauseResize));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostCanExecuteChromeCommandRequest::kMessageId: {
@@ -10952,7 +12619,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->can_execute_chrome_command(receiver, cefArg<decltype(receiver->can_execute_chrome_command), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -10964,7 +12631,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostExecuteChromeCommandRequest::kMessageId: {
@@ -10981,12 +12653,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t disposition = req.disposition;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, disposition]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, disposition]() {
                 receiver->execute_chrome_command(receiver, cefArg<decltype(receiver->execute_chrome_command), 1>(commandId), cefArg<decltype(receiver->execute_chrome_command), 2>(disposition));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostIsRenderProcessUnresponsiveRequest::kMessageId: {
@@ -11001,7 +12678,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_render_process_unresponsive(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11013,7 +12690,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserHostGetRuntimeStyleRequest::kMessageId: {
@@ -11028,7 +12710,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_runtime_style(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11040,7 +12722,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsSubMenuRequest::kMessageId: {
@@ -11055,7 +12742,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_sub_menu(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11067,7 +12754,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelClearRequest::kMessageId: {
@@ -11082,7 +12774,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->clear(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11094,7 +12786,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetCountRequest::kMessageId: {
@@ -11109,7 +12806,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11121,7 +12818,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelAddSeparatorRequest::kMessageId: {
@@ -11136,7 +12838,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->add_separator(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11148,7 +12850,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelAddItemRequest::kMessageId: {
@@ -11165,7 +12872,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->add_item(receiver, cefArg<decltype(receiver->add_item), 1>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11178,7 +12885,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelAddCheckItemRequest::kMessageId: {
@@ -11195,7 +12907,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->add_check_item(receiver, cefArg<decltype(receiver->add_check_item), 1>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11208,7 +12920,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelAddRadioItemRequest::kMessageId: {
@@ -11226,7 +12943,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
             std::int32_t groupId = req.groupId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, label, groupId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, label, groupId]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->add_radio_item(receiver, cefArg<decltype(receiver->add_radio_item), 1>(commandId), label_cef.get(), cefArg<decltype(receiver->add_radio_item), 3>(groupId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11239,7 +12956,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelAddSubMenuRequest::kMessageId: {
@@ -11256,7 +12978,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->add_sub_menu(receiver, cefArg<decltype(receiver->add_sub_menu), 1>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11269,7 +12991,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelInsertSeparatorAtRequest::kMessageId: {
@@ -11285,7 +13012,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->insert_separator_at(receiver, cefArg<decltype(receiver->insert_separator_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11297,7 +13024,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelInsertItemAtRequest::kMessageId: {
@@ -11315,7 +13047,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int64_t index = req.index;
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->insert_item_at(receiver, cefArg<decltype(receiver->insert_item_at), 1>(index), cefArg<decltype(receiver->insert_item_at), 2>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11328,7 +13060,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelInsertCheckItemAtRequest::kMessageId: {
@@ -11346,7 +13083,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int64_t index = req.index;
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->insert_check_item_at(receiver, cefArg<decltype(receiver->insert_check_item_at), 1>(index), cefArg<decltype(receiver->insert_check_item_at), 2>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11359,7 +13096,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelInsertRadioItemAtRequest::kMessageId: {
@@ -11378,7 +13120,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
             std::int32_t groupId = req.groupId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label, groupId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label, groupId]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->insert_radio_item_at(receiver, cefArg<decltype(receiver->insert_radio_item_at), 1>(index), cefArg<decltype(receiver->insert_radio_item_at), 2>(commandId), label_cef.get(), cefArg<decltype(receiver->insert_radio_item_at), 4>(groupId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11391,7 +13133,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelInsertSubMenuAtRequest::kMessageId: {
@@ -11409,7 +13156,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int64_t index = req.index;
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->insert_sub_menu_at(receiver, cefArg<decltype(receiver->insert_sub_menu_at), 1>(index), cefArg<decltype(receiver->insert_sub_menu_at), 2>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11422,7 +13169,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelRemoveRequest::kMessageId: {
@@ -11438,7 +13190,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->remove(receiver, cefArg<decltype(receiver->remove), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11450,7 +13202,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelRemoveAtRequest::kMessageId: {
@@ -11466,7 +13223,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->remove_at(receiver, cefArg<decltype(receiver->remove_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11478,7 +13235,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetIndexOfRequest::kMessageId: {
@@ -11494,7 +13256,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->get_index_of(receiver, cefArg<decltype(receiver->get_index_of), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11506,7 +13268,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetCommandIdAtRequest::kMessageId: {
@@ -11522,7 +13289,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_command_id_at(receiver, cefArg<decltype(receiver->get_command_id_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11534,7 +13301,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetCommandIdAtRequest::kMessageId: {
@@ -11551,7 +13323,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, commandId]() {
                 auto rawResult = receiver->set_command_id_at(receiver, cefArg<decltype(receiver->set_command_id_at), 1>(index), cefArg<decltype(receiver->set_command_id_at), 2>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11563,7 +13335,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetLabelRequest::kMessageId: {
@@ -11579,7 +13356,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->get_label(receiver, cefArg<decltype(receiver->get_label), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11591,7 +13368,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetLabelRequest::kMessageId: {
@@ -11608,7 +13390,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->set_label(receiver, cefArg<decltype(receiver->set_label), 1>(commandId), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11621,7 +13403,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetLabelAtRequest::kMessageId: {
@@ -11638,7 +13425,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::string label = req.label;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, label]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, label]() {
                 ScopedCefString label_cef(label);
                 auto rawResult = receiver->set_label_at(receiver, cefArg<decltype(receiver->set_label_at), 1>(index), label_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -11651,7 +13438,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetTypeRequest::kMessageId: {
@@ -11667,7 +13459,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->get_type(receiver, cefArg<decltype(receiver->get_type), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11679,7 +13471,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetGroupIdRequest::kMessageId: {
@@ -11695,7 +13492,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->get_group_id(receiver, cefArg<decltype(receiver->get_group_id), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11707,7 +13504,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetGroupIdAtRequest::kMessageId: {
@@ -11723,7 +13525,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_group_id_at(receiver, cefArg<decltype(receiver->get_group_id_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11735,7 +13537,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetGroupIdRequest::kMessageId: {
@@ -11752,7 +13559,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t groupId = req.groupId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, groupId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, groupId]() {
                 auto rawResult = receiver->set_group_id(receiver, cefArg<decltype(receiver->set_group_id), 1>(commandId), cefArg<decltype(receiver->set_group_id), 2>(groupId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11764,7 +13571,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetGroupIdAtRequest::kMessageId: {
@@ -11781,7 +13593,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t groupId = req.groupId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, groupId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, groupId]() {
                 auto rawResult = receiver->set_group_id_at(receiver, cefArg<decltype(receiver->set_group_id_at), 1>(index), cefArg<decltype(receiver->set_group_id_at), 2>(groupId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11793,7 +13605,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetSubMenuRequest::kMessageId: {
@@ -11809,7 +13626,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->get_sub_menu(receiver, cefArg<decltype(receiver->get_sub_menu), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11821,7 +13638,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelGetSubMenuAtRequest::kMessageId: {
@@ -11837,7 +13659,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_sub_menu_at(receiver, cefArg<decltype(receiver->get_sub_menu_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11849,7 +13671,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsVisibleRequest::kMessageId: {
@@ -11865,7 +13692,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->is_visible(receiver, cefArg<decltype(receiver->is_visible), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11877,7 +13704,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsVisibleAtRequest::kMessageId: {
@@ -11893,7 +13725,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->is_visible_at(receiver, cefArg<decltype(receiver->is_visible_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11905,7 +13737,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetVisibleRequest::kMessageId: {
@@ -11922,7 +13759,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t visible = req.visible;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, visible]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, visible]() {
                 auto rawResult = receiver->set_visible(receiver, cefArg<decltype(receiver->set_visible), 1>(commandId), cefArg<decltype(receiver->set_visible), 2>(visible));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11934,7 +13771,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetVisibleAtRequest::kMessageId: {
@@ -11951,7 +13793,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t visible = req.visible;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, visible]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, visible]() {
                 auto rawResult = receiver->set_visible_at(receiver, cefArg<decltype(receiver->set_visible_at), 1>(index), cefArg<decltype(receiver->set_visible_at), 2>(visible));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11963,7 +13805,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsEnabledRequest::kMessageId: {
@@ -11979,7 +13826,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->is_enabled(receiver, cefArg<decltype(receiver->is_enabled), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -11991,7 +13838,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsEnabledAtRequest::kMessageId: {
@@ -12007,7 +13859,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->is_enabled_at(receiver, cefArg<decltype(receiver->is_enabled_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12019,7 +13871,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetEnabledRequest::kMessageId: {
@@ -12036,7 +13893,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t enabled = req.enabled;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, enabled]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, enabled]() {
                 auto rawResult = receiver->set_enabled(receiver, cefArg<decltype(receiver->set_enabled), 1>(commandId), cefArg<decltype(receiver->set_enabled), 2>(enabled));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12048,7 +13905,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetEnabledAtRequest::kMessageId: {
@@ -12065,7 +13927,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t enabled = req.enabled;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, enabled]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, enabled]() {
                 auto rawResult = receiver->set_enabled_at(receiver, cefArg<decltype(receiver->set_enabled_at), 1>(index), cefArg<decltype(receiver->set_enabled_at), 2>(enabled));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12077,7 +13939,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsCheckedRequest::kMessageId: {
@@ -12093,7 +13960,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->is_checked(receiver, cefArg<decltype(receiver->is_checked), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12105,7 +13972,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelIsCheckedAtRequest::kMessageId: {
@@ -12121,7 +13993,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->is_checked_at(receiver, cefArg<decltype(receiver->is_checked_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12133,7 +14005,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetCheckedRequest::kMessageId: {
@@ -12150,7 +14027,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t checked = req.checked;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, checked]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, checked]() {
                 auto rawResult = receiver->set_checked(receiver, cefArg<decltype(receiver->set_checked), 1>(commandId), cefArg<decltype(receiver->set_checked), 2>(checked));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12162,7 +14039,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetCheckedAtRequest::kMessageId: {
@@ -12179,7 +14061,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int64_t index = req.index;
             std::int32_t checked = req.checked;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, checked]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, checked]() {
                 auto rawResult = receiver->set_checked_at(receiver, cefArg<decltype(receiver->set_checked_at), 1>(index), cefArg<decltype(receiver->set_checked_at), 2>(checked));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12191,7 +14073,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelHasAcceleratorRequest::kMessageId: {
@@ -12207,7 +14094,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->has_accelerator(receiver, cefArg<decltype(receiver->has_accelerator), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12219,7 +14106,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelHasAcceleratorAtRequest::kMessageId: {
@@ -12235,7 +14127,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->has_accelerator_at(receiver, cefArg<decltype(receiver->has_accelerator_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12247,7 +14139,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetAcceleratorRequest::kMessageId: {
@@ -12267,7 +14164,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t shiftPressed = req.shiftPressed;
             std::int32_t ctrlPressed = req.ctrlPressed;
             std::int32_t altPressed = req.altPressed;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, keyCode, shiftPressed, ctrlPressed, altPressed]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, keyCode, shiftPressed, ctrlPressed, altPressed]() {
                 auto rawResult = receiver->set_accelerator(receiver, cefArg<decltype(receiver->set_accelerator), 1>(commandId), cefArg<decltype(receiver->set_accelerator), 2>(keyCode), cefArg<decltype(receiver->set_accelerator), 3>(shiftPressed), cefArg<decltype(receiver->set_accelerator), 4>(ctrlPressed), cefArg<decltype(receiver->set_accelerator), 5>(altPressed));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12279,7 +14176,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetAcceleratorAtRequest::kMessageId: {
@@ -12299,7 +14201,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t shiftPressed = req.shiftPressed;
             std::int32_t ctrlPressed = req.ctrlPressed;
             std::int32_t altPressed = req.altPressed;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, keyCode, shiftPressed, ctrlPressed, altPressed]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, keyCode, shiftPressed, ctrlPressed, altPressed]() {
                 auto rawResult = receiver->set_accelerator_at(receiver, cefArg<decltype(receiver->set_accelerator_at), 1>(index), cefArg<decltype(receiver->set_accelerator_at), 2>(keyCode), cefArg<decltype(receiver->set_accelerator_at), 3>(shiftPressed), cefArg<decltype(receiver->set_accelerator_at), 4>(ctrlPressed), cefArg<decltype(receiver->set_accelerator_at), 5>(altPressed));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12311,7 +14213,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelRemoveAcceleratorRequest::kMessageId: {
@@ -12327,7 +14234,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->remove_accelerator(receiver, cefArg<decltype(receiver->remove_accelerator), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12339,7 +14246,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelRemoveAcceleratorAtRequest::kMessageId: {
@@ -12355,7 +14267,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->remove_accelerator_at(receiver, cefArg<decltype(receiver->remove_accelerator_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12367,7 +14279,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetColorRequest::kMessageId: {
@@ -12385,7 +14302,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t commandId = req.commandId;
             std::int32_t colorType = req.colorType;
             std::int32_t color = req.color;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, colorType, color]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, colorType, color]() {
                 auto rawResult = receiver->set_color(receiver, cefArg<decltype(receiver->set_color), 1>(commandId), cefArg<decltype(receiver->set_color), 2>(colorType), cefArg<decltype(receiver->set_color), 3>(color));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12397,7 +14314,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetColorAtRequest::kMessageId: {
@@ -12415,7 +14337,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t index = req.index;
             std::int32_t colorType = req.colorType;
             std::int32_t color = req.color;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, colorType, color]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, colorType, color]() {
                 auto rawResult = receiver->set_color_at(receiver, cefArg<decltype(receiver->set_color_at), 1>(index), cefArg<decltype(receiver->set_color_at), 2>(colorType), cefArg<decltype(receiver->set_color_at), 3>(color));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12427,7 +14349,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetFontListRequest::kMessageId: {
@@ -12444,7 +14371,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::string fontList = req.fontList;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, fontList]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, fontList]() {
                 ScopedCefString fontList_cef(fontList);
                 auto rawResult = receiver->set_font_list(receiver, cefArg<decltype(receiver->set_font_list), 1>(commandId), fontList_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -12457,7 +14384,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuModelSetFontListAtRequest::kMessageId: {
@@ -12474,7 +14406,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t index = req.index;
             std::string fontList = req.fontList;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index, fontList]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index, fontList]() {
                 ScopedCefString fontList_cef(fontList);
                 auto rawResult = receiver->set_font_list_at(receiver, cefArg<decltype(receiver->set_font_list_at), 1>(index), fontList_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -12487,7 +14419,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RunContextMenuCallbackContRequest::kMessageId: {
@@ -12504,12 +14441,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t eventFlags = req.eventFlags;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, eventFlags]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, eventFlags]() {
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(commandId), cefArg<decltype(receiver->cont), 2>(eventFlags));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RunContextMenuCallbackCancelRequest::kMessageId: {
@@ -12524,12 +14466,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RunQuickMenuCallbackContRequest::kMessageId: {
@@ -12546,12 +14493,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t commandId = req.commandId;
             std::int32_t eventFlags = req.eventFlags;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, eventFlags]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, eventFlags]() {
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(commandId), cefArg<decltype(receiver->cont), 2>(eventFlags));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::RunQuickMenuCallbackCancelRequest::kMessageId: {
@@ -12566,12 +14518,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetXcoordRequest::kMessageId: {
@@ -12586,7 +14543,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_xcoord(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12598,7 +14555,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetYcoordRequest::kMessageId: {
@@ -12613,7 +14575,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_ycoord(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12625,7 +14587,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetTypeFlagsRequest::kMessageId: {
@@ -12640,7 +14607,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_type_flags(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12652,7 +14619,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetLinkUrlRequest::kMessageId: {
@@ -12667,7 +14639,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_link_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12679,7 +14651,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetUnfilteredLinkUrlRequest::kMessageId: {
@@ -12694,7 +14671,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_unfiltered_link_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12706,7 +14683,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetSourceUrlRequest::kMessageId: {
@@ -12721,7 +14703,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_source_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12733,7 +14715,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsHasImageContentsRequest::kMessageId: {
@@ -12748,7 +14735,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_image_contents(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12760,7 +14747,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetTitleTextRequest::kMessageId: {
@@ -12775,7 +14767,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_title_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12787,7 +14779,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetPageUrlRequest::kMessageId: {
@@ -12802,7 +14799,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_page_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12814,7 +14811,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetFrameUrlRequest::kMessageId: {
@@ -12829,7 +14831,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_frame_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12841,7 +14843,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetFrameCharsetRequest::kMessageId: {
@@ -12856,7 +14863,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_frame_charset(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12868,7 +14875,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetMediaTypeRequest::kMessageId: {
@@ -12883,7 +14895,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_media_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12895,7 +14907,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetMediaStateFlagsRequest::kMessageId: {
@@ -12910,7 +14927,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_media_state_flags(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12922,7 +14939,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetSelectionTextRequest::kMessageId: {
@@ -12937,7 +14959,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_selection_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12949,7 +14971,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetMisspelledWordRequest::kMessageId: {
@@ -12964,7 +14991,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_misspelled_word(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -12976,7 +15003,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetDictionarySuggestionsRequest::kMessageId: {
@@ -12992,7 +15024,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> suggestions = std::move(req.suggestions);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, suggestions]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, suggestions]() {
                 cef_string_list_t suggestions_list = cef_string_list_alloc();
                 for (const auto& __s : suggestions) {
                     cef_string_t __cs{};
@@ -13012,7 +15044,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsIsEditableRequest::kMessageId: {
@@ -13027,7 +15064,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_editable(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13039,7 +15076,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsIsSpellCheckEnabledRequest::kMessageId: {
@@ -13054,7 +15096,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_spell_check_enabled(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13066,7 +15108,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsGetEditStateFlagsRequest::kMessageId: {
@@ -13081,7 +15128,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_edit_state_flags(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13093,7 +15140,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ContextMenuParamsIsCustomMenuRequest::kMessageId: {
@@ -13108,7 +15160,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_custom_menu(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13120,7 +15172,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FileDialogCallbackContRequest::kMessageId: {
@@ -13136,7 +15193,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> filePaths = std::move(req.filePaths);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, filePaths]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, filePaths]() {
                 cef_string_list_t filePaths_list = cef_string_list_alloc();
                 for (const auto& __s : filePaths) {
                     cef_string_t __cs{};
@@ -13149,7 +15206,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(filePaths_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::FileDialogCallbackCancelRequest::kMessageId: {
@@ -13164,12 +15226,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemIsValidRequest::kMessageId: {
@@ -13184,7 +15251,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13196,7 +15263,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemIsInProgressRequest::kMessageId: {
@@ -13211,7 +15283,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_in_progress(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13223,7 +15295,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemIsCompleteRequest::kMessageId: {
@@ -13238,7 +15315,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_complete(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13250,7 +15327,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemIsCanceledRequest::kMessageId: {
@@ -13265,7 +15347,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_canceled(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13277,7 +15359,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemIsInterruptedRequest::kMessageId: {
@@ -13292,7 +15379,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_interrupted(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13304,7 +15391,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetInterruptReasonRequest::kMessageId: {
@@ -13319,7 +15411,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_interrupt_reason(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13331,7 +15423,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetCurrentSpeedRequest::kMessageId: {
@@ -13346,7 +15443,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_current_speed(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13358,7 +15455,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetPercentCompleteRequest::kMessageId: {
@@ -13373,7 +15475,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_percent_complete(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13385,7 +15487,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetTotalBytesRequest::kMessageId: {
@@ -13400,7 +15507,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_total_bytes(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13412,7 +15519,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetReceivedBytesRequest::kMessageId: {
@@ -13427,7 +15539,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_received_bytes(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13439,7 +15551,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetStartTimeRequest::kMessageId: {
@@ -13454,7 +15571,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_basetime_t rawResult = receiver->get_start_time(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13466,7 +15583,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetEndTimeRequest::kMessageId: {
@@ -13481,7 +15603,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_basetime_t rawResult = receiver->get_end_time(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13493,7 +15615,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetFullPathRequest::kMessageId: {
@@ -13508,7 +15635,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_full_path(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13520,7 +15647,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetIdRequest::kMessageId: {
@@ -13535,7 +15667,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13547,7 +15679,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetUrlRequest::kMessageId: {
@@ -13562,7 +15699,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13574,7 +15711,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetOriginalUrlRequest::kMessageId: {
@@ -13589,7 +15731,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_original_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13601,7 +15743,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetSuggestedFileNameRequest::kMessageId: {
@@ -13616,7 +15763,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_suggested_file_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13628,7 +15775,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetContentDispositionRequest::kMessageId: {
@@ -13643,7 +15795,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_content_disposition(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13655,7 +15807,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemGetMimeTypeRequest::kMessageId: {
@@ -13670,7 +15827,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_mime_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13682,7 +15839,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemIsPausedRequest::kMessageId: {
@@ -13697,7 +15859,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_paused(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13709,7 +15871,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BeforeDownloadCallbackContRequest::kMessageId: {
@@ -13726,13 +15893,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string downloadPath = req.downloadPath;
             std::int32_t showDialog = req.showDialog;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, downloadPath, showDialog]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, downloadPath, showDialog]() {
                 ScopedCefString downloadPath_cef(downloadPath);
                 receiver->cont(receiver, downloadPath_cef.get(), cefArg<decltype(receiver->cont), 2>(showDialog));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemCallbackCancelRequest::kMessageId: {
@@ -13747,12 +15919,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemCallbackPauseRequest::kMessageId: {
@@ -13767,12 +15944,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->pause(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DownloadItemCallbackResumeRequest::kMessageId: {
@@ -13787,12 +15969,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->resume(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::JsdialogCallbackContRequest::kMessageId: {
@@ -13809,13 +15996,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t success = req.success;
             std::string userInput = req.userInput;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, success, userInput]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, success, userInput]() {
                 ScopedCefString userInput_cef(userInput);
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(success), userInput_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaAccessCallbackContRequest::kMessageId: {
@@ -13831,12 +16023,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t allowedPermissions = req.allowedPermissions;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, allowedPermissions]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, allowedPermissions]() {
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(allowedPermissions));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MediaAccessCallbackCancelRequest::kMessageId: {
@@ -13851,12 +16048,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PermissionPromptCallbackContRequest::kMessageId: {
@@ -13872,12 +16074,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t result = req.result;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, result]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, result]() {
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(result));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsIsValidRequest::kMessageId: {
@@ -13892,7 +16099,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13904,7 +16111,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsIsReadOnlyRequest::kMessageId: {
@@ -13919,7 +16131,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13931,7 +16143,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetOrientationRequest::kMessageId: {
@@ -13947,12 +16164,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t landscape = req.landscape;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, landscape]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, landscape]() {
                 receiver->set_orientation(receiver, cefArg<decltype(receiver->set_orientation), 1>(landscape));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsIsLandscapeRequest::kMessageId: {
@@ -13967,7 +16189,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_landscape(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -13979,7 +16201,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetPrinterPrintableAreaRequest::kMessageId: {
@@ -13997,7 +16224,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             gen::Size physicalSizeDeviceUnits = std::move(req.physicalSizeDeviceUnits);
             gen::Rect printableAreaDeviceUnits = std::move(req.printableAreaDeviceUnits);
             std::int32_t landscapeNeedsFlip = req.landscapeNeedsFlip;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip]() {
                 cef_size_t physicalSizeDeviceUnits_native{};
                 physicalSizeDeviceUnits_native.width = static_cast<decltype(physicalSizeDeviceUnits_native.width)>(physicalSizeDeviceUnits.width);
                 physicalSizeDeviceUnits_native.height = static_cast<decltype(physicalSizeDeviceUnits_native.height)>(physicalSizeDeviceUnits.height);
@@ -14010,7 +16237,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetDeviceNameRequest::kMessageId: {
@@ -14026,13 +16258,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 receiver->set_device_name(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsGetDeviceNameRequest::kMessageId: {
@@ -14047,7 +16284,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_device_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14059,7 +16296,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetDpiRequest::kMessageId: {
@@ -14075,12 +16317,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t dpi = req.dpi;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, dpi]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, dpi]() {
                 receiver->set_dpi(receiver, cefArg<decltype(receiver->set_dpi), 1>(dpi));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsGetDpiRequest::kMessageId: {
@@ -14095,7 +16342,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_dpi(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14107,7 +16354,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsGetPageRangesCountRequest::kMessageId: {
@@ -14122,7 +16374,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_page_ranges_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14134,7 +16386,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetSelectionOnlyRequest::kMessageId: {
@@ -14150,12 +16407,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t selectionOnly = req.selectionOnly;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, selectionOnly]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, selectionOnly]() {
                 receiver->set_selection_only(receiver, cefArg<decltype(receiver->set_selection_only), 1>(selectionOnly));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsIsSelectionOnlyRequest::kMessageId: {
@@ -14170,7 +16432,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_selection_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14182,7 +16444,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetCollateRequest::kMessageId: {
@@ -14198,12 +16465,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t collate = req.collate;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, collate]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, collate]() {
                 receiver->set_collate(receiver, cefArg<decltype(receiver->set_collate), 1>(collate));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsWillCollateRequest::kMessageId: {
@@ -14218,7 +16490,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->will_collate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14230,7 +16502,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetColorModelRequest::kMessageId: {
@@ -14246,12 +16523,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t model = req.model;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, model]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, model]() {
                 receiver->set_color_model(receiver, cefArg<decltype(receiver->set_color_model), 1>(model));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsGetColorModelRequest::kMessageId: {
@@ -14266,7 +16548,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_color_model(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14278,7 +16560,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetCopiesRequest::kMessageId: {
@@ -14294,12 +16581,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t copies = req.copies;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, copies]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, copies]() {
                 receiver->set_copies(receiver, cefArg<decltype(receiver->set_copies), 1>(copies));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsGetCopiesRequest::kMessageId: {
@@ -14314,7 +16606,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_copies(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14326,7 +16618,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsSetDuplexModeRequest::kMessageId: {
@@ -14342,12 +16639,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t mode = req.mode;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, mode]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, mode]() {
                 receiver->set_duplex_mode(receiver, cefArg<decltype(receiver->set_duplex_mode), 1>(mode));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintSettingsGetDuplexModeRequest::kMessageId: {
@@ -14362,7 +16664,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_duplex_mode(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14374,7 +16676,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintDialogCallbackContRequest::kMessageId: {
@@ -14390,7 +16697,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t settings = req.settings;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, settings]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, settings]() {
                 cef_print_settings_t* settings_ptr = settings != 0 ? tables::printSettings.retain(settings) : nullptr;
                 receiver->cont(receiver, settings_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -14400,7 +16707,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     settings_base->release(settings_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintDialogCallbackCancelRequest::kMessageId: {
@@ -14415,12 +16727,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PrintJobCallbackContRequest::kMessageId: {
@@ -14435,12 +16752,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cont(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::AuthCallbackContRequest::kMessageId: {
@@ -14457,14 +16779,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string username = req.username;
             std::string password = req.password;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, username, password]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, username, password]() {
                 ScopedCefString username_cef(username);
                 ScopedCefString password_cef(password);
                 receiver->cont(receiver, username_cef.get(), password_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::AuthCallbackCancelRequest::kMessageId: {
@@ -14479,12 +16806,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseIsReadOnlyRequest::kMessageId: {
@@ -14499,7 +16831,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14511,7 +16843,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetErrorRequest::kMessageId: {
@@ -14526,7 +16863,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_error(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14538,7 +16875,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetErrorRequest::kMessageId: {
@@ -14554,12 +16896,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t error = req.error;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, error]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, error]() {
                 receiver->set_error(receiver, cefArg<decltype(receiver->set_error), 1>(error));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetStatusRequest::kMessageId: {
@@ -14574,7 +16921,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_status(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14586,7 +16933,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetStatusRequest::kMessageId: {
@@ -14602,12 +16954,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t status = req.status;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, status]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, status]() {
                 receiver->set_status(receiver, cefArg<decltype(receiver->set_status), 1>(status));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetStatusTextRequest::kMessageId: {
@@ -14622,7 +16979,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_status_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14634,7 +16991,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetStatusTextRequest::kMessageId: {
@@ -14650,13 +17012,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string statusText = req.statusText;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, statusText]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, statusText]() {
                 ScopedCefString statusText_cef(statusText);
                 receiver->set_status_text(receiver, statusText_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetMimeTypeRequest::kMessageId: {
@@ -14671,7 +17038,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_mime_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14683,7 +17050,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetMimeTypeRequest::kMessageId: {
@@ -14699,13 +17071,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string mimeType = req.mimeType;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, mimeType]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, mimeType]() {
                 ScopedCefString mimeType_cef(mimeType);
                 receiver->set_mime_type(receiver, mimeType_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetCharsetRequest::kMessageId: {
@@ -14720,7 +17097,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_charset(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14732,7 +17109,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetCharsetRequest::kMessageId: {
@@ -14748,13 +17130,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string charset = req.charset;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, charset]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, charset]() {
                 ScopedCefString charset_cef(charset);
                 receiver->set_charset(receiver, charset_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetHeaderByNameRequest::kMessageId: {
@@ -14770,7 +17157,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->get_header_by_name(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -14783,7 +17170,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetHeaderByNameRequest::kMessageId: {
@@ -14801,14 +17193,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string name = req.name;
             std::string value = req.value;
             std::int32_t overwrite = req.overwrite;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name, value, overwrite]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name, value, overwrite]() {
                 ScopedCefString name_cef(name);
                 ScopedCefString value_cef(value);
                 receiver->set_header_by_name(receiver, name_cef.get(), value_cef.get(), cefArg<decltype(receiver->set_header_by_name), 3>(overwrite));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseGetUrlRequest::kMessageId: {
@@ -14823,7 +17220,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_url(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14835,7 +17232,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResponseSetUrlRequest::kMessageId: {
@@ -14851,13 +17253,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string url = req.url;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, url]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, url]() {
                 ScopedCefString url_cef(url);
                 receiver->set_url(receiver, url_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResourceSkipCallbackContRequest::kMessageId: {
@@ -14873,12 +17280,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t bytesSkipped = req.bytesSkipped;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, bytesSkipped]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, bytesSkipped]() {
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(bytesSkipped));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResourceReadCallbackContRequest::kMessageId: {
@@ -14894,12 +17306,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t bytesRead = req.bytesRead;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, bytesRead]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, bytesRead]() {
                 receiver->cont(receiver, cefArg<decltype(receiver->cont), 1>(bytesRead));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslinfoGetCertStatusRequest::kMessageId: {
@@ -14914,7 +17331,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_cert_status(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14926,7 +17343,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SslinfoGetX509CertificateRequest::kMessageId: {
@@ -14941,7 +17363,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_x509_certificate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -14953,7 +17375,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UnresponsiveProcessCallbackTerminateRequest::kMessageId: {
@@ -14968,12 +17395,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->terminate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SelectClientCertificateCallbackSelectRequest::kMessageId: {
@@ -14989,7 +17421,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t cert = req.cert;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, cert]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, cert]() {
                 cef_x509_certificate_t* cert_ptr = cert != 0 ? tables::x509Certificate.retain(cert) : nullptr;
                 receiver->select(receiver, cert_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -14999,7 +17431,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     cert_base->release(cert_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineIsValidRequest::kMessageId: {
@@ -15014,7 +17451,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15026,7 +17463,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineIsReadOnlyRequest::kMessageId: {
@@ -15041,7 +17483,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15053,7 +17495,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineCopyRequest::kMessageId: {
@@ -15068,7 +17515,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->copy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15080,7 +17527,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineInitFromStringRequest::kMessageId: {
@@ -15096,13 +17548,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string commandLine = req.commandLine;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandLine]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandLine]() {
                 ScopedCefString commandLine_cef(commandLine);
                 receiver->init_from_string(receiver, commandLine_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineResetRequest::kMessageId: {
@@ -15117,12 +17574,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->reset(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineGetArgvRequest::kMessageId: {
@@ -15138,7 +17600,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> argv = std::move(req.argv);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, argv]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, argv]() {
                 cef_string_list_t argv_list = cef_string_list_alloc();
                 for (const auto& __s : argv) {
                     cef_string_t __cs{};
@@ -15151,7 +17613,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(argv_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineGetCommandLineStringRequest::kMessageId: {
@@ -15166,7 +17633,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_command_line_string(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15178,7 +17645,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineGetProgramRequest::kMessageId: {
@@ -15193,7 +17665,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_program(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15205,7 +17677,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineSetProgramRequest::kMessageId: {
@@ -15221,13 +17698,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string program = req.program;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, program]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, program]() {
                 ScopedCefString program_cef(program);
                 receiver->set_program(receiver, program_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineHasSwitchesRequest::kMessageId: {
@@ -15242,7 +17724,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_switches(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15254,7 +17736,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineHasSwitchRequest::kMessageId: {
@@ -15270,7 +17757,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->has_switch(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -15283,7 +17770,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineGetSwitchValueRequest::kMessageId: {
@@ -15299,7 +17791,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 auto rawResult = receiver->get_switch_value(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -15312,7 +17804,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineAppendSwitchRequest::kMessageId: {
@@ -15328,13 +17825,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 receiver->append_switch(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineAppendSwitchWithValueRequest::kMessageId: {
@@ -15351,14 +17853,19 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string name = req.name;
             std::string value = req.value;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name, value]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name, value]() {
                 ScopedCefString name_cef(name);
                 ScopedCefString value_cef(value);
                 receiver->append_switch_with_value(receiver, name_cef.get(), value_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineHasArgumentsRequest::kMessageId: {
@@ -15373,7 +17880,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_arguments(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15385,7 +17892,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineGetArgumentsRequest::kMessageId: {
@@ -15401,7 +17913,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::vector<std::string> arguments = std::move(req.arguments);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, arguments]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, arguments]() {
                 cef_string_list_t arguments_list = cef_string_list_alloc();
                 for (const auto& __s : arguments) {
                     cef_string_t __cs{};
@@ -15414,7 +17926,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 base->release(base);
                 cef_string_list_free(arguments_list);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineAppendArgumentRequest::kMessageId: {
@@ -15430,13 +17947,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string argument = req.argument;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, argument]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, argument]() {
                 ScopedCefString argument_cef(argument);
                 receiver->append_argument(receiver, argument_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLinePrependWrapperRequest::kMessageId: {
@@ -15452,13 +17974,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string wrapper = req.wrapper;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, wrapper]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, wrapper]() {
                 ScopedCefString wrapper_cef(wrapper);
                 receiver->prepend_wrapper(receiver, wrapper_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::CommandLineRemoveSwitchRequest::kMessageId: {
@@ -15474,13 +18001,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 receiver->remove_switch(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskRunnerIsSameRequest::kMessageId: {
@@ -15496,7 +18028,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_task_runner_t* that_ptr = that != 0 ? tables::taskRunner.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -15513,7 +18045,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskRunnerBelongsToCurrentThreadRequest::kMessageId: {
@@ -15528,7 +18065,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->belongs_to_current_thread(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15540,7 +18077,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskRunnerBelongsToThreadRequest::kMessageId: {
@@ -15556,7 +18098,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t threadId = req.threadId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, threadId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, threadId]() {
                 auto rawResult = receiver->belongs_to_thread(receiver, cefArg<decltype(receiver->belongs_to_thread), 1>(threadId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15568,7 +18110,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskRunnerPostTaskRequest::kMessageId: {
@@ -15584,7 +18131,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t task = req.task;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, task]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, task]() {
                 cef_task_t* task_ptr = task != 0 ?
                         reinterpret_cast<cef_task_t*>(new genvisitors::JvmTask(task, ipc)) :
                         nullptr;
@@ -15599,7 +18146,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskRunnerPostDelayedTaskRequest::kMessageId: {
@@ -15616,7 +18168,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t task = req.task;
             std::int64_t delayMs = req.delayMs;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, task, delayMs]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, task, delayMs]() {
                 cef_task_t* task_ptr = task != 0 ?
                         reinterpret_cast<cef_task_t*>(new genvisitors::JvmTask(task, ipc)) :
                         nullptr;
@@ -15631,7 +18183,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SchemeRegistrarAddCustomSchemeRequest::kMessageId: {
@@ -15648,7 +18205,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string schemeName = req.schemeName;
             std::int32_t options = req.options;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, schemeName, options]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, schemeName, options]() {
                 ScopedCefString schemeName_cef(schemeName);
                 auto rawResult = receiver->add_custom_scheme(receiver, schemeName_cef.get(), cefArg<decltype(receiver->add_custom_scheme), 2>(options));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -15661,7 +18218,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentGetIdRequest::kMessageId: {
@@ -15676,7 +18238,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15688,7 +18250,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentGetNameRequest::kMessageId: {
@@ -15703,7 +18270,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15715,7 +18282,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentGetVersionRequest::kMessageId: {
@@ -15730,7 +18302,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_version(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15742,7 +18314,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentGetStateRequest::kMessageId: {
@@ -15757,7 +18334,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_state(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15769,7 +18346,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentUpdaterGetComponentCountRequest::kMessageId: {
@@ -15784,7 +18366,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_component_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15796,7 +18378,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentUpdaterGetComponentByIdRequest::kMessageId: {
@@ -15812,7 +18399,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string componentId = req.componentId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, componentId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, componentId]() {
                 ScopedCefString componentId_cef(componentId);
                 auto rawResult = receiver->get_component_by_id(receiver, componentId_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -15825,7 +18412,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ComponentUpdaterUpdateRequest::kMessageId: {
@@ -15843,7 +18435,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::string componentId = req.componentId;
             std::int32_t priority = req.priority;
             std::int32_t callback = req.callback;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, componentId, priority, callback]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, componentId, priority, callback]() {
                 ScopedCefString componentId_cef(componentId);
                 cef_component_update_callback_t* callback_ptr = callback != 0 ?
                         reinterpret_cast<cef_component_update_callback_t*>(new genvisitors::JvmComponentUpdateCallback(callback, ipc)) :
@@ -15852,7 +18444,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResourceBundleGetLocalizedStringRequest::kMessageId: {
@@ -15868,7 +18465,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t stringId = req.stringId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, stringId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, stringId]() {
                 auto rawResult = receiver->get_localized_string(receiver, cefArg<decltype(receiver->get_localized_string), 1>(stringId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15880,7 +18477,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResourceBundleGetDataResourceRequest::kMessageId: {
@@ -15896,7 +18498,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t resourceId = req.resourceId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, resourceId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, resourceId]() {
                 auto rawResult = receiver->get_data_resource(receiver, cefArg<decltype(receiver->get_data_resource), 1>(resourceId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15908,7 +18510,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ResourceBundleGetDataResourceForScaleRequest::kMessageId: {
@@ -15925,7 +18532,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t resourceId = req.resourceId;
             std::int32_t scaleFactor = req.scaleFactor;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, resourceId, scaleFactor]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, resourceId, scaleFactor]() {
                 auto rawResult = receiver->get_data_resource_for_scale(receiver, cefArg<decltype(receiver->get_data_resource_for_scale), 1>(resourceId), cefArg<decltype(receiver->get_data_resource_for_scale), 2>(scaleFactor));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15937,7 +18544,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerGetTaskRunnerRequest::kMessageId: {
@@ -15952,7 +18564,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_task_runner(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -15964,7 +18576,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerShutdownRequest::kMessageId: {
@@ -15979,12 +18596,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->shutdown(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerIsRunningRequest::kMessageId: {
@@ -15999,7 +18621,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_running(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16011,7 +18633,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerGetAddressRequest::kMessageId: {
@@ -16026,7 +18653,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_address(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16038,7 +18665,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerHasConnectionRequest::kMessageId: {
@@ -16053,7 +18685,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_connection(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16065,7 +18697,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerIsValidConnectionRequest::kMessageId: {
@@ -16081,7 +18718,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t connectionId = req.connectionId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId]() {
                 auto rawResult = receiver->is_valid_connection(receiver, cefArg<decltype(receiver->is_valid_connection), 1>(connectionId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16093,7 +18730,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerSendHttp200ResponseRequest::kMessageId: {
@@ -16111,13 +18753,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t connectionId = req.connectionId;
             std::string contentType = req.contentType;
             std::vector<std::uint8_t> data = std::move(req.data);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId, contentType, data]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId, contentType, data]() {
                 ScopedCefString contentType_cef(contentType);
                 receiver->send_http200_response(receiver, cefArg<decltype(receiver->send_http200_response), 1>(connectionId), contentType_cef.get(), data.data(), static_cast<size_t>(data.size()));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerSendHttp404ResponseRequest::kMessageId: {
@@ -16133,12 +18780,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t connectionId = req.connectionId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId]() {
                 receiver->send_http404_response(receiver, cefArg<decltype(receiver->send_http404_response), 1>(connectionId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerSendHttp500ResponseRequest::kMessageId: {
@@ -16155,13 +18807,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t connectionId = req.connectionId;
             std::string errorMessage = req.errorMessage;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId, errorMessage]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId, errorMessage]() {
                 ScopedCefString errorMessage_cef(errorMessage);
                 receiver->send_http500_response(receiver, cefArg<decltype(receiver->send_http500_response), 1>(connectionId), errorMessage_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerSendRawDataRequest::kMessageId: {
@@ -16178,12 +18835,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t connectionId = req.connectionId;
             std::vector<std::uint8_t> data = std::move(req.data);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId, data]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId, data]() {
                 receiver->send_raw_data(receiver, cefArg<decltype(receiver->send_raw_data), 1>(connectionId), data.data(), static_cast<size_t>(data.size()));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerCloseConnectionRequest::kMessageId: {
@@ -16199,12 +18861,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t connectionId = req.connectionId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId]() {
                 receiver->close_connection(receiver, cefArg<decltype(receiver->close_connection), 1>(connectionId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ServerSendWebSocketMessageRequest::kMessageId: {
@@ -16221,12 +18888,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t connectionId = req.connectionId;
             std::vector<std::uint8_t> data = std::move(req.data);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, connectionId, data]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, connectionId, data]() {
                 receiver->send_web_socket_message(receiver, cefArg<decltype(receiver->send_web_socket_message), 1>(connectionId), data.data(), static_cast<size_t>(data.size()));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SharedProcessMessageBuilderIsValidRequest::kMessageId: {
@@ -16241,7 +18913,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16253,7 +18925,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SharedProcessMessageBuilderSizeRequest::kMessageId: {
@@ -16268,7 +18945,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16280,7 +18957,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::SharedProcessMessageBuilderBuildRequest::kMessageId: {
@@ -16295,7 +18977,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->build(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16307,7 +18989,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskManagerGetTasksCountRequest::kMessageId: {
@@ -16322,7 +19009,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_tasks_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16334,7 +19021,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskManagerKillTaskRequest::kMessageId: {
@@ -16350,7 +19042,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t taskId = req.taskId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, taskId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, taskId]() {
                 auto rawResult = receiver->kill_task(receiver, cefArg<decltype(receiver->kill_task), 1>(taskId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16362,7 +19054,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TaskManagerGetTaskIdForBrowserIdRequest::kMessageId: {
@@ -16378,7 +19075,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t browserId = req.browserId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserId]() {
                 auto rawResult = receiver->get_task_id_for_browser_id(receiver, cefArg<decltype(receiver->get_task_id_for_browser_id), 1>(browserId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16390,7 +19087,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ThreadGetTaskRunnerRequest::kMessageId: {
@@ -16405,7 +19107,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_task_runner(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16417,7 +19119,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ThreadGetPlatformThreadIdRequest::kMessageId: {
@@ -16432,7 +19139,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_platform_thread_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16444,7 +19151,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ThreadStopRequest::kMessageId: {
@@ -16459,12 +19171,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->stop(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ThreadIsRunningRequest::kMessageId: {
@@ -16479,7 +19196,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_running(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16491,7 +19208,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UrlrequestGetRequestRequest::kMessageId: {
@@ -16506,7 +19228,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_request(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16518,7 +19240,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UrlrequestGetRequestStatusRequest::kMessageId: {
@@ -16533,7 +19260,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_request_status(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16545,7 +19272,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UrlrequestGetRequestErrorRequest::kMessageId: {
@@ -16560,7 +19292,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_request_error(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16572,7 +19304,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UrlrequestGetResponseRequest::kMessageId: {
@@ -16587,7 +19324,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_response(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16599,7 +19336,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UrlrequestResponseWasCachedRequest::kMessageId: {
@@ -16614,7 +19356,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->response_was_cached(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16626,7 +19368,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::UrlrequestCancelRequest::kMessageId: {
@@ -16641,12 +19388,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WaitableEventResetRequest::kMessageId: {
@@ -16661,12 +19413,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->reset(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WaitableEventSignalRequest::kMessageId: {
@@ -16681,12 +19438,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->signal(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WaitableEventIsSignaledRequest::kMessageId: {
@@ -16701,7 +19463,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_signaled(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16713,7 +19475,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WaitableEventTimedWaitRequest::kMessageId: {
@@ -16729,7 +19496,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int64_t maxMs = req.maxMs;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, maxMs]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, maxMs]() {
                 auto rawResult = receiver->timed_wait(receiver, cefArg<decltype(receiver->timed_wait), 1>(maxMs));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16741,7 +19508,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToNextNodeRequest::kMessageId: {
@@ -16756,7 +19528,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->move_to_next_node(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16768,7 +19540,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderCloseRequest::kMessageId: {
@@ -16783,7 +19560,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->close(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16795,7 +19572,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderHasErrorRequest::kMessageId: {
@@ -16810,7 +19592,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_error(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16822,7 +19604,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetErrorRequest::kMessageId: {
@@ -16837,7 +19624,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_error(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16849,7 +19636,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetTypeRequest::kMessageId: {
@@ -16864,7 +19656,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_type(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16876,7 +19668,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetDepthRequest::kMessageId: {
@@ -16891,7 +19688,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_depth(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16903,7 +19700,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetLocalNameRequest::kMessageId: {
@@ -16918,7 +19720,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_local_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16930,7 +19732,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetPrefixRequest::kMessageId: {
@@ -16945,7 +19752,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_prefix(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16957,7 +19764,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetQualifiedNameRequest::kMessageId: {
@@ -16972,7 +19784,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_qualified_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -16984,7 +19796,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetNamespaceUriRequest::kMessageId: {
@@ -16999,7 +19816,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_namespace_uri(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17011,7 +19828,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetBaseUriRequest::kMessageId: {
@@ -17026,7 +19848,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_base_uri(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17038,7 +19860,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetXmlLangRequest::kMessageId: {
@@ -17053,7 +19880,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_xml_lang(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17065,7 +19892,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderIsEmptyElementRequest::kMessageId: {
@@ -17080,7 +19912,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_empty_element(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17092,7 +19924,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderHasValueRequest::kMessageId: {
@@ -17107,7 +19944,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_value(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17119,7 +19956,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetValueRequest::kMessageId: {
@@ -17134,7 +19976,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_value(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17146,7 +19988,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderHasAttributesRequest::kMessageId: {
@@ -17161,7 +20008,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_attributes(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17173,7 +20020,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetAttributeCountRequest::kMessageId: {
@@ -17188,7 +20040,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_attribute_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17200,7 +20052,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetAttributeByindexRequest::kMessageId: {
@@ -17216,7 +20073,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_attribute_byindex(receiver, cefArg<decltype(receiver->get_attribute_byindex), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17228,7 +20085,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetAttributeByqnameRequest::kMessageId: {
@@ -17244,7 +20106,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string qualifiedName = req.qualifiedName;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, qualifiedName]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, qualifiedName]() {
                 ScopedCefString qualifiedName_cef(qualifiedName);
                 auto rawResult = receiver->get_attribute_byqname(receiver, qualifiedName_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17257,7 +20119,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetAttributeBylnameRequest::kMessageId: {
@@ -17274,7 +20141,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string localName = req.localName;
             std::string namespaceURI = req.namespaceURI;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, localName, namespaceURI]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, localName, namespaceURI]() {
                 ScopedCefString localName_cef(localName);
                 ScopedCefString namespaceURI_cef(namespaceURI);
                 auto rawResult = receiver->get_attribute_bylname(receiver, localName_cef.get(), namespaceURI_cef.get());
@@ -17288,7 +20155,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetInnerXmlRequest::kMessageId: {
@@ -17303,7 +20175,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_inner_xml(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17315,7 +20187,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetOuterXmlRequest::kMessageId: {
@@ -17330,7 +20207,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_outer_xml(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17342,7 +20219,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderGetLineNumberRequest::kMessageId: {
@@ -17357,7 +20239,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_line_number(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17369,7 +20251,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToAttributeByindexRequest::kMessageId: {
@@ -17385,7 +20272,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->move_to_attribute_byindex(receiver, cefArg<decltype(receiver->move_to_attribute_byindex), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17397,7 +20284,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToAttributeByqnameRequest::kMessageId: {
@@ -17413,7 +20305,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string qualifiedName = req.qualifiedName;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, qualifiedName]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, qualifiedName]() {
                 ScopedCefString qualifiedName_cef(qualifiedName);
                 auto rawResult = receiver->move_to_attribute_byqname(receiver, qualifiedName_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17426,7 +20318,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToAttributeBylnameRequest::kMessageId: {
@@ -17443,7 +20340,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string localName = req.localName;
             std::string namespaceURI = req.namespaceURI;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, localName, namespaceURI]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, localName, namespaceURI]() {
                 ScopedCefString localName_cef(localName);
                 ScopedCefString namespaceURI_cef(namespaceURI);
                 auto rawResult = receiver->move_to_attribute_bylname(receiver, localName_cef.get(), namespaceURI_cef.get());
@@ -17457,7 +20354,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToFirstAttributeRequest::kMessageId: {
@@ -17472,7 +20374,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->move_to_first_attribute(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17484,7 +20386,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToNextAttributeRequest::kMessageId: {
@@ -17499,7 +20406,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->move_to_next_attribute(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17511,7 +20418,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::XmlReaderMoveToCarryingElementRequest::kMessageId: {
@@ -17526,7 +20438,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->move_to_carrying_element(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17538,7 +20450,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderMoveToFirstFileRequest::kMessageId: {
@@ -17553,7 +20470,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->move_to_first_file(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17565,7 +20482,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderMoveToNextFileRequest::kMessageId: {
@@ -17580,7 +20502,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->move_to_next_file(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17592,7 +20514,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderMoveToFileRequest::kMessageId: {
@@ -17609,7 +20536,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::string fileName = req.fileName;
             std::int32_t caseSensitive = req.caseSensitive;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, fileName, caseSensitive]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, fileName, caseSensitive]() {
                 ScopedCefString fileName_cef(fileName);
                 auto rawResult = receiver->move_to_file(receiver, fileName_cef.get(), cefArg<decltype(receiver->move_to_file), 2>(caseSensitive));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17622,7 +20549,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderCloseRequest::kMessageId: {
@@ -17637,7 +20569,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->close(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17649,7 +20581,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderGetFileNameRequest::kMessageId: {
@@ -17664,7 +20601,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_file_name(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17676,7 +20613,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderGetFileSizeRequest::kMessageId: {
@@ -17691,7 +20633,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_file_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17703,7 +20645,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderGetFileLastModifiedRequest::kMessageId: {
@@ -17718,7 +20665,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_basetime_t rawResult = receiver->get_file_last_modified(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17730,7 +20677,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderOpenFileRequest::kMessageId: {
@@ -17746,7 +20698,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string password = req.password;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, password]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, password]() {
                 ScopedCefString password_cef(password);
                 auto rawResult = receiver->open_file(receiver, password_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17759,7 +20711,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderCloseFileRequest::kMessageId: {
@@ -17774,7 +20731,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->close_file(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17786,7 +20743,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderTellRequest::kMessageId: {
@@ -17801,7 +20763,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->tell(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17813,7 +20775,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ZipReaderEofRequest::kMessageId: {
@@ -17828,7 +20795,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->eof(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17840,7 +20807,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LayoutAsBoxLayoutRequest::kMessageId: {
@@ -17855,7 +20827,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_box_layout(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17867,7 +20839,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LayoutIsValidRequest::kMessageId: {
@@ -17882,7 +20859,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -17894,7 +20871,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BoxLayoutSetFlexForViewRequest::kMessageId: {
@@ -17911,7 +20893,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t view = req.view;
             std::int32_t flex = req.flex;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, flex]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, flex]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->set_flex_for_view(receiver, view_ptr, cefArg<decltype(receiver->set_flex_for_view), 2>(flex));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17921,7 +20903,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BoxLayoutClearFlexForViewRequest::kMessageId: {
@@ -17937,7 +20924,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->clear_flex_for_view(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17947,7 +20934,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateGetPreferredSizeRequest::kMessageId: {
@@ -17963,7 +20955,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 cef_size_t rawResult = receiver->get_preferred_size(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -17981,7 +20973,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateGetMinimumSizeRequest::kMessageId: {
@@ -17997,7 +20994,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 cef_size_t rawResult = receiver->get_minimum_size(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18015,7 +21012,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateGetMaximumSizeRequest::kMessageId: {
@@ -18031,7 +21033,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 cef_size_t rawResult = receiver->get_maximum_size(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18049,7 +21051,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateGetHeightForWidthRequest::kMessageId: {
@@ -18066,7 +21073,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t view = req.view;
             std::int32_t width = req.width;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, width]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, width]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 auto rawResult = receiver->get_height_for_width(receiver, view_ptr, cefArg<decltype(receiver->get_height_for_width), 2>(width));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18083,7 +21090,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnParentViewChangedRequest::kMessageId: {
@@ -18101,7 +21113,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t view = req.view;
             std::int32_t added = req.added;
             std::int32_t parent = req.parent;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, added, parent]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, added, parent]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 cef_view_t* parent_ptr = parent != 0 ? tables::view.retain(parent) : nullptr;
                 receiver->on_parent_view_changed(receiver, view_ptr, cefArg<decltype(receiver->on_parent_view_changed), 2>(added), parent_ptr);
@@ -18116,7 +21128,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     parent_base->release(parent_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnChildViewChangedRequest::kMessageId: {
@@ -18134,7 +21151,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t view = req.view;
             std::int32_t added = req.added;
             std::int32_t child = req.child;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, added, child]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, added, child]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 cef_view_t* child_ptr = child != 0 ? tables::view.retain(child) : nullptr;
                 receiver->on_child_view_changed(receiver, view_ptr, cefArg<decltype(receiver->on_child_view_changed), 2>(added), child_ptr);
@@ -18149,7 +21166,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     child_base->release(child_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnWindowChangedRequest::kMessageId: {
@@ -18166,7 +21188,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t view = req.view;
             std::int32_t added = req.added;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, added]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, added]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->on_window_changed(receiver, view_ptr, cefArg<decltype(receiver->on_window_changed), 2>(added));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18176,7 +21198,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnLayoutChangedRequest::kMessageId: {
@@ -18193,7 +21220,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t view = req.view;
             gen::Rect newBounds = std::move(req.newBounds);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, newBounds]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, newBounds]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 cef_rect_t newBounds_native{};
                 newBounds_native.x = static_cast<decltype(newBounds_native.x)>(newBounds.x);
@@ -18208,7 +21235,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnFocusRequest::kMessageId: {
@@ -18224,7 +21256,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->on_focus(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18234,7 +21266,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnBlurRequest::kMessageId: {
@@ -18250,7 +21287,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->on_blur(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18260,7 +21297,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewDelegateOnThemeChangedRequest::kMessageId: {
@@ -18276,7 +21318,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->on_theme_changed(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18286,7 +21328,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateOnBrowserCreatedRequest::kMessageId: {
@@ -18303,7 +21350,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t browserView = req.browserView;
             std::int32_t browser = req.browser;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView, browser]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView, browser]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 cef_browser_t* browser_ptr = browser != 0 ? tables::browser.retain(browser) : nullptr;
                 receiver->on_browser_created(receiver, browserView_ptr, browser_ptr);
@@ -18318,7 +21365,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     browser_base->release(browser_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateOnBrowserDestroyedRequest::kMessageId: {
@@ -18335,7 +21387,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t browserView = req.browserView;
             std::int32_t browser = req.browser;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView, browser]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView, browser]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 cef_browser_t* browser_ptr = browser != 0 ? tables::browser.retain(browser) : nullptr;
                 receiver->on_browser_destroyed(receiver, browserView_ptr, browser_ptr);
@@ -18350,7 +21402,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     browser_base->release(browser_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateOnPopupBrowserViewCreatedRequest::kMessageId: {
@@ -18368,7 +21425,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t browserView = req.browserView;
             std::int32_t popupBrowserView = req.popupBrowserView;
             std::int32_t isDevtools = req.isDevtools;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView, popupBrowserView, isDevtools]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView, popupBrowserView, isDevtools]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 cef_browser_view_t* popupBrowserView_ptr = popupBrowserView != 0 ? tables::browserView.retain(popupBrowserView) : nullptr;
                 auto rawResult = receiver->on_popup_browser_view_created(receiver, browserView_ptr, popupBrowserView_ptr, cefArg<decltype(receiver->on_popup_browser_view_created), 3>(isDevtools));
@@ -18390,7 +21447,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateGetChromeToolbarTypeRequest::kMessageId: {
@@ -18406,7 +21468,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t browserView = req.browserView;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 auto rawResult = receiver->get_chrome_toolbar_type(receiver, browserView_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18423,7 +21485,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateUseFramelessWindowForPictureInPictureRequest::kMessageId: {
@@ -18439,7 +21506,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t browserView = req.browserView;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 auto rawResult = receiver->use_frameless_window_for_picture_in_picture(receiver, browserView_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18456,7 +21523,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateOnGestureCommandRequest::kMessageId: {
@@ -18473,7 +21545,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t browserView = req.browserView;
             std::int32_t gestureCommand = req.gestureCommand;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView, gestureCommand]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView, gestureCommand]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 auto rawResult = receiver->on_gesture_command(receiver, browserView_ptr, cefArg<decltype(receiver->on_gesture_command), 2>(gestureCommand));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18490,7 +21562,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateGetBrowserRuntimeStyleRequest::kMessageId: {
@@ -18505,7 +21582,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_browser_runtime_style(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18517,7 +21594,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateAllowMoveForPictureInPictureRequest::kMessageId: {
@@ -18533,7 +21615,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t browserView = req.browserView;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 auto rawResult = receiver->allow_move_for_picture_in_picture(receiver, browserView_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18550,7 +21632,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewDelegateAllowPictureInPictureWithoutUserActivationRequest::kMessageId: {
@@ -18566,7 +21653,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t browserView = req.browserView;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 auto rawResult = receiver->allow_picture_in_picture_without_user_activation(receiver, browserView_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18583,7 +21670,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewAsBrowserViewRequest::kMessageId: {
@@ -18598,7 +21690,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_browser_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18610,7 +21702,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewAsButtonRequest::kMessageId: {
@@ -18625,7 +21722,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_button(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18637,7 +21734,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewAsPanelRequest::kMessageId: {
@@ -18652,7 +21754,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_panel(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18664,7 +21766,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewAsScrollViewRequest::kMessageId: {
@@ -18679,7 +21786,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_scroll_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18691,7 +21798,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewAsTextfieldRequest::kMessageId: {
@@ -18706,7 +21818,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_textfield(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18718,7 +21830,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetTypeStringRequest::kMessageId: {
@@ -18733,7 +21850,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_type_string(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18745,7 +21862,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsValidRequest::kMessageId: {
@@ -18760,7 +21882,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18772,7 +21894,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsAttachedRequest::kMessageId: {
@@ -18787,7 +21914,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_attached(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18799,7 +21926,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsSameRequest::kMessageId: {
@@ -18815,7 +21947,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_view_t* that_ptr = that != 0 ? tables::view.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -18832,7 +21964,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetDelegateRequest::kMessageId: {
@@ -18847,7 +21984,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_delegate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18859,7 +21996,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetWindowRequest::kMessageId: {
@@ -18874,7 +22016,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18886,7 +22028,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetIdRequest::kMessageId: {
@@ -18901,7 +22048,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18913,7 +22060,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetIdRequest::kMessageId: {
@@ -18929,12 +22081,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t id = req.id;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, id]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, id]() {
                 receiver->set_id(receiver, cefArg<decltype(receiver->set_id), 1>(id));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetGroupIdRequest::kMessageId: {
@@ -18949,7 +22106,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_group_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -18961,7 +22118,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetGroupIdRequest::kMessageId: {
@@ -18977,12 +22139,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t groupId = req.groupId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, groupId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, groupId]() {
                 receiver->set_group_id(receiver, cefArg<decltype(receiver->set_group_id), 1>(groupId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetParentViewRequest::kMessageId: {
@@ -18997,7 +22164,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_parent_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19009,7 +22176,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetViewForIdRequest::kMessageId: {
@@ -19025,7 +22197,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t id = req.id;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, id]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, id]() {
                 auto rawResult = receiver->get_view_for_id(receiver, cefArg<decltype(receiver->get_view_for_id), 1>(id));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19037,7 +22209,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetBoundsRequest::kMessageId: {
@@ -19053,7 +22230,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Rect bounds = std::move(req.bounds);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, bounds]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, bounds]() {
                 cef_rect_t bounds_native{};
                 bounds_native.x = static_cast<decltype(bounds_native.x)>(bounds.x);
                 bounds_native.y = static_cast<decltype(bounds_native.y)>(bounds.y);
@@ -19063,7 +22240,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetBoundsRequest::kMessageId: {
@@ -19078,7 +22260,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_bounds(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19093,7 +22275,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetBoundsInScreenRequest::kMessageId: {
@@ -19108,7 +22295,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_bounds_in_screen(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19123,7 +22310,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetSizeRequest::kMessageId: {
@@ -19139,7 +22331,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Size size = std::move(req.size);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, size]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, size]() {
                 cef_size_t size_native{};
                 size_native.width = static_cast<decltype(size_native.width)>(size.width);
                 size_native.height = static_cast<decltype(size_native.height)>(size.height);
@@ -19147,7 +22339,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetSizeRequest::kMessageId: {
@@ -19162,7 +22359,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_size_t rawResult = receiver->get_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19175,7 +22372,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetPositionRequest::kMessageId: {
@@ -19191,7 +22393,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Point position = std::move(req.position);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, position]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, position]() {
                 cef_point_t position_native{};
                 position_native.x = static_cast<decltype(position_native.x)>(position.x);
                 position_native.y = static_cast<decltype(position_native.y)>(position.y);
@@ -19199,7 +22401,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetPositionRequest::kMessageId: {
@@ -19214,7 +22421,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_point_t rawResult = receiver->get_position(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19227,7 +22434,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetInsetsRequest::kMessageId: {
@@ -19243,7 +22455,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Insets insets = std::move(req.insets);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, insets]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, insets]() {
                 cef_insets_t insets_native{};
                 insets_native.top = static_cast<decltype(insets_native.top)>(insets.top);
                 insets_native.left = static_cast<decltype(insets_native.left)>(insets.left);
@@ -19253,7 +22465,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetInsetsRequest::kMessageId: {
@@ -19268,7 +22485,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_insets_t rawResult = receiver->get_insets(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19283,7 +22500,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetPreferredSizeRequest::kMessageId: {
@@ -19298,7 +22520,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_size_t rawResult = receiver->get_preferred_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19311,7 +22533,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSizeToPreferredSizeRequest::kMessageId: {
@@ -19326,12 +22553,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->size_to_preferred_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetMinimumSizeRequest::kMessageId: {
@@ -19346,7 +22578,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_size_t rawResult = receiver->get_minimum_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19359,7 +22591,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetMaximumSizeRequest::kMessageId: {
@@ -19374,7 +22611,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_size_t rawResult = receiver->get_maximum_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19387,7 +22624,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetHeightForWidthRequest::kMessageId: {
@@ -19403,7 +22645,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t width = req.width;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, width]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, width]() {
                 auto rawResult = receiver->get_height_for_width(receiver, cefArg<decltype(receiver->get_height_for_width), 1>(width));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19415,7 +22657,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewInvalidateLayoutRequest::kMessageId: {
@@ -19430,12 +22677,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->invalidate_layout(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetVisibleRequest::kMessageId: {
@@ -19451,12 +22703,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t visible = req.visible;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, visible]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, visible]() {
                 receiver->set_visible(receiver, cefArg<decltype(receiver->set_visible), 1>(visible));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsVisibleRequest::kMessageId: {
@@ -19471,7 +22728,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_visible(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19483,7 +22740,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsDrawnRequest::kMessageId: {
@@ -19498,7 +22760,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_drawn(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19510,7 +22772,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetEnabledRequest::kMessageId: {
@@ -19526,12 +22793,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t enabled = req.enabled;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, enabled]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, enabled]() {
                 receiver->set_enabled(receiver, cefArg<decltype(receiver->set_enabled), 1>(enabled));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsEnabledRequest::kMessageId: {
@@ -19546,7 +22818,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_enabled(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19558,7 +22830,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetFocusableRequest::kMessageId: {
@@ -19574,12 +22851,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t focusable = req.focusable;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, focusable]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, focusable]() {
                 receiver->set_focusable(receiver, cefArg<decltype(receiver->set_focusable), 1>(focusable));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsFocusableRequest::kMessageId: {
@@ -19594,7 +22876,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_focusable(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19606,7 +22888,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewIsAccessibilityFocusableRequest::kMessageId: {
@@ -19621,7 +22908,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_accessibility_focusable(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19633,7 +22920,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewHasFocusRequest::kMessageId: {
@@ -19648,7 +22940,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_focus(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19660,7 +22952,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewRequestFocusRequest::kMessageId: {
@@ -19675,12 +22972,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->request_focus(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewSetBackgroundColorRequest::kMessageId: {
@@ -19696,12 +22998,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t color = req.color;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, color]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, color]() {
                 receiver->set_background_color(receiver, cefArg<decltype(receiver->set_background_color), 1>(color));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetBackgroundColorRequest::kMessageId: {
@@ -19716,7 +23023,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_background_color(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19728,7 +23035,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ViewGetThemeColorRequest::kMessageId: {
@@ -19744,7 +23056,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t colorId = req.colorId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, colorId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, colorId]() {
                 auto rawResult = receiver->get_theme_color(receiver, cefArg<decltype(receiver->get_theme_color), 1>(colorId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19756,7 +23068,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewGetBrowserRequest::kMessageId: {
@@ -19771,7 +23088,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_browser(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19783,7 +23100,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewGetChromeToolbarRequest::kMessageId: {
@@ -19798,7 +23120,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_chrome_toolbar(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19810,7 +23132,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewSetPreferAcceleratorsRequest::kMessageId: {
@@ -19826,12 +23153,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t preferAccelerators = req.preferAccelerators;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, preferAccelerators]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, preferAccelerators]() {
                 receiver->set_prefer_accelerators(receiver, cefArg<decltype(receiver->set_prefer_accelerators), 1>(preferAccelerators));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::BrowserViewGetRuntimeStyleRequest::kMessageId: {
@@ -19846,7 +23178,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_runtime_style(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19858,7 +23190,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonAsLabelButtonRequest::kMessageId: {
@@ -19873,7 +23210,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_label_button(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19885,7 +23222,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonSetStateRequest::kMessageId: {
@@ -19901,12 +23243,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t state = req.state;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, state]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, state]() {
                 receiver->set_state(receiver, cefArg<decltype(receiver->set_state), 1>(state));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonGetStateRequest::kMessageId: {
@@ -19921,7 +23268,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_state(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -19933,7 +23280,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonSetInkDropEnabledRequest::kMessageId: {
@@ -19949,12 +23301,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t enabled = req.enabled;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, enabled]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, enabled]() {
                 receiver->set_ink_drop_enabled(receiver, cefArg<decltype(receiver->set_ink_drop_enabled), 1>(enabled));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonSetTooltipTextRequest::kMessageId: {
@@ -19970,13 +23327,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string tooltipText = req.tooltipText;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, tooltipText]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, tooltipText]() {
                 ScopedCefString tooltipText_cef(tooltipText);
                 receiver->set_tooltip_text(receiver, tooltipText_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonSetAccessibleNameRequest::kMessageId: {
@@ -19992,13 +23354,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 receiver->set_accessible_name(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonDelegateOnButtonPressedRequest::kMessageId: {
@@ -20014,7 +23381,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t button = req.button;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, button]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, button]() {
                 cef_button_t* button_ptr = button != 0 ? tables::button.retain(button) : nullptr;
                 receiver->on_button_pressed(receiver, button_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -20024,7 +23391,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     button_base->release(button_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ButtonDelegateOnButtonStateChangedRequest::kMessageId: {
@@ -20040,7 +23412,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t button = req.button;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, button]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, button]() {
                 cef_button_t* button_ptr = button != 0 ? tables::button.retain(button) : nullptr;
                 receiver->on_button_state_changed(receiver, button_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -20050,7 +23422,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     button_base->release(button_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DisplayGetIdRequest::kMessageId: {
@@ -20065,7 +23442,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_id(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20077,7 +23454,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DisplayGetBoundsRequest::kMessageId: {
@@ -20092,7 +23474,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_bounds(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20107,7 +23489,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DisplayGetWorkAreaRequest::kMessageId: {
@@ -20122,7 +23509,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_work_area(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20137,7 +23524,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::DisplayGetRotationRequest::kMessageId: {
@@ -20152,7 +23544,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_rotation(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20164,7 +23556,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonAsMenuButtonRequest::kMessageId: {
@@ -20179,7 +23576,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_menu_button(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20191,7 +23588,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetTextRequest::kMessageId: {
@@ -20207,13 +23609,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string text = req.text;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text]() {
                 ScopedCefString text_cef(text);
                 receiver->set_text(receiver, text_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonGetTextRequest::kMessageId: {
@@ -20228,7 +23635,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20240,7 +23647,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetImageRequest::kMessageId: {
@@ -20257,7 +23669,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t buttonState = req.buttonState;
             std::int32_t image = req.image;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, buttonState, image]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, buttonState, image]() {
                 cef_image_t* image_ptr = image != 0 ? tables::image.retain(image) : nullptr;
                 receiver->set_image(receiver, cefArg<decltype(receiver->set_image), 1>(buttonState), image_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -20267,7 +23679,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     image_base->release(image_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonGetImageRequest::kMessageId: {
@@ -20283,7 +23700,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t buttonState = req.buttonState;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, buttonState]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, buttonState]() {
                 auto rawResult = receiver->get_image(receiver, cefArg<decltype(receiver->get_image), 1>(buttonState));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20295,7 +23712,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetTextColorRequest::kMessageId: {
@@ -20312,12 +23734,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t forState = req.forState;
             std::int32_t color = req.color;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, forState, color]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, forState, color]() {
                 receiver->set_text_color(receiver, cefArg<decltype(receiver->set_text_color), 1>(forState), cefArg<decltype(receiver->set_text_color), 2>(color));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetEnabledTextColorsRequest::kMessageId: {
@@ -20333,12 +23760,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t color = req.color;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, color]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, color]() {
                 receiver->set_enabled_text_colors(receiver, cefArg<decltype(receiver->set_enabled_text_colors), 1>(color));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetFontListRequest::kMessageId: {
@@ -20354,13 +23786,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string fontList = req.fontList;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, fontList]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, fontList]() {
                 ScopedCefString fontList_cef(fontList);
                 receiver->set_font_list(receiver, fontList_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetHorizontalAlignmentRequest::kMessageId: {
@@ -20376,12 +23813,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t alignment = req.alignment;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, alignment]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, alignment]() {
                 receiver->set_horizontal_alignment(receiver, cefArg<decltype(receiver->set_horizontal_alignment), 1>(alignment));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetMinimumSizeRequest::kMessageId: {
@@ -20397,7 +23839,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Size size = std::move(req.size);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, size]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, size]() {
                 cef_size_t size_native{};
                 size_native.width = static_cast<decltype(size_native.width)>(size.width);
                 size_native.height = static_cast<decltype(size_native.height)>(size.height);
@@ -20405,7 +23847,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::LabelButtonSetMaximumSizeRequest::kMessageId: {
@@ -20421,7 +23868,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Size size = std::move(req.size);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, size]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, size]() {
                 cef_size_t size_native{};
                 size_native.width = static_cast<decltype(size_native.width)>(size.width);
                 size_native.height = static_cast<decltype(size_native.height)>(size.height);
@@ -20429,7 +23876,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuButtonShowMenuRequest::kMessageId: {
@@ -20447,7 +23899,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t menuModel = req.menuModel;
             gen::Point screenPoint = std::move(req.screenPoint);
             std::int32_t anchorPosition = req.anchorPosition;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, menuModel, screenPoint, anchorPosition]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, menuModel, screenPoint, anchorPosition]() {
                 cef_menu_model_t* menuModel_ptr = menuModel != 0 ? tables::menuModel.retain(menuModel) : nullptr;
                 cef_point_t screenPoint_native{};
                 screenPoint_native.x = static_cast<decltype(screenPoint_native.x)>(screenPoint.x);
@@ -20460,7 +23912,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     menuModel_base->release(menuModel_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::MenuButtonTriggerMenuRequest::kMessageId: {
@@ -20475,12 +23932,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->trigger_menu(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerIsValidRequest::kMessageId: {
@@ -20495,7 +23957,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_valid(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20507,7 +23969,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerIsSameRequest::kMessageId: {
@@ -20523,7 +23990,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t that = req.that;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, that]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, that]() {
                 cef_overlay_controller_t* that_ptr = that != 0 ? tables::overlayController.retain(that) : nullptr;
                 auto rawResult = receiver->is_same(receiver, that_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -20540,7 +24007,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetContentsViewRequest::kMessageId: {
@@ -20555,7 +24027,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_contents_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20567,7 +24039,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetWindowRequest::kMessageId: {
@@ -20582,7 +24059,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20594,7 +24071,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetDockingModeRequest::kMessageId: {
@@ -20609,7 +24091,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_docking_mode(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20621,7 +24103,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerDestroyRequest::kMessageId: {
@@ -20636,12 +24123,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->destroy(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerSetBoundsRequest::kMessageId: {
@@ -20657,7 +24149,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Rect bounds = std::move(req.bounds);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, bounds]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, bounds]() {
                 cef_rect_t bounds_native{};
                 bounds_native.x = static_cast<decltype(bounds_native.x)>(bounds.x);
                 bounds_native.y = static_cast<decltype(bounds_native.y)>(bounds.y);
@@ -20667,7 +24159,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetBoundsRequest::kMessageId: {
@@ -20682,7 +24179,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_bounds(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20697,7 +24194,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetBoundsInScreenRequest::kMessageId: {
@@ -20712,7 +24214,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_bounds_in_screen(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20727,7 +24229,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerSetSizeRequest::kMessageId: {
@@ -20743,7 +24250,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Size size = std::move(req.size);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, size]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, size]() {
                 cef_size_t size_native{};
                 size_native.width = static_cast<decltype(size_native.width)>(size.width);
                 size_native.height = static_cast<decltype(size_native.height)>(size.height);
@@ -20751,7 +24258,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetSizeRequest::kMessageId: {
@@ -20766,7 +24278,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_size_t rawResult = receiver->get_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20779,7 +24291,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerSetPositionRequest::kMessageId: {
@@ -20795,7 +24312,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Point position = std::move(req.position);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, position]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, position]() {
                 cef_point_t position_native{};
                 position_native.x = static_cast<decltype(position_native.x)>(position.x);
                 position_native.y = static_cast<decltype(position_native.y)>(position.y);
@@ -20803,7 +24320,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetPositionRequest::kMessageId: {
@@ -20818,7 +24340,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_point_t rawResult = receiver->get_position(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20831,7 +24353,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerSetInsetsRequest::kMessageId: {
@@ -20847,7 +24374,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Insets insets = std::move(req.insets);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, insets]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, insets]() {
                 cef_insets_t insets_native{};
                 insets_native.top = static_cast<decltype(insets_native.top)>(insets.top);
                 insets_native.left = static_cast<decltype(insets_native.left)>(insets.left);
@@ -20857,7 +24384,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerGetInsetsRequest::kMessageId: {
@@ -20872,7 +24404,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_insets_t rawResult = receiver->get_insets(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20887,7 +24419,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerSizeToPreferredSizeRequest::kMessageId: {
@@ -20902,12 +24439,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->size_to_preferred_size(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerSetVisibleRequest::kMessageId: {
@@ -20923,12 +24465,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t visible = req.visible;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, visible]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, visible]() {
                 receiver->set_visible(receiver, cefArg<decltype(receiver->set_visible), 1>(visible));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerIsVisibleRequest::kMessageId: {
@@ -20943,7 +24490,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_visible(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20955,7 +24502,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::OverlayControllerIsDrawnRequest::kMessageId: {
@@ -20970,7 +24522,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_drawn(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -20982,7 +24534,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelAsWindowRequest::kMessageId: {
@@ -20997,7 +24554,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->as_window(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21009,7 +24566,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelGetLayoutRequest::kMessageId: {
@@ -21024,7 +24586,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_layout(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21036,7 +24598,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelLayoutRequest::kMessageId: {
@@ -21051,12 +24618,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->layout(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelAddChildViewRequest::kMessageId: {
@@ -21072,7 +24644,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->add_child_view(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -21082,7 +24654,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelAddChildViewAtRequest::kMessageId: {
@@ -21099,7 +24676,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t view = req.view;
             std::int32_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, index]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->add_child_view_at(receiver, view_ptr, cefArg<decltype(receiver->add_child_view_at), 2>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -21109,7 +24686,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelReorderChildViewRequest::kMessageId: {
@@ -21126,7 +24708,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t view = req.view;
             std::int32_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, index]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->reorder_child_view(receiver, view_ptr, cefArg<decltype(receiver->reorder_child_view), 2>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -21136,7 +24718,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelRemoveChildViewRequest::kMessageId: {
@@ -21152,7 +24739,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->remove_child_view(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -21162,7 +24749,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelRemoveAllChildViewsRequest::kMessageId: {
@@ -21177,12 +24769,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->remove_all_child_views(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelGetChildViewCountRequest::kMessageId: {
@@ -21197,7 +24794,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_child_view_count(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21209,7 +24806,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::PanelGetChildViewAtRequest::kMessageId: {
@@ -21225,7 +24827,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t index = req.index;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, index]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, index]() {
                 auto rawResult = receiver->get_child_view_at(receiver, cefArg<decltype(receiver->get_child_view_at), 1>(index));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21237,7 +24839,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewSetContentViewRequest::kMessageId: {
@@ -21253,7 +24860,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t view = req.view;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 receiver->set_content_view(receiver, view_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -21263,7 +24870,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     view_base->release(view_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewGetContentViewRequest::kMessageId: {
@@ -21278,7 +24890,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_content_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21290,7 +24902,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewGetVisibleContentRectRequest::kMessageId: {
@@ -21305,7 +24922,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_visible_content_rect(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21320,7 +24937,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewHasHorizontalScrollbarRequest::kMessageId: {
@@ -21335,7 +24957,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_horizontal_scrollbar(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21347,7 +24969,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewGetHorizontalScrollbarHeightRequest::kMessageId: {
@@ -21362,7 +24989,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_horizontal_scrollbar_height(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21374,7 +25001,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewHasVerticalScrollbarRequest::kMessageId: {
@@ -21389,7 +25021,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_vertical_scrollbar(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21401,7 +25033,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::ScrollViewGetVerticalScrollbarWidthRequest::kMessageId: {
@@ -21416,7 +25053,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_vertical_scrollbar_width(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21428,7 +25065,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldDelegateOnKeyEventRequest::kMessageId: {
@@ -21445,7 +25087,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t textfield = req.textfield;
             gen::KeyEvent event = std::move(req.event);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, textfield, event]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, textfield, event]() {
                 cef_textfield_t* textfield_ptr = textfield != 0 ? tables::textfield.retain(textfield) : nullptr;
                 cef_key_event_t event_native{};
                 event_native.size = sizeof(event_native);
@@ -21472,7 +25114,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldDelegateOnAfterUserActionRequest::kMessageId: {
@@ -21488,7 +25135,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t textfield = req.textfield;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, textfield]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, textfield]() {
                 cef_textfield_t* textfield_ptr = textfield != 0 ? tables::textfield.retain(textfield) : nullptr;
                 receiver->on_after_user_action(receiver, textfield_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -21498,7 +25145,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     textfield_base->release(textfield_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSetPasswordInputRequest::kMessageId: {
@@ -21514,12 +25166,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t passwordInput = req.passwordInput;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, passwordInput]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, passwordInput]() {
                 receiver->set_password_input(receiver, cefArg<decltype(receiver->set_password_input), 1>(passwordInput));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldIsPasswordInputRequest::kMessageId: {
@@ -21534,7 +25191,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_password_input(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21546,7 +25203,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSetReadOnlyRequest::kMessageId: {
@@ -21562,12 +25224,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t readOnly = req.readOnly;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, readOnly]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, readOnly]() {
                 receiver->set_read_only(receiver, cefArg<decltype(receiver->set_read_only), 1>(readOnly));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldIsReadOnlyRequest::kMessageId: {
@@ -21582,7 +25249,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_read_only(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21594,7 +25261,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldGetTextRequest::kMessageId: {
@@ -21609,7 +25281,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21621,7 +25293,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSetTextRequest::kMessageId: {
@@ -21637,13 +25314,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string text = req.text;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text]() {
                 ScopedCefString text_cef(text);
                 receiver->set_text(receiver, text_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldAppendTextRequest::kMessageId: {
@@ -21659,13 +25341,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string text = req.text;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text]() {
                 ScopedCefString text_cef(text);
                 receiver->append_text(receiver, text_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldInsertOrReplaceTextRequest::kMessageId: {
@@ -21681,13 +25368,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string text = req.text;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text]() {
                 ScopedCefString text_cef(text);
                 receiver->insert_or_replace_text(receiver, text_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldHasSelectionRequest::kMessageId: {
@@ -21702,7 +25394,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->has_selection(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21714,7 +25406,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldGetSelectedTextRequest::kMessageId: {
@@ -21729,7 +25426,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_selected_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21741,7 +25438,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSelectAllRequest::kMessageId: {
@@ -21757,12 +25459,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t reversed = req.reversed;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, reversed]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, reversed]() {
                 receiver->select_all(receiver, cefArg<decltype(receiver->select_all), 1>(reversed));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldClearSelectionRequest::kMessageId: {
@@ -21777,12 +25484,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->clear_selection(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldGetSelectedRangeRequest::kMessageId: {
@@ -21797,7 +25509,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_range_t rawResult = receiver->get_selected_range(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21810,7 +25522,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSelectRangeRequest::kMessageId: {
@@ -21826,7 +25543,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Range range = std::move(req.range);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, range]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, range]() {
                 cef_range_t range_native{};
                 range_native.from = static_cast<decltype(range_native.from)>(range.from);
                 range_native.to = static_cast<decltype(range_native.to)>(range.to);
@@ -21834,7 +25551,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldGetCursorPositionRequest::kMessageId: {
@@ -21849,7 +25571,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_cursor_position(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21861,7 +25583,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSetFontListRequest::kMessageId: {
@@ -21877,13 +25604,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string fontList = req.fontList;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, fontList]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, fontList]() {
                 ScopedCefString fontList_cef(fontList);
                 receiver->set_font_list(receiver, fontList_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldApplyTextColorRequest::kMessageId: {
@@ -21900,7 +25632,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t color = req.color;
             gen::Range range = std::move(req.range);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, color, range]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, color, range]() {
                 cef_range_t range_native{};
                 range_native.from = static_cast<decltype(range_native.from)>(range.from);
                 range_native.to = static_cast<decltype(range_native.to)>(range.to);
@@ -21908,7 +25640,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldApplyTextStyleRequest::kMessageId: {
@@ -21926,7 +25663,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t style = req.style;
             std::int32_t add = req.add;
             gen::Range range = std::move(req.range);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, style, add, range]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, style, add, range]() {
                 cef_range_t range_native{};
                 range_native.from = static_cast<decltype(range_native.from)>(range.from);
                 range_native.to = static_cast<decltype(range_native.to)>(range.to);
@@ -21934,7 +25671,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldIsCommandEnabledRequest::kMessageId: {
@@ -21950,7 +25692,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 auto rawResult = receiver->is_command_enabled(receiver, cefArg<decltype(receiver->is_command_enabled), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -21962,7 +25704,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldExecuteCommandRequest::kMessageId: {
@@ -21978,12 +25725,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 receiver->execute_command(receiver, cefArg<decltype(receiver->execute_command), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldClearEditHistoryRequest::kMessageId: {
@@ -21998,12 +25750,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->clear_edit_history(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSetPlaceholderTextRequest::kMessageId: {
@@ -22019,13 +25776,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string text = req.text;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, text]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, text]() {
                 ScopedCefString text_cef(text);
                 receiver->set_placeholder_text(receiver, text_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldGetPlaceholderTextRequest::kMessageId: {
@@ -22040,7 +25802,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_placeholder_text(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -22052,7 +25814,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::TextfieldSetAccessibleNameRequest::kMessageId: {
@@ -22068,13 +25835,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string name = req.name;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, name]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, name]() {
                 ScopedCefString name_cef(name);
                 receiver->set_accessible_name(receiver, name_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnWindowCreatedRequest::kMessageId: {
@@ -22090,7 +25862,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 receiver->on_window_created(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22100,7 +25872,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnWindowClosingRequest::kMessageId: {
@@ -22116,7 +25893,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 receiver->on_window_closing(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22126,7 +25903,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnWindowDestroyedRequest::kMessageId: {
@@ -22142,7 +25924,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 receiver->on_window_destroyed(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22152,7 +25934,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnWindowActivationChangedRequest::kMessageId: {
@@ -22169,7 +25956,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t window = req.window;
             std::int32_t active = req.active;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window, active]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window, active]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 receiver->on_window_activation_changed(receiver, window_ptr, cefArg<decltype(receiver->on_window_activation_changed), 2>(active));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22179,7 +25966,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnWindowBoundsChangedRequest::kMessageId: {
@@ -22196,7 +25988,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t window = req.window;
             gen::Rect newBounds = std::move(req.newBounds);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window, newBounds]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window, newBounds]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 cef_rect_t newBounds_native{};
                 newBounds_native.x = static_cast<decltype(newBounds_native.x)>(newBounds.x);
@@ -22211,7 +26003,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnWindowFullscreenTransitionRequest::kMessageId: {
@@ -22228,7 +26025,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t window = req.window;
             std::int32_t isCompleted = req.isCompleted;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window, isCompleted]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window, isCompleted]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 receiver->on_window_fullscreen_transition(receiver, window_ptr, cefArg<decltype(receiver->on_window_fullscreen_transition), 2>(isCompleted));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22238,7 +26035,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateIsWindowModalDialogRequest::kMessageId: {
@@ -22254,7 +26056,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->is_window_modal_dialog(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22271,7 +26073,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateGetInitialBoundsRequest::kMessageId: {
@@ -22287,7 +26094,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 cef_rect_t rawResult = receiver->get_initial_bounds(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22307,7 +26114,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateGetInitialShowStateRequest::kMessageId: {
@@ -22323,7 +26135,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->get_initial_show_state(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22340,7 +26152,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateIsFramelessRequest::kMessageId: {
@@ -22356,7 +26173,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->is_frameless(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22373,7 +26190,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateWithStandardWindowButtonsRequest::kMessageId: {
@@ -22389,7 +26211,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->with_standard_window_buttons(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22406,7 +26228,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateAcceptsFirstMouseRequest::kMessageId: {
@@ -22422,7 +26249,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->accepts_first_mouse(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22439,7 +26266,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateCanResizeRequest::kMessageId: {
@@ -22455,7 +26287,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->can_resize(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22472,7 +26304,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateCanMaximizeRequest::kMessageId: {
@@ -22488,7 +26325,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->can_maximize(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22505,7 +26342,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateCanMinimizeRequest::kMessageId: {
@@ -22521,7 +26363,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->can_minimize(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22538,7 +26380,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateCanCloseRequest::kMessageId: {
@@ -22554,7 +26401,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t window = req.window;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->can_close(receiver, window_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22571,7 +26418,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnAcceleratorRequest::kMessageId: {
@@ -22588,7 +26440,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t window = req.window;
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window, commandId]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 auto rawResult = receiver->on_accelerator(receiver, window_ptr, cefArg<decltype(receiver->on_accelerator), 2>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22605,7 +26457,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnKeyEventRequest::kMessageId: {
@@ -22622,7 +26479,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t window = req.window;
             gen::KeyEvent event = std::move(req.event);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window, event]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window, event]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 cef_key_event_t event_native{};
                 event_native.size = sizeof(event_native);
@@ -22649,7 +26506,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateOnThemeColorsChangedRequest::kMessageId: {
@@ -22666,7 +26528,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t window = req.window;
             std::int32_t chromeTheme = req.chromeTheme;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, window, chromeTheme]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, window, chromeTheme]() {
                 cef_window_t* window_ptr = window != 0 ? tables::window.retain(window) : nullptr;
                 receiver->on_theme_colors_changed(receiver, window_ptr, cefArg<decltype(receiver->on_theme_colors_changed), 2>(chromeTheme));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22676,7 +26538,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     window_base->release(window_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDelegateGetWindowRuntimeStyleRequest::kMessageId: {
@@ -22691,7 +26558,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window_runtime_style(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -22703,7 +26570,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowShowRequest::kMessageId: {
@@ -22718,12 +26590,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->show(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowShowAsBrowserModalDialogRequest::kMessageId: {
@@ -22739,7 +26616,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t browserView = req.browserView;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, browserView]() {
                 cef_browser_view_t* browserView_ptr = browserView != 0 ? tables::browserView.retain(browserView) : nullptr;
                 receiver->show_as_browser_modal_dialog(receiver, browserView_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -22749,7 +26626,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     browserView_base->release(browserView_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowHideRequest::kMessageId: {
@@ -22764,12 +26646,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->hide(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowCenterWindowRequest::kMessageId: {
@@ -22785,7 +26672,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             gen::Size size = std::move(req.size);
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, size]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, size]() {
                 cef_size_t size_native{};
                 size_native.width = static_cast<decltype(size_native.width)>(size.width);
                 size_native.height = static_cast<decltype(size_native.height)>(size.height);
@@ -22793,7 +26680,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowCloseRequest::kMessageId: {
@@ -22808,12 +26700,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->close(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowIsClosedRequest::kMessageId: {
@@ -22828,7 +26725,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_closed(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -22840,7 +26737,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowActivateRequest::kMessageId: {
@@ -22855,12 +26757,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->activate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowDeactivateRequest::kMessageId: {
@@ -22875,12 +26782,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->deactivate(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowIsActiveRequest::kMessageId: {
@@ -22895,7 +26807,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_active(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -22907,7 +26819,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowBringToTopRequest::kMessageId: {
@@ -22922,12 +26839,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->bring_to_top(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetAlwaysOnTopRequest::kMessageId: {
@@ -22943,12 +26865,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t onTop = req.onTop;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, onTop]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, onTop]() {
                 receiver->set_always_on_top(receiver, cefArg<decltype(receiver->set_always_on_top), 1>(onTop));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowIsAlwaysOnTopRequest::kMessageId: {
@@ -22963,7 +26890,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_always_on_top(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -22975,7 +26902,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowMaximizeRequest::kMessageId: {
@@ -22990,12 +26922,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->maximize(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowMinimizeRequest::kMessageId: {
@@ -23010,12 +26947,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->minimize(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowRestoreRequest::kMessageId: {
@@ -23030,12 +26972,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->restore(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetFullscreenRequest::kMessageId: {
@@ -23051,12 +26998,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t fullscreen = req.fullscreen;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, fullscreen]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, fullscreen]() {
                 receiver->set_fullscreen(receiver, cefArg<decltype(receiver->set_fullscreen), 1>(fullscreen));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowIsMaximizedRequest::kMessageId: {
@@ -23071,7 +27023,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_maximized(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23083,7 +27035,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowIsMinimizedRequest::kMessageId: {
@@ -23098,7 +27055,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_minimized(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23110,7 +27067,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowIsFullscreenRequest::kMessageId: {
@@ -23125,7 +27087,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->is_fullscreen(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23137,7 +27099,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetFocusedViewRequest::kMessageId: {
@@ -23152,7 +27119,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_focused_view(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23164,7 +27131,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetTitleRequest::kMessageId: {
@@ -23180,13 +27152,18 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::string title = req.title;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, title]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, title]() {
                 ScopedCefString title_cef(title);
                 receiver->set_title(receiver, title_cef.get());
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetTitleRequest::kMessageId: {
@@ -23201,7 +27178,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_title(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23213,7 +27190,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetWindowIconRequest::kMessageId: {
@@ -23229,7 +27211,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t image = req.image;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, image]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, image]() {
                 cef_image_t* image_ptr = image != 0 ? tables::image.retain(image) : nullptr;
                 receiver->set_window_icon(receiver, image_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -23239,7 +27221,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     image_base->release(image_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetWindowIconRequest::kMessageId: {
@@ -23254,7 +27241,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window_icon(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23266,7 +27253,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetWindowAppIconRequest::kMessageId: {
@@ -23282,7 +27274,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t image = req.image;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, image]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, image]() {
                 cef_image_t* image_ptr = image != 0 ? tables::image.retain(image) : nullptr;
                 receiver->set_window_app_icon(receiver, image_ptr);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -23292,7 +27284,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     image_base->release(image_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetWindowAppIconRequest::kMessageId: {
@@ -23307,7 +27304,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window_app_icon(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23319,7 +27316,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowAddOverlayViewRequest::kMessageId: {
@@ -23337,7 +27339,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t view = req.view;
             std::int32_t dockingMode = req.dockingMode;
             std::int32_t canActivate = req.canActivate;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, view, dockingMode, canActivate]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, view, dockingMode, canActivate]() {
                 cef_view_t* view_ptr = view != 0 ? tables::view.retain(view) : nullptr;
                 auto rawResult = receiver->add_overlay_view(receiver, view_ptr, cefArg<decltype(receiver->add_overlay_view), 2>(dockingMode), cefArg<decltype(receiver->add_overlay_view), 3>(canActivate));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -23354,7 +27356,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowShowMenuRequest::kMessageId: {
@@ -23372,7 +27379,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t menuModel = req.menuModel;
             gen::Point screenPoint = std::move(req.screenPoint);
             std::int32_t anchorPosition = req.anchorPosition;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, menuModel, screenPoint, anchorPosition]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, menuModel, screenPoint, anchorPosition]() {
                 cef_menu_model_t* menuModel_ptr = menuModel != 0 ? tables::menuModel.retain(menuModel) : nullptr;
                 cef_point_t screenPoint_native{};
                 screenPoint_native.x = static_cast<decltype(screenPoint_native.x)>(screenPoint.x);
@@ -23385,7 +27392,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     menuModel_base->release(menuModel_base);
                 }
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowCancelMenuRequest::kMessageId: {
@@ -23400,12 +27412,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->cancel_menu(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetDisplayRequest::kMessageId: {
@@ -23420,7 +27437,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_display(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23432,7 +27449,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetClientAreaBoundsInScreenRequest::kMessageId: {
@@ -23447,7 +27469,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 cef_rect_t rawResult = receiver->get_client_area_bounds_in_screen(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23462,7 +27484,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetWindowHandleRequest::kMessageId: {
@@ -23477,7 +27504,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_window_handle(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23489,7 +27516,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSendKeyPressRequest::kMessageId: {
@@ -23506,12 +27538,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t keyCode = req.keyCode;
             std::int32_t eventFlags = req.eventFlags;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, keyCode, eventFlags]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, keyCode, eventFlags]() {
                 receiver->send_key_press(receiver, cefArg<decltype(receiver->send_key_press), 1>(keyCode), cefArg<decltype(receiver->send_key_press), 2>(eventFlags));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSendMouseMoveRequest::kMessageId: {
@@ -23528,12 +27565,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t screenX = req.screenX;
             std::int32_t screenY = req.screenY;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, screenX, screenY]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, screenX, screenY]() {
                 receiver->send_mouse_move(receiver, cefArg<decltype(receiver->send_mouse_move), 1>(screenX), cefArg<decltype(receiver->send_mouse_move), 2>(screenY));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSendMouseEventsRequest::kMessageId: {
@@ -23551,12 +27593,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t button = req.button;
             std::int32_t mouseDown = req.mouseDown;
             std::int32_t mouseUp = req.mouseUp;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, button, mouseDown, mouseUp]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, button, mouseDown, mouseUp]() {
                 receiver->send_mouse_events(receiver, cefArg<decltype(receiver->send_mouse_events), 1>(button), cefArg<decltype(receiver->send_mouse_events), 2>(mouseDown), cefArg<decltype(receiver->send_mouse_events), 3>(mouseUp));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetAcceleratorRequest::kMessageId: {
@@ -23577,12 +27624,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             std::int32_t ctrlPressed = req.ctrlPressed;
             std::int32_t altPressed = req.altPressed;
             std::int32_t highPriority = req.highPriority;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority]() {
                 receiver->set_accelerator(receiver, cefArg<decltype(receiver->set_accelerator), 1>(commandId), cefArg<decltype(receiver->set_accelerator), 2>(keyCode), cefArg<decltype(receiver->set_accelerator), 3>(shiftPressed), cefArg<decltype(receiver->set_accelerator), 4>(ctrlPressed), cefArg<decltype(receiver->set_accelerator), 5>(altPressed), cefArg<decltype(receiver->set_accelerator), 6>(highPriority));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowRemoveAcceleratorRequest::kMessageId: {
@@ -23598,12 +27650,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                 return true;
             }
             std::int32_t commandId = req.commandId;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, commandId]() {
                 receiver->remove_accelerator(receiver, cefArg<decltype(receiver->remove_accelerator), 1>(commandId));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowRemoveAllAcceleratorsRequest::kMessageId: {
@@ -23618,12 +27675,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->remove_all_accelerators(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowSetThemeColorRequest::kMessageId: {
@@ -23640,12 +27702,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
             }
             std::int32_t colorId = req.colorId;
             std::int32_t color = req.color;
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId, colorId, color]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId, colorId, color]() {
                 receiver->set_theme_color(receiver, cefArg<decltype(receiver->set_theme_color), 1>(colorId), cefArg<decltype(receiver->set_theme_color), 2>(color));
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowThemeChangedRequest::kMessageId: {
@@ -23660,12 +27727,17 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 receiver->theme_changed(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
                 if (ipc) ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case gen::WindowGetRuntimeStyleRequest::kMessageId: {
@@ -23680,7 +27752,7 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                                    kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return true;
             }
-            cef_post_task(TID_UI, new LambdaTask([receiver, ipc, corrId, msgId]() {
+            auto* uiTask = new LambdaTask([receiver, ipc, corrId, msgId]() {
                 auto rawResult = receiver->get_runtime_style(receiver);
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                 base->release(base);
@@ -23692,7 +27764,12 @@ inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
                     ipc->send(cef4j::ipc::Kind::Response, 0, corrId, msgId,
                               respPayload.data(), respPayload.size());
                 }
-            }));
+            });
+            if (!postUiTask(uiTask)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                base->release(base);
+                sendTaskRejected(ipc, corrId, msgId);
+            }
             return true;
         }
         case 992358954: // DomdocumentGetTypeRequest (cef_domdocument_t::get_type)

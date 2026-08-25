@@ -73,14 +73,17 @@ class WebViewRuntimeSingleWindowClipboardCompatTest extends WebViewRuntimeCompat
 
         String previous = null;
         for (int i = 0; i < ROWS.length; i++) {
+            String row = ROWS[i];
             String seed = "seed-" + (i + 1);
             setClipboardText(seed);
             clearSink(view);
 
-            leftClick(view, SOURCE_X, sourceY(i));
-            invokeShortcut(view, KeyCode.A);
+            selectSource(view, i);
             invokeShortcut(view, KeyCode.C);
 
+            assertThat(waitUntilOnFx(() -> row.equals(getClipboardText()), 2_500))
+                    .as("row %s: copy should update clipboard", i + 1)
+                    .isTrue();
             String copied = getClipboardText();
             assertThat(copied)
                     .as("row %s: copy should update clipboard", i + 1)
@@ -106,6 +109,22 @@ class WebViewRuntimeSingleWindowClipboardCompatTest extends WebViewRuntimeCompat
 
     private static int sourceY(int rowIndex) {
         return SOURCE_BASE_Y + (rowIndex * SOURCE_ROW_STEP);
+    }
+
+    private static void selectSource(WebView view, int rowIndex) throws Exception {
+        leftClick(view, SOURCE_X, sourceY(rowIndex));
+        String marker = "selected-" + rowIndex + '-' + System.nanoTime();
+        onFxThread(() -> view.getEngine()
+                .executeScript("var d = document.getElementById('sourceFrame').contentWindow.document;"
+                        + "var source = d.getElementById('t"
+                        + (rowIndex + 1)
+                        + "');"
+                        + "source.focus(); source.select(); document.title='"
+                        + marker
+                        + "';"));
+        assertThat(waitUntilOnFx(() -> marker.equals(title(view)), 2_000))
+                .as("row %s: source selection should reach the renderer", rowIndex + 1)
+                .isTrue();
     }
 
     private static void loadPage(WebView view) throws Exception {

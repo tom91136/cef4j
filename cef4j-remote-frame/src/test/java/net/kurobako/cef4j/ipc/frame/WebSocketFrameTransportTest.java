@@ -69,6 +69,30 @@ final class WebSocketFrameTransportTest {
         }
     }
 
+    @Test
+    void scopedBindingDoesNotReplayAnotherBrowsersLatestFrame() throws Exception {
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2))) {
+            CountDownLatch stored = new CountDownLatch(1);
+            CefSession.HandlerRegistration observer =
+                    session.on(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, ignored -> stored.countDown());
+            sendEvent(pair.b, new InlinePaintEvent(new RemoteHandle(8), 1L, 1, 1, 0, 0, 0, 1, 1, new byte[4]));
+            assertThat(stored.await(2, TimeUnit.SECONDS)).isTrue();
+            observer.close();
+
+            try (InlineFrameTransport frames = InlineFrameTransport.bind(session, new RemoteHandle(9))) {
+                CountDownLatch arrived = new CountDownLatch(1);
+                frames.onFrame((width, height, buffer, meta) -> arrived.countDown());
+                assertThat(arrived.await(100, TimeUnit.MILLISECONDS)).isFalse();
+
+                sendEvent(pair.b, new InlinePaintEvent(new RemoteHandle(9), 2L, 1, 1, 0, 0, 0, 1, 1, new byte[4]));
+                assertThat(arrived.await(2, TimeUnit.SECONDS)).isTrue();
+            }
+        } finally {
+            pair.b.close();
+        }
+    }
+
     private static void sendEvent(LoopbackTransport peer, InlinePaintEvent event) throws Exception {
         ByteBuffer frame =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + event.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);

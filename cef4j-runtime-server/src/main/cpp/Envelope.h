@@ -24,6 +24,7 @@ enum class Kind : std::uint8_t {
 namespace ErrorCode {
     constexpr std::int32_t ReceiverGone = 1;
     constexpr std::int32_t MalformedRequest = 2;
+    constexpr std::int32_t TaskRejected = 3;
 }
 
 struct Header {

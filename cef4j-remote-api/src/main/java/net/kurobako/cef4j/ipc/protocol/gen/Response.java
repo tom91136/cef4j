@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Response {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_response_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_response_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:60</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new ResponseIsReadOnlyRequest(handle), ResponseIsReadOnlyResponse.DECODER)
-            .thenApply(ResponseIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseIsReadOnlyRequest(handle), ResponseIsReadOnlyResponse.DECODER),
+            ResponseIsReadOnlyResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:66</a>
      */
     public CompletableFuture<Integer> getError() {
-        return session
-            .request(new ResponseGetErrorRequest(handle), ResponseGetErrorResponse.DECODER)
-            .thenApply(ResponseGetErrorResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetErrorRequest(handle), ResponseGetErrorResponse.DECODER),
+            ResponseGetErrorResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:72</a>
      */
     public CompletableFuture<Void> setError(int error) {
-        return session
-            .request(new ResponseSetErrorRequest(handle, error), ResponseSetErrorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetErrorRequest(handle, error), ResponseSetErrorResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:79</a>
      */
     public CompletableFuture<Integer> getStatus() {
-        return session
-            .request(new ResponseGetStatusRequest(handle), ResponseGetStatusResponse.DECODER)
-            .thenApply(ResponseGetStatusResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetStatusRequest(handle), ResponseGetStatusResponse.DECODER),
+            ResponseGetStatusResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:85</a>
      */
     public CompletableFuture<Void> setStatus(int status) {
-        return session
-            .request(new ResponseSetStatusRequest(handle, status), ResponseSetStatusResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetStatusRequest(handle, status), ResponseSetStatusResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:91</a>
      */
     public CompletableFuture<String> getStatusText() {
-        return session
-            .request(new ResponseGetStatusTextRequest(handle), ResponseGetStatusTextResponse.DECODER)
-            .thenApply(ResponseGetStatusTextResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetStatusTextRequest(handle), ResponseGetStatusTextResponse.DECODER),
+            ResponseGetStatusTextResponse::result);
     }
 
     /**
@@ -116,9 +118,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:97</a>
      */
     public CompletableFuture<Void> setStatusText(@Nonnull String statusText) {
-        return session
-            .request(new ResponseSetStatusTextRequest(handle, statusText), ResponseSetStatusTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetStatusTextRequest(handle, statusText), ResponseSetStatusTextResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -128,9 +130,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:103</a>
      */
     public CompletableFuture<String> getMimeType() {
-        return session
-            .request(new ResponseGetMimeTypeRequest(handle), ResponseGetMimeTypeResponse.DECODER)
-            .thenApply(ResponseGetMimeTypeResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetMimeTypeRequest(handle), ResponseGetMimeTypeResponse.DECODER),
+            ResponseGetMimeTypeResponse::result);
     }
 
     /**
@@ -142,9 +144,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:109</a>
      */
     public CompletableFuture<Void> setMimeType(@Nonnull String mimeType) {
-        return session
-            .request(new ResponseSetMimeTypeRequest(handle, mimeType), ResponseSetMimeTypeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetMimeTypeRequest(handle, mimeType), ResponseSetMimeTypeResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -154,9 +156,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:115</a>
      */
     public CompletableFuture<String> getCharset() {
-        return session
-            .request(new ResponseGetCharsetRequest(handle), ResponseGetCharsetResponse.DECODER)
-            .thenApply(ResponseGetCharsetResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetCharsetRequest(handle), ResponseGetCharsetResponse.DECODER),
+            ResponseGetCharsetResponse::result);
     }
 
     /**
@@ -168,9 +170,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:121</a>
      */
     public CompletableFuture<Void> setCharset(@Nonnull String charset) {
-        return session
-            .request(new ResponseSetCharsetRequest(handle, charset), ResponseSetCharsetResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetCharsetRequest(handle, charset), ResponseSetCharsetResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -180,9 +182,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:127</a>
      */
     public CompletableFuture<String> getHeaderByName(@Nonnull String name) {
-        return session
-            .request(new ResponseGetHeaderByNameRequest(handle, name), ResponseGetHeaderByNameResponse.DECODER)
-            .thenApply(ResponseGetHeaderByNameResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetHeaderByNameRequest(handle, name), ResponseGetHeaderByNameResponse.DECODER),
+            ResponseGetHeaderByNameResponse::result);
     }
 
     /**
@@ -194,9 +196,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:133</a>
      */
     public CompletableFuture<Void> setHeaderByName(@Nonnull String name, @Nonnull String value, int overwrite) {
-        return session
-            .request(new ResponseSetHeaderByNameRequest(handle, name, value, overwrite), ResponseSetHeaderByNameResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetHeaderByNameRequest(handle, name, value, overwrite), ResponseSetHeaderByNameResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -206,9 +208,9 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
-        return session
-            .request(new ResponseGetUrlRequest(handle), ResponseGetUrlResponse.DECODER)
-            .thenApply(ResponseGetUrlResponse::result);
+        return CefFutures.map(
+            session.request(new ResponseGetUrlRequest(handle), ResponseGetUrlResponse.DECODER),
+            ResponseGetUrlResponse::result);
     }
 
     /**
@@ -220,8 +222,8 @@ public final class Response {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:161</a>
      */
     public CompletableFuture<Void> setUrl(@Nonnull String url) {
-        return session
-            .request(new ResponseSetUrlRequest(handle, url), ResponseSetUrlResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ResponseSetUrlRequest(handle, url), ResponseSetUrlResponse.DECODER),
+            r -> null);
     }
 }

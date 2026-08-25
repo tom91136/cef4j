@@ -358,9 +358,6 @@ public final class RemoteWebView extends Region {
     @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
         RemoteViewportConstraints.validate(width, height);
-        if (!Platform.isFxApplicationThread()) {
-            return browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, width, height));
-        }
         CompletableFuture<Void> pendingFxWork = new CompletableFuture<>();
         Platform.runLater(() -> pendingFxWork.complete(null));
         return pendingFxWork.thenCompose(ignored ->

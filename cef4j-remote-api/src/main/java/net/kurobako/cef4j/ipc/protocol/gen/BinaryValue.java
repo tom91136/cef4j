@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class BinaryValue {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_binary_value_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_binary_value_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class BinaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:246</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new BinaryValueIsValidRequest(handle), BinaryValueIsValidResponse.DECODER)
-            .thenApply(BinaryValueIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new BinaryValueIsValidRequest(handle), BinaryValueIsValidResponse.DECODER),
+            BinaryValueIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class BinaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:255</a>
      */
     public CompletableFuture<Integer> isOwned() {
-        return session
-            .request(new BinaryValueIsOwnedRequest(handle), BinaryValueIsOwnedResponse.DECODER)
-            .thenApply(BinaryValueIsOwnedResponse::result);
+        return CefFutures.map(
+            session.request(new BinaryValueIsOwnedRequest(handle), BinaryValueIsOwnedResponse.DECODER),
+            BinaryValueIsOwnedResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class BinaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:261</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new BinaryValueIsSameRequest(handle, that), BinaryValueIsSameResponse.DECODER)
-            .thenApply(BinaryValueIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new BinaryValueIsSameRequest(handle, that), BinaryValueIsSameResponse.DECODER),
+            BinaryValueIsSameResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class BinaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:268</a>
      */
     public CompletableFuture<Integer> isEqual(@Nonnull RemoteHandle that) {
-        return session
-            .request(new BinaryValueIsEqualRequest(handle, that), BinaryValueIsEqualResponse.DECODER)
-            .thenApply(BinaryValueIsEqualResponse::result);
+        return CefFutures.map(
+            session.request(new BinaryValueIsEqualRequest(handle, that), BinaryValueIsEqualResponse.DECODER),
+            BinaryValueIsEqualResponse::result);
     }
 
     /**
@@ -90,10 +92,9 @@ public final class BinaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:275</a>
      */
     public CompletableFuture<BinaryValue> copy() {
-        return session
-            .request(new BinaryValueCopyRequest(handle), BinaryValueCopyResponse.DECODER)
-            .thenApply(BinaryValueCopyResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new BinaryValueCopyRequest(handle), BinaryValueCopyResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -103,8 +104,8 @@ public final class BinaryValue {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:289</a>
      */
     public CompletableFuture<Long> getSize() {
-        return session
-            .request(new BinaryValueGetSizeRequest(handle), BinaryValueGetSizeResponse.DECODER)
-            .thenApply(BinaryValueGetSizeResponse::result);
+        return CefFutures.map(
+            session.request(new BinaryValueGetSizeRequest(handle), BinaryValueGetSizeResponse.DECODER),
+            BinaryValueGetSizeResponse::result);
     }
 }

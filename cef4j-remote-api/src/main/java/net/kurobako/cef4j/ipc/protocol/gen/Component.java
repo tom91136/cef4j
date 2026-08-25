@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Component {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_component_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_component_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class Component {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     public CompletableFuture<String> getId() {
-        return session
-            .request(new ComponentGetIdRequest(handle), ComponentGetIdResponse.DECODER)
-            .thenApply(ComponentGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new ComponentGetIdRequest(handle), ComponentGetIdResponse.DECODER),
+            ComponentGetIdResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class Component {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
      */
     public CompletableFuture<String> getName() {
-        return session
-            .request(new ComponentGetNameRequest(handle), ComponentGetNameResponse.DECODER)
-            .thenApply(ComponentGetNameResponse::result);
+        return CefFutures.map(
+            session.request(new ComponentGetNameRequest(handle), ComponentGetNameResponse.DECODER),
+            ComponentGetNameResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class Component {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:87</a>
      */
     public CompletableFuture<String> getVersion() {
-        return session
-            .request(new ComponentGetVersionRequest(handle), ComponentGetVersionResponse.DECODER)
-            .thenApply(ComponentGetVersionResponse::result);
+        return CefFutures.map(
+            session.request(new ComponentGetVersionRequest(handle), ComponentGetVersionResponse.DECODER),
+            ComponentGetVersionResponse::result);
     }
 
     /**
@@ -78,8 +80,8 @@ public final class Component {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
      */
     public CompletableFuture<Integer> getState() {
-        return session
-            .request(new ComponentGetStateRequest(handle), ComponentGetStateResponse.DECODER)
-            .thenApply(ComponentGetStateResponse::result);
+        return CefFutures.map(
+            session.request(new ComponentGetStateRequest(handle), ComponentGetStateResponse.DECODER),
+            ComponentGetStateResponse::result);
     }
 }

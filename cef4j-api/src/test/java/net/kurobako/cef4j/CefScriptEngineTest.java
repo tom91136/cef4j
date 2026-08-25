@@ -10,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -698,7 +699,14 @@ class CefScriptEngineTest extends CefTestBase {
                 disposable.evaluate("new Promise(() => {})").orTimeout(1, TimeUnit.MILLISECONDS);
         CompletableFuture<Integer> callback =
                 disposable.createCallback(arguments -> {}).orTimeout(1, TimeUnit.MILLISECONDS);
-        Thread.sleep(20);
+        TestDeadline.after(java.time.Duration.ofSeconds(2))
+                .until(
+                        () -> evaluation.isCompletedExceptionally()
+                                && callback.isCompletedExceptionally()
+                                && disposable.pendingRequestCount() == 0
+                                && disposable.callbackCount() == 0,
+                        java.time.Duration.ofMillis(1),
+                        "script timeout cleanup");
 
         assertThat(evaluation).isCompletedExceptionally();
         assertThat(callback).isCompletedExceptionally();

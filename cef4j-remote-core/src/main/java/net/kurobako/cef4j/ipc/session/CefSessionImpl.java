@@ -45,6 +45,10 @@ public final class CefSessionImpl implements CefSession {
     private final CopyOnWriteArrayList<Runnable> closeHandlers = new CopyOnWriteArrayList<>();
     private final java.util.concurrent.atomic.AtomicBoolean closeNotified =
             new java.util.concurrent.atomic.AtomicBoolean();
+    private final java.util.concurrent.atomic.AtomicBoolean closeStarted =
+            new java.util.concurrent.atomic.AtomicBoolean();
+    private final java.util.concurrent.atomic.AtomicBoolean disconnectHandled =
+            new java.util.concurrent.atomic.AtomicBoolean();
     private final CompletableFuture<Void> runtimeSessionReady = new CompletableFuture<>();
 
     private volatile boolean closed = false;
@@ -101,7 +105,12 @@ public final class CefSessionImpl implements CefSession {
         } catch (CefTransportException e) {
             if (ownTimer) timer.shutdownNow();
             throw new IllegalStateException("failed to establish runtime server session", e);
-        } catch (java.util.concurrent.ExecutionException | TimeoutException e) {
+        } catch (java.util.concurrent.ExecutionException e) {
+            transport.close();
+            if (ownTimer) timer.shutdownNow();
+            throw new IllegalStateException(
+                    "runtime server did not acknowledge session readiness", e.getCause() == null ? e : e.getCause());
+        } catch (TimeoutException e) {
             transport.close();
             if (ownTimer) timer.shutdownNow();
             throw new IllegalStateException("runtime server did not acknowledge session readiness", e);
@@ -125,12 +134,12 @@ public final class CefSessionImpl implements CefSession {
     @Nonnull
     public <R extends CefMessageView> CompletableFuture<R> request(
             @Nonnull CefMessageEncoder enc, @Nonnull CefMessageDecoder<R> dec) {
-        CompletableFuture<R> future = new CompletableFuture<>();
+        RequestFuture<R> future = new RequestFuture<>();
         if (closed) {
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
         }
-        Pending<R> p = new Pending<>(future, dec);
+        Pending<R> p = new Pending<>(future, dec, enc.messageId());
         int corrId = correlationIds.allocate(candidate -> pending.putIfAbsent(candidate, p) == null);
         if (closed) {
             pending.remove(corrId, p);
@@ -141,9 +150,8 @@ public final class CefSessionImpl implements CefSession {
         try {
             timeoutTask = timer.schedule(
                     () -> {
-                        Pending<?> popped = pending.remove(corrId);
-                        if (popped != null) {
-                            popped.future.completeExceptionally(new TimeoutException("request msgId=" + enc.messageId()
+                        if (pending.remove(corrId, p)) {
+                            p.future.completeExceptionally(new TimeoutException("request msgId=" + enc.messageId()
                                     + " corrId=" + corrId + " timed out after " + defaultTimeout));
                         }
                     },
@@ -155,6 +163,10 @@ public final class CefSessionImpl implements CefSession {
             future.completeExceptionally(schedulingFailure);
             return future;
         }
+        future.onCancel = () -> {
+            if (pending.remove(corrId, p)) cancelQuietly(p.timeoutTask);
+        };
+        if (future.isCancelled()) future.onCancel.run();
         if (closed) {
             pending.remove(corrId, p);
             timeoutTask.cancel(false);
@@ -170,11 +182,11 @@ public final class CefSessionImpl implements CefSession {
             buf.flip();
             transport.send(buf);
         } catch (CefTransportException e) {
-            pending.remove(corrId);
+            pending.remove(corrId, p);
             timeoutTask.cancel(false);
             future.completeExceptionally(e);
         } catch (RuntimeException encodeFailure) {
-            pending.remove(corrId);
+            pending.remove(corrId, p);
             timeoutTask.cancel(false);
             future.completeExceptionally(encodeFailure);
         }
@@ -238,10 +250,10 @@ public final class CefSessionImpl implements CefSession {
 
     @Override
     public void close() {
-        if (!closed) {
-            closed = true;
-            failAllPending(new CefTransportException("session closed"));
-        }
+        if (!closeStarted.compareAndSet(false, true)) return;
+        disconnectHandled.set(true);
+        closed = true;
+        failAllPending(new CefTransportException("session closed"));
         notifyClosed();
         latestEvents.clear();
         transport.close();
@@ -298,12 +310,29 @@ public final class CefSessionImpl implements CefSession {
      * default-zeroed value.
      */
     private void handleError(Envelope.Header h, ByteBuffer payload) {
-        Pending<?> raw = pending.remove(h.corrId);
+        if (h.messageId == RUNTIME_SESSION_READY_MESSAGE_ID && h.corrId == RUNTIME_SESSION_READY_CORR_ID) {
+            completeStructuredError(runtimeSessionReady, payload);
+            return;
+        }
+        Pending<?> raw = pending.get(h.corrId);
         if (raw == null) {
             LOG.debug("orphan error corrId={} (ignored)", h.corrId);
             return;
         }
+        if (raw.messageId != h.messageId) {
+            LOG.warn(
+                    "mismatched error corrId={} expected messageId={} but received {} (ignored)",
+                    h.corrId,
+                    raw.messageId,
+                    h.messageId);
+            return;
+        }
+        if (!pending.remove(h.corrId, raw)) return;
         cancelQuietly(raw.timeoutTask);
+        completeStructuredError(raw.future, payload);
+    }
+
+    private static void completeStructuredError(CompletableFuture<?> future, ByteBuffer payload) {
         try {
             ByteBuffer source = payload.duplicate().order(ByteOrder.LITTLE_ENDIAN);
             WireDecoder.requireRemaining(source, Integer.BYTES, "error.code");
@@ -312,10 +341,10 @@ public final class CefSessionImpl implements CefSession {
             byte[] message = new byte[messageLength];
             source.get(message);
             WireDecoder.requireFullyConsumed(source, "structured error");
-            raw.future.completeExceptionally(
+            future.completeExceptionally(
                     new CefRemoteException(code, new String(message, java.nio.charset.StandardCharsets.UTF_8)));
         } catch (RuntimeException malformed) {
-            raw.future.completeExceptionally(malformed);
+            future.completeExceptionally(malformed);
         }
     }
 
@@ -325,11 +354,20 @@ public final class CefSessionImpl implements CefSession {
             runtimeSessionReady.complete(null);
             return;
         }
-        Pending<?> raw = pending.remove(h.corrId);
+        Pending<?> raw = pending.get(h.corrId);
         if (raw == null) {
             LOG.debug("orphan response corrId={} (ignored)", h.corrId);
             return;
         }
+        if (raw.messageId != h.messageId) {
+            LOG.warn(
+                    "mismatched response corrId={} expected messageId={} but received {} (ignored)",
+                    h.corrId,
+                    raw.messageId,
+                    h.messageId);
+            return;
+        }
+        if (!pending.remove(h.corrId, raw)) return;
         Pending<R> p = (Pending<R>) raw;
         cancelQuietly(p.timeoutTask);
         try {
@@ -394,10 +432,9 @@ public final class CefSessionImpl implements CefSession {
     }
 
     private void handleDisconnect() {
-        if (!closed) {
-            closed = true;
-            failAllPending(new CefTransportException("transport disconnected"));
-        }
+        if (!disconnectHandled.compareAndSet(false, true)) return;
+        closed = true;
+        failAllPending(new CefTransportException("transport disconnected"));
         latestEvents.clear();
         notifyClosed();
         if (ownTimer) timer.shutdownNow();
@@ -418,13 +455,26 @@ public final class CefSessionImpl implements CefSession {
     private static final class Pending<R extends CefMessageView> {
         final CompletableFuture<R> future;
         final CefMessageDecoder<R> decoder;
+        final int messageId;
 
         @Nullable
         volatile ScheduledFuture<?> timeoutTask;
 
-        Pending(CompletableFuture<R> future, CefMessageDecoder<R> decoder) {
+        Pending(CompletableFuture<R> future, CefMessageDecoder<R> decoder, int messageId) {
             this.future = future;
             this.decoder = decoder;
+            this.messageId = messageId;
+        }
+    }
+
+    private static final class RequestFuture<R> extends CompletableFuture<R> {
+        volatile Runnable onCancel = () -> {};
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            boolean cancelled = super.cancel(mayInterruptIfRunning);
+            if (cancelled) onCancel.run();
+            return cancelled;
         }
     }
 

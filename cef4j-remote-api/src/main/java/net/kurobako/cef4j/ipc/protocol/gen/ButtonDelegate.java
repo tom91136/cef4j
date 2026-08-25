@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,22 +31,23 @@ public final class ButtonDelegate {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_button_delegate_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_button_delegate_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_button_pressed} to the runtime server. */
     public CompletableFuture<Void> onButtonPressed(@Nonnull RemoteHandle button) {
-        return session
-            .request(new ButtonDelegateOnButtonPressedRequest(handle, button), ButtonDelegateOnButtonPressedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ButtonDelegateOnButtonPressedRequest(handle, button), ButtonDelegateOnButtonPressedResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code on_button_state_changed} to the runtime server. */
     public CompletableFuture<Void> onButtonStateChanged(@Nonnull RemoteHandle button) {
-        return session
-            .request(new ButtonDelegateOnButtonStateChangedRequest(handle, button), ButtonDelegateOnButtonStateChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ButtonDelegateOnButtonStateChangedRequest(handle, button), ButtonDelegateOnButtonStateChangedResponse.DECODER),
+            r -> null);
     }
 }

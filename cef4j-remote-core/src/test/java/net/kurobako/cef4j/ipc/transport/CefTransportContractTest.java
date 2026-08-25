@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Timeout.ThreadMode;
@@ -136,12 +135,9 @@ public abstract class CefTransportContractTest {
     @Test
     void framesArrivingBeforeReceiverIsRegisteredAreBuffered() throws Exception {
         try (Pair p = newPair()) {
-            // A sends three frames before B registers a handler.
             p.a.send(buf("one"));
             p.a.send(buf("two"));
             p.a.send(buf("three"));
-            // Give the receiver a moment to actually deliver them to its internal buffer.
-            Thread.sleep(200);
 
             ConcurrentLinkedQueue<String> received = new ConcurrentLinkedQueue<>();
             CountDownLatch done = new CountDownLatch(3);
@@ -166,12 +162,13 @@ public abstract class CefTransportContractTest {
                 done.countDown();
             });
             CountDownLatch start = new CountDownLatch(1);
-            List<Thread> ts = new ArrayList<>();
+            List<java.util.concurrent.CompletableFuture<Void>> tasks = new ArrayList<>();
             for (int t = 0; t < threads; t++) {
                 final int tid = t;
-                Thread th = new Thread(() -> {
+                tasks.add(java.util.concurrent.CompletableFuture.runAsync(() -> {
                     try {
-                        start.await();
+                        if (!start.await(5, TimeUnit.SECONDS))
+                            throw new IllegalStateException("send start not released");
                         for (int i = 0; i < perThread; i++) {
                             ByteBuffer m = ByteBuffer.allocate(8).putInt(tid).putInt(i);
                             m.flip();
@@ -179,15 +176,16 @@ public abstract class CefTransportContractTest {
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
+                        throw new java.util.concurrent.CompletionException(e);
                     } catch (CefTransportException e) {
                         throw new RuntimeException(e);
                     }
-                });
-                ts.add(th);
-                th.start();
+                }));
             }
             start.countDown();
-            for (Thread th : ts) th.join();
+            java.util.concurrent.CompletableFuture.allOf(
+                            tasks.toArray(new java.util.concurrent.CompletableFuture<?>[0]))
+                    .get(10, TimeUnit.SECONDS);
             assertThat(done.await(30, TimeUnit.SECONDS)).isTrue();
 
             // Per-thread sequences must remain monotonic; cross-thread ordering is not specified.
@@ -226,12 +224,10 @@ public abstract class CefTransportContractTest {
     @Test
     void localCloseDoesNotFireOwnDisconnect() throws Exception {
         try (Pair p = newPair()) {
-            AtomicBoolean fired = new AtomicBoolean(false);
-            p.a.onDisconnect(() -> fired.set(true));
+            CountDownLatch fired = new CountDownLatch(1);
+            p.a.onDisconnect(fired::countDown);
             p.a.close();
-            // Give any erroneous async fire a chance to race in.
-            Thread.sleep(200);
-            assertThat(fired)
+            assertThat(fired.await(200, TimeUnit.MILLISECONDS))
                     .as("local close must not fire onDisconnect on the same transport")
                     .isFalse();
         }

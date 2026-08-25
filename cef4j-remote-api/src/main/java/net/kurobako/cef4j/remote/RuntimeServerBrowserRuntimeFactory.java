@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
@@ -17,6 +19,13 @@ import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 
 /** Spawns a packaged CEF runtime server by provider name, without binding to transport implementations. */
 public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRuntimeFactory {
+    private static final AtomicInteger STARTUP_THREAD_IDS = new AtomicInteger();
+    private static final Executor STARTUP_THREADS = task -> {
+        Thread thread = new Thread(task, "cef4j-runtime-start-" + STARTUP_THREAD_IDS.incrementAndGet());
+        thread.setDaemon(true);
+        thread.start();
+    };
+
     private final Path binary;
     private final String controlTransport;
     private final String endpoint;
@@ -55,21 +64,34 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
     @Override
     @Nonnull
     public CompletableFuture<? extends RemoteBrowserRuntime> create() {
-        return CompletableFuture.supplyAsync(() -> {
-            Exception firstFailure = null;
-            for (int attempt = 0; attempt < 2; attempt++) {
-                try {
-                    return createOnce();
-                } catch (Exception failure) {
-                    if (firstFailure == null) firstFailure = failure;
-                    else failure.addSuppressed(firstFailure);
-                    if (attempt == 1) {
-                        throw new IllegalStateException("failed to start cef4j runtime server", failure);
-                    }
+        CompletableFuture<OwnedRuntime> result = new CompletableFuture<>();
+        STARTUP_THREADS.execute(() -> {
+            OwnedRuntime runtime;
+            try {
+                runtime = createWithRetry();
+            } catch (RuntimeException failure) {
+                result.completeExceptionally(failure);
+                return;
+            }
+            if (!result.complete(runtime)) runtime.close();
+        });
+        return result;
+    }
+
+    private OwnedRuntime createWithRetry() {
+        Exception firstFailure = null;
+        for (int attempt = 0; attempt < 2; attempt++) {
+            try {
+                return createOnce();
+            } catch (Exception failure) {
+                if (firstFailure == null) firstFailure = failure;
+                else failure.addSuppressed(firstFailure);
+                if (attempt == 1) {
+                    throw new IllegalStateException("failed to start cef4j runtime server", failure);
                 }
             }
-            throw new AssertionError("unreachable");
-        });
+        }
+        throw new AssertionError("unreachable");
     }
 
     private OwnedRuntime createOnce() throws Exception {

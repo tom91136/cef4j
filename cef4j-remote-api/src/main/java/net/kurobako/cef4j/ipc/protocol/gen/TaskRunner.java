@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class TaskRunner {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_task_runner_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_task_runner_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class TaskRunner {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:88</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new TaskRunnerIsSameRequest(handle, that), TaskRunnerIsSameResponse.DECODER)
-            .thenApply(TaskRunnerIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new TaskRunnerIsSameRequest(handle, that), TaskRunnerIsSameResponse.DECODER),
+            TaskRunnerIsSameResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class TaskRunner {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:95</a>
      */
     public CompletableFuture<Integer> belongsToCurrentThread() {
-        return session
-            .request(new TaskRunnerBelongsToCurrentThreadRequest(handle), TaskRunnerBelongsToCurrentThreadResponse.DECODER)
-            .thenApply(TaskRunnerBelongsToCurrentThreadResponse::result);
+        return CefFutures.map(
+            session.request(new TaskRunnerBelongsToCurrentThreadRequest(handle), TaskRunnerBelongsToCurrentThreadResponse.DECODER),
+            TaskRunnerBelongsToCurrentThreadResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class TaskRunner {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:101</a>
      */
     public CompletableFuture<Integer> belongsToThread(int threadId) {
-        return session
-            .request(new TaskRunnerBelongsToThreadRequest(handle, threadId), TaskRunnerBelongsToThreadResponse.DECODER)
-            .thenApply(TaskRunnerBelongsToThreadResponse::result);
+        return CefFutures.map(
+            session.request(new TaskRunnerBelongsToThreadRequest(handle, threadId), TaskRunnerBelongsToThreadResponse.DECODER),
+            TaskRunnerBelongsToThreadResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class TaskRunner {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:107</a>
      */
     public CompletableFuture<Integer> postTask(@Nonnull RemoteHandle task) {
-        return session
-            .request(new TaskRunnerPostTaskRequest(handle, task), TaskRunnerPostTaskResponse.DECODER)
-            .thenApply(TaskRunnerPostTaskResponse::result);
+        return CefFutures.map(
+            session.request(new TaskRunnerPostTaskRequest(handle, task), TaskRunnerPostTaskResponse.DECODER),
+            TaskRunnerPostTaskResponse::result);
     }
 
     /**
@@ -90,8 +92,8 @@ public final class TaskRunner {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:114</a>
      */
     public CompletableFuture<Integer> postDelayedTask(@Nonnull RemoteHandle task, long delayMs) {
-        return session
-            .request(new TaskRunnerPostDelayedTaskRequest(handle, task, delayMs), TaskRunnerPostDelayedTaskResponse.DECODER)
-            .thenApply(TaskRunnerPostDelayedTaskResponse::result);
+        return CefFutures.map(
+            session.request(new TaskRunnerPostDelayedTaskRequest(handle, task, delayMs), TaskRunnerPostDelayedTaskResponse.DECODER),
+            TaskRunnerPostDelayedTaskResponse::result);
     }
 }

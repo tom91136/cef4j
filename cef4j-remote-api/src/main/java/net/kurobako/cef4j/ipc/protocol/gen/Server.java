@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Server {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_server_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_server_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,10 +44,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:82</a>
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
-        return session
-            .request(new ServerGetTaskRunnerRequest(handle), ServerGetTaskRunnerResponse.DECODER)
-            .thenApply(ServerGetTaskRunnerResponse::result)
-            .thenApply(__h -> new TaskRunner(session, __h));
+        return CefFutures.map(
+            session.request(new ServerGetTaskRunnerRequest(handle), ServerGetTaskRunnerResponse.DECODER),
+            __r -> new TaskRunner(session, __r.result()));
     }
 
     /**
@@ -55,9 +56,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:88</a>
      */
     public CompletableFuture<Void> shutdown() {
-        return session
-            .request(new ServerShutdownRequest(handle), ServerShutdownResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerShutdownRequest(handle), ServerShutdownResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -67,9 +68,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:96</a>
      */
     public CompletableFuture<Integer> isRunning() {
-        return session
-            .request(new ServerIsRunningRequest(handle), ServerIsRunningResponse.DECODER)
-            .thenApply(ServerIsRunningResponse::result);
+        return CefFutures.map(
+            session.request(new ServerIsRunningRequest(handle), ServerIsRunningResponse.DECODER),
+            ServerIsRunningResponse::result);
     }
 
     /**
@@ -79,9 +80,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:105</a>
      */
     public CompletableFuture<String> getAddress() {
-        return session
-            .request(new ServerGetAddressRequest(handle), ServerGetAddressResponse.DECODER)
-            .thenApply(ServerGetAddressResponse::result);
+        return CefFutures.map(
+            session.request(new ServerGetAddressRequest(handle), ServerGetAddressResponse.DECODER),
+            ServerGetAddressResponse::result);
     }
 
     /**
@@ -91,9 +92,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:111</a>
      */
     public CompletableFuture<Integer> hasConnection() {
-        return session
-            .request(new ServerHasConnectionRequest(handle), ServerHasConnectionResponse.DECODER)
-            .thenApply(ServerHasConnectionResponse::result);
+        return CefFutures.map(
+            session.request(new ServerHasConnectionRequest(handle), ServerHasConnectionResponse.DECODER),
+            ServerHasConnectionResponse::result);
     }
 
     /**
@@ -103,9 +104,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:118</a>
      */
     public CompletableFuture<Integer> isValidConnection(int connectionId) {
-        return session
-            .request(new ServerIsValidConnectionRequest(handle, connectionId), ServerIsValidConnectionResponse.DECODER)
-            .thenApply(ServerIsValidConnectionResponse::result);
+        return CefFutures.map(
+            session.request(new ServerIsValidConnectionRequest(handle, connectionId), ServerIsValidConnectionResponse.DECODER),
+            ServerIsValidConnectionResponse::result);
     }
 
     /**
@@ -118,9 +119,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:125</a>
      */
     public CompletableFuture<Void> sendHttp200Response(int connectionId, @Nonnull String contentType, @Nonnull byte[] data) {
-        return session
-            .request(new ServerSendHttp200ResponseRequest(handle, connectionId, contentType, data), ServerSendHttp200ResponseResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerSendHttp200ResponseRequest(handle, connectionId, contentType, data), ServerSendHttp200ResponseResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -130,9 +131,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:138</a>
      */
     public CompletableFuture<Void> sendHttp404Response(int connectionId) {
-        return session
-            .request(new ServerSendHttp404ResponseRequest(handle, connectionId), ServerSendHttp404ResponseResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerSendHttp404ResponseRequest(handle, connectionId), ServerSendHttp404ResponseResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -142,9 +143,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:146</a>
      */
     public CompletableFuture<Void> sendHttp500Response(int connectionId, @Nonnull String errorMessage) {
-        return session
-            .request(new ServerSendHttp500ResponseRequest(handle, connectionId, errorMessage), ServerSendHttp500ResponseResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerSendHttp500ResponseRequest(handle, connectionId, errorMessage), ServerSendHttp500ResponseResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -157,9 +158,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:177</a>
      */
     public CompletableFuture<Void> sendRawData(int connectionId, @Nonnull byte[] data) {
-        return session
-            .request(new ServerSendRawDataRequest(handle, connectionId, data), ServerSendRawDataResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerSendRawDataRequest(handle, connectionId, data), ServerSendRawDataResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -169,9 +170,9 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:190</a>
      */
     public CompletableFuture<Void> closeConnection(int connectionId) {
-        return session
-            .request(new ServerCloseConnectionRequest(handle, connectionId), ServerCloseConnectionResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerCloseConnectionRequest(handle, connectionId), ServerCloseConnectionResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -184,8 +185,8 @@ public final class Server {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:197</a>
      */
     public CompletableFuture<Void> sendWebSocketMessage(int connectionId, @Nonnull byte[] data) {
-        return session
-            .request(new ServerSendWebSocketMessageRequest(handle, connectionId, data), ServerSendWebSocketMessageResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ServerSendWebSocketMessageRequest(handle, connectionId, data), ServerSendWebSocketMessageResponse.DECODER),
+            r -> null);
     }
 }

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Image {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_image_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_image_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class Image {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:62</a>
      */
     public CompletableFuture<Integer> isEmpty() {
-        return session
-            .request(new ImageIsEmptyRequest(handle), ImageIsEmptyResponse.DECODER)
-            .thenApply(ImageIsEmptyResponse::result);
+        return CefFutures.map(
+            session.request(new ImageIsEmptyRequest(handle), ImageIsEmptyResponse.DECODER),
+            ImageIsEmptyResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class Image {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:68</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new ImageIsSameRequest(handle, that), ImageIsSameResponse.DECODER)
-            .thenApply(ImageIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new ImageIsSameRequest(handle, that), ImageIsSameResponse.DECODER),
+            ImageIsSameResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class Image {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:111</a>
      */
     public CompletableFuture<Long> getWidth() {
-        return session
-            .request(new ImageGetWidthRequest(handle), ImageGetWidthResponse.DECODER)
-            .thenApply(ImageGetWidthResponse::result);
+        return CefFutures.map(
+            session.request(new ImageGetWidthRequest(handle), ImageGetWidthResponse.DECODER),
+            ImageGetWidthResponse::result);
     }
 
     /**
@@ -78,8 +80,8 @@ public final class Image {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:117</a>
      */
     public CompletableFuture<Long> getHeight() {
-        return session
-            .request(new ImageGetHeightRequest(handle), ImageGetHeightResponse.DECODER)
-            .thenApply(ImageGetHeightResponse::result);
+        return CefFutures.map(
+            session.request(new ImageGetHeightRequest(handle), ImageGetHeightResponse.DECODER),
+            ImageGetHeightResponse::result);
     }
 }

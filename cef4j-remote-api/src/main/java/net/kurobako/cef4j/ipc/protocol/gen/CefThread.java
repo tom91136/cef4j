@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class CefThread {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_thread_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_thread_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,10 +44,9 @@ public final class CefThread {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:87</a>
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
-        return session
-            .request(new ThreadGetTaskRunnerRequest(handle), ThreadGetTaskRunnerResponse.DECODER)
-            .thenApply(ThreadGetTaskRunnerResponse::result)
-            .thenApply(__h -> new TaskRunner(session, __h));
+        return CefFutures.map(
+            session.request(new ThreadGetTaskRunnerRequest(handle), ThreadGetTaskRunnerResponse.DECODER),
+            __r -> new TaskRunner(session, __r.result()));
     }
 
     /**
@@ -55,9 +56,9 @@ public final class CefThread {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:94</a>
      */
     public CompletableFuture<Long> getPlatformThreadId() {
-        return session
-            .request(new ThreadGetPlatformThreadIdRequest(handle), ThreadGetPlatformThreadIdResponse.DECODER)
-            .thenApply(ThreadGetPlatformThreadIdResponse::result);
+        return CefFutures.map(
+            session.request(new ThreadGetPlatformThreadIdRequest(handle), ThreadGetPlatformThreadIdResponse.DECODER),
+            ThreadGetPlatformThreadIdResponse::result);
     }
 
     /**
@@ -67,9 +68,9 @@ public final class CefThread {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:101</a>
      */
     public CompletableFuture<Void> stop() {
-        return session
-            .request(new ThreadStopRequest(handle), ThreadStopResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ThreadStopRequest(handle), ThreadStopResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -79,8 +80,8 @@ public final class CefThread {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:109</a>
      */
     public CompletableFuture<Integer> isRunning() {
-        return session
-            .request(new ThreadIsRunningRequest(handle), ThreadIsRunningResponse.DECODER)
-            .thenApply(ThreadIsRunningResponse::result);
+        return CefFutures.map(
+            session.request(new ThreadIsRunningRequest(handle), ThreadIsRunningResponse.DECODER),
+            ThreadIsRunningResponse::result);
     }
 }

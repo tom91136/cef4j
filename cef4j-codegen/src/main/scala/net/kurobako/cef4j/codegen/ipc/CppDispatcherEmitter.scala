@@ -243,6 +243,23 @@ object CppDispatcherEmitter {
        |    }
        |};
        |
+       |inline bool postUiTask(cef_task_t* task) {
+       |    if (cef_post_task(TID_UI, task)) return true;
+       |    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(task);
+       |    base->release(base);
+       |    return false;
+       |}
+       |
+       |inline void sendTaskRejected(cef4j::ipc::IpcServer* ipc, std::int32_t corrId, std::int32_t messageId) {
+       |    constexpr std::int32_t code = cef4j::ipc::ErrorCode::TaskRejected;
+       |    static const std::uint8_t kTaskRejectedPayload[8] = {
+       |            static_cast<std::uint8_t>(code), static_cast<std::uint8_t>(code >> 8),
+       |            static_cast<std::uint8_t>(code >> 16), static_cast<std::uint8_t>(code >> 24),
+       |            0x00, 0x00, 0x00, 0x00};
+       |    if (ipc) ipc->send(cef4j::ipc::Kind::Error, 0, corrId, messageId,
+       |                       kTaskRejectedPayload, sizeof(kTaskRejectedPayload));
+       |}
+       |
        |/** Relays a renderer-affinity Request to the renderer subprocess via cef_process_message. Decodes the
        |  * leading int32 frame handle from the wire payload (renderer-affinity Requests have `frame: RemoteHandle`
        |  * as their first field, see SpecDeriver.deriveOne), looks the frame up in `tables::frame`, and ships the
@@ -270,7 +287,7 @@ object CppDispatcherEmitter {
        |    std::int32_t corrId    = h.corrId;
        |    std::int32_t messageId = h.messageId;
        |    std::vector<std::uint8_t> payloadCopy = payload;
-       |    cef_post_task(TID_UI, new LambdaTask([frame, corrId, messageId, payloadCopy]() {
+       |    auto* uiTask = new LambdaTask([frame, corrId, messageId, payloadCopy]() {
        |        cef_string_t name{};
        |        cef_string_utf8_to_utf16("cef4j_renderer_req", 18, &name);
        |        cef_process_message_t* msg = cef_process_message_create(&name);
@@ -294,7 +311,12 @@ object CppDispatcherEmitter {
        |        }
        |        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
        |        base->release(base);
-       |    }));
+       |    });
+       |    if (!postUiTask(uiTask)) {
+       |        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
+       |        base->release(base);
+       |        sendTaskRejected(ctx.ipc, corrId, messageId);
+       |    }
        |    return true;
        |}
        |
@@ -544,9 +566,14 @@ object CppDispatcherEmitter {
        |                $emptyAck
        |                return true;
        |            }$captureBlock
-       |            cef_post_task(TID_UI, new LambdaTask([$lambdaCaptures]() {
+       |            auto* uiTask = new LambdaTask([$lambdaCaptures]() {
        |$callAndRespond
-       |            }));
+       |            });
+       |            if (!postUiTask(uiTask)) {
+       |                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+       |                base->release(base);
+       |                sendTaskRejected(ipc, corrId, msgId);
+       |            }
        |            return true;
        |        }""".stripMargin
   }

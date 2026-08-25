@@ -80,7 +80,7 @@ public final class SystemBootstrap {
                     }
                 }
                 loaded = true;
-                log.info("Loaded cef4j native library from system path");
+                log.debug("Loaded cef4j native library from system path");
             } catch (UnsatisfiedLinkError e) {
                 log.debug("System library path failed: {}", e.getMessage());
                 try {
@@ -116,7 +116,7 @@ public final class SystemBootstrap {
                 }
             }
             loaded = true;
-            log.info("Loaded cef4j native library from filesystem path {}", fullPath);
+            log.debug("Loaded cef4j native library from filesystem path {}", fullPath);
             finishLoad();
         }
     }
@@ -337,7 +337,7 @@ public final class SystemBootstrap {
             System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
         }
         loaded = true;
-        log.info("Loaded cef4j native library from classpath extraction: {}", cacheDir);
+        log.debug("Loaded cef4j native library from classpath extraction: {}", cacheDir);
     }
 
     private static Path resolveExtractionCacheDir(

@@ -7,7 +7,12 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
@@ -82,6 +87,62 @@ public abstract class WebDriverServerContract {
                 "{\"name\":\"name\",\"value\":\"value\",\"sameSite\":\"sometimes\"}", "invalid cookie sameSite");
     }
 
+    @Test
+    final void deletingSessionCancelsActiveCommandBeforeClosingBackend() throws Exception {
+        BlockingBackend backend = new BlockingBackend();
+        try (WebDriverServer server =
+                WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(backend), codec())) {
+            String sessionId = request(server, "{\"capabilities\":{}}")
+                    .value()
+                    .get("sessionId")
+                    .string();
+            CompletableFuture<HttpResponse<String>> navigation = client.sendAsync(
+                    HttpRequest.newBuilder(server.endpoint().resolve("/session/" + sessionId + "/url"))
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString("{\"url\":\"https://pending.test\"}"))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString());
+            assertThat(backend.started.await(5, TimeUnit.SECONDS)).isTrue();
+
+            CompletableFuture<HttpResponse<String>> deletion = client.sendAsync(
+                    HttpRequest.newBuilder(server.endpoint().resolve("/session/" + sessionId))
+                            .DELETE()
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString());
+            assertThat(backend.navigation.cancelObserved.await(5, TimeUnit.SECONDS))
+                    .isTrue();
+            assertThat(backend.closed).isFalse();
+            backend.navigation.allowCommandExit.countDown();
+            HttpResponse<String> deleted = deletion.get(5, TimeUnit.SECONDS);
+
+            assertThat(deleted.statusCode()).isEqualTo(200);
+            assertThat(navigation.get(5, TimeUnit.SECONDS).statusCode()).isEqualTo(500);
+            assertThat(backend.cancelled).isTrue();
+            assertThat(backend.closed).isTrue();
+        }
+    }
+
+    @Test
+    final void deletingSessionStillClosesBackendWhenCancellationFails() throws Exception {
+        CancelFailingBackend backend = new CancelFailingBackend();
+        try (WebDriverServer server =
+                WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(backend), codec())) {
+            String sessionId = request(server, "{\"capabilities\":{}}")
+                    .value()
+                    .get("sessionId")
+                    .string();
+
+            HttpResponse<String> deletion = client.send(
+                    HttpRequest.newBuilder(server.endpoint().resolve("/session/" + sessionId))
+                            .DELETE()
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString());
+
+            assertThat(deletion.statusCode()).isEqualTo(200);
+            assertThat(backend.closed).isTrue();
+        }
+    }
+
     private void assertCookieFailure(String json, String message) {
         JsonObject cookie = codec().decode(json).asObject();
         assertThatThrownBy(() -> CdpAutomationBackend.validateCookie(cookie))
@@ -152,7 +213,7 @@ public abstract class WebDriverServerContract {
         }
     }
 
-    private static final class Backend implements AutomationBackend {
+    private static class Backend implements AutomationBackend {
         private final AtomicBoolean closed = new AtomicBoolean();
 
         @Override
@@ -201,6 +262,60 @@ public abstract class WebDriverServerContract {
         @Override
         public void close() {
             closed.set(true);
+        }
+    }
+
+    private static final class BlockingBackend extends Backend {
+        private final CountDownLatch started = new CountDownLatch(1);
+        private final BlockingFuture navigation = new BlockingFuture();
+        private final AtomicBoolean cancelled = new AtomicBoolean();
+        private final AtomicBoolean closed = new AtomicBoolean();
+
+        @Override
+        public CompletableFuture<Void> navigate(String url) {
+            started.countDown();
+            return navigation;
+        }
+
+        @Override
+        public void cancelPendingCommands(Throwable failure) {
+            cancelled.set(true);
+            navigation.completeExceptionally(failure);
+        }
+
+        @Override
+        public void close() {
+            closed.set(true);
+        }
+    }
+
+    private static final class CancelFailingBackend extends Backend {
+        private final AtomicBoolean closed = new AtomicBoolean();
+
+        @Override
+        public void cancelPendingCommands(Throwable failure) {
+            throw new IllegalStateException("cancel failed");
+        }
+
+        @Override
+        public void close() {
+            closed.set(true);
+        }
+    }
+
+    private static final class BlockingFuture extends CompletableFuture<Void> {
+        private final CountDownLatch cancelObserved = new CountDownLatch(1);
+        private final CountDownLatch allowCommandExit = new CountDownLatch(1);
+
+        @Override
+        public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            try {
+                return super.get(timeout, unit);
+            } catch (ExecutionException | CancellationException failure) {
+                cancelObserved.countDown();
+                if (!allowCommandExit.await(timeout, unit)) throw new TimeoutException("command exit not released");
+                throw failure;
+            }
         }
     }
 }

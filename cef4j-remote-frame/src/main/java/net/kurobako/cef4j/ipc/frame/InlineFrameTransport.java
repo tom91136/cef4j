@@ -2,10 +2,15 @@ package net.kurobako.cef4j.ipc.frame;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.InlinePaintEvent;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -21,6 +26,8 @@ public final class InlineFrameTransport implements FrameTransport {
     private final RemoteHandle browser;
 
     private final AtomicInteger sequence = new AtomicInteger();
+    private final AtomicBoolean repaintRequested = new AtomicBoolean();
+    private final AtomicInteger repaintGeneration = new AtomicInteger();
 
     @Nullable
     private volatile FrameConsumer consumer;
@@ -28,6 +35,10 @@ public final class InlineFrameTransport implements FrameTransport {
     @Nullable
     private HandlerRegistration registration;
 
+    @Nullable
+    private CefSession session;
+
+    private final AtomicReference<CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
     private volatile boolean closed;
 
     @Nonnull
@@ -49,7 +60,10 @@ public final class InlineFrameTransport implements FrameTransport {
     }
 
     private void subscribe(CefSession session) {
-        registration = session.onLatest(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, this::onPaint);
+        this.session = session;
+        registration = browser == null
+                ? session.onLatest(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, this::onPaint)
+                : session.on(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, this::onPaint);
     }
 
     private void onPaint(InlinePaintEvent event) {
@@ -94,6 +108,43 @@ public final class InlineFrameTransport implements FrameTransport {
     @Override
     public void onFrame(@Nullable FrameConsumer consumer) {
         this.consumer = consumer;
+        repaintRequested.set(false);
+        cancelRepaint();
+        if (consumer != null) {
+            requestScopedRepaint();
+        }
+    }
+
+    private void requestScopedRepaint() {
+        CefSession current = session;
+        RemoteHandle scopedBrowser = browser;
+        if (closed || current == null || scopedBrowser == null || !repaintRequested.compareAndSet(false, true)) return;
+        int generation = repaintGeneration.incrementAndGet();
+        CompletableFuture<Void> repaint;
+        try {
+            repaint = CefFutures.flatMap(new Browser(current, scopedBrowser).getHost(), host -> host.invalidate(0));
+        } catch (RuntimeException failure) {
+            if (repaintGeneration.get() == generation) repaintRequested.set(false);
+            LOG.debug("failed to request initial inline repaint for browser={}", scopedBrowser.id(), failure);
+            return;
+        }
+        if (!repaintRequest.compareAndSet(null, repaint) || repaintGeneration.get() != generation) {
+            repaintRequest.compareAndSet(repaint, null);
+            repaint.cancel(true);
+            return;
+        }
+        CefFutures.observeFailure(repaint, failure -> {
+            if (!closed && repaintGeneration.get() == generation && repaintRequest.compareAndSet(repaint, null)) {
+                repaintRequested.set(false);
+                LOG.debug("failed to request initial inline repaint for browser={}", scopedBrowser.id(), failure);
+            }
+        });
+    }
+
+    private void cancelRepaint() {
+        repaintGeneration.incrementAndGet();
+        CompletableFuture<Void> repaint = repaintRequest.getAndSet(null);
+        if (repaint != null) repaint.cancel(true);
     }
 
     @Override
@@ -101,6 +152,8 @@ public final class InlineFrameTransport implements FrameTransport {
         if (closed) return;
         closed = true;
         consumer = null;
+        session = null;
+        cancelRepaint();
         HandlerRegistration current = registration;
         if (current != null) current.unregister();
         registration = null;

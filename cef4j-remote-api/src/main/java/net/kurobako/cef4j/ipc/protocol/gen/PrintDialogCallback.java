@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class PrintDialogCallback {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_print_dialog_callback_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_print_dialog_callback_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class PrintDialogCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(@Nonnull RemoteHandle settings) {
-        return session
-            .request(new PrintDialogCallbackContRequest(handle, settings), PrintDialogCallbackContResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintDialogCallbackContRequest(handle, settings), PrintDialogCallbackContResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -54,8 +56,8 @@ public final class PrintDialogCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:57</a>
      */
     public CompletableFuture<Void> cancel() {
-        return session
-            .request(new PrintDialogCallbackCancelRequest(handle), PrintDialogCallbackCancelResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PrintDialogCallbackCancelRequest(handle), PrintDialogCallbackCancelResponse.DECODER),
+            r -> null);
     }
 }

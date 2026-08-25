@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -38,11 +39,11 @@ public final class V8StackTrace {
     /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
       * cef_v8_stack_trace_t only exists in the renderer subprocess's table state. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(
+        return CefFutures.map(
+            session.request(
                 new RendererReleaseHandleRequest(frame, handle, "cef_v8_stack_trace_t"),
-                RendererReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+                RendererReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -52,9 +53,9 @@ public final class V8StackTrace {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1049</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new V8StackTraceIsValidRequest(frame, handle), V8StackTraceIsValidResponse.DECODER)
-            .thenApply(V8StackTraceIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackTraceIsValidRequest(frame, handle), V8StackTraceIsValidResponse.DECODER),
+            V8StackTraceIsValidResponse::result);
     }
 
     /**
@@ -64,9 +65,9 @@ public final class V8StackTrace {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1057</a>
      */
     public CompletableFuture<Integer> getFrameCount() {
-        return session
-            .request(new V8StackTraceGetFrameCountRequest(frame, handle), V8StackTraceGetFrameCountResponse.DECODER)
-            .thenApply(V8StackTraceGetFrameCountResponse::result);
+        return CefFutures.map(
+            session.request(new V8StackTraceGetFrameCountRequest(frame, handle), V8StackTraceGetFrameCountResponse.DECODER),
+            V8StackTraceGetFrameCountResponse::result);
     }
 
     /**
@@ -76,9 +77,8 @@ public final class V8StackTrace {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1063</a>
      */
     public CompletableFuture<V8StackFrame> getFrame(int index) {
-        return session
-            .request(new V8StackTraceGetFrameRequest(frame, handle, index), V8StackTraceGetFrameResponse.DECODER)
-            .thenApply(V8StackTraceGetFrameResponse::result)
-            .thenApply(__h -> new V8StackFrame(session, frame, __h));
+        return CefFutures.map(
+            session.request(new V8StackTraceGetFrameRequest(frame, handle, index), V8StackTraceGetFrameResponse.DECODER),
+            __r -> new V8StackFrame(session, frame, __r.result()));
     }
 }

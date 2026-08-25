@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,88 +31,86 @@ public final class Panel {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_panel_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_panel_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code as_window} to the runtime server. */
     public CompletableFuture<Window> asWindow() {
-        return session
-            .request(new PanelAsWindowRequest(handle), PanelAsWindowResponse.DECODER)
-            .thenApply(PanelAsWindowResponse::result)
-            .thenApply(__h -> new Window(session, __h));
+        return CefFutures.map(
+            session.request(new PanelAsWindowRequest(handle), PanelAsWindowResponse.DECODER),
+            __r -> new Window(session, __r.result()));
     }
 
     /** Dispatches {@code set_to_fill_layout} to the runtime server. */
     public CompletableFuture<RemoteHandle> setToFillLayout() {
-        return session
-            .request(new PanelSetToFillLayoutRequest(handle), PanelSetToFillLayoutResponse.DECODER)
-            .thenApply(PanelSetToFillLayoutResponse::result);
+        return CefFutures.map(
+            session.request(new PanelSetToFillLayoutRequest(handle), PanelSetToFillLayoutResponse.DECODER),
+            PanelSetToFillLayoutResponse::result);
     }
 
     /** Dispatches {@code get_layout} to the runtime server. */
     public CompletableFuture<Layout> getLayout() {
-        return session
-            .request(new PanelGetLayoutRequest(handle), PanelGetLayoutResponse.DECODER)
-            .thenApply(PanelGetLayoutResponse::result)
-            .thenApply(__h -> new Layout(session, __h));
+        return CefFutures.map(
+            session.request(new PanelGetLayoutRequest(handle), PanelGetLayoutResponse.DECODER),
+            __r -> new Layout(session, __r.result()));
     }
 
     /** Dispatches {@code layout} to the runtime server. */
     public CompletableFuture<Void> layout() {
-        return session
-            .request(new PanelLayoutRequest(handle), PanelLayoutResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PanelLayoutRequest(handle), PanelLayoutResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code add_child_view} to the runtime server. */
     public CompletableFuture<Void> addChildView(@Nonnull RemoteHandle view) {
-        return session
-            .request(new PanelAddChildViewRequest(handle, view), PanelAddChildViewResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PanelAddChildViewRequest(handle, view), PanelAddChildViewResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code add_child_view_at} to the runtime server. */
     public CompletableFuture<Void> addChildViewAt(@Nonnull RemoteHandle view, int index) {
-        return session
-            .request(new PanelAddChildViewAtRequest(handle, view, index), PanelAddChildViewAtResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PanelAddChildViewAtRequest(handle, view, index), PanelAddChildViewAtResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code reorder_child_view} to the runtime server. */
     public CompletableFuture<Void> reorderChildView(@Nonnull RemoteHandle view, int index) {
-        return session
-            .request(new PanelReorderChildViewRequest(handle, view, index), PanelReorderChildViewResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PanelReorderChildViewRequest(handle, view, index), PanelReorderChildViewResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code remove_child_view} to the runtime server. */
     public CompletableFuture<Void> removeChildView(@Nonnull RemoteHandle view) {
-        return session
-            .request(new PanelRemoveChildViewRequest(handle, view), PanelRemoveChildViewResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PanelRemoveChildViewRequest(handle, view), PanelRemoveChildViewResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code remove_all_child_views} to the runtime server. */
     public CompletableFuture<Void> removeAllChildViews() {
-        return session
-            .request(new PanelRemoveAllChildViewsRequest(handle), PanelRemoveAllChildViewsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new PanelRemoveAllChildViewsRequest(handle), PanelRemoveAllChildViewsResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_child_view_count} to the runtime server. */
     public CompletableFuture<Long> getChildViewCount() {
-        return session
-            .request(new PanelGetChildViewCountRequest(handle), PanelGetChildViewCountResponse.DECODER)
-            .thenApply(PanelGetChildViewCountResponse::result);
+        return CefFutures.map(
+            session.request(new PanelGetChildViewCountRequest(handle), PanelGetChildViewCountResponse.DECODER),
+            PanelGetChildViewCountResponse::result);
     }
 
     /** Dispatches {@code get_child_view_at} to the runtime server. */
     public CompletableFuture<View> getChildViewAt(int index) {
-        return session
-            .request(new PanelGetChildViewAtRequest(handle, index), PanelGetChildViewAtResponse.DECODER)
-            .thenApply(PanelGetChildViewAtResponse::result)
-            .thenApply(__h -> new View(session, __h));
+        return CefFutures.map(
+            session.request(new PanelGetChildViewAtRequest(handle, index), PanelGetChildViewAtResponse.DECODER),
+            __r -> new View(session, __r.result()));
     }
 }

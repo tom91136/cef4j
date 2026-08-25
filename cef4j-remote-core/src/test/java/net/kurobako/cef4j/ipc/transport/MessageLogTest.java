@@ -77,10 +77,10 @@ class MessageLogTest {
         int threads = 4;
         int per = 100;
         try (MessageLog.Writer w = MessageLog.writer(file)) {
-            List<Thread> ts = new ArrayList<>();
+            List<java.util.concurrent.CompletableFuture<Void>> tasks = new ArrayList<>();
             for (int t = 0; t < threads; t++) {
                 final int tid = t;
-                Thread th = new Thread(() -> {
+                tasks.add(java.util.concurrent.CompletableFuture.runAsync(() -> {
                     for (int i = 0; i < per; i++) {
                         try {
                             w.append(MessageLog.Direction.OUTBOUND, tid * 1000L + i, new byte[] {(byte) tid, (byte) i});
@@ -88,11 +88,11 @@ class MessageLogTest {
                             throw new RuntimeException(e);
                         }
                     }
-                });
-                ts.add(th);
-                th.start();
+                }));
             }
-            for (Thread th : ts) th.join();
+            java.util.concurrent.CompletableFuture.allOf(
+                            tasks.toArray(new java.util.concurrent.CompletableFuture<?>[0]))
+                    .get(10, java.util.concurrent.TimeUnit.SECONDS);
         }
         int count = 0;
         try (MessageLog.Reader r = MessageLog.reader(file)) {

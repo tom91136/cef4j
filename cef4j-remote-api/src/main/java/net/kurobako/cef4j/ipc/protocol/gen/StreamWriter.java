@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class StreamWriter {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_stream_writer_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_stream_writer_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -46,9 +48,9 @@ public final class StreamWriter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:206</a>
      */
     public CompletableFuture<Long> write(@Nonnull byte[] ptr, long n) {
-        return session
-            .request(new StreamWriterWriteRequest(handle, ptr, n), StreamWriterWriteResponse.DECODER)
-            .thenApply(StreamWriterWriteResponse::result);
+        return CefFutures.map(
+            session.request(new StreamWriterWriteRequest(handle, ptr, n), StreamWriterWriteResponse.DECODER),
+            StreamWriterWriteResponse::result);
     }
 
     /**
@@ -58,9 +60,9 @@ public final class StreamWriter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:212</a>
      */
     public CompletableFuture<Integer> seek(long offset, int whence) {
-        return session
-            .request(new StreamWriterSeekRequest(handle, offset, whence), StreamWriterSeekResponse.DECODER)
-            .thenApply(StreamWriterSeekResponse::result);
+        return CefFutures.map(
+            session.request(new StreamWriterSeekRequest(handle, offset, whence), StreamWriterSeekResponse.DECODER),
+            StreamWriterSeekResponse::result);
     }
 
     /**
@@ -70,9 +72,9 @@ public final class StreamWriter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:220</a>
      */
     public CompletableFuture<Long> tell() {
-        return session
-            .request(new StreamWriterTellRequest(handle), StreamWriterTellResponse.DECODER)
-            .thenApply(StreamWriterTellResponse::result);
+        return CefFutures.map(
+            session.request(new StreamWriterTellRequest(handle), StreamWriterTellResponse.DECODER),
+            StreamWriterTellResponse::result);
     }
 
     /**
@@ -82,9 +84,9 @@ public final class StreamWriter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:226</a>
      */
     public CompletableFuture<Integer> flush() {
-        return session
-            .request(new StreamWriterFlushRequest(handle), StreamWriterFlushResponse.DECODER)
-            .thenApply(StreamWriterFlushResponse::result);
+        return CefFutures.map(
+            session.request(new StreamWriterFlushRequest(handle), StreamWriterFlushResponse.DECODER),
+            StreamWriterFlushResponse::result);
     }
 
     /**
@@ -94,8 +96,8 @@ public final class StreamWriter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:232</a>
      */
     public CompletableFuture<Integer> mayBlock() {
-        return session
-            .request(new StreamWriterMayBlockRequest(handle), StreamWriterMayBlockResponse.DECODER)
-            .thenApply(StreamWriterMayBlockResponse::result);
+        return CefFutures.map(
+            session.request(new StreamWriterMayBlockRequest(handle), StreamWriterMayBlockResponse.DECODER),
+            StreamWriterMayBlockResponse::result);
     }
 }

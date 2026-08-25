@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,37 +31,38 @@ public final class Window {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_window_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_window_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code show} to the runtime server. */
     public CompletableFuture<Void> show() {
-        return session
-            .request(new WindowShowRequest(handle), WindowShowResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowShowRequest(handle), WindowShowResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code show_as_browser_modal_dialog} to the runtime server. */
     public CompletableFuture<Void> showAsBrowserModalDialog(@Nonnull RemoteHandle browserView) {
-        return session
-            .request(new WindowShowAsBrowserModalDialogRequest(handle, browserView), WindowShowAsBrowserModalDialogResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowShowAsBrowserModalDialogRequest(handle, browserView), WindowShowAsBrowserModalDialogResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code hide} to the runtime server. */
     public CompletableFuture<Void> hide() {
-        return session
-            .request(new WindowHideRequest(handle), WindowHideResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowHideRequest(handle), WindowHideResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code center_window} to the runtime server. */
     public CompletableFuture<Void> centerWindow(Size size) {
-        return session
-            .request(new WindowCenterWindowRequest(handle, size), WindowCenterWindowResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowCenterWindowRequest(handle, size), WindowCenterWindowResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -70,100 +72,100 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
      */
     public CompletableFuture<Void> close() {
-        return session
-            .request(new WindowCloseRequest(handle), WindowCloseResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowCloseRequest(handle), WindowCloseResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_closed} to the runtime server. */
     public CompletableFuture<Integer> isClosed() {
-        return session
-            .request(new WindowIsClosedRequest(handle), WindowIsClosedResponse.DECODER)
-            .thenApply(WindowIsClosedResponse::result);
+        return CefFutures.map(
+            session.request(new WindowIsClosedRequest(handle), WindowIsClosedResponse.DECODER),
+            WindowIsClosedResponse::result);
     }
 
     /** Dispatches {@code activate} to the runtime server. */
     public CompletableFuture<Void> activate() {
-        return session
-            .request(new WindowActivateRequest(handle), WindowActivateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowActivateRequest(handle), WindowActivateResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code deactivate} to the runtime server. */
     public CompletableFuture<Void> deactivate() {
-        return session
-            .request(new WindowDeactivateRequest(handle), WindowDeactivateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowDeactivateRequest(handle), WindowDeactivateResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_active} to the runtime server. */
     public CompletableFuture<Integer> isActive() {
-        return session
-            .request(new WindowIsActiveRequest(handle), WindowIsActiveResponse.DECODER)
-            .thenApply(WindowIsActiveResponse::result);
+        return CefFutures.map(
+            session.request(new WindowIsActiveRequest(handle), WindowIsActiveResponse.DECODER),
+            WindowIsActiveResponse::result);
     }
 
     /** Dispatches {@code bring_to_top} to the runtime server. */
     public CompletableFuture<Void> bringToTop() {
-        return session
-            .request(new WindowBringToTopRequest(handle), WindowBringToTopResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowBringToTopRequest(handle), WindowBringToTopResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_always_on_top} to the runtime server. */
     public CompletableFuture<Void> setAlwaysOnTop(int onTop) {
-        return session
-            .request(new WindowSetAlwaysOnTopRequest(handle, onTop), WindowSetAlwaysOnTopResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetAlwaysOnTopRequest(handle, onTop), WindowSetAlwaysOnTopResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_always_on_top} to the runtime server. */
     public CompletableFuture<Integer> isAlwaysOnTop() {
-        return session
-            .request(new WindowIsAlwaysOnTopRequest(handle), WindowIsAlwaysOnTopResponse.DECODER)
-            .thenApply(WindowIsAlwaysOnTopResponse::result);
+        return CefFutures.map(
+            session.request(new WindowIsAlwaysOnTopRequest(handle), WindowIsAlwaysOnTopResponse.DECODER),
+            WindowIsAlwaysOnTopResponse::result);
     }
 
     /** Dispatches {@code maximize} to the runtime server. */
     public CompletableFuture<Void> maximize() {
-        return session
-            .request(new WindowMaximizeRequest(handle), WindowMaximizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowMaximizeRequest(handle), WindowMaximizeResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code minimize} to the runtime server. */
     public CompletableFuture<Void> minimize() {
-        return session
-            .request(new WindowMinimizeRequest(handle), WindowMinimizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowMinimizeRequest(handle), WindowMinimizeResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code restore} to the runtime server. */
     public CompletableFuture<Void> restore() {
-        return session
-            .request(new WindowRestoreRequest(handle), WindowRestoreResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowRestoreRequest(handle), WindowRestoreResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_fullscreen} to the runtime server. */
     public CompletableFuture<Void> setFullscreen(int fullscreen) {
-        return session
-            .request(new WindowSetFullscreenRequest(handle, fullscreen), WindowSetFullscreenResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetFullscreenRequest(handle, fullscreen), WindowSetFullscreenResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_maximized} to the runtime server. */
     public CompletableFuture<Integer> isMaximized() {
-        return session
-            .request(new WindowIsMaximizedRequest(handle), WindowIsMaximizedResponse.DECODER)
-            .thenApply(WindowIsMaximizedResponse::result);
+        return CefFutures.map(
+            session.request(new WindowIsMaximizedRequest(handle), WindowIsMaximizedResponse.DECODER),
+            WindowIsMaximizedResponse::result);
     }
 
     /** Dispatches {@code is_minimized} to the runtime server. */
     public CompletableFuture<Integer> isMinimized() {
-        return session
-            .request(new WindowIsMinimizedRequest(handle), WindowIsMinimizedResponse.DECODER)
-            .thenApply(WindowIsMinimizedResponse::result);
+        return CefFutures.map(
+            session.request(new WindowIsMinimizedRequest(handle), WindowIsMinimizedResponse.DECODER),
+            WindowIsMinimizedResponse::result);
     }
 
     /**
@@ -173,24 +175,23 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1012</a>
      */
     public CompletableFuture<Integer> isFullscreen() {
-        return session
-            .request(new WindowIsFullscreenRequest(handle), WindowIsFullscreenResponse.DECODER)
-            .thenApply(WindowIsFullscreenResponse::result);
+        return CefFutures.map(
+            session.request(new WindowIsFullscreenRequest(handle), WindowIsFullscreenResponse.DECODER),
+            WindowIsFullscreenResponse::result);
     }
 
     /** Dispatches {@code get_focused_view} to the runtime server. */
     public CompletableFuture<View> getFocusedView() {
-        return session
-            .request(new WindowGetFocusedViewRequest(handle), WindowGetFocusedViewResponse.DECODER)
-            .thenApply(WindowGetFocusedViewResponse::result)
-            .thenApply(__h -> new View(session, __h));
+        return CefFutures.map(
+            session.request(new WindowGetFocusedViewRequest(handle), WindowGetFocusedViewResponse.DECODER),
+            __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code set_title} to the runtime server. */
     public CompletableFuture<Void> setTitle(@Nonnull String title) {
-        return session
-            .request(new WindowSetTitleRequest(handle, title), WindowSetTitleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetTitleRequest(handle, title), WindowSetTitleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -200,76 +201,72 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
      */
     public CompletableFuture<String> getTitle() {
-        return session
-            .request(new WindowGetTitleRequest(handle), WindowGetTitleResponse.DECODER)
-            .thenApply(WindowGetTitleResponse::result);
+        return CefFutures.map(
+            session.request(new WindowGetTitleRequest(handle), WindowGetTitleResponse.DECODER),
+            WindowGetTitleResponse::result);
     }
 
     /** Dispatches {@code set_window_icon} to the runtime server. */
     public CompletableFuture<Void> setWindowIcon(@Nonnull RemoteHandle image) {
-        return session
-            .request(new WindowSetWindowIconRequest(handle, image), WindowSetWindowIconResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetWindowIconRequest(handle, image), WindowSetWindowIconResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_window_icon} to the runtime server. */
     public CompletableFuture<Image> getWindowIcon() {
-        return session
-            .request(new WindowGetWindowIconRequest(handle), WindowGetWindowIconResponse.DECODER)
-            .thenApply(WindowGetWindowIconResponse::result)
-            .thenApply(__h -> new Image(session, __h));
+        return CefFutures.map(
+            session.request(new WindowGetWindowIconRequest(handle), WindowGetWindowIconResponse.DECODER),
+            __r -> new Image(session, __r.result()));
     }
 
     /** Dispatches {@code set_window_app_icon} to the runtime server. */
     public CompletableFuture<Void> setWindowAppIcon(@Nonnull RemoteHandle image) {
-        return session
-            .request(new WindowSetWindowAppIconRequest(handle, image), WindowSetWindowAppIconResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetWindowAppIconRequest(handle, image), WindowSetWindowAppIconResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_window_app_icon} to the runtime server. */
     public CompletableFuture<Image> getWindowAppIcon() {
-        return session
-            .request(new WindowGetWindowAppIconRequest(handle), WindowGetWindowAppIconResponse.DECODER)
-            .thenApply(WindowGetWindowAppIconResponse::result)
-            .thenApply(__h -> new Image(session, __h));
+        return CefFutures.map(
+            session.request(new WindowGetWindowAppIconRequest(handle), WindowGetWindowAppIconResponse.DECODER),
+            __r -> new Image(session, __r.result()));
     }
 
     /** Dispatches {@code add_overlay_view} to the runtime server. */
     public CompletableFuture<OverlayController> addOverlayView(@Nonnull RemoteHandle view, int dockingMode, int canActivate) {
-        return session
-            .request(new WindowAddOverlayViewRequest(handle, view, dockingMode, canActivate), WindowAddOverlayViewResponse.DECODER)
-            .thenApply(WindowAddOverlayViewResponse::result)
-            .thenApply(__h -> new OverlayController(session, __h));
+        return CefFutures.map(
+            session.request(new WindowAddOverlayViewRequest(handle, view, dockingMode, canActivate), WindowAddOverlayViewResponse.DECODER),
+            __r -> new OverlayController(session, __r.result()));
     }
 
     /** Dispatches {@code show_menu} to the runtime server. */
     public CompletableFuture<Void> showMenu(@Nonnull RemoteHandle menuModel, Point screenPoint, int anchorPosition) {
-        return session
-            .request(new WindowShowMenuRequest(handle, menuModel, screenPoint, anchorPosition), WindowShowMenuResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowShowMenuRequest(handle, menuModel, screenPoint, anchorPosition), WindowShowMenuResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code cancel_menu} to the runtime server. */
     public CompletableFuture<Void> cancelMenu() {
-        return session
-            .request(new WindowCancelMenuRequest(handle), WindowCancelMenuResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowCancelMenuRequest(handle), WindowCancelMenuResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_display} to the runtime server. */
     public CompletableFuture<Display> getDisplay() {
-        return session
-            .request(new WindowGetDisplayRequest(handle), WindowGetDisplayResponse.DECODER)
-            .thenApply(WindowGetDisplayResponse::result)
-            .thenApply(__h -> new Display(session, __h));
+        return CefFutures.map(
+            session.request(new WindowGetDisplayRequest(handle), WindowGetDisplayResponse.DECODER),
+            __r -> new Display(session, __r.result()));
     }
 
     /** Dispatches {@code get_client_area_bounds_in_screen} to the runtime server. */
     public CompletableFuture<Rect> getClientAreaBoundsInScreen() {
-        return session
-            .request(new WindowGetClientAreaBoundsInScreenRequest(handle), WindowGetClientAreaBoundsInScreenResponse.DECODER)
-            .thenApply(WindowGetClientAreaBoundsInScreenResponse::result);
+        return CefFutures.map(
+            session.request(new WindowGetClientAreaBoundsInScreenRequest(handle), WindowGetClientAreaBoundsInScreenResponse.DECODER),
+            WindowGetClientAreaBoundsInScreenResponse::result);
     }
 
     /**
@@ -279,30 +276,30 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:403</a>
      */
     public CompletableFuture<Long> getWindowHandle() {
-        return session
-            .request(new WindowGetWindowHandleRequest(handle), WindowGetWindowHandleResponse.DECODER)
-            .thenApply(WindowGetWindowHandleResponse::result);
+        return CefFutures.map(
+            session.request(new WindowGetWindowHandleRequest(handle), WindowGetWindowHandleResponse.DECODER),
+            WindowGetWindowHandleResponse::result);
     }
 
     /** Dispatches {@code send_key_press} to the runtime server. */
     public CompletableFuture<Void> sendKeyPress(int keyCode, int eventFlags) {
-        return session
-            .request(new WindowSendKeyPressRequest(handle, keyCode, eventFlags), WindowSendKeyPressResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSendKeyPressRequest(handle, keyCode, eventFlags), WindowSendKeyPressResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code send_mouse_move} to the runtime server. */
     public CompletableFuture<Void> sendMouseMove(int screenX, int screenY) {
-        return session
-            .request(new WindowSendMouseMoveRequest(handle, screenX, screenY), WindowSendMouseMoveResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSendMouseMoveRequest(handle, screenX, screenY), WindowSendMouseMoveResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code send_mouse_events} to the runtime server. */
     public CompletableFuture<Void> sendMouseEvents(int button, int mouseDown, int mouseUp) {
-        return session
-            .request(new WindowSendMouseEventsRequest(handle, button, mouseDown, mouseUp), WindowSendMouseEventsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSendMouseEventsRequest(handle, button, mouseDown, mouseUp), WindowSendMouseEventsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -312,9 +309,9 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
     public CompletableFuture<Void> setAccelerator(int commandId, int keyCode, int shiftPressed, int ctrlPressed, int altPressed, int highPriority) {
-        return session
-            .request(new WindowSetAcceleratorRequest(handle, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority), WindowSetAcceleratorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetAcceleratorRequest(handle, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority), WindowSetAcceleratorResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -324,30 +321,30 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
      */
     public CompletableFuture<Void> removeAccelerator(int commandId) {
-        return session
-            .request(new WindowRemoveAcceleratorRequest(handle, commandId), WindowRemoveAcceleratorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowRemoveAcceleratorRequest(handle, commandId), WindowRemoveAcceleratorResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code remove_all_accelerators} to the runtime server. */
     public CompletableFuture<Void> removeAllAccelerators() {
-        return session
-            .request(new WindowRemoveAllAcceleratorsRequest(handle), WindowRemoveAllAcceleratorsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowRemoveAllAcceleratorsRequest(handle), WindowRemoveAllAcceleratorsResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_theme_color} to the runtime server. */
     public CompletableFuture<Void> setThemeColor(int colorId, int color) {
-        return session
-            .request(new WindowSetThemeColorRequest(handle, colorId, color), WindowSetThemeColorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowSetThemeColorRequest(handle, colorId, color), WindowSetThemeColorResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code theme_changed} to the runtime server. */
     public CompletableFuture<Void> themeChanged() {
-        return session
-            .request(new WindowThemeChangedRequest(handle), WindowThemeChangedResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new WindowThemeChangedRequest(handle), WindowThemeChangedResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -357,8 +354,8 @@ public final class Window {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1069</a>
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
-        return session
-            .request(new WindowGetRuntimeStyleRequest(handle), WindowGetRuntimeStyleResponse.DECODER)
-            .thenApply(WindowGetRuntimeStyleResponse::result);
+        return CefFutures.map(
+            session.request(new WindowGetRuntimeStyleRequest(handle), WindowGetRuntimeStyleResponse.DECODER),
+            WindowGetRuntimeStyleResponse::result);
     }
 }

@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -18,7 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -50,6 +53,8 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private final AtomicReference<OsrPaintEvent> pendingPaint = new AtomicReference<>();
 
     private final AtomicBoolean deliveryScheduled = new AtomicBoolean();
+    private final AtomicBoolean repaintRequested = new AtomicBoolean();
+    private final AtomicInteger repaintGeneration = new AtomicInteger();
 
     private final ExecutorService deliveryExecutor = Executors.newSingleThreadExecutor(task -> {
         Thread thread = new Thread(task, "cef4j-frame-" + INSTANCE.incrementAndGet());
@@ -110,8 +115,16 @@ public final class SharedFileFrameTransport implements FrameTransport {
     @Nullable
     private HandlerRegistration registration;
 
+    @Nullable
+    private CefSession session;
+
+    private final AtomicReference<CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
+
     private void subscribe(CefSession session) {
-        this.registration = session.onLatest(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint);
+        this.session = session;
+        this.registration = browser == null
+                ? session.onLatest(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint)
+                : session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint);
     }
 
     private String browserIdForLog() {
@@ -294,11 +307,46 @@ public final class SharedFileFrameTransport implements FrameTransport {
     @Override
     public void onFrame(@Nullable FrameConsumer consumer) {
         this.consumer = consumer;
+        repaintRequested.set(false);
+        cancelRepaint();
         if (consumer != null) {
             scheduleDelivery();
+            requestScopedRepaint();
         } else {
             pendingPaint.set(null);
         }
+    }
+
+    private void requestScopedRepaint() {
+        CefSession current = session;
+        RemoteHandle scopedBrowser = browser;
+        if (closed || current == null || scopedBrowser == null || !repaintRequested.compareAndSet(false, true)) return;
+        int generation = repaintGeneration.incrementAndGet();
+        CompletableFuture<Void> repaint;
+        try {
+            repaint = CefFutures.flatMap(new Browser(current, scopedBrowser).getHost(), host -> host.invalidate(0));
+        } catch (RuntimeException failure) {
+            if (repaintGeneration.get() == generation) repaintRequested.set(false);
+            LOG.debug("failed to request initial shared-file repaint for browser={}", scopedBrowser.id(), failure);
+            return;
+        }
+        if (!repaintRequest.compareAndSet(null, repaint) || repaintGeneration.get() != generation) {
+            repaintRequest.compareAndSet(repaint, null);
+            repaint.cancel(true);
+            return;
+        }
+        CefFutures.observeFailure(repaint, failure -> {
+            if (!closed && repaintGeneration.get() == generation && repaintRequest.compareAndSet(repaint, null)) {
+                repaintRequested.set(false);
+                LOG.debug("failed to request initial shared-file repaint for browser={}", scopedBrowser.id(), failure);
+            }
+        });
+    }
+
+    private void cancelRepaint() {
+        repaintGeneration.incrementAndGet();
+        CompletableFuture<Void> repaint = repaintRequest.getAndSet(null);
+        if (repaint != null) repaint.cancel(true);
     }
 
     @Override
@@ -307,6 +355,8 @@ public final class SharedFileFrameTransport implements FrameTransport {
             if (closed) return;
             closed = true;
             consumer = null;
+            session = null;
+            cancelRepaint();
             pendingPaint.set(null);
             if (registration != null) registration.unregister();
             synchronized (mappingLock) {

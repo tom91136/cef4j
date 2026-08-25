@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -38,11 +39,11 @@ public final class CefV8Exception {
     /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
       * cef_v8_exception_t only exists in the renderer subprocess's table state. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(
+        return CefFutures.map(
+            session.request(
                 new RendererReleaseHandleRequest(frame, handle, "cef_v8_exception_t"),
-                RendererReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+                RendererReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -52,9 +53,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:359</a>
      */
     public CompletableFuture<String> getMessage() {
-        return session
-            .request(new V8ExceptionGetMessageRequest(frame, handle), V8ExceptionGetMessageResponse.DECODER)
-            .thenApply(V8ExceptionGetMessageResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetMessageRequest(frame, handle), V8ExceptionGetMessageResponse.DECODER),
+            V8ExceptionGetMessageResponse::result);
     }
 
     /**
@@ -64,9 +65,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:365</a>
      */
     public CompletableFuture<String> getSourceLine() {
-        return session
-            .request(new V8ExceptionGetSourceLineRequest(frame, handle), V8ExceptionGetSourceLineResponse.DECODER)
-            .thenApply(V8ExceptionGetSourceLineResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetSourceLineRequest(frame, handle), V8ExceptionGetSourceLineResponse.DECODER),
+            V8ExceptionGetSourceLineResponse::result);
     }
 
     /**
@@ -76,9 +77,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:371</a>
      */
     public CompletableFuture<String> getScriptResourceName() {
-        return session
-            .request(new V8ExceptionGetScriptResourceNameRequest(frame, handle), V8ExceptionGetScriptResourceNameResponse.DECODER)
-            .thenApply(V8ExceptionGetScriptResourceNameResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetScriptResourceNameRequest(frame, handle), V8ExceptionGetScriptResourceNameResponse.DECODER),
+            V8ExceptionGetScriptResourceNameResponse::result);
     }
 
     /**
@@ -88,9 +89,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:378</a>
      */
     public CompletableFuture<Integer> getLineNumber() {
-        return session
-            .request(new V8ExceptionGetLineNumberRequest(frame, handle), V8ExceptionGetLineNumberResponse.DECODER)
-            .thenApply(V8ExceptionGetLineNumberResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetLineNumberRequest(frame, handle), V8ExceptionGetLineNumberResponse.DECODER),
+            V8ExceptionGetLineNumberResponse::result);
     }
 
     /**
@@ -100,9 +101,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:385</a>
      */
     public CompletableFuture<Integer> getStartPosition() {
-        return session
-            .request(new V8ExceptionGetStartPositionRequest(frame, handle), V8ExceptionGetStartPositionResponse.DECODER)
-            .thenApply(V8ExceptionGetStartPositionResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetStartPositionRequest(frame, handle), V8ExceptionGetStartPositionResponse.DECODER),
+            V8ExceptionGetStartPositionResponse::result);
     }
 
     /**
@@ -112,9 +113,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:392</a>
      */
     public CompletableFuture<Integer> getEndPosition() {
-        return session
-            .request(new V8ExceptionGetEndPositionRequest(frame, handle), V8ExceptionGetEndPositionResponse.DECODER)
-            .thenApply(V8ExceptionGetEndPositionResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetEndPositionRequest(frame, handle), V8ExceptionGetEndPositionResponse.DECODER),
+            V8ExceptionGetEndPositionResponse::result);
     }
 
     /**
@@ -124,9 +125,9 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:399</a>
      */
     public CompletableFuture<Integer> getStartColumn() {
-        return session
-            .request(new V8ExceptionGetStartColumnRequest(frame, handle), V8ExceptionGetStartColumnResponse.DECODER)
-            .thenApply(V8ExceptionGetStartColumnResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetStartColumnRequest(frame, handle), V8ExceptionGetStartColumnResponse.DECODER),
+            V8ExceptionGetStartColumnResponse::result);
     }
 
     /**
@@ -136,8 +137,8 @@ public final class CefV8Exception {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:406</a>
      */
     public CompletableFuture<Integer> getEndColumn() {
-        return session
-            .request(new V8ExceptionGetEndColumnRequest(frame, handle), V8ExceptionGetEndColumnResponse.DECODER)
-            .thenApply(V8ExceptionGetEndColumnResponse::result);
+        return CefFutures.map(
+            session.request(new V8ExceptionGetEndColumnRequest(frame, handle), V8ExceptionGetEndColumnResponse.DECODER),
+            V8ExceptionGetEndColumnResponse::result);
     }
 }

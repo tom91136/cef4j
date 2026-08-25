@@ -152,11 +152,11 @@ public final class RuntimeServerProcess implements Closeable {
                     return;
                 }
             }
-            STDOUT_LOG.info("{}", line);
+            STDOUT_LOG.trace("{}", line);
         });
         startReader(p.getErrorStream(), "runtime-server-stderr-" + p.pid(), line -> {
             rememberOutput(bootstrapOutput, "stderr: " + line);
-            STDERR_LOG.info("{}", line);
+            logStderr(line);
         });
 
         watchForExit(p, bindEndpoint, handshakeFuture, bootstrapOutput);
@@ -215,6 +215,54 @@ public final class RuntimeServerProcess implements Closeable {
                     .forEach(command::add);
         }
         return command;
+    }
+
+    static ChildOutputLevel stderrLevel(String line) {
+        if (isRoutineLifecycleLine(line)) {
+            return ChildOutputLevel.TRACE;
+        }
+        if (line.contains("zmq_send failed: Host unreachable")
+                || line.contains("zmq_send failed: Context was terminated")
+                || line.contains(":INFO:")) {
+            return ChildOutputLevel.DEBUG;
+        }
+        return ChildOutputLevel.WARN;
+    }
+
+    private static boolean isRoutineLifecycleLine(String line) {
+        return line.startsWith("[cef4j-runtime-server] shutdown: closing ")
+                || line.equals("[cef4j-runtime-server] shutdown: final browser closed")
+                || line.equals("[cef4j-runtime-server] shutdown: quitting CEF message loop")
+                || line.equals("[cef4j-runtime-server] shutdown: parent command received")
+                || line.equals("[cef4j-runtime-server] shutdown: CEF message loop returned")
+                || line.equals("[cef4j-runtime-server] shutdown: stopping IPC transport")
+                || line.equals("[cef4j-runtime-server] shutdown: IPC transport stopped")
+                || line.equals("[cef4j-runtime-server] shutdown: cef_shutdown complete")
+                || line.equals("[cef4j-runtime-server] cef_initialize: begin")
+                || line.equals("[cef4j-runtime-server] cef_initialize: complete")
+                || line.equals("[cef4j-runtime-server] macOS application bootstrap: begin")
+                || line.equals("[cef4j-runtime-server] macOS application bootstrap: complete")
+                || line.equals("[cef4j-runtime-server] CEF context initialized; publishing endpoint");
+    }
+
+    private static void logStderr(String line) {
+        switch (stderrLevel(line)) {
+            case TRACE:
+                STDERR_LOG.trace("{}", line);
+                break;
+            case DEBUG:
+                STDERR_LOG.debug("{}", line);
+                break;
+            case WARN:
+                STDERR_LOG.warn("{}", line);
+                break;
+        }
+    }
+
+    enum ChildOutputLevel {
+        TRACE,
+        DEBUG,
+        WARN
     }
 
     /** Registers a deliberately detached watcher that owns process-exit cleanup and bootstrap failure reporting. */

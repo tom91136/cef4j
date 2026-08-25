@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class DragData {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_drag_data_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_drag_data_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:66</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new DragDataIsReadOnlyRequest(handle), DragDataIsReadOnlyResponse.DECODER)
-            .thenApply(DragDataIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataIsReadOnlyRequest(handle), DragDataIsReadOnlyResponse.DECODER),
+            DragDataIsReadOnlyResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:72</a>
      */
     public CompletableFuture<Integer> isLink() {
-        return session
-            .request(new DragDataIsLinkRequest(handle), DragDataIsLinkResponse.DECODER)
-            .thenApply(DragDataIsLinkResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataIsLinkRequest(handle), DragDataIsLinkResponse.DECODER),
+            DragDataIsLinkResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:78</a>
      */
     public CompletableFuture<Integer> isFragment() {
-        return session
-            .request(new DragDataIsFragmentRequest(handle), DragDataIsFragmentResponse.DECODER)
-            .thenApply(DragDataIsFragmentResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataIsFragmentRequest(handle), DragDataIsFragmentResponse.DECODER),
+            DragDataIsFragmentResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:84</a>
      */
     public CompletableFuture<Integer> isFile() {
-        return session
-            .request(new DragDataIsFileRequest(handle), DragDataIsFileResponse.DECODER)
-            .thenApply(DragDataIsFileResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataIsFileRequest(handle), DragDataIsFileResponse.DECODER),
+            DragDataIsFileResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
      */
     public CompletableFuture<String> getLinkUrl() {
-        return session
-            .request(new DragDataGetLinkUrlRequest(handle), DragDataGetLinkUrlResponse.DECODER)
-            .thenApply(DragDataGetLinkUrlResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetLinkUrlRequest(handle), DragDataGetLinkUrlResponse.DECODER),
+            DragDataGetLinkUrlResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:96</a>
      */
     public CompletableFuture<String> getLinkTitle() {
-        return session
-            .request(new DragDataGetLinkTitleRequest(handle), DragDataGetLinkTitleResponse.DECODER)
-            .thenApply(DragDataGetLinkTitleResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetLinkTitleRequest(handle), DragDataGetLinkTitleResponse.DECODER),
+            DragDataGetLinkTitleResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:102</a>
      */
     public CompletableFuture<String> getLinkMetadata() {
-        return session
-            .request(new DragDataGetLinkMetadataRequest(handle), DragDataGetLinkMetadataResponse.DECODER)
-            .thenApply(DragDataGetLinkMetadataResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetLinkMetadataRequest(handle), DragDataGetLinkMetadataResponse.DECODER),
+            DragDataGetLinkMetadataResponse::result);
     }
 
     /**
@@ -126,9 +128,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:108</a>
      */
     public CompletableFuture<String> getFragmentText() {
-        return session
-            .request(new DragDataGetFragmentTextRequest(handle), DragDataGetFragmentTextResponse.DECODER)
-            .thenApply(DragDataGetFragmentTextResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFragmentTextRequest(handle), DragDataGetFragmentTextResponse.DECODER),
+            DragDataGetFragmentTextResponse::result);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:114</a>
      */
     public CompletableFuture<String> getFragmentHtml() {
-        return session
-            .request(new DragDataGetFragmentHtmlRequest(handle), DragDataGetFragmentHtmlResponse.DECODER)
-            .thenApply(DragDataGetFragmentHtmlResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFragmentHtmlRequest(handle), DragDataGetFragmentHtmlResponse.DECODER),
+            DragDataGetFragmentHtmlResponse::result);
     }
 
     /**
@@ -150,9 +152,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:120</a>
      */
     public CompletableFuture<String> getFragmentBaseUrl() {
-        return session
-            .request(new DragDataGetFragmentBaseUrlRequest(handle), DragDataGetFragmentBaseUrlResponse.DECODER)
-            .thenApply(DragDataGetFragmentBaseUrlResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFragmentBaseUrlRequest(handle), DragDataGetFragmentBaseUrlResponse.DECODER),
+            DragDataGetFragmentBaseUrlResponse::result);
     }
 
     /**
@@ -162,9 +164,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
      */
     public CompletableFuture<String> getFileName() {
-        return session
-            .request(new DragDataGetFileNameRequest(handle), DragDataGetFileNameResponse.DECODER)
-            .thenApply(DragDataGetFileNameResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFileNameRequest(handle), DragDataGetFileNameResponse.DECODER),
+            DragDataGetFileNameResponse::result);
     }
 
     /**
@@ -176,9 +178,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:133</a>
      */
     public CompletableFuture<Long> getFileContents(@Nonnull RemoteHandle writer) {
-        return session
-            .request(new DragDataGetFileContentsRequest(handle, writer), DragDataGetFileContentsResponse.DECODER)
-            .thenApply(DragDataGetFileContentsResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFileContentsRequest(handle, writer), DragDataGetFileContentsResponse.DECODER),
+            DragDataGetFileContentsResponse::result);
     }
 
     /**
@@ -188,9 +190,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
      */
     public CompletableFuture<Integer> getFileNames(String[] names) {
-        return session
-            .request(new DragDataGetFileNamesRequest(handle, names), DragDataGetFileNamesResponse.DECODER)
-            .thenApply(DragDataGetFileNamesResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFileNamesRequest(handle, names), DragDataGetFileNamesResponse.DECODER),
+            DragDataGetFileNamesResponse::result);
     }
 
     /**
@@ -200,9 +202,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
      */
     public CompletableFuture<Integer> getFilePaths(String[] paths) {
-        return session
-            .request(new DragDataGetFilePathsRequest(handle, paths), DragDataGetFilePathsResponse.DECODER)
-            .thenApply(DragDataGetFilePathsResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetFilePathsRequest(handle, paths), DragDataGetFilePathsResponse.DECODER),
+            DragDataGetFilePathsResponse::result);
     }
 
     /**
@@ -214,9 +216,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
      */
     public CompletableFuture<Void> setLinkUrl(@Nonnull String url) {
-        return session
-            .request(new DragDataSetLinkUrlRequest(handle, url), DragDataSetLinkUrlResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataSetLinkUrlRequest(handle, url), DragDataSetLinkUrlResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -228,9 +230,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
      */
     public CompletableFuture<Void> setLinkTitle(@Nonnull String title) {
-        return session
-            .request(new DragDataSetLinkTitleRequest(handle, title), DragDataSetLinkTitleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataSetLinkTitleRequest(handle, title), DragDataSetLinkTitleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -242,9 +244,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
      */
     public CompletableFuture<Void> setLinkMetadata(@Nonnull String data) {
-        return session
-            .request(new DragDataSetLinkMetadataRequest(handle, data), DragDataSetLinkMetadataResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataSetLinkMetadataRequest(handle, data), DragDataSetLinkMetadataResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -256,9 +258,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
      */
     public CompletableFuture<Void> setFragmentText(@Nonnull String text) {
-        return session
-            .request(new DragDataSetFragmentTextRequest(handle, text), DragDataSetFragmentTextResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataSetFragmentTextRequest(handle, text), DragDataSetFragmentTextResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -270,9 +272,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
      */
     public CompletableFuture<Void> setFragmentHtml(@Nonnull String html) {
-        return session
-            .request(new DragDataSetFragmentHtmlRequest(handle, html), DragDataSetFragmentHtmlResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataSetFragmentHtmlRequest(handle, html), DragDataSetFragmentHtmlResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -284,9 +286,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
      */
     public CompletableFuture<Void> setFragmentBaseUrl(@Nonnull String baseUrl) {
-        return session
-            .request(new DragDataSetFragmentBaseUrlRequest(handle, baseUrl), DragDataSetFragmentBaseUrlResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataSetFragmentBaseUrlRequest(handle, baseUrl), DragDataSetFragmentBaseUrlResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -296,9 +298,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
      */
     public CompletableFuture<Void> resetFileContents() {
-        return session
-            .request(new DragDataResetFileContentsRequest(handle), DragDataResetFileContentsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataResetFileContentsRequest(handle), DragDataResetFileContentsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -310,9 +312,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
      */
     public CompletableFuture<Void> addFile(@Nonnull String path, @Nonnull String displayName) {
-        return session
-            .request(new DragDataAddFileRequest(handle, path, displayName), DragDataAddFileResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataAddFileRequest(handle, path, displayName), DragDataAddFileResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -322,9 +324,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
      */
     public CompletableFuture<Void> clearFilenames() {
-        return session
-            .request(new DragDataClearFilenamesRequest(handle), DragDataClearFilenamesResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new DragDataClearFilenamesRequest(handle), DragDataClearFilenamesResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -334,10 +336,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
      */
     public CompletableFuture<Image> getImage() {
-        return session
-            .request(new DragDataGetImageRequest(handle), DragDataGetImageResponse.DECODER)
-            .thenApply(DragDataGetImageResponse::result)
-            .thenApply(__h -> new Image(session, __h));
+        return CefFutures.map(
+            session.request(new DragDataGetImageRequest(handle), DragDataGetImageResponse.DECODER),
+            __r -> new Image(session, __r.result()));
     }
 
     /**
@@ -347,9 +348,9 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
      */
     public CompletableFuture<Point> getImageHotspot() {
-        return session
-            .request(new DragDataGetImageHotspotRequest(handle), DragDataGetImageHotspotResponse.DECODER)
-            .thenApply(DragDataGetImageHotspotResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataGetImageHotspotRequest(handle), DragDataGetImageHotspotResponse.DECODER),
+            DragDataGetImageHotspotResponse::result);
     }
 
     /**
@@ -359,8 +360,8 @@ public final class DragData {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:226</a>
      */
     public CompletableFuture<Integer> hasImage() {
-        return session
-            .request(new DragDataHasImageRequest(handle), DragDataHasImageResponse.DECODER)
-            .thenApply(DragDataHasImageResponse::result);
+        return CefFutures.map(
+            session.request(new DragDataHasImageRequest(handle), DragDataHasImageResponse.DECODER),
+            DragDataHasImageResponse::result);
     }
 }

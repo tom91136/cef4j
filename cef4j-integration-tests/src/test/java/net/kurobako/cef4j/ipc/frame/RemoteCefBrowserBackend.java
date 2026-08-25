@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,12 +20,12 @@ import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
@@ -69,23 +69,22 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         private final RemoteHandle browserHandle;
         private final Browser browser;
         private final SharedFileFrameTransport frameTransport;
-        private final LinkedBlockingQueue<V8ContextCreatedEvent> contextQueue = new LinkedBlockingQueue<>();
+        private final RemoteNavigationProbe navigation;
         private final AtomicReference<PaintInfo> latestPaint = new AtomicReference<>();
-        private final LinkedBlockingQueue<PaintInfo> paintQueue = new LinkedBlockingQueue<>();
+        private final ArrayBlockingQueue<PaintInfo> paintQueue = new ArrayBlockingQueue<>(1);
 
         IpcSession(SessionConfig config) throws Exception {
             RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
             this.server = launchServer(environment.binary(), environment.resources(), config.startupTimeout());
             this.transport = ZmqTransport.connect(server.endpoint());
             this.session = new CefSessionImpl(transport, Duration.ofSeconds(30));
+            this.navigation = new RemoteNavigationProbe(session);
 
-            // Bind the frame transport BEFORE the server hands us the browser so we never miss the first paint.
             this.frameTransport = SharedFileFrameTransport.bindAll(session);
-            session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contextQueue::offer);
             frameTransport.onFrame((w, h, pixels, meta) -> {
                 PaintInfo p = new PaintInfo(w, h, pixels.remaining());
                 latestPaint.set(p);
-                paintQueue.offer(p);
+                while (!paintQueue.offer(p)) paintQueue.poll();
             });
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
@@ -101,7 +100,6 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
                             SetViewportSizeResponse.DECODER)
                     .get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
-            // Optional initial navigation; tests that want a deterministic page can pass a non-empty URL.
             if (!config.initialUrl().isEmpty()) {
                 loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
             }
@@ -110,30 +108,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            // Frame.loadUrl acknowledges that navigation was queued. BrowserSession's
-            // stronger contract requires the new document to be usable, so wait for
-            // the renderer's matching V8 context before completing.
-            contextQueue.clear();
-            return browser.getMainFrame()
-                    .thenCompose(frame -> frame.loadUrl(url))
-                    .thenCompose(ignored -> CompletableFuture.runAsync(() -> awaitContext(url)));
-        }
-
-        private void awaitContext(String url) {
-            long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
-            try {
-                while (System.nanoTime() < deadline) {
-                    long remaining = Math.max(1L, deadline - System.nanoTime());
-                    V8ContextCreatedEvent event = contextQueue.poll(remaining, TimeUnit.NANOSECONDS);
-                    if (event == null) break;
-                    if (url.equals(event.frameUrl())) return;
-                }
-                throw new java.util.concurrent.CompletionException(
-                        new TimeoutException("no V8 context for navigation to " + url));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new java.util.concurrent.CompletionException(e);
-            }
+            return navigation.load(url, () -> browser.getMainFrame().thenCompose(frame -> frame.loadUrl(url)));
         }
 
         @Override
@@ -155,12 +130,12 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException {
+        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
             PaintInfo p = paintQueue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (p == null) {
                 PaintInfo fallback = latestPaint.get();
                 if (fallback != null) return fallback;
-                throw new InterruptedException("no paint within " + timeout);
+                throw new TimeoutException("no paint within " + timeout);
             }
             return p;
         }
@@ -175,25 +150,26 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
 
         @Override
         public void close() {
+            navigation.close();
             try {
                 frameTransport.close();
             } catch (RuntimeException ignored) {
-                // Continue closing the remaining independently owned test resources.
+                // Cleanup continues with independently owned resources.
             }
             try {
                 session.close();
             } catch (Exception ignored) {
-                // Continue closing the remaining independently owned test resources.
+                // Cleanup continues with independently owned resources.
             }
             try {
                 transport.close();
             } catch (RuntimeException ignored) {
-                // Continue closing the remaining independently owned test resources.
+                // Cleanup continues with independently owned resources.
             }
             try {
                 server.close();
             } catch (RuntimeException ignored) {
-                // Test teardown is best effort after all other resources have been released.
+                // Cleanup is best effort in the disposable test process.
             }
         }
     }

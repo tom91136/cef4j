@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class MediaRouter {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_media_router_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_media_router_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class MediaRouter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:72</a>
      */
     public CompletableFuture<RemoteHandle> addObserver(@Nonnull RemoteHandle observer) {
-        return session
-            .request(new MediaRouterAddObserverRequest(handle, observer), MediaRouterAddObserverResponse.DECODER)
-            .thenApply(MediaRouterAddObserverResponse::result);
+        return CefFutures.map(
+            session.request(new MediaRouterAddObserverRequest(handle, observer), MediaRouterAddObserverResponse.DECODER),
+            MediaRouterAddObserverResponse::result);
     }
 
     /**
@@ -54,10 +56,9 @@ public final class MediaRouter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:80</a>
      */
     public CompletableFuture<MediaSource> getSource(@Nonnull String urn) {
-        return session
-            .request(new MediaRouterGetSourceRequest(handle, urn), MediaRouterGetSourceResponse.DECODER)
-            .thenApply(MediaRouterGetSourceResponse::result)
-            .thenApply(__h -> new MediaSource(session, __h));
+        return CefFutures.map(
+            session.request(new MediaRouterGetSourceRequest(handle, urn), MediaRouterGetSourceResponse.DECODER),
+            __r -> new MediaSource(session, __r.result()));
     }
 
     /**
@@ -67,9 +68,9 @@ public final class MediaRouter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:88</a>
      */
     public CompletableFuture<Void> notifyCurrentSinks() {
-        return session
-            .request(new MediaRouterNotifyCurrentSinksRequest(handle), MediaRouterNotifyCurrentSinksResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MediaRouterNotifyCurrentSinksRequest(handle), MediaRouterNotifyCurrentSinksResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -79,9 +80,9 @@ public final class MediaRouter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:95</a>
      */
     public CompletableFuture<Void> createRoute(@Nonnull RemoteHandle source, @Nonnull RemoteHandle sink, @Nonnull RemoteHandle callback) {
-        return session
-            .request(new MediaRouterCreateRouteRequest(handle, source, sink, callback), MediaRouterCreateRouteResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MediaRouterCreateRouteRequest(handle, source, sink, callback), MediaRouterCreateRouteResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -91,8 +92,8 @@ public final class MediaRouter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:108</a>
      */
     public CompletableFuture<Void> notifyCurrentRoutes() {
-        return session
-            .request(new MediaRouterNotifyCurrentRoutesRequest(handle), MediaRouterNotifyCurrentRoutesResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MediaRouterNotifyCurrentRoutesRequest(handle), MediaRouterNotifyCurrentRoutesResponse.DECODER),
+            r -> null);
     }
 }

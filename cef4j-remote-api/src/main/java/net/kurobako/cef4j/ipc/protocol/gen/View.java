@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,56 +31,52 @@ public final class View {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_view_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_view_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code as_browser_view} to the runtime server. */
     public CompletableFuture<BrowserView> asBrowserView() {
-        return session
-            .request(new ViewAsBrowserViewRequest(handle), ViewAsBrowserViewResponse.DECODER)
-            .thenApply(ViewAsBrowserViewResponse::result)
-            .thenApply(__h -> new BrowserView(session, __h));
+        return CefFutures.map(
+            session.request(new ViewAsBrowserViewRequest(handle), ViewAsBrowserViewResponse.DECODER),
+            __r -> new BrowserView(session, __r.result()));
     }
 
     /** Dispatches {@code as_button} to the runtime server. */
     public CompletableFuture<Button> asButton() {
-        return session
-            .request(new ViewAsButtonRequest(handle), ViewAsButtonResponse.DECODER)
-            .thenApply(ViewAsButtonResponse::result)
-            .thenApply(__h -> new Button(session, __h));
+        return CefFutures.map(
+            session.request(new ViewAsButtonRequest(handle), ViewAsButtonResponse.DECODER),
+            __r -> new Button(session, __r.result()));
     }
 
     /** Dispatches {@code as_panel} to the runtime server. */
     public CompletableFuture<Panel> asPanel() {
-        return session
-            .request(new ViewAsPanelRequest(handle), ViewAsPanelResponse.DECODER)
-            .thenApply(ViewAsPanelResponse::result)
-            .thenApply(__h -> new Panel(session, __h));
+        return CefFutures.map(
+            session.request(new ViewAsPanelRequest(handle), ViewAsPanelResponse.DECODER),
+            __r -> new Panel(session, __r.result()));
     }
 
     /** Dispatches {@code as_scroll_view} to the runtime server. */
     public CompletableFuture<ScrollView> asScrollView() {
-        return session
-            .request(new ViewAsScrollViewRequest(handle), ViewAsScrollViewResponse.DECODER)
-            .thenApply(ViewAsScrollViewResponse::result)
-            .thenApply(__h -> new ScrollView(session, __h));
+        return CefFutures.map(
+            session.request(new ViewAsScrollViewRequest(handle), ViewAsScrollViewResponse.DECODER),
+            __r -> new ScrollView(session, __r.result()));
     }
 
     /** Dispatches {@code as_textfield} to the runtime server. */
     public CompletableFuture<Textfield> asTextfield() {
-        return session
-            .request(new ViewAsTextfieldRequest(handle), ViewAsTextfieldResponse.DECODER)
-            .thenApply(ViewAsTextfieldResponse::result)
-            .thenApply(__h -> new Textfield(session, __h));
+        return CefFutures.map(
+            session.request(new ViewAsTextfieldRequest(handle), ViewAsTextfieldResponse.DECODER),
+            __r -> new Textfield(session, __r.result()));
     }
 
     /** Dispatches {@code get_type_string} to the runtime server. */
     public CompletableFuture<String> getTypeString() {
-        return session
-            .request(new ViewGetTypeStringRequest(handle), ViewGetTypeStringResponse.DECODER)
-            .thenApply(ViewGetTypeStringResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetTypeStringRequest(handle), ViewGetTypeStringResponse.DECODER),
+            ViewGetTypeStringResponse::result);
     }
 
     /**
@@ -89,16 +86,16 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:549</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new ViewIsValidRequest(handle), ViewIsValidResponse.DECODER)
-            .thenApply(ViewIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsValidRequest(handle), ViewIsValidResponse.DECODER),
+            ViewIsValidResponse::result);
     }
 
     /** Dispatches {@code is_attached} to the runtime server. */
     public CompletableFuture<Integer> isAttached() {
-        return session
-            .request(new ViewIsAttachedRequest(handle), ViewIsAttachedResponse.DECODER)
-            .thenApply(ViewIsAttachedResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsAttachedRequest(handle), ViewIsAttachedResponse.DECODER),
+            ViewIsAttachedResponse::result);
     }
 
     /**
@@ -108,25 +105,23 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:571</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new ViewIsSameRequest(handle, that), ViewIsSameResponse.DECODER)
-            .thenApply(ViewIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsSameRequest(handle, that), ViewIsSameResponse.DECODER),
+            ViewIsSameResponse::result);
     }
 
     /** Dispatches {@code get_delegate} to the runtime server. */
     public CompletableFuture<ViewDelegate> getDelegate() {
-        return session
-            .request(new ViewGetDelegateRequest(handle), ViewGetDelegateResponse.DECODER)
-            .thenApply(ViewGetDelegateResponse::result)
-            .thenApply(__h -> new ViewDelegate(session, __h));
+        return CefFutures.map(
+            session.request(new ViewGetDelegateRequest(handle), ViewGetDelegateResponse.DECODER),
+            __r -> new ViewDelegate(session, __r.result()));
     }
 
     /** Dispatches {@code get_window} to the runtime server. */
     public CompletableFuture<Window> getWindow() {
-        return session
-            .request(new ViewGetWindowRequest(handle), ViewGetWindowResponse.DECODER)
-            .thenApply(ViewGetWindowResponse::result)
-            .thenApply(__h -> new Window(session, __h));
+        return CefFutures.map(
+            session.request(new ViewGetWindowRequest(handle), ViewGetWindowResponse.DECODER),
+            __r -> new Window(session, __r.result()));
     }
 
     /**
@@ -136,16 +131,16 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     public CompletableFuture<Integer> getId() {
-        return session
-            .request(new ViewGetIdRequest(handle), ViewGetIdResponse.DECODER)
-            .thenApply(ViewGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetIdRequest(handle), ViewGetIdResponse.DECODER),
+            ViewGetIdResponse::result);
     }
 
     /** Dispatches {@code set_id} to the runtime server. */
     public CompletableFuture<Void> setId(int id) {
-        return session
-            .request(new ViewSetIdRequest(handle, id), ViewSetIdResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetIdRequest(handle, id), ViewSetIdResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -155,9 +150,9 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
      */
     public CompletableFuture<Integer> getGroupId() {
-        return session
-            .request(new ViewGetGroupIdRequest(handle), ViewGetGroupIdResponse.DECODER)
-            .thenApply(ViewGetGroupIdResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetGroupIdRequest(handle), ViewGetGroupIdResponse.DECODER),
+            ViewGetGroupIdResponse::result);
     }
 
     /**
@@ -167,46 +162,44 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
     public CompletableFuture<Void> setGroupId(int groupId) {
-        return session
-            .request(new ViewSetGroupIdRequest(handle, groupId), ViewSetGroupIdResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetGroupIdRequest(handle, groupId), ViewSetGroupIdResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_parent_view} to the runtime server. */
     public CompletableFuture<View> getParentView() {
-        return session
-            .request(new ViewGetParentViewRequest(handle), ViewGetParentViewResponse.DECODER)
-            .thenApply(ViewGetParentViewResponse::result)
-            .thenApply(__h -> new View(session, __h));
+        return CefFutures.map(
+            session.request(new ViewGetParentViewRequest(handle), ViewGetParentViewResponse.DECODER),
+            __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code get_view_for_id} to the runtime server. */
     public CompletableFuture<View> getViewForId(int id) {
-        return session
-            .request(new ViewGetViewForIdRequest(handle, id), ViewGetViewForIdResponse.DECODER)
-            .thenApply(ViewGetViewForIdResponse::result)
-            .thenApply(__h -> new View(session, __h));
+        return CefFutures.map(
+            session.request(new ViewGetViewForIdRequest(handle, id), ViewGetViewForIdResponse.DECODER),
+            __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code set_bounds} to the runtime server. */
     public CompletableFuture<Void> setBounds(Rect bounds) {
-        return session
-            .request(new ViewSetBoundsRequest(handle, bounds), ViewSetBoundsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetBoundsRequest(handle, bounds), ViewSetBoundsResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_bounds} to the runtime server. */
     public CompletableFuture<Rect> getBounds() {
-        return session
-            .request(new ViewGetBoundsRequest(handle), ViewGetBoundsResponse.DECODER)
-            .thenApply(ViewGetBoundsResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetBoundsRequest(handle), ViewGetBoundsResponse.DECODER),
+            ViewGetBoundsResponse::result);
     }
 
     /** Dispatches {@code get_bounds_in_screen} to the runtime server. */
     public CompletableFuture<Rect> getBoundsInScreen() {
-        return session
-            .request(new ViewGetBoundsInScreenRequest(handle), ViewGetBoundsInScreenResponse.DECODER)
-            .thenApply(ViewGetBoundsInScreenResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetBoundsInScreenRequest(handle), ViewGetBoundsInScreenResponse.DECODER),
+            ViewGetBoundsInScreenResponse::result);
     }
 
     /**
@@ -216,9 +209,9 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
     public CompletableFuture<Void> setSize(Size size) {
-        return session
-            .request(new ViewSetSizeRequest(handle, size), ViewSetSizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetSizeRequest(handle, size), ViewSetSizeResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -228,79 +221,79 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
     public CompletableFuture<Size> getSize() {
-        return session
-            .request(new ViewGetSizeRequest(handle), ViewGetSizeResponse.DECODER)
-            .thenApply(ViewGetSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetSizeRequest(handle), ViewGetSizeResponse.DECODER),
+            ViewGetSizeResponse::result);
     }
 
     /** Dispatches {@code set_position} to the runtime server. */
     public CompletableFuture<Void> setPosition(Point position) {
-        return session
-            .request(new ViewSetPositionRequest(handle, position), ViewSetPositionResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetPositionRequest(handle, position), ViewSetPositionResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_position} to the runtime server. */
     public CompletableFuture<Point> getPosition() {
-        return session
-            .request(new ViewGetPositionRequest(handle), ViewGetPositionResponse.DECODER)
-            .thenApply(ViewGetPositionResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetPositionRequest(handle), ViewGetPositionResponse.DECODER),
+            ViewGetPositionResponse::result);
     }
 
     /** Dispatches {@code set_insets} to the runtime server. */
     public CompletableFuture<Void> setInsets(Insets insets) {
-        return session
-            .request(new ViewSetInsetsRequest(handle, insets), ViewSetInsetsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetInsetsRequest(handle, insets), ViewSetInsetsResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_insets} to the runtime server. */
     public CompletableFuture<Insets> getInsets() {
-        return session
-            .request(new ViewGetInsetsRequest(handle), ViewGetInsetsResponse.DECODER)
-            .thenApply(ViewGetInsetsResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetInsetsRequest(handle), ViewGetInsetsResponse.DECODER),
+            ViewGetInsetsResponse::result);
     }
 
     /** Dispatches {@code get_preferred_size} to the runtime server. */
     public CompletableFuture<Size> getPreferredSize() {
-        return session
-            .request(new ViewGetPreferredSizeRequest(handle), ViewGetPreferredSizeResponse.DECODER)
-            .thenApply(ViewGetPreferredSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetPreferredSizeRequest(handle), ViewGetPreferredSizeResponse.DECODER),
+            ViewGetPreferredSizeResponse::result);
     }
 
     /** Dispatches {@code size_to_preferred_size} to the runtime server. */
     public CompletableFuture<Void> sizeToPreferredSize() {
-        return session
-            .request(new ViewSizeToPreferredSizeRequest(handle), ViewSizeToPreferredSizeResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSizeToPreferredSizeRequest(handle), ViewSizeToPreferredSizeResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_minimum_size} to the runtime server. */
     public CompletableFuture<Size> getMinimumSize() {
-        return session
-            .request(new ViewGetMinimumSizeRequest(handle), ViewGetMinimumSizeResponse.DECODER)
-            .thenApply(ViewGetMinimumSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetMinimumSizeRequest(handle), ViewGetMinimumSizeResponse.DECODER),
+            ViewGetMinimumSizeResponse::result);
     }
 
     /** Dispatches {@code get_maximum_size} to the runtime server. */
     public CompletableFuture<Size> getMaximumSize() {
-        return session
-            .request(new ViewGetMaximumSizeRequest(handle), ViewGetMaximumSizeResponse.DECODER)
-            .thenApply(ViewGetMaximumSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetMaximumSizeRequest(handle), ViewGetMaximumSizeResponse.DECODER),
+            ViewGetMaximumSizeResponse::result);
     }
 
     /** Dispatches {@code get_height_for_width} to the runtime server. */
     public CompletableFuture<Integer> getHeightForWidth(int width) {
-        return session
-            .request(new ViewGetHeightForWidthRequest(handle, width), ViewGetHeightForWidthResponse.DECODER)
-            .thenApply(ViewGetHeightForWidthResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetHeightForWidthRequest(handle, width), ViewGetHeightForWidthResponse.DECODER),
+            ViewGetHeightForWidthResponse::result);
     }
 
     /** Dispatches {@code invalidate_layout} to the runtime server. */
     public CompletableFuture<Void> invalidateLayout() {
-        return session
-            .request(new ViewInvalidateLayoutRequest(handle), ViewInvalidateLayoutResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewInvalidateLayoutRequest(handle), ViewInvalidateLayoutResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -310,9 +303,9 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Void> setVisible(int visible) {
-        return session
-            .request(new ViewSetVisibleRequest(handle, visible), ViewSetVisibleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetVisibleRequest(handle, visible), ViewSetVisibleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -322,16 +315,16 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
      */
     public CompletableFuture<Integer> isVisible() {
-        return session
-            .request(new ViewIsVisibleRequest(handle), ViewIsVisibleResponse.DECODER)
-            .thenApply(ViewIsVisibleResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsVisibleRequest(handle), ViewIsVisibleResponse.DECODER),
+            ViewIsVisibleResponse::result);
     }
 
     /** Dispatches {@code is_drawn} to the runtime server. */
     public CompletableFuture<Integer> isDrawn() {
-        return session
-            .request(new ViewIsDrawnRequest(handle), ViewIsDrawnResponse.DECODER)
-            .thenApply(ViewIsDrawnResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsDrawnRequest(handle), ViewIsDrawnResponse.DECODER),
+            ViewIsDrawnResponse::result);
     }
 
     /**
@@ -341,9 +334,9 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
      */
     public CompletableFuture<Void> setEnabled(int enabled) {
-        return session
-            .request(new ViewSetEnabledRequest(handle, enabled), ViewSetEnabledResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetEnabledRequest(handle, enabled), ViewSetEnabledResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -353,64 +346,64 @@ public final class View {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
      */
     public CompletableFuture<Integer> isEnabled() {
-        return session
-            .request(new ViewIsEnabledRequest(handle), ViewIsEnabledResponse.DECODER)
-            .thenApply(ViewIsEnabledResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsEnabledRequest(handle), ViewIsEnabledResponse.DECODER),
+            ViewIsEnabledResponse::result);
     }
 
     /** Dispatches {@code set_focusable} to the runtime server. */
     public CompletableFuture<Void> setFocusable(int focusable) {
-        return session
-            .request(new ViewSetFocusableRequest(handle, focusable), ViewSetFocusableResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetFocusableRequest(handle, focusable), ViewSetFocusableResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code is_focusable} to the runtime server. */
     public CompletableFuture<Integer> isFocusable() {
-        return session
-            .request(new ViewIsFocusableRequest(handle), ViewIsFocusableResponse.DECODER)
-            .thenApply(ViewIsFocusableResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsFocusableRequest(handle), ViewIsFocusableResponse.DECODER),
+            ViewIsFocusableResponse::result);
     }
 
     /** Dispatches {@code is_accessibility_focusable} to the runtime server. */
     public CompletableFuture<Integer> isAccessibilityFocusable() {
-        return session
-            .request(new ViewIsAccessibilityFocusableRequest(handle), ViewIsAccessibilityFocusableResponse.DECODER)
-            .thenApply(ViewIsAccessibilityFocusableResponse::result);
+        return CefFutures.map(
+            session.request(new ViewIsAccessibilityFocusableRequest(handle), ViewIsAccessibilityFocusableResponse.DECODER),
+            ViewIsAccessibilityFocusableResponse::result);
     }
 
     /** Dispatches {@code has_focus} to the runtime server. */
     public CompletableFuture<Integer> hasFocus() {
-        return session
-            .request(new ViewHasFocusRequest(handle), ViewHasFocusResponse.DECODER)
-            .thenApply(ViewHasFocusResponse::result);
+        return CefFutures.map(
+            session.request(new ViewHasFocusRequest(handle), ViewHasFocusResponse.DECODER),
+            ViewHasFocusResponse::result);
     }
 
     /** Dispatches {@code request_focus} to the runtime server. */
     public CompletableFuture<Void> requestFocus() {
-        return session
-            .request(new ViewRequestFocusRequest(handle), ViewRequestFocusResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewRequestFocusRequest(handle), ViewRequestFocusResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code set_background_color} to the runtime server. */
     public CompletableFuture<Void> setBackgroundColor(int color) {
-        return session
-            .request(new ViewSetBackgroundColorRequest(handle, color), ViewSetBackgroundColorResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ViewSetBackgroundColorRequest(handle, color), ViewSetBackgroundColorResponse.DECODER),
+            r -> null);
     }
 
     /** Dispatches {@code get_background_color} to the runtime server. */
     public CompletableFuture<Integer> getBackgroundColor() {
-        return session
-            .request(new ViewGetBackgroundColorRequest(handle), ViewGetBackgroundColorResponse.DECODER)
-            .thenApply(ViewGetBackgroundColorResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetBackgroundColorRequest(handle), ViewGetBackgroundColorResponse.DECODER),
+            ViewGetBackgroundColorResponse::result);
     }
 
     /** Dispatches {@code get_theme_color} to the runtime server. */
     public CompletableFuture<Integer> getThemeColor(int colorId) {
-        return session
-            .request(new ViewGetThemeColorRequest(handle, colorId), ViewGetThemeColorResponse.DECODER)
-            .thenApply(ViewGetThemeColorResponse::result);
+        return CefFutures.map(
+            session.request(new ViewGetThemeColorRequest(handle, colorId), ViewGetThemeColorResponse.DECODER),
+            ViewGetThemeColorResponse::result);
     }
 }

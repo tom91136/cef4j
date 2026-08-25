@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class ResourceBundle {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_resource_bundle_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_resource_bundle_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class ResourceBundle {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:62</a>
      */
     public CompletableFuture<String> getLocalizedString(int stringId) {
-        return session
-            .request(new ResourceBundleGetLocalizedStringRequest(handle, stringId), ResourceBundleGetLocalizedStringResponse.DECODER)
-            .thenApply(ResourceBundleGetLocalizedStringResponse::result);
+        return CefFutures.map(
+            session.request(new ResourceBundleGetLocalizedStringRequest(handle, stringId), ResourceBundleGetLocalizedStringResponse.DECODER),
+            ResourceBundleGetLocalizedStringResponse::result);
     }
 
     /**
@@ -54,10 +56,9 @@ public final class ResourceBundle {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:71</a>
      */
     public CompletableFuture<BinaryValue> getDataResource(int resourceId) {
-        return session
-            .request(new ResourceBundleGetDataResourceRequest(handle, resourceId), ResourceBundleGetDataResourceResponse.DECODER)
-            .thenApply(ResourceBundleGetDataResourceResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new ResourceBundleGetDataResourceRequest(handle, resourceId), ResourceBundleGetDataResourceResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 
     /**
@@ -67,9 +68,8 @@ public final class ResourceBundle {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
      */
     public CompletableFuture<BinaryValue> getDataResourceForScale(int resourceId, int scaleFactor) {
-        return session
-            .request(new ResourceBundleGetDataResourceForScaleRequest(handle, resourceId, scaleFactor), ResourceBundleGetDataResourceForScaleResponse.DECODER)
-            .thenApply(ResourceBundleGetDataResourceForScaleResponse::result)
-            .thenApply(__h -> new BinaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new ResourceBundleGetDataResourceForScaleRequest(handle, resourceId, scaleFactor), ResourceBundleGetDataResourceForScaleResponse.DECODER),
+            __r -> new BinaryValue(session, __r.result()));
     }
 }

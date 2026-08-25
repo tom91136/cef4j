@@ -97,12 +97,10 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
     private static void selectSourceText(WebView view) throws Exception {
         focusSource(view);
         invokeShortcut(view, KeyCode.A);
-        onFxThread(
-                () -> view.getEngine()
-                        .executeScript(
-                                "var el = window.__getSrcEl && window.__getSrcEl();"
-                                        + "if (el) { el.focus(); if (el.select) { el.select(); } if (window.__syncTitle) { window.__syncTitle(); } }"));
-        Thread.sleep(50);
+        executeAndAwaitScript(
+                view,
+                "var el = window.__getSrcEl && window.__getSrcEl();"
+                        + "if (el) { el.focus(); if (el.select) { el.select(); } }");
     }
 
     private static String iterationText(int iteration) {
@@ -143,15 +141,23 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
 
     private static void focusElement(WebView view, boolean source, double x) throws Exception {
         leftClick(view, x, TEXT_Y);
-        onFxThread(
-                () -> view.getEngine()
-                        .executeScript(
-                                source
-                                        ? "var el = window.__getSrcEl && window.__getSrcEl();"
-                                                + "if (el) { el.focus(); if (el.setSelectionRange) { el.setSelectionRange(el.value.length, el.value.length); } }"
-                                        : "var el = window.__getDstEl && window.__getDstEl();"
-                                                + "if (el) { el.focus(); if (el.setSelectionRange) { el.setSelectionRange(el.value.length, el.value.length); } }"));
-        Thread.sleep(50);
+        executeAndAwaitScript(
+                view,
+                source
+                        ? "var el = window.__getSrcEl && window.__getSrcEl();"
+                                + "if (el) { el.focus(); if (el.setSelectionRange) { el.setSelectionRange(el.value.length, el.value.length); } }"
+                        : "var el = window.__getDstEl && window.__getDstEl();"
+                                + "if (el) { el.focus(); if (el.setSelectionRange) { el.setSelectionRange(el.value.length, el.value.length); } }");
+    }
+
+    private static void executeAndAwaitScript(WebView view, String script) throws Exception {
+        String previousTitle = titleFor(view);
+        String marker = "cef4j-script-" + System.nanoTime();
+        onFxThread(() -> view.getEngine().executeScript(script + ";document.title='" + marker + "';"));
+        assertThat(waitUntilOnFx(() -> marker.equals(titleFor(view)), 2_000)).isTrue();
+        onFxThread(() -> view.getEngine().executeScript("if (window.__syncTitle) { window.__syncTitle(); }"));
+        assertThat(waitUntilOnFx(() -> java.util.Objects.equals(previousTitle, titleFor(view)), 2_000))
+                .isTrue();
     }
 
     @Nullable

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class TextfieldDelegate {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_textfield_delegate_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_textfield_delegate_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,15 +44,15 @@ public final class TextfieldDelegate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
     public CompletableFuture<Integer> onKeyEvent(@Nonnull RemoteHandle textfield, KeyEvent event) {
-        return session
-            .request(new TextfieldDelegateOnKeyEventRequest(handle, textfield, event), TextfieldDelegateOnKeyEventResponse.DECODER)
-            .thenApply(TextfieldDelegateOnKeyEventResponse::result);
+        return CefFutures.map(
+            session.request(new TextfieldDelegateOnKeyEventRequest(handle, textfield, event), TextfieldDelegateOnKeyEventResponse.DECODER),
+            TextfieldDelegateOnKeyEventResponse::result);
     }
 
     /** Dispatches {@code on_after_user_action} to the runtime server. */
     public CompletableFuture<Void> onAfterUserAction(@Nonnull RemoteHandle textfield) {
-        return session
-            .request(new TextfieldDelegateOnAfterUserActionRequest(handle, textfield), TextfieldDelegateOnAfterUserActionResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new TextfieldDelegateOnAfterUserActionRequest(handle, textfield), TextfieldDelegateOnAfterUserActionResponse.DECODER),
+            r -> null);
     }
 }

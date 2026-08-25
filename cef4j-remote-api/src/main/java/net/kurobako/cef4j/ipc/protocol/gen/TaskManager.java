@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class TaskManager {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_task_manager_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_task_manager_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class TaskManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:62</a>
      */
     public CompletableFuture<Long> getTasksCount() {
-        return session
-            .request(new TaskManagerGetTasksCountRequest(handle), TaskManagerGetTasksCountResponse.DECODER)
-            .thenApply(TaskManagerGetTasksCountResponse::result);
+        return CefFutures.map(
+            session.request(new TaskManagerGetTasksCountRequest(handle), TaskManagerGetTasksCountResponse.DECODER),
+            TaskManagerGetTasksCountResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class TaskManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:91</a>
      */
     public CompletableFuture<Integer> killTask(long taskId) {
-        return session
-            .request(new TaskManagerKillTaskRequest(handle, taskId), TaskManagerKillTaskResponse.DECODER)
-            .thenApply(TaskManagerKillTaskResponse::result);
+        return CefFutures.map(
+            session.request(new TaskManagerKillTaskRequest(handle, taskId), TaskManagerKillTaskResponse.DECODER),
+            TaskManagerKillTaskResponse::result);
     }
 
     /**
@@ -66,8 +68,8 @@ public final class TaskManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:99</a>
      */
     public CompletableFuture<Long> getTaskIdForBrowserId(int browserId) {
-        return session
-            .request(new TaskManagerGetTaskIdForBrowserIdRequest(handle, browserId), TaskManagerGetTaskIdForBrowserIdResponse.DECODER)
-            .thenApply(TaskManagerGetTaskIdForBrowserIdResponse::result);
+        return CefFutures.map(
+            session.request(new TaskManagerGetTaskIdForBrowserIdRequest(handle, browserId), TaskManagerGetTaskIdForBrowserIdResponse.DECODER),
+            TaskManagerGetTaskIdForBrowserIdResponse::result);
     }
 }

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class FileDialogCallback {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_file_dialog_callback_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_file_dialog_callback_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -44,9 +46,9 @@ public final class FileDialogCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:50</a>
      */
     public CompletableFuture<Void> cont(String[] filePaths) {
-        return session
-            .request(new FileDialogCallbackContRequest(handle, filePaths), FileDialogCallbackContResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FileDialogCallbackContRequest(handle, filePaths), FileDialogCallbackContResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -56,8 +58,8 @@ public final class FileDialogCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:58</a>
      */
     public CompletableFuture<Void> cancel() {
-        return session
-            .request(new FileDialogCallbackCancelRequest(handle), FileDialogCallbackCancelResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new FileDialogCallbackCancelRequest(handle), FileDialogCallbackCancelResponse.DECODER),
+            r -> null);
     }
 }

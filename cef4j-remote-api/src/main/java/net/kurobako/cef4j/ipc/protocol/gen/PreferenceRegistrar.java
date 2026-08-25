@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class PreferenceRegistrar {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_preference_registrar_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_preference_registrar_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,8 +44,8 @@ public final class PreferenceRegistrar {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:53</a>
      */
     public CompletableFuture<Integer> addPreference(@Nonnull String name, @Nonnull RemoteHandle defaultValue) {
-        return session
-            .request(new PreferenceRegistrarAddPreferenceRequest(handle, name, defaultValue), PreferenceRegistrarAddPreferenceResponse.DECODER)
-            .thenApply(PreferenceRegistrarAddPreferenceResponse::result);
+        return CefFutures.map(
+            session.request(new PreferenceRegistrarAddPreferenceRequest(handle, name, defaultValue), PreferenceRegistrarAddPreferenceResponse.DECODER),
+            PreferenceRegistrarAddPreferenceResponse::result);
     }
 }

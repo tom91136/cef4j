@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class RunContextMenuCallback {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_run_context_menu_callback_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_run_context_menu_callback_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class RunContextMenuCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:54</a>
      */
     public CompletableFuture<Void> cont(int commandId, int eventFlags) {
-        return session
-            .request(new RunContextMenuCallbackContRequest(handle, commandId, eventFlags), RunContextMenuCallbackContResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RunContextMenuCallbackContRequest(handle, commandId, eventFlags), RunContextMenuCallbackContResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -54,8 +56,8 @@ public final class RunContextMenuCallback {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:61</a>
      */
     public CompletableFuture<Void> cancel() {
-        return session
-            .request(new RunContextMenuCallbackCancelRequest(handle), RunContextMenuCallbackCancelResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new RunContextMenuCallbackCancelRequest(handle), RunContextMenuCallbackCancelResponse.DECODER),
+            r -> null);
     }
 }

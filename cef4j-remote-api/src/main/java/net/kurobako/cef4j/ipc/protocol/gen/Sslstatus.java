@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Sslstatus {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_sslstatus_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_sslstatus_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class Sslstatus {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:51</a>
      */
     public CompletableFuture<Integer> isSecureConnection() {
-        return session
-            .request(new SslstatusIsSecureConnectionRequest(handle), SslstatusIsSecureConnectionResponse.DECODER)
-            .thenApply(SslstatusIsSecureConnectionResponse::result);
+        return CefFutures.map(
+            session.request(new SslstatusIsSecureConnectionRequest(handle), SslstatusIsSecureConnectionResponse.DECODER),
+            SslstatusIsSecureConnectionResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class Sslstatus {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:57</a>
      */
     public CompletableFuture<Integer> getCertStatus() {
-        return session
-            .request(new SslstatusGetCertStatusRequest(handle), SslstatusGetCertStatusResponse.DECODER)
-            .thenApply(SslstatusGetCertStatusResponse::result);
+        return CefFutures.map(
+            session.request(new SslstatusGetCertStatusRequest(handle), SslstatusGetCertStatusResponse.DECODER),
+            SslstatusGetCertStatusResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class Sslstatus {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:64</a>
      */
     public CompletableFuture<Integer> getSslversion() {
-        return session
-            .request(new SslstatusGetSslversionRequest(handle), SslstatusGetSslversionResponse.DECODER)
-            .thenApply(SslstatusGetSslversionResponse::result);
+        return CefFutures.map(
+            session.request(new SslstatusGetSslversionRequest(handle), SslstatusGetSslversionResponse.DECODER),
+            SslstatusGetSslversionResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class Sslstatus {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:70</a>
      */
     public CompletableFuture<Integer> getContentStatus() {
-        return session
-            .request(new SslstatusGetContentStatusRequest(handle), SslstatusGetContentStatusResponse.DECODER)
-            .thenApply(SslstatusGetContentStatusResponse::result);
+        return CefFutures.map(
+            session.request(new SslstatusGetContentStatusRequest(handle), SslstatusGetContentStatusResponse.DECODER),
+            SslstatusGetContentStatusResponse::result);
     }
 
     /**
@@ -90,9 +92,8 @@ public final class Sslstatus {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
      */
     public CompletableFuture<X509Certificate> getX509Certificate() {
-        return session
-            .request(new SslstatusGetX509CertificateRequest(handle), SslstatusGetX509CertificateResponse.DECODER)
-            .thenApply(SslstatusGetX509CertificateResponse::result)
-            .thenApply(__h -> new X509Certificate(session, __h));
+        return CefFutures.map(
+            session.request(new SslstatusGetX509CertificateRequest(handle), SslstatusGetX509CertificateResponse.DECODER),
+            __r -> new X509Certificate(session, __r.result()));
     }
 }

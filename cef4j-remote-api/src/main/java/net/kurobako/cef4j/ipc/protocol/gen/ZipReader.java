@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class ZipReader {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_zip_reader_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_zip_reader_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:58</a>
      */
     public CompletableFuture<Integer> moveToFirstFile() {
-        return session
-            .request(new ZipReaderMoveToFirstFileRequest(handle), ZipReaderMoveToFirstFileResponse.DECODER)
-            .thenApply(ZipReaderMoveToFirstFileResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderMoveToFirstFileRequest(handle), ZipReaderMoveToFirstFileResponse.DECODER),
+            ZipReaderMoveToFirstFileResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:65</a>
      */
     public CompletableFuture<Integer> moveToNextFile() {
-        return session
-            .request(new ZipReaderMoveToNextFileRequest(handle), ZipReaderMoveToNextFileResponse.DECODER)
-            .thenApply(ZipReaderMoveToNextFileResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderMoveToNextFileRequest(handle), ZipReaderMoveToNextFileResponse.DECODER),
+            ZipReaderMoveToNextFileResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:72</a>
      */
     public CompletableFuture<Integer> moveToFile(@Nonnull String fileName, int caseSensitive) {
-        return session
-            .request(new ZipReaderMoveToFileRequest(handle, fileName, caseSensitive), ZipReaderMoveToFileResponse.DECODER)
-            .thenApply(ZipReaderMoveToFileResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderMoveToFileRequest(handle, fileName, caseSensitive), ZipReaderMoveToFileResponse.DECODER),
+            ZipReaderMoveToFileResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
      */
     public CompletableFuture<Integer> close() {
-        return session
-            .request(new ZipReaderCloseRequest(handle), ZipReaderCloseResponse.DECODER)
-            .thenApply(ZipReaderCloseResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderCloseRequest(handle), ZipReaderCloseResponse.DECODER),
+            ZipReaderCloseResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:89</a>
      */
     public CompletableFuture<String> getFileName() {
-        return session
-            .request(new ZipReaderGetFileNameRequest(handle), ZipReaderGetFileNameResponse.DECODER)
-            .thenApply(ZipReaderGetFileNameResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderGetFileNameRequest(handle), ZipReaderGetFileNameResponse.DECODER),
+            ZipReaderGetFileNameResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:95</a>
      */
     public CompletableFuture<Long> getFileSize() {
-        return session
-            .request(new ZipReaderGetFileSizeRequest(handle), ZipReaderGetFileSizeResponse.DECODER)
-            .thenApply(ZipReaderGetFileSizeResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderGetFileSizeRequest(handle), ZipReaderGetFileSizeResponse.DECODER),
+            ZipReaderGetFileSizeResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
      */
     public CompletableFuture<Basetime> getFileLastModified() {
-        return session
-            .request(new ZipReaderGetFileLastModifiedRequest(handle), ZipReaderGetFileLastModifiedResponse.DECODER)
-            .thenApply(ZipReaderGetFileLastModifiedResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderGetFileLastModifiedRequest(handle), ZipReaderGetFileLastModifiedResponse.DECODER),
+            ZipReaderGetFileLastModifiedResponse::result);
     }
 
     /**
@@ -128,9 +130,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:107</a>
      */
     public CompletableFuture<Integer> openFile(@Nonnull String password) {
-        return session
-            .request(new ZipReaderOpenFileRequest(handle, password), ZipReaderOpenFileResponse.DECODER)
-            .thenApply(ZipReaderOpenFileResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderOpenFileRequest(handle, password), ZipReaderOpenFileResponse.DECODER),
+            ZipReaderOpenFileResponse::result);
     }
 
     /**
@@ -140,9 +142,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:114</a>
      */
     public CompletableFuture<Integer> closeFile() {
-        return session
-            .request(new ZipReaderCloseFileRequest(handle), ZipReaderCloseFileResponse.DECODER)
-            .thenApply(ZipReaderCloseFileResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderCloseFileRequest(handle), ZipReaderCloseFileResponse.DECODER),
+            ZipReaderCloseFileResponse::result);
     }
 
     /**
@@ -152,9 +154,9 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:127</a>
      */
     public CompletableFuture<Long> tell() {
-        return session
-            .request(new ZipReaderTellRequest(handle), ZipReaderTellResponse.DECODER)
-            .thenApply(ZipReaderTellResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderTellRequest(handle), ZipReaderTellResponse.DECODER),
+            ZipReaderTellResponse::result);
     }
 
     /**
@@ -164,8 +166,8 @@ public final class ZipReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
      */
     public CompletableFuture<Integer> eof() {
-        return session
-            .request(new ZipReaderEofRequest(handle), ZipReaderEofResponse.DECODER)
-            .thenApply(ZipReaderEofResponse::result);
+        return CefFutures.map(
+            session.request(new ZipReaderEofRequest(handle), ZipReaderEofResponse.DECODER),
+            ZipReaderEofResponse::result);
     }
 }

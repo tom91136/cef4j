@@ -8,9 +8,26 @@ import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntime;
+import net.kurobako.cef4j.remote.RemoteBrowserRuntimeFactory;
+import net.kurobako.cef4j.webdriver.JsonElement;
+import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import org.junit.jupiter.api.Test;
 
 class RemoteCefAutomationBackendFactoryTest {
+    @Test
+    void cancellationReachesRuntimeCreation() {
+        CompletableFuture<RemoteBrowserRuntime> runtime = new CompletableFuture<>();
+        RemoteBrowserRuntimeFactory runtimes = () -> runtime;
+        RemoteCefAutomationBackendFactory factory = new RemoteCefAutomationBackendFactory(
+                runtimes,
+                (session, browser, host) -> CompletableFuture.failedFuture(new AssertionError("unexpected attach")),
+                new UnusedJsonCodec());
+
+        factory.create(new net.kurobako.cef4j.webdriver.JsonObject()).cancel(true);
+
+        assertThat(runtime).isCancelled();
+    }
+
     @Test
     void closesRuntimeWhenDevToolsDetachNeverAcknowledges() {
         AtomicBoolean runtimeClosed = new AtomicBoolean();
@@ -38,6 +55,18 @@ class RemoteCefAutomationBackendFactoryTest {
         @Override
         public CompletableFuture<Void> closeAsync() {
             return new CompletableFuture<>();
+        }
+    }
+
+    private static final class UnusedJsonCodec implements WebDriverJsonCodec {
+        @Override
+        public JsonElement decode(byte[] json) {
+            throw new AssertionError("unexpected decode");
+        }
+
+        @Override
+        public byte[] encode(JsonElement value) {
+            throw new AssertionError("unexpected encode");
         }
     }
 

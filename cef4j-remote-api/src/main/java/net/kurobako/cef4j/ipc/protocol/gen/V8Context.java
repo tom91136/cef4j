@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -38,11 +39,11 @@ public final class V8Context {
     /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
       * cef_v8_context_t only exists in the renderer subprocess's table state. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(
+        return CefFutures.map(
+            session.request(
                 new RendererReleaseHandleRequest(frame, handle, "cef_v8_context_t"),
-                RendererReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+                RendererReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -52,10 +53,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:147</a>
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
-        return session
-            .request(new V8ContextGetTaskRunnerRequest(frame, handle), V8ContextGetTaskRunnerResponse.DECODER)
-            .thenApply(V8ContextGetTaskRunnerResponse::result)
-            .thenApply(__h -> new TaskRunner(session, __h));
+        return CefFutures.map(
+            session.request(new V8ContextGetTaskRunnerRequest(frame, handle), V8ContextGetTaskRunnerResponse.DECODER),
+            __r -> new TaskRunner(session, __r.result()));
     }
 
     /**
@@ -65,9 +65,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:155</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new V8ContextIsValidRequest(frame, handle), V8ContextIsValidResponse.DECODER)
-            .thenApply(V8ContextIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new V8ContextIsValidRequest(frame, handle), V8ContextIsValidResponse.DECODER),
+            V8ContextIsValidResponse::result);
     }
 
     /**
@@ -77,10 +77,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:163</a>
      */
     public CompletableFuture<Browser> getBrowser() {
-        return session
-            .request(new V8ContextGetBrowserRequest(frame, handle), V8ContextGetBrowserResponse.DECODER)
-            .thenApply(V8ContextGetBrowserResponse::result)
-            .thenApply(__h -> new Browser(session, __h));
+        return CefFutures.map(
+            session.request(new V8ContextGetBrowserRequest(frame, handle), V8ContextGetBrowserResponse.DECODER),
+            __r -> new Browser(session, __r.result()));
     }
 
     /**
@@ -90,10 +89,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:170</a>
      */
     public CompletableFuture<Frame> getFrame() {
-        return session
-            .request(new V8ContextGetFrameRequest(frame, handle), V8ContextGetFrameResponse.DECODER)
-            .thenApply(V8ContextGetFrameResponse::result)
-            .thenApply(__h -> new Frame(session, __h));
+        return CefFutures.map(
+            session.request(new V8ContextGetFrameRequest(frame, handle), V8ContextGetFrameResponse.DECODER),
+            __r -> new Frame(session, __r.result()));
     }
 
     /**
@@ -103,10 +101,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     public CompletableFuture<V8Value> getGlobal() {
-        return session
-            .request(new V8ContextGetGlobalRequest(frame, handle), V8ContextGetGlobalResponse.DECODER)
-            .thenApply(V8ContextGetGlobalResponse::result)
-            .thenApply(__h -> new V8Value(session, frame, __h));
+        return CefFutures.map(
+            session.request(new V8ContextGetGlobalRequest(frame, handle), V8ContextGetGlobalResponse.DECODER),
+            __r -> new V8Value(session, frame, __r.result()));
     }
 
     /**
@@ -116,9 +113,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:184</a>
      */
     public CompletableFuture<Integer> enter() {
-        return session
-            .request(new V8ContextEnterRequest(frame, handle), V8ContextEnterResponse.DECODER)
-            .thenApply(V8ContextEnterResponse::result);
+        return CefFutures.map(
+            session.request(new V8ContextEnterRequest(frame, handle), V8ContextEnterResponse.DECODER),
+            V8ContextEnterResponse::result);
     }
 
     /**
@@ -128,9 +125,9 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:194</a>
      */
     public CompletableFuture<Integer> exit() {
-        return session
-            .request(new V8ContextExitRequest(frame, handle), V8ContextExitResponse.DECODER)
-            .thenApply(V8ContextExitResponse::result);
+        return CefFutures.map(
+            session.request(new V8ContextExitRequest(frame, handle), V8ContextExitResponse.DECODER),
+            V8ContextExitResponse::result);
     }
 
     /**
@@ -140,8 +137,8 @@ public final class V8Context {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:201</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
-        return session
-            .request(new V8ContextIsSameRequest(frame, handle, that), V8ContextIsSameResponse.DECODER)
-            .thenApply(V8ContextIsSameResponse::result);
+        return CefFutures.map(
+            session.request(new V8ContextIsSameRequest(frame, handle, that), V8ContextIsSameResponse.DECODER),
+            V8ContextIsSameResponse::result);
     }
 }

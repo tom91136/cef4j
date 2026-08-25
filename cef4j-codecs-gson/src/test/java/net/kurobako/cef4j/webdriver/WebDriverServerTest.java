@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.webdriver.gson.GsonWebDriverJsonCodec;
 import org.junit.jupiter.api.Test;
 
@@ -171,7 +172,8 @@ final class WebDriverServerTest {
             Response response = request(server, "POST", "/session", "{\"capabilities\":{}}");
             assertError(response, 500, "timeout");
             creation.complete(backend);
-            for (int i = 0; i < 50 && !backend.closed.get(); i++) Thread.sleep(2);
+            TestDeadline.after(Duration.ofSeconds(1))
+                    .until(backend.closed::get, Duration.ofMillis(2), "late backend cleanup");
             assertThat(backend.closed).isTrue();
         }
     }

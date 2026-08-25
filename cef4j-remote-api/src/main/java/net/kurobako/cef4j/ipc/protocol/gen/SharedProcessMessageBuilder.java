@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class SharedProcessMessageBuilder {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_shared_process_message_builder_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_shared_process_message_builder_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class SharedProcessMessageBuilder {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:58</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new SharedProcessMessageBuilderIsValidRequest(handle), SharedProcessMessageBuilderIsValidResponse.DECODER)
-            .thenApply(SharedProcessMessageBuilderIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new SharedProcessMessageBuilderIsValidRequest(handle), SharedProcessMessageBuilderIsValidResponse.DECODER),
+            SharedProcessMessageBuilderIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class SharedProcessMessageBuilder {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:64</a>
      */
     public CompletableFuture<Long> size() {
-        return session
-            .request(new SharedProcessMessageBuilderSizeRequest(handle), SharedProcessMessageBuilderSizeResponse.DECODER)
-            .thenApply(SharedProcessMessageBuilderSizeResponse::result);
+        return CefFutures.map(
+            session.request(new SharedProcessMessageBuilderSizeRequest(handle), SharedProcessMessageBuilderSizeResponse.DECODER),
+            SharedProcessMessageBuilderSizeResponse::result);
     }
 
     /**
@@ -66,9 +68,8 @@ public final class SharedProcessMessageBuilder {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:79</a>
      */
     public CompletableFuture<ProcessMessage> build() {
-        return session
-            .request(new SharedProcessMessageBuilderBuildRequest(handle), SharedProcessMessageBuilderBuildResponse.DECODER)
-            .thenApply(SharedProcessMessageBuilderBuildResponse::result)
-            .thenApply(__h -> new ProcessMessage(session, __h));
+        return CefFutures.map(
+            session.request(new SharedProcessMessageBuilderBuildRequest(handle), SharedProcessMessageBuilderBuildResponse.DECODER),
+            __r -> new ProcessMessage(session, __r.result()));
     }
 }

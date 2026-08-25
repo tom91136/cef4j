@@ -10,14 +10,15 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Assumptions;
 
 /** Shared behavioural contract run unchanged against in-process and Remote CEF browser surfaces. */
 public final class BrowserContract {
     private static final Duration MAX_EVALUATION_ATTEMPT = Duration.ofSeconds(5);
+    private static final Duration CONTRACT_TIMEOUT = Duration.ofMinutes(2);
 
     private BrowserContract() {}
 
@@ -33,32 +34,37 @@ public final class BrowserContract {
         BrowserBackend.SessionConfig config = new BrowserBackend.SessionConfig(site.url("/first"), 640, 480, timeout);
 
         try (BrowserSession session = backend.openSession(config)) {
-            assertPaint(session.awaitPaint(640, 480, timeout), 640, 480);
+            TestDeadline deadline = TestDeadline.after(CONTRACT_TIMEOUT);
+            assertPaint(session.awaitPaint(640, 480, deadline.remainingUpTo(timeout)), 640, 480);
 
-            assertThat(session.evaluateJavascript("1 + 2 + 3").get(timeout.toSeconds(), TimeUnit.SECONDS))
+            assertThat(deadline.await(session.evaluateJavascript("1 + 2 + 3"), "evaluate arithmetic", timeout))
                     .isEqualTo("6");
-            assertThat(session.evaluateJavascript("true").get(timeout.toSeconds(), TimeUnit.SECONDS))
+            assertThat(deadline.await(session.evaluateJavascript("true"), "evaluate true", timeout))
                     .isEqualTo("true");
-            assertThat(session.evaluateJavascript("false").get(timeout.toSeconds(), TimeUnit.SECONDS))
+            assertThat(deadline.await(session.evaluateJavascript("false"), "evaluate false", timeout))
                     .isEqualTo("false");
-            assertThat(session.evaluateJavascript("-7").get(timeout.toSeconds(), TimeUnit.SECONDS))
+            assertThat(deadline.await(session.evaluateJavascript("-7"), "evaluate integer", timeout))
                     .isEqualTo("-7");
             assertThat(Double.parseDouble(
-                            session.evaluateJavascript("Math.PI").get(timeout.toSeconds(), TimeUnit.SECONDS)))
+                            deadline.await(session.evaluateJavascript("Math.PI"), "evaluate floating point", timeout)))
                     .isEqualTo(Math.PI);
-            assertThat(session.evaluateJavascript("'hello'").get(timeout.toSeconds(), TimeUnit.SECONDS))
+            assertThat(deadline.await(session.evaluateJavascript("'hello'"), "evaluate string", timeout))
                     .isIn("hello", "\"hello\"");
-            assertThat(unquote(session.evaluateJavascript("document.getElementById('marker').textContent")
-                            .get(timeout.toSeconds(), TimeUnit.SECONDS)))
+            assertThat(unquote(deadline.await(
+                            session.evaluateJavascript("document.getElementById('marker').textContent"),
+                            "read initial marker",
+                            timeout)))
                     .isEqualTo("first");
 
-            session.loadUrl(site.url("/second")).get(timeout.toSeconds(), TimeUnit.SECONDS);
-            assertEventuallyEquals(session, "document.getElementById('marker').textContent", "second", timeout);
+            deadline.await(session.loadUrl(site.url("/second")), "navigate to second page", timeout);
+            assertEventuallyEquals(
+                    session, "document.getElementById('marker').textContent", "second", deadline, timeout);
 
             if (backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)) {
-                session.resizeViewport(512, 384).get(timeout.toSeconds(), TimeUnit.SECONDS);
-                assertPaint(session.awaitPaint(512, 384, timeout), 512, 384);
-                assertEventuallyEquals(session, "window.innerWidth + 'x' + window.innerHeight", "512x384", timeout);
+                deadline.await(session.resizeViewport(512, 384), "resize viewport", timeout);
+                assertPaint(session.awaitPaint(512, 384, deadline.remainingUpTo(timeout)), 512, 384);
+                assertEventuallyEquals(
+                        session, "window.innerWidth + 'x' + window.innerHeight", "512x384", deadline, timeout);
             }
         }
     }
@@ -114,15 +120,26 @@ public final class BrowserContract {
 
     static void assertEventuallyEquals(BrowserSession session, String expression, String expected, Duration timeout)
             throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
-        long attemptTimeout = Math.max(1L, Math.min(MAX_EVALUATION_ATTEMPT.toNanos(), timeout.toNanos() / 4L));
+        assertEventuallyEquals(session, expression, expected, TestDeadline.after(timeout), timeout);
+    }
+
+    static void assertEventuallyEquals(
+            BrowserSession session,
+            String expression,
+            String expected,
+            TestDeadline deadline,
+            Duration operationTimeout)
+            throws Exception {
+        long attemptTimeout = Math.max(1L, Math.min(MAX_EVALUATION_ATTEMPT.toNanos(), operationTimeout.toNanos() / 4L));
         String value = null;
         TimeoutException lastTimeout = null;
-        while (System.nanoTime() < deadline) {
-            long remaining = Math.max(1L, deadline - System.nanoTime());
+        Duration phaseBudget = deadline.remainingUpTo(operationTimeout);
+        TestDeadline phaseDeadline = TestDeadline.after(phaseBudget);
+        while (!phaseDeadline.isExpired()) {
             CompletableFuture<String> evaluation = session.evaluateJavascript(expression);
             try {
-                value = unquote(evaluation.get(Math.min(remaining, attemptTimeout), TimeUnit.NANOSECONDS));
+                value = unquote(
+                        phaseDeadline.await(evaluation, "evaluate " + expression, Duration.ofNanos(attemptTimeout)));
                 lastTimeout = null;
             } catch (TimeoutException timeoutException) {
                 evaluation.cancel(true);

@@ -85,6 +85,19 @@ class CefSessionImplTest {
     }
 
     @Test
+    void runtimeServerSessionFailsImmediatelyWhenReadyTaskIsRejected() {
+        AcknowledgingRuntimeTransport transport = new AcknowledgingRuntimeTransport(0, 0, true);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> new CefSessionImpl(transport, Duration.ofSeconds(2)))
+                .isInstanceOf(IllegalStateException.class)
+                .cause()
+                .isInstanceOfSatisfying(
+                        CefRemoteException.class,
+                        failure -> assertThat(failure.code()).isEqualTo(CefRemoteException.CODE_TASK_REJECTED));
+        assertThat(transport.closeCount).hasValue(1);
+    }
+
+    @Test
     void requestResolvesWhenResponseArrives() throws Exception {
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, "ping".getBytes(StandardCharsets.UTF_8)),
@@ -103,12 +116,48 @@ class CefSessionImplTest {
     }
 
     @Test
+    void cancelledRequestRejectsLateAndMismatchedResponses() throws Exception {
+        CompletableFuture<TestMessages.BytesView> cancelled = session.request(
+                new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+        TestPeer.DecodedFrame cancelledRequest = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "request");
+        assertThat(cancelled.cancel(true)).isTrue();
+
+        CompletableFuture<TestMessages.BytesView> active = session.request(
+                new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+        TestPeer.DecodedFrame activeRequest = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "request");
+        peer.sendResponse(cancelledRequest.header.corrId, MSG_PING, "late".getBytes(StandardCharsets.UTF_8));
+        peer.sendResponse(activeRequest.header.corrId, MSG_EVENT, "wrong".getBytes(StandardCharsets.UTF_8));
+        assertThat(active).isNotDone();
+
+        peer.sendResponse(activeRequest.header.corrId, MSG_PING, "ok".getBytes(StandardCharsets.UTF_8));
+        assertThat(active.get(2, TimeUnit.SECONDS).bytes).isEqualTo("ok".getBytes(StandardCharsets.UTF_8));
+        assertThat(cancelled).isCancelled();
+    }
+
+    @Test
     void malformedStructuredErrorsFailTheRequestAsProtocolErrors() throws Exception {
         assertMalformedError(new byte[] {1, 0, 0});
         assertMalformedError(new byte[] {1, 0, 0, 0, -1, -1, -1, -1});
         assertMalformedError(new byte[] {1, 0, 0, 0, 1, 0, 0, 4});
         assertMalformedError(new byte[] {1, 0, 0, 0, 2, 0, 0, 0, 'x'});
         assertMalformedError(new byte[] {1, 0, 0, 0, 0, 0, 0, 0, 9});
+    }
+
+    @Test
+    void taskSubmissionRejectionCompletesRequestImmediately() throws Exception {
+        CompletableFuture<TestMessages.BytesView> future = session.request(
+                new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+        TestPeer.DecodedFrame request = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "request");
+        peer.sendError(
+                request.header.corrId, MSG_PING, new byte[] {CefRemoteException.CODE_TASK_REJECTED, 0, 0, 0, 0, 0, 0, 0
+                });
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> future.get(2, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .cause()
+                .isInstanceOfSatisfying(
+                        CefRemoteException.class,
+                        failure -> assertThat(failure.code()).isEqualTo(CefRemoteException.CODE_TASK_REJECTED));
     }
 
     private void assertMalformedError(byte[] payload) throws Exception {
@@ -124,6 +173,7 @@ class CefSessionImplTest {
     private static final class AcknowledgingRuntimeTransport implements CefTransport {
         private final int requestsToDrop;
         private final long acknowledgementDelayMillis;
+        private final boolean rejectReady;
 
         @Nullable
         private Consumer<ByteBuffer> receiver;
@@ -132,6 +182,7 @@ class CefSessionImplTest {
         private ByteBuffer readyRequest;
 
         private int sendCount;
+        private final AtomicInteger closeCount = new AtomicInteger();
 
         private AcknowledgingRuntimeTransport() {
             this(0);
@@ -142,8 +193,14 @@ class CefSessionImplTest {
         }
 
         private AcknowledgingRuntimeTransport(int requestsToDrop, long acknowledgementDelayMillis) {
+            this(requestsToDrop, acknowledgementDelayMillis, false);
+        }
+
+        private AcknowledgingRuntimeTransport(
+                int requestsToDrop, long acknowledgementDelayMillis, boolean rejectReady) {
             this.requestsToDrop = requestsToDrop;
             this.acknowledgementDelayMillis = acknowledgementDelayMillis;
+            this.rejectReady = rejectReady;
         }
 
         @Override
@@ -153,8 +210,18 @@ class CefSessionImplTest {
             readyRequest.put(frame).flip();
             if (sendCount <= requestsToDrop) return;
             Envelope.Header request = Envelope.readHeader(readyRequest.duplicate());
-            ByteBuffer response = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(response, Envelope.Kind.RESPONSE, 0, request.corrId, request.messageId, 0);
+            int payloadLength = rejectReady ? 2 * Integer.BYTES : 0;
+            ByteBuffer response =
+                    ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLength).order(ByteOrder.LITTLE_ENDIAN);
+            Envelope.writeHeader(
+                    response,
+                    rejectReady ? Envelope.Kind.ERROR : Envelope.Kind.RESPONSE,
+                    0,
+                    request.corrId,
+                    request.messageId,
+                    payloadLength);
+            if (rejectReady)
+                response.putInt(CefRemoteException.CODE_TASK_REJECTED).putInt(0);
             response.flip();
             if (acknowledgementDelayMillis == 0) {
                 Objects.requireNonNull(receiver).accept(response);
@@ -193,7 +260,32 @@ class CefSessionImplTest {
         }
 
         @Override
-        public void close() {}
+        public void close() {
+            closeCount.incrementAndGet();
+        }
+    }
+
+    @Test
+    void concurrentCloseClosesTransportExactlyOnce() throws Exception {
+        AcknowledgingRuntimeTransport transport = new AcknowledgingRuntimeTransport();
+        CefSessionImpl concurrent = new CefSessionImpl(transport, Duration.ofSeconds(2));
+        CountDownLatch start = new CountDownLatch(1);
+        List<CompletableFuture<Void>> closers = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            closers.add(CompletableFuture.runAsync(() -> {
+                try {
+                    if (!start.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("close start not released");
+                    concurrent.close();
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new java.util.concurrent.CompletionException(interrupted);
+                }
+            }));
+        }
+        start.countDown();
+        CompletableFuture.allOf(closers.toArray(new CompletableFuture<?>[0])).get(5, TimeUnit.SECONDS);
+
+        assertThat(transport.closeCount).hasValue(1);
     }
 
     @Test
@@ -271,8 +363,12 @@ class CefSessionImplTest {
 
     @Test
     void onLatestReplaysEventReceivedBeforeSubscription() throws Exception {
+        CountDownLatch stored = new CountDownLatch(1);
+        CefSession.HandlerRegistration initial =
+                session.on(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), ignored -> stored.countDown());
         peer.sendEvent(MSG_EVENT, "ready".getBytes(StandardCharsets.UTF_8));
-        Thread.sleep(100);
+        assertThat(stored.await(2, TimeUnit.SECONDS)).isTrue();
+        initial.unregister();
 
         CountDownLatch arrived = new CountDownLatch(1);
         AtomicReference<TestMessages.BytesView> seen = new AtomicReference<>();
@@ -307,16 +403,19 @@ class CefSessionImplTest {
     @Test
     void unregisterStopsDelivery() throws Exception {
         AtomicInteger count = new AtomicInteger();
-        CefSession.HandlerRegistration reg =
-                session.on(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), v -> count.incrementAndGet());
+        CountDownLatch first = new CountDownLatch(1);
+        CountDownLatch unexpected = new CountDownLatch(1);
+        CefSession.HandlerRegistration reg = session.on(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), v -> {
+            if (count.incrementAndGet() == 1) first.countDown();
+            else unexpected.countDown();
+        });
         peer.sendEvent(MSG_EVENT, new byte[] {1});
-        long deadline = System.currentTimeMillis() + 2000;
-        while (count.get() == 0 && System.currentTimeMillis() < deadline) Thread.sleep(20);
+        assertThat(first.await(2, TimeUnit.SECONDS)).isTrue();
         assertThat(count.get()).isEqualTo(1);
 
         reg.unregister();
         peer.sendEvent(MSG_EVENT, new byte[] {2});
-        Thread.sleep(300);
+        assertThat(unexpected.await(300, TimeUnit.MILLISECONDS)).isFalse();
         assertThat(count.get()).as("after unregister, no further deliveries").isEqualTo(1);
     }
 
@@ -402,7 +501,6 @@ class CefSessionImplTest {
     @Test
     void orphanResponseDoesNotCrashSession() throws Exception {
         peer.sendResponse(/*corrId*/ 12345, MSG_PING, new byte[] {1, 2, 3});
-        Thread.sleep(200);
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
         TestPeer.DecodedFrame f = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "follow-up request");

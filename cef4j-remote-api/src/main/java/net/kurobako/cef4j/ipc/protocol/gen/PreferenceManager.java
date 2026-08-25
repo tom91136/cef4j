@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class PreferenceManager {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_preference_manager_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_preference_manager_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class PreferenceManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:131</a>
      */
     public CompletableFuture<Integer> hasPreference(@Nonnull String name) {
-        return session
-            .request(new PreferenceManagerHasPreferenceRequest(handle, name), PreferenceManagerHasPreferenceResponse.DECODER)
-            .thenApply(PreferenceManagerHasPreferenceResponse::result);
+        return CefFutures.map(
+            session.request(new PreferenceManagerHasPreferenceRequest(handle, name), PreferenceManagerHasPreferenceResponse.DECODER),
+            PreferenceManagerHasPreferenceResponse::result);
     }
 
     /**
@@ -54,10 +56,9 @@ public final class PreferenceManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:138</a>
      */
     public CompletableFuture<Value> getPreference(@Nonnull String name) {
-        return session
-            .request(new PreferenceManagerGetPreferenceRequest(handle, name), PreferenceManagerGetPreferenceResponse.DECODER)
-            .thenApply(PreferenceManagerGetPreferenceResponse::result)
-            .thenApply(__h -> new Value(session, __h));
+        return CefFutures.map(
+            session.request(new PreferenceManagerGetPreferenceRequest(handle, name), PreferenceManagerGetPreferenceResponse.DECODER),
+            __r -> new Value(session, __r.result()));
     }
 
     /**
@@ -67,10 +68,9 @@ public final class PreferenceManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:148</a>
      */
     public CompletableFuture<DictionaryValue> getAllPreferences(int includeDefaults) {
-        return session
-            .request(new PreferenceManagerGetAllPreferencesRequest(handle, includeDefaults), PreferenceManagerGetAllPreferencesResponse.DECODER)
-            .thenApply(PreferenceManagerGetAllPreferencesResponse::result)
-            .thenApply(__h -> new DictionaryValue(session, __h));
+        return CefFutures.map(
+            session.request(new PreferenceManagerGetAllPreferencesRequest(handle, includeDefaults), PreferenceManagerGetAllPreferencesResponse.DECODER),
+            __r -> new DictionaryValue(session, __r.result()));
     }
 
     /**
@@ -80,9 +80,9 @@ public final class PreferenceManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:160</a>
      */
     public CompletableFuture<Integer> canSetPreference(@Nonnull String name) {
-        return session
-            .request(new PreferenceManagerCanSetPreferenceRequest(handle, name), PreferenceManagerCanSetPreferenceResponse.DECODER)
-            .thenApply(PreferenceManagerCanSetPreferenceResponse::result);
+        return CefFutures.map(
+            session.request(new PreferenceManagerCanSetPreferenceRequest(handle, name), PreferenceManagerCanSetPreferenceResponse.DECODER),
+            PreferenceManagerCanSetPreferenceResponse::result);
     }
 
     /**
@@ -94,9 +94,9 @@ public final class PreferenceManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:169</a>
      */
     public CompletableFuture<Integer> setPreference(@Nonnull String name, @Nonnull RemoteHandle value, @Nonnull String error) {
-        return session
-            .request(new PreferenceManagerSetPreferenceRequest(handle, name, value, error), PreferenceManagerSetPreferenceResponse.DECODER)
-            .thenApply(PreferenceManagerSetPreferenceResponse::result);
+        return CefFutures.map(
+            session.request(new PreferenceManagerSetPreferenceRequest(handle, name, value, error), PreferenceManagerSetPreferenceResponse.DECODER),
+            PreferenceManagerSetPreferenceResponse::result);
     }
 
     /**
@@ -109,8 +109,8 @@ public final class PreferenceManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:183</a>
      */
     public CompletableFuture<RemoteHandle> addPreferenceObserver(@Nonnull String name, @Nonnull RemoteHandle observer) {
-        return session
-            .request(new PreferenceManagerAddPreferenceObserverRequest(handle, name, observer), PreferenceManagerAddPreferenceObserverResponse.DECODER)
-            .thenApply(PreferenceManagerAddPreferenceObserverResponse::result);
+        return CefFutures.map(
+            session.request(new PreferenceManagerAddPreferenceObserverRequest(handle, name, observer), PreferenceManagerAddPreferenceObserverResponse.DECODER),
+            PreferenceManagerAddPreferenceObserverResponse::result);
     }
 }

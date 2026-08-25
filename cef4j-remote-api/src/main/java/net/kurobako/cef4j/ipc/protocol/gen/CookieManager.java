@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class CookieManager {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_cookie_manager_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_cookie_manager_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class CookieManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:69</a>
      */
     public CompletableFuture<Integer> visitAllCookies(@Nonnull RemoteHandle visitor) {
-        return session
-            .request(new CookieManagerVisitAllCookiesRequest(handle, visitor), CookieManagerVisitAllCookiesResponse.DECODER)
-            .thenApply(CookieManagerVisitAllCookiesResponse::result);
+        return CefFutures.map(
+            session.request(new CookieManagerVisitAllCookiesRequest(handle, visitor), CookieManagerVisitAllCookiesResponse.DECODER),
+            CookieManagerVisitAllCookiesResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class CookieManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:77</a>
      */
     public CompletableFuture<Integer> visitUrlCookies(@Nonnull String url, int includeHttpOnly, @Nonnull RemoteHandle visitor) {
-        return session
-            .request(new CookieManagerVisitUrlCookiesRequest(handle, url, includeHttpOnly, visitor), CookieManagerVisitUrlCookiesResponse.DECODER)
-            .thenApply(CookieManagerVisitUrlCookiesResponse::result);
+        return CefFutures.map(
+            session.request(new CookieManagerVisitUrlCookiesRequest(handle, url, includeHttpOnly, visitor), CookieManagerVisitUrlCookiesResponse.DECODER),
+            CookieManagerVisitUrlCookiesResponse::result);
     }
 
     /**
@@ -70,9 +72,9 @@ public final class CookieManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:103</a>
      */
     public CompletableFuture<Integer> deleteCookies(@Nonnull String url, @Nonnull String cookieName, @Nonnull RemoteHandle callback) {
-        return session
-            .request(new CookieManagerDeleteCookiesRequest(handle, url, cookieName, callback), CookieManagerDeleteCookiesResponse.DECODER)
-            .thenApply(CookieManagerDeleteCookiesResponse::result);
+        return CefFutures.map(
+            session.request(new CookieManagerDeleteCookiesRequest(handle, url, cookieName, callback), CookieManagerDeleteCookiesResponse.DECODER),
+            CookieManagerDeleteCookiesResponse::result);
     }
 
     /**
@@ -84,8 +86,8 @@ public final class CookieManager {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:120</a>
      */
     public CompletableFuture<Integer> flushStore(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new CookieManagerFlushStoreRequest(handle, callback), CookieManagerFlushStoreResponse.DECODER)
-            .thenApply(CookieManagerFlushStoreResponse::result);
+        return CefFutures.map(
+            session.request(new CookieManagerFlushStoreRequest(handle, callback), CookieManagerFlushStoreResponse.DECODER),
+            CookieManagerFlushStoreResponse::result);
     }
 }

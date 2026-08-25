@@ -99,11 +99,10 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     private static void selectSourceText(CefBrowserPanel panel, Layout layout) throws Exception {
         focusSource(panel, layout);
         invokeShortcut(panel, KeyEvent.VK_A);
-        executeJavaScript(
+        executeAndAwaitScript(
                 panel,
                 "var el = window.__getSrcEl && window.__getSrcEl();"
-                        + "if (el) { el.focus(); if (el.select) { el.select(); } if (window.__syncTitle) { window.__syncTitle(); } }");
-        Thread.sleep(50);
+                        + "if (el) { el.focus(); if (el.select) { el.select(); } }");
     }
 
     private static String iterationText(int iteration) {
@@ -146,14 +145,23 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             CefBrowserPanel panel, @SuppressWarnings("UnusedVariable") Layout layout, boolean source, double x)
             throws Exception {
         leftClick(panel, x, TEXT_Y);
-        executeJavaScript(
+        executeAndAwaitScript(
                 panel,
                 source
                         ? "var el = window.__getSrcEl && window.__getSrcEl();"
                                 + "if (el) { el.focus(); if (el.setSelectionRange) { el.setSelectionRange(el.value.length, el.value.length); } }"
                         : "var el = window.__getDstEl && window.__getDstEl();"
                                 + "if (el) { el.focus(); if (el.setSelectionRange) { el.setSelectionRange(el.value.length, el.value.length); } }");
-        Thread.sleep(50);
+    }
+
+    private static void executeAndAwaitScript(CefBrowserPanel panel, String script) throws Exception {
+        String previousTitle = titleFor(panel);
+        String marker = "cef4j-script-" + System.nanoTime();
+        executeJavaScript(panel, script + ";document.title='" + marker + "';");
+        assertThat(waitUntil(() -> titleFor(panel).equals(marker), 2_000)).isTrue();
+        executeJavaScript(panel, "if (window.__syncTitle) { window.__syncTitle(); }");
+        assertThat(waitUntil(() -> titleFor(panel).equals(previousTitle), 2_000))
+                .isTrue();
     }
 
     private static void leftClick(CefBrowserPanel panel, double x, double y) throws Exception {
@@ -183,7 +191,7 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             panel.dispatchEvent(
                     new MouseEvent(panel, MouseEvent.MOUSE_CLICKED, now, 0, px, py, 1, false, MouseEvent.BUTTON1));
         });
-        Thread.sleep(75);
+        drainCefUi();
     }
 
     private static void invokeShortcut(CefBrowserPanel panel, int keyCode) throws Exception {
@@ -206,7 +214,7 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             dispatchKey(panel, now, KeyEvent.KEY_RELEASED, keyCode, KeyEvent.CHAR_UNDEFINED, InputEvent.CTRL_DOWN_MASK);
             dispatchKey(panel, now, KeyEvent.KEY_RELEASED, KeyEvent.VK_CONTROL, KeyEvent.CHAR_UNDEFINED, 0);
         });
-        Thread.sleep(75);
+        drainCefUi();
     }
 
     private static void dispatchKey(
@@ -230,7 +238,7 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
                 frame.paste();
                 break;
         }
-        Thread.sleep(75);
+        drainCefUi();
     }
 
     private static String clipboardPageHtml(Layout layout) {

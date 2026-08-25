@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class SharedMemoryRegion {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_shared_memory_region_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_shared_memory_region_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class SharedMemoryRegion {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:49</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new SharedMemoryRegionIsValidRequest(handle), SharedMemoryRegionIsValidResponse.DECODER)
-            .thenApply(SharedMemoryRegionIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new SharedMemoryRegionIsValidRequest(handle), SharedMemoryRegionIsValidResponse.DECODER),
+            SharedMemoryRegionIsValidResponse::result);
     }
 
     /**
@@ -54,8 +56,8 @@ public final class SharedMemoryRegion {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:55</a>
      */
     public CompletableFuture<Long> size() {
-        return session
-            .request(new SharedMemoryRegionSizeRequest(handle), SharedMemoryRegionSizeResponse.DECODER)
-            .thenApply(SharedMemoryRegionSizeResponse::result);
+        return CefFutures.map(
+            session.request(new SharedMemoryRegionSizeRequest(handle), SharedMemoryRegionSizeResponse.DECODER),
+            SharedMemoryRegionSizeResponse::result);
     }
 }

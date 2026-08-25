@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class ComponentUpdater {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_component_updater_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_component_updater_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class ComponentUpdater {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:121</a>
      */
     public CompletableFuture<Long> getComponentCount() {
-        return session
-            .request(new ComponentUpdaterGetComponentCountRequest(handle), ComponentUpdaterGetComponentCountResponse.DECODER)
-            .thenApply(ComponentUpdaterGetComponentCountResponse::result);
+        return CefFutures.map(
+            session.request(new ComponentUpdaterGetComponentCountRequest(handle), ComponentUpdaterGetComponentCountResponse.DECODER),
+            ComponentUpdaterGetComponentCountResponse::result);
     }
 
     /**
@@ -54,10 +56,9 @@ public final class ComponentUpdater {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
      */
     public CompletableFuture<Component> getComponentById(@Nonnull String componentId) {
-        return session
-            .request(new ComponentUpdaterGetComponentByIdRequest(handle, componentId), ComponentUpdaterGetComponentByIdResponse.DECODER)
-            .thenApply(ComponentUpdaterGetComponentByIdResponse::result)
-            .thenApply(__h -> new Component(session, __h));
+        return CefFutures.map(
+            session.request(new ComponentUpdaterGetComponentByIdRequest(handle, componentId), ComponentUpdaterGetComponentByIdResponse.DECODER),
+            __r -> new Component(session, __r.result()));
     }
 
     /**
@@ -71,8 +72,8 @@ public final class ComponentUpdater {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
      */
     public CompletableFuture<Void> update(@Nonnull String componentId, int priority, @Nonnull RemoteHandle callback) {
-        return session
-            .request(new ComponentUpdaterUpdateRequest(handle, componentId, priority, callback), ComponentUpdaterUpdateResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new ComponentUpdaterUpdateRequest(handle, componentId, priority, callback), ComponentUpdaterUpdateResponse.DECODER),
+            r -> null);
     }
 }

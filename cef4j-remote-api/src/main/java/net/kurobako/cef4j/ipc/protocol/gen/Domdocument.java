@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -38,11 +39,11 @@ public final class Domdocument {
     /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
       * cef_domdocument_t only exists in the renderer subprocess's table state. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(
+        return CefFutures.map(
+            session.request(
                 new RendererReleaseHandleRequest(frame, handle, "cef_domdocument_t"),
-                RendererReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+                RendererReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -52,9 +53,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:75</a>
      */
     public CompletableFuture<Integer> getType() {
-        return session
-            .request(new DomdocumentGetTypeRequest(frame, handle), DomdocumentGetTypeResponse.DECODER)
-            .thenApply(DomdocumentGetTypeResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetTypeRequest(frame, handle), DomdocumentGetTypeResponse.DECODER),
+            DomdocumentGetTypeResponse::result);
     }
 
     /**
@@ -64,10 +65,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:81</a>
      */
     public CompletableFuture<Domnode> getDocument() {
-        return session
-            .request(new DomdocumentGetDocumentRequest(frame, handle), DomdocumentGetDocumentResponse.DECODER)
-            .thenApply(DomdocumentGetDocumentResponse::result)
-            .thenApply(__h -> new Domnode(session, frame, __h));
+        return CefFutures.map(
+            session.request(new DomdocumentGetDocumentRequest(frame, handle), DomdocumentGetDocumentResponse.DECODER),
+            __r -> new Domnode(session, frame, __r.result()));
     }
 
     /**
@@ -77,10 +77,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:87</a>
      */
     public CompletableFuture<Domnode> getBody() {
-        return session
-            .request(new DomdocumentGetBodyRequest(frame, handle), DomdocumentGetBodyResponse.DECODER)
-            .thenApply(DomdocumentGetBodyResponse::result)
-            .thenApply(__h -> new Domnode(session, frame, __h));
+        return CefFutures.map(
+            session.request(new DomdocumentGetBodyRequest(frame, handle), DomdocumentGetBodyResponse.DECODER),
+            __r -> new Domnode(session, frame, __r.result()));
     }
 
     /**
@@ -90,10 +89,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:93</a>
      */
     public CompletableFuture<Domnode> getHead() {
-        return session
-            .request(new DomdocumentGetHeadRequest(frame, handle), DomdocumentGetHeadResponse.DECODER)
-            .thenApply(DomdocumentGetHeadResponse::result)
-            .thenApply(__h -> new Domnode(session, frame, __h));
+        return CefFutures.map(
+            session.request(new DomdocumentGetHeadRequest(frame, handle), DomdocumentGetHeadResponse.DECODER),
+            __r -> new Domnode(session, frame, __r.result()));
     }
 
     /**
@@ -103,9 +101,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:99</a>
      */
     public CompletableFuture<String> getTitle() {
-        return session
-            .request(new DomdocumentGetTitleRequest(frame, handle), DomdocumentGetTitleResponse.DECODER)
-            .thenApply(DomdocumentGetTitleResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetTitleRequest(frame, handle), DomdocumentGetTitleResponse.DECODER),
+            DomdocumentGetTitleResponse::result);
     }
 
     /**
@@ -115,10 +113,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:105</a>
      */
     public CompletableFuture<Domnode> getElementById(@Nonnull String id) {
-        return session
-            .request(new DomdocumentGetElementByIdRequest(frame, handle, id), DomdocumentGetElementByIdResponse.DECODER)
-            .thenApply(DomdocumentGetElementByIdResponse::result)
-            .thenApply(__h -> new Domnode(session, frame, __h));
+        return CefFutures.map(
+            session.request(new DomdocumentGetElementByIdRequest(frame, handle, id), DomdocumentGetElementByIdResponse.DECODER),
+            __r -> new Domnode(session, frame, __r.result()));
     }
 
     /**
@@ -128,10 +125,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:111</a>
      */
     public CompletableFuture<Domnode> getFocusedNode() {
-        return session
-            .request(new DomdocumentGetFocusedNodeRequest(frame, handle), DomdocumentGetFocusedNodeResponse.DECODER)
-            .thenApply(DomdocumentGetFocusedNodeResponse::result)
-            .thenApply(__h -> new Domnode(session, frame, __h));
+        return CefFutures.map(
+            session.request(new DomdocumentGetFocusedNodeRequest(frame, handle), DomdocumentGetFocusedNodeResponse.DECODER),
+            __r -> new Domnode(session, frame, __r.result()));
     }
 
     /**
@@ -141,9 +137,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:117</a>
      */
     public CompletableFuture<Integer> hasSelection() {
-        return session
-            .request(new DomdocumentHasSelectionRequest(frame, handle), DomdocumentHasSelectionResponse.DECODER)
-            .thenApply(DomdocumentHasSelectionResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentHasSelectionRequest(frame, handle), DomdocumentHasSelectionResponse.DECODER),
+            DomdocumentHasSelectionResponse::result);
     }
 
     /**
@@ -153,9 +149,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:123</a>
      */
     public CompletableFuture<Integer> getSelectionStartOffset() {
-        return session
-            .request(new DomdocumentGetSelectionStartOffsetRequest(frame, handle), DomdocumentGetSelectionStartOffsetResponse.DECODER)
-            .thenApply(DomdocumentGetSelectionStartOffsetResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetSelectionStartOffsetRequest(frame, handle), DomdocumentGetSelectionStartOffsetResponse.DECODER),
+            DomdocumentGetSelectionStartOffsetResponse::result);
     }
 
     /**
@@ -165,9 +161,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:129</a>
      */
     public CompletableFuture<Integer> getSelectionEndOffset() {
-        return session
-            .request(new DomdocumentGetSelectionEndOffsetRequest(frame, handle), DomdocumentGetSelectionEndOffsetResponse.DECODER)
-            .thenApply(DomdocumentGetSelectionEndOffsetResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetSelectionEndOffsetRequest(frame, handle), DomdocumentGetSelectionEndOffsetResponse.DECODER),
+            DomdocumentGetSelectionEndOffsetResponse::result);
     }
 
     /**
@@ -177,9 +173,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:135</a>
      */
     public CompletableFuture<String> getSelectionAsMarkup() {
-        return session
-            .request(new DomdocumentGetSelectionAsMarkupRequest(frame, handle), DomdocumentGetSelectionAsMarkupResponse.DECODER)
-            .thenApply(DomdocumentGetSelectionAsMarkupResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetSelectionAsMarkupRequest(frame, handle), DomdocumentGetSelectionAsMarkupResponse.DECODER),
+            DomdocumentGetSelectionAsMarkupResponse::result);
     }
 
     /**
@@ -189,9 +185,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:141</a>
      */
     public CompletableFuture<String> getSelectionAsText() {
-        return session
-            .request(new DomdocumentGetSelectionAsTextRequest(frame, handle), DomdocumentGetSelectionAsTextResponse.DECODER)
-            .thenApply(DomdocumentGetSelectionAsTextResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetSelectionAsTextRequest(frame, handle), DomdocumentGetSelectionAsTextResponse.DECODER),
+            DomdocumentGetSelectionAsTextResponse::result);
     }
 
     /**
@@ -201,9 +197,9 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:147</a>
      */
     public CompletableFuture<String> getBaseUrl() {
-        return session
-            .request(new DomdocumentGetBaseUrlRequest(frame, handle), DomdocumentGetBaseUrlResponse.DECODER)
-            .thenApply(DomdocumentGetBaseUrlResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetBaseUrlRequest(frame, handle), DomdocumentGetBaseUrlResponse.DECODER),
+            DomdocumentGetBaseUrlResponse::result);
     }
 
     /**
@@ -213,8 +209,8 @@ public final class Domdocument {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:153</a>
      */
     public CompletableFuture<String> getCompleteUrl(@Nonnull String partialURL) {
-        return session
-            .request(new DomdocumentGetCompleteUrlRequest(frame, handle, partialURL), DomdocumentGetCompleteUrlResponse.DECODER)
-            .thenApply(DomdocumentGetCompleteUrlResponse::result);
+        return CefFutures.map(
+            session.request(new DomdocumentGetCompleteUrlRequest(frame, handle, partialURL), DomdocumentGetCompleteUrlResponse.DECODER),
+            DomdocumentGetCompleteUrlResponse::result);
     }
 }

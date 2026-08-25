@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class Display {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_display_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_display_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,29 +44,29 @@ public final class Display {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     public CompletableFuture<Long> getId() {
-        return session
-            .request(new DisplayGetIdRequest(handle), DisplayGetIdResponse.DECODER)
-            .thenApply(DisplayGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new DisplayGetIdRequest(handle), DisplayGetIdResponse.DECODER),
+            DisplayGetIdResponse::result);
     }
 
     /** Dispatches {@code get_bounds} to the runtime server. */
     public CompletableFuture<Rect> getBounds() {
-        return session
-            .request(new DisplayGetBoundsRequest(handle), DisplayGetBoundsResponse.DECODER)
-            .thenApply(DisplayGetBoundsResponse::result);
+        return CefFutures.map(
+            session.request(new DisplayGetBoundsRequest(handle), DisplayGetBoundsResponse.DECODER),
+            DisplayGetBoundsResponse::result);
     }
 
     /** Dispatches {@code get_work_area} to the runtime server. */
     public CompletableFuture<Rect> getWorkArea() {
-        return session
-            .request(new DisplayGetWorkAreaRequest(handle), DisplayGetWorkAreaResponse.DECODER)
-            .thenApply(DisplayGetWorkAreaResponse::result);
+        return CefFutures.map(
+            session.request(new DisplayGetWorkAreaRequest(handle), DisplayGetWorkAreaResponse.DECODER),
+            DisplayGetWorkAreaResponse::result);
     }
 
     /** Dispatches {@code get_rotation} to the runtime server. */
     public CompletableFuture<Integer> getRotation() {
-        return session
-            .request(new DisplayGetRotationRequest(handle), DisplayGetRotationResponse.DECODER)
-            .thenApply(DisplayGetRotationResponse::result);
+        return CefFutures.map(
+            session.request(new DisplayGetRotationRequest(handle), DisplayGetRotationResponse.DECODER),
+            DisplayGetRotationResponse::result);
     }
 }

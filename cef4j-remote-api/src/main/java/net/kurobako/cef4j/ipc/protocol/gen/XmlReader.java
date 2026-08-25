@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class XmlReader {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_xml_reader_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_xml_reader_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:64</a>
      */
     public CompletableFuture<Integer> moveToNextNode() {
-        return session
-            .request(new XmlReaderMoveToNextNodeRequest(handle), XmlReaderMoveToNextNodeResponse.DECODER)
-            .thenApply(XmlReaderMoveToNextNodeResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToNextNodeRequest(handle), XmlReaderMoveToNextNodeResponse.DECODER),
+            XmlReaderMoveToNextNodeResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
      */
     public CompletableFuture<Integer> close() {
-        return session
-            .request(new XmlReaderCloseRequest(handle), XmlReaderCloseResponse.DECODER)
-            .thenApply(XmlReaderCloseResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderCloseRequest(handle), XmlReaderCloseResponse.DECODER),
+            XmlReaderCloseResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:79</a>
      */
     public CompletableFuture<Integer> hasError() {
-        return session
-            .request(new XmlReaderHasErrorRequest(handle), XmlReaderHasErrorResponse.DECODER)
-            .thenApply(XmlReaderHasErrorResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderHasErrorRequest(handle), XmlReaderHasErrorResponse.DECODER),
+            XmlReaderHasErrorResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
      */
     public CompletableFuture<String> getError() {
-        return session
-            .request(new XmlReaderGetErrorRequest(handle), XmlReaderGetErrorResponse.DECODER)
-            .thenApply(XmlReaderGetErrorResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetErrorRequest(handle), XmlReaderGetErrorResponse.DECODER),
+            XmlReaderGetErrorResponse::result);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
      */
     public CompletableFuture<Integer> getType() {
-        return session
-            .request(new XmlReaderGetTypeRequest(handle), XmlReaderGetTypeResponse.DECODER)
-            .thenApply(XmlReaderGetTypeResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetTypeRequest(handle), XmlReaderGetTypeResponse.DECODER),
+            XmlReaderGetTypeResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:100</a>
      */
     public CompletableFuture<Integer> getDepth() {
-        return session
-            .request(new XmlReaderGetDepthRequest(handle), XmlReaderGetDepthResponse.DECODER)
-            .thenApply(XmlReaderGetDepthResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetDepthRequest(handle), XmlReaderGetDepthResponse.DECODER),
+            XmlReaderGetDepthResponse::result);
     }
 
     /**
@@ -114,9 +116,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:106</a>
      */
     public CompletableFuture<String> getLocalName() {
-        return session
-            .request(new XmlReaderGetLocalNameRequest(handle), XmlReaderGetLocalNameResponse.DECODER)
-            .thenApply(XmlReaderGetLocalNameResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetLocalNameRequest(handle), XmlReaderGetLocalNameResponse.DECODER),
+            XmlReaderGetLocalNameResponse::result);
     }
 
     /**
@@ -126,9 +128,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:113</a>
      */
     public CompletableFuture<String> getPrefix() {
-        return session
-            .request(new XmlReaderGetPrefixRequest(handle), XmlReaderGetPrefixResponse.DECODER)
-            .thenApply(XmlReaderGetPrefixResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetPrefixRequest(handle), XmlReaderGetPrefixResponse.DECODER),
+            XmlReaderGetPrefixResponse::result);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:120</a>
      */
     public CompletableFuture<String> getQualifiedName() {
-        return session
-            .request(new XmlReaderGetQualifiedNameRequest(handle), XmlReaderGetQualifiedNameResponse.DECODER)
-            .thenApply(XmlReaderGetQualifiedNameResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetQualifiedNameRequest(handle), XmlReaderGetQualifiedNameResponse.DECODER),
+            XmlReaderGetQualifiedNameResponse::result);
     }
 
     /**
@@ -150,9 +152,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:127</a>
      */
     public CompletableFuture<String> getNamespaceUri() {
-        return session
-            .request(new XmlReaderGetNamespaceUriRequest(handle), XmlReaderGetNamespaceUriResponse.DECODER)
-            .thenApply(XmlReaderGetNamespaceUriResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetNamespaceUriRequest(handle), XmlReaderGetNamespaceUriResponse.DECODER),
+            XmlReaderGetNamespaceUriResponse::result);
     }
 
     /**
@@ -162,9 +164,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:134</a>
      */
     public CompletableFuture<String> getBaseUri() {
-        return session
-            .request(new XmlReaderGetBaseUriRequest(handle), XmlReaderGetBaseUriResponse.DECODER)
-            .thenApply(XmlReaderGetBaseUriResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetBaseUriRequest(handle), XmlReaderGetBaseUriResponse.DECODER),
+            XmlReaderGetBaseUriResponse::result);
     }
 
     /**
@@ -174,9 +176,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:141</a>
      */
     public CompletableFuture<String> getXmlLang() {
-        return session
-            .request(new XmlReaderGetXmlLangRequest(handle), XmlReaderGetXmlLangResponse.DECODER)
-            .thenApply(XmlReaderGetXmlLangResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetXmlLangRequest(handle), XmlReaderGetXmlLangResponse.DECODER),
+            XmlReaderGetXmlLangResponse::result);
     }
 
     /**
@@ -186,9 +188,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:148</a>
      */
     public CompletableFuture<Integer> isEmptyElement() {
-        return session
-            .request(new XmlReaderIsEmptyElementRequest(handle), XmlReaderIsEmptyElementResponse.DECODER)
-            .thenApply(XmlReaderIsEmptyElementResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderIsEmptyElementRequest(handle), XmlReaderIsEmptyElementResponse.DECODER),
+            XmlReaderIsEmptyElementResponse::result);
     }
 
     /**
@@ -198,9 +200,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:155</a>
      */
     public CompletableFuture<Integer> hasValue() {
-        return session
-            .request(new XmlReaderHasValueRequest(handle), XmlReaderHasValueResponse.DECODER)
-            .thenApply(XmlReaderHasValueResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderHasValueRequest(handle), XmlReaderHasValueResponse.DECODER),
+            XmlReaderHasValueResponse::result);
     }
 
     /**
@@ -210,9 +212,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:161</a>
      */
     public CompletableFuture<String> getValue() {
-        return session
-            .request(new XmlReaderGetValueRequest(handle), XmlReaderGetValueResponse.DECODER)
-            .thenApply(XmlReaderGetValueResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetValueRequest(handle), XmlReaderGetValueResponse.DECODER),
+            XmlReaderGetValueResponse::result);
     }
 
     /**
@@ -222,9 +224,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:167</a>
      */
     public CompletableFuture<Integer> hasAttributes() {
-        return session
-            .request(new XmlReaderHasAttributesRequest(handle), XmlReaderHasAttributesResponse.DECODER)
-            .thenApply(XmlReaderHasAttributesResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderHasAttributesRequest(handle), XmlReaderHasAttributesResponse.DECODER),
+            XmlReaderHasAttributesResponse::result);
     }
 
     /**
@@ -234,9 +236,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:173</a>
      */
     public CompletableFuture<Long> getAttributeCount() {
-        return session
-            .request(new XmlReaderGetAttributeCountRequest(handle), XmlReaderGetAttributeCountResponse.DECODER)
-            .thenApply(XmlReaderGetAttributeCountResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetAttributeCountRequest(handle), XmlReaderGetAttributeCountResponse.DECODER),
+            XmlReaderGetAttributeCountResponse::result);
     }
 
     /**
@@ -248,9 +250,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:179</a>
      */
     public CompletableFuture<String> getAttributeByindex(int index) {
-        return session
-            .request(new XmlReaderGetAttributeByindexRequest(handle, index), XmlReaderGetAttributeByindexResponse.DECODER)
-            .thenApply(XmlReaderGetAttributeByindexResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetAttributeByindexRequest(handle, index), XmlReaderGetAttributeByindexResponse.DECODER),
+            XmlReaderGetAttributeByindexResponse::result);
     }
 
     /**
@@ -260,9 +262,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
      */
     public CompletableFuture<String> getAttributeByqname(@Nonnull String qualifiedName) {
-        return session
-            .request(new XmlReaderGetAttributeByqnameRequest(handle, qualifiedName), XmlReaderGetAttributeByqnameResponse.DECODER)
-            .thenApply(XmlReaderGetAttributeByqnameResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetAttributeByqnameRequest(handle, qualifiedName), XmlReaderGetAttributeByqnameResponse.DECODER),
+            XmlReaderGetAttributeByqnameResponse::result);
     }
 
     /**
@@ -272,9 +274,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
      */
     public CompletableFuture<String> getAttributeBylname(@Nonnull String localName, @Nonnull String namespaceURI) {
-        return session
-            .request(new XmlReaderGetAttributeBylnameRequest(handle, localName, namespaceURI), XmlReaderGetAttributeBylnameResponse.DECODER)
-            .thenApply(XmlReaderGetAttributeBylnameResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetAttributeBylnameRequest(handle, localName, namespaceURI), XmlReaderGetAttributeBylnameResponse.DECODER),
+            XmlReaderGetAttributeBylnameResponse::result);
     }
 
     /**
@@ -284,9 +286,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:199</a>
      */
     public CompletableFuture<String> getInnerXml() {
-        return session
-            .request(new XmlReaderGetInnerXmlRequest(handle), XmlReaderGetInnerXmlResponse.DECODER)
-            .thenApply(XmlReaderGetInnerXmlResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetInnerXmlRequest(handle), XmlReaderGetInnerXmlResponse.DECODER),
+            XmlReaderGetInnerXmlResponse::result);
     }
 
     /**
@@ -296,9 +298,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:205</a>
      */
     public CompletableFuture<String> getOuterXml() {
-        return session
-            .request(new XmlReaderGetOuterXmlRequest(handle), XmlReaderGetOuterXmlResponse.DECODER)
-            .thenApply(XmlReaderGetOuterXmlResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetOuterXmlRequest(handle), XmlReaderGetOuterXmlResponse.DECODER),
+            XmlReaderGetOuterXmlResponse::result);
     }
 
     /**
@@ -308,9 +310,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:211</a>
      */
     public CompletableFuture<Integer> getLineNumber() {
-        return session
-            .request(new XmlReaderGetLineNumberRequest(handle), XmlReaderGetLineNumberResponse.DECODER)
-            .thenApply(XmlReaderGetLineNumberResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderGetLineNumberRequest(handle), XmlReaderGetLineNumberResponse.DECODER),
+            XmlReaderGetLineNumberResponse::result);
     }
 
     /**
@@ -322,9 +324,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:222</a>
      */
     public CompletableFuture<Integer> moveToAttributeByindex(int index) {
-        return session
-            .request(new XmlReaderMoveToAttributeByindexRequest(handle, index), XmlReaderMoveToAttributeByindexResponse.DECODER)
-            .thenApply(XmlReaderMoveToAttributeByindexResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToAttributeByindexRequest(handle, index), XmlReaderMoveToAttributeByindexResponse.DECODER),
+            XmlReaderMoveToAttributeByindexResponse::result);
     }
 
     /**
@@ -334,9 +336,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
      */
     public CompletableFuture<Integer> moveToAttributeByqname(@Nonnull String qualifiedName) {
-        return session
-            .request(new XmlReaderMoveToAttributeByqnameRequest(handle, qualifiedName), XmlReaderMoveToAttributeByqnameResponse.DECODER)
-            .thenApply(XmlReaderMoveToAttributeByqnameResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToAttributeByqnameRequest(handle, qualifiedName), XmlReaderMoveToAttributeByqnameResponse.DECODER),
+            XmlReaderMoveToAttributeByqnameResponse::result);
     }
 
     /**
@@ -346,9 +348,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
      */
     public CompletableFuture<Integer> moveToAttributeBylname(@Nonnull String localName, @Nonnull String namespaceURI) {
-        return session
-            .request(new XmlReaderMoveToAttributeBylnameRequest(handle, localName, namespaceURI), XmlReaderMoveToAttributeBylnameResponse.DECODER)
-            .thenApply(XmlReaderMoveToAttributeBylnameResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToAttributeBylnameRequest(handle, localName, namespaceURI), XmlReaderMoveToAttributeBylnameResponse.DECODER),
+            XmlReaderMoveToAttributeBylnameResponse::result);
     }
 
     /**
@@ -358,9 +360,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:244</a>
      */
     public CompletableFuture<Integer> moveToFirstAttribute() {
-        return session
-            .request(new XmlReaderMoveToFirstAttributeRequest(handle), XmlReaderMoveToFirstAttributeResponse.DECODER)
-            .thenApply(XmlReaderMoveToFirstAttributeResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToFirstAttributeRequest(handle), XmlReaderMoveToFirstAttributeResponse.DECODER),
+            XmlReaderMoveToFirstAttributeResponse::result);
     }
 
     /**
@@ -370,9 +372,9 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:251</a>
      */
     public CompletableFuture<Integer> moveToNextAttribute() {
-        return session
-            .request(new XmlReaderMoveToNextAttributeRequest(handle), XmlReaderMoveToNextAttributeResponse.DECODER)
-            .thenApply(XmlReaderMoveToNextAttributeResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToNextAttributeRequest(handle), XmlReaderMoveToNextAttributeResponse.DECODER),
+            XmlReaderMoveToNextAttributeResponse::result);
     }
 
     /**
@@ -382,8 +384,8 @@ public final class XmlReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:258</a>
      */
     public CompletableFuture<Integer> moveToCarryingElement() {
-        return session
-            .request(new XmlReaderMoveToCarryingElementRequest(handle), XmlReaderMoveToCarryingElementResponse.DECODER)
-            .thenApply(XmlReaderMoveToCarryingElementResponse::result);
+        return CefFutures.map(
+            session.request(new XmlReaderMoveToCarryingElementRequest(handle), XmlReaderMoveToCarryingElementResponse.DECODER),
+            XmlReaderMoveToCarryingElementResponse::result);
     }
 }

@@ -274,7 +274,6 @@ class RuntimeServerIntegrationTest {
                     },
                     ReleaseHandleResponse.DECODER);
 
-            Thread.sleep(500);
             server.kill();
 
             org.assertj.core.api.Assertions.assertThatThrownBy(() -> fut.get(20, TimeUnit.SECONDS))

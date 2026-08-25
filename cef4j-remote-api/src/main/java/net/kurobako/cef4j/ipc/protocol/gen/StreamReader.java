@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class StreamReader {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_stream_reader_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_stream_reader_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class StreamReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:116</a>
      */
     public CompletableFuture<Integer> seek(long offset, int whence) {
-        return session
-            .request(new StreamReaderSeekRequest(handle, offset, whence), StreamReaderSeekResponse.DECODER)
-            .thenApply(StreamReaderSeekResponse::result);
+        return CefFutures.map(
+            session.request(new StreamReaderSeekRequest(handle, offset, whence), StreamReaderSeekResponse.DECODER),
+            StreamReaderSeekResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class StreamReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:124</a>
      */
     public CompletableFuture<Long> tell() {
-        return session
-            .request(new StreamReaderTellRequest(handle), StreamReaderTellResponse.DECODER)
-            .thenApply(StreamReaderTellResponse::result);
+        return CefFutures.map(
+            session.request(new StreamReaderTellRequest(handle), StreamReaderTellResponse.DECODER),
+            StreamReaderTellResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class StreamReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:130</a>
      */
     public CompletableFuture<Integer> eof() {
-        return session
-            .request(new StreamReaderEofRequest(handle), StreamReaderEofResponse.DECODER)
-            .thenApply(StreamReaderEofResponse::result);
+        return CefFutures.map(
+            session.request(new StreamReaderEofRequest(handle), StreamReaderEofResponse.DECODER),
+            StreamReaderEofResponse::result);
     }
 
     /**
@@ -78,8 +80,8 @@ public final class StreamReader {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:136</a>
      */
     public CompletableFuture<Integer> mayBlock() {
-        return session
-            .request(new StreamReaderMayBlockRequest(handle), StreamReaderMayBlockResponse.DECODER)
-            .thenApply(StreamReaderMayBlockResponse::result);
+        return CefFutures.map(
+            session.request(new StreamReaderMayBlockRequest(handle), StreamReaderMayBlockResponse.DECODER),
+            StreamReaderMayBlockResponse::result);
     }
 }

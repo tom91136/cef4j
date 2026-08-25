@@ -2,7 +2,9 @@ package net.kurobako.cef4j.test.backend;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.test.TestDeadline;
 
 /**
  * Per-browser test handle. The shape is intentionally narrow — only the operations the existing CEF test suite actually
@@ -30,7 +32,7 @@ public interface BrowserSession extends AutoCloseable {
      * out. Backends without a paint pipeline (headless variants) should fail this synchronously rather than hanging.
      */
     @Nonnull
-    PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException;
+    PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException;
 
     /** Resize the browser's CSS viewport. Only valid when the backend advertises VIEWPORT_RESIZE. */
     @Nonnull
@@ -42,15 +44,19 @@ public interface BrowserSession extends AutoCloseable {
 
     /** Wait until a paint with the requested dimensions arrives. */
     @Nonnull
-    default PaintInfo awaitPaint(int width, int height, @Nonnull Duration timeout) throws InterruptedException {
-        long deadline = System.nanoTime() + timeout.toNanos();
+    default PaintInfo awaitPaint(int width, int height, @Nonnull Duration timeout)
+            throws InterruptedException, TimeoutException {
+        TestDeadline deadline = TestDeadline.after(timeout);
         PaintInfo last = null;
-        while (System.nanoTime() < deadline) {
-            Duration remaining = Duration.ofNanos(Math.max(1L, deadline - System.nanoTime()));
-            last = awaitFirstPaint(remaining);
+        while (!deadline.isExpired()) {
+            try {
+                last = awaitFirstPaint(deadline.remaining());
+            } catch (TimeoutException exhausted) {
+                break;
+            }
             if (last.width == width && last.height == height) return last;
         }
-        throw new InterruptedException("no " + width + "x" + height + " paint within " + timeout
+        throw new TimeoutException("no " + width + "x" + height + " paint within " + timeout
                 + (last == null ? "" : "; last was " + last.width + "x" + last.height));
     }
 

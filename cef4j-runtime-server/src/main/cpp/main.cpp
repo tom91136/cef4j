@@ -1874,49 +1874,60 @@ struct CreateBrowserTask : cef_task_t {
     std::atomic<int> refCount{1};
     std::string url;
     net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings;
+    std::int32_t corrId;
+    std::int32_t messageId;
 
-    CreateBrowserTask(std::string u, net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings s)
-            : cef_task_t{}, url(std::move(u)), settings(std::move(s)) {
+    CreateBrowserTask(std::string u, net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings s,
+                      std::int32_t correlation = kNoCorrId, std::int32_t message = 0)
+            : cef_task_t{}, url(std::move(u)), settings(std::move(s)), corrId(correlation), messageId(message) {
         initRef<CreateBrowserTask, cef_task_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         execute = [](cef_task_t* self) {
             auto* t = reinterpret_cast<CreateBrowserTask*>(self);
-            if (!g_client || g_runtimeShuttingDown) return;
-
-            cef_window_info_t windowInfo{};
-#if CEF_VERSION_MAJOR >= 133
-            windowInfo.size                       = sizeof(windowInfo);
-#endif
-            windowInfo.windowless_rendering_enabled = 1;
-            windowInfo.bounds.x                   = 0;
-            windowInfo.bounds.y                   = 0;
-            windowInfo.bounds.width               = 800;
-            windowInfo.bounds.height              = 600;
-
-            cef_browser_settings_t native{};
-            native.size                  = sizeof(native);
-            native.windowless_frame_rate = static_cast<int>(t->settings.windowlessFrameRate);
-            native.background_color      = static_cast<cef_color_t>(t->settings.backgroundColor);
-            native.remote_fonts          = static_cast<cef_state_t>(t->settings.remoteFonts);
-            native.javascript            = static_cast<cef_state_t>(t->settings.javascript);
-            native.image_loading         = static_cast<cef_state_t>(t->settings.imageLoading);
-            native.local_storage         = static_cast<cef_state_t>(t->settings.localStorage);
-            native.webgl                 = static_cast<cef_state_t>(t->settings.webgl);
-            native.default_font_size     = static_cast<int>(t->settings.defaultFontSize);
-            native.minimum_font_size     = static_cast<int>(t->settings.minimumFontSize);
-            if (!t->settings.standardFontFamily.empty()) {
-                cef_string_utf8_to_utf16(t->settings.standardFontFamily.data(),
-                        t->settings.standardFontFamily.size(), &native.standard_font_family);
+            bool accepted = t->createBrowser();
+            if (t->corrId == kNoCorrId) return;
+            if (accepted) {
+                if (g_ipc) g_ipc->send(Kind::Response, 0, t->corrId, t->messageId, nullptr, 0);
+            } else {
+                gendisp::sendTaskRejected(g_ipc, t->corrId, t->messageId);
             }
-            if (!t->settings.defaultEncoding.empty()) {
-                cef_string_utf8_to_utf16(t->settings.defaultEncoding.data(),
-                        t->settings.defaultEncoding.size(), &native.default_encoding);
-            }
-
-            ScopedCefString cefUrl(t->url);
-            (void)cef_browser_host_create_browser(
-                    &windowInfo, g_client, cefUrl.get(), &native, /*extra_info*/ nullptr,
-                    /*request_context*/ nullptr);
         };
+    }
+
+    bool createBrowser() {
+        if (!g_client || g_runtimeShuttingDown) return false;
+
+        cef_window_info_t windowInfo{};
+#if CEF_VERSION_MAJOR >= 133
+        windowInfo.size = sizeof(windowInfo);
+#endif
+        windowInfo.windowless_rendering_enabled = 1;
+        windowInfo.bounds.x = 0;
+        windowInfo.bounds.y = 0;
+        windowInfo.bounds.width = 800;
+        windowInfo.bounds.height = 600;
+
+        cef_browser_settings_t native{};
+        native.size = sizeof(native);
+        native.windowless_frame_rate = static_cast<int>(settings.windowlessFrameRate);
+        native.background_color = static_cast<cef_color_t>(settings.backgroundColor);
+        native.remote_fonts = static_cast<cef_state_t>(settings.remoteFonts);
+        native.javascript = static_cast<cef_state_t>(settings.javascript);
+        native.image_loading = static_cast<cef_state_t>(settings.imageLoading);
+        native.local_storage = static_cast<cef_state_t>(settings.localStorage);
+        native.webgl = static_cast<cef_state_t>(settings.webgl);
+        native.default_font_size = static_cast<int>(settings.defaultFontSize);
+        native.minimum_font_size = static_cast<int>(settings.minimumFontSize);
+        if (!settings.standardFontFamily.empty()) {
+            cef_string_utf8_to_utf16(settings.standardFontFamily.data(),
+                        settings.standardFontFamily.size(), &native.standard_font_family);
+        }
+        if (!settings.defaultEncoding.empty()) {
+            cef_string_utf8_to_utf16(settings.defaultEncoding.data(),
+                        settings.defaultEncoding.size(), &native.default_encoding);
+        }
+
+        ScopedCefString cefUrl(url);
+        return cef_browser_host_create_browser(&windowInfo, g_client, cefUrl.get(), &native, nullptr, nullptr);
     }
 };
 
@@ -1934,15 +1945,24 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
         case kMsgSessionReady: {
             const auto corrId = h.corrId;
             const auto messageId = h.messageId;
-            cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, messageId]() {
+            auto* task = new gendisp::LambdaTask([corrId, messageId]() {
                 static std::atomic<bool> bootstrapStarted{false};
                 if (!bootstrapStarted.exchange(true)) {
                     net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings{};
                     settings.windowlessFrameRate = 30;
-                    cef_post_task(TID_UI, new CreateBrowserTask("about:blank", std::move(settings)));
+                    auto* create = new CreateBrowserTask("about:blank", std::move(settings));
+                    bool accepted = create->createBrowser();
+                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(create);
+                    base->release(base);
+                    if (!accepted) {
+                        bootstrapStarted.store(false);
+                        gendisp::sendTaskRejected(g_ipc, corrId, messageId);
+                        return;
+                    }
                 }
                 if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, messageId, nullptr, 0);
-            }));
+            });
+            if (!gendisp::postUiTask(task)) gendisp::sendTaskRejected(g_ipc, corrId, messageId);
             return;
         }
         case kMsgReleaseHandle: {
@@ -1953,8 +1973,9 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
         }
         case kMsgCreateBrowser: {
             auto req = gen::CreateBrowserRequest::decode(payload.data(), payload.size());
-            cef_post_task(TID_UI, new CreateBrowserTask(std::move(req.url), std::move(req.settings)));
-            if (g_ipc) g_ipc->send(Kind::Response, 0, h.corrId, h.messageId, nullptr, 0);
+            auto* task = new CreateBrowserTask(
+                    std::move(req.url), std::move(req.settings), h.corrId, h.messageId);
+            if (!gendisp::postUiTask(task)) gendisp::sendTaskRejected(g_ipc, h.corrId, h.messageId);
             return;
         }
         case kMsgTriggerIntercept: {
@@ -2000,12 +2021,12 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                                        kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return;
             }
-            {
+            auto* task = new gendisp::LambdaTask([browser, corrId, msgId, width, height]() {
                 int id = browser->get_identifier(browser);
-                std::lock_guard<std::mutex> g(g_viewportsMu);
-                g_viewports[id] = Viewport{width, height};
-            }
-            cef_post_task(TID_UI, new gendisp::LambdaTask([browser]() {
+                {
+                    std::lock_guard<std::mutex> g(g_viewportsMu);
+                    g_viewports[id] = Viewport{width, height};
+                }
                 auto* host = browser->get_host(browser);
                 if (host) {
                     host->notify_screen_info_changed(host);
@@ -2016,8 +2037,13 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 }
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
                 base->release(base);
-            }));
-            if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
+                if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
+            });
+            if (!gendisp::postUiTask(task)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
+                base->release(base);
+                gendisp::sendTaskRejected(g_ipc, corrId, msgId);
+            }
             return;
         }
         case kMsgDevToolsAttach: {
@@ -2033,7 +2059,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                                        kReceiverGonePayload, sizeof(kReceiverGonePayload));
                 return;
             }
-            cef_post_task(TID_UI, new gendisp::LambdaTask([browser, browserHandle, corrId, msgId]() {
+            auto* task = new gendisp::LambdaTask([browser, browserHandle, corrId, msgId]() {
                 int browserIdentifier = browser->get_identifier(browser);
                 auto* host = browser->get_host(browser);
                 cef_registration_t* registration = nullptr;
@@ -2057,7 +2083,12 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 g_devToolsRegistrations.emplace(
                         browserHandle, DevToolsRegistration{registration, browserIdentifier});
                 if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
-            }));
+            });
+            if (!gendisp::postUiTask(task)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
+                base->release(base);
+                gendisp::sendTaskRejected(g_ipc, corrId, msgId);
+            }
             return;
         }
         case kMsgDevToolsDetach: {
@@ -2065,12 +2096,14 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             std::int32_t browserHandle = req.browser;
             std::int32_t corrId = h.corrId;
             std::int32_t msgId = h.messageId;
-            cef_post_task(TID_UI, new gendisp::LambdaTask([browserHandle, corrId, msgId]() {
+            auto* task = new gendisp::LambdaTask([browserHandle, corrId, msgId]() {
                 releaseDevToolsRegistration(browserHandle);
-                cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, msgId]() {
+                auto* acknowledge = new gendisp::LambdaTask([corrId, msgId]() {
                     if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
-                }));
-            }));
+                });
+                if (!gendisp::postUiTask(acknowledge)) gendisp::sendTaskRejected(g_ipc, corrId, msgId);
+            });
+            if (!gendisp::postUiTask(task)) gendisp::sendTaskRejected(g_ipc, corrId, msgId);
             return;
         }
         default: {
@@ -2088,7 +2121,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 }
                 std::string code = std::move(req.code);
                 bool retainHandle = req.retainHandle;
-                cef_post_task(TID_UI, new gendisp::LambdaTask([receiver, corrId, code, retainHandle]() {
+                auto* task = new gendisp::LambdaTask([receiver, corrId, code, retainHandle]() {
                     cef_string_t name{};
                     cef_string_utf8_to_utf16("v8_eval_req", 11, &name);
                     auto* m = cef_process_message_create(&name);
@@ -2109,7 +2142,12 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     }
                     auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                     base->release(base);
-                }));
+                });
+                if (!gendisp::postUiTask(task)) {
+                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                    base->release(base);
+                    gendisp::sendTaskRejected(g_ipc, corrId, msgId);
+                }
                 return;
             }
             auto relayV8Method = [&](const char* msgName, std::size_t msgNameLen,
@@ -2126,7 +2164,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     return;
                 }
                 std::string nameStr(msgName, msgNameLen);
-                cef_post_task(TID_UI, new gendisp::LambdaTask(
+                auto* task = new gendisp::LambdaTask(
                                               [receiver, corrId, nameStr, packArgs]() {
                                                   cef_string_t cefName{};
                                                   cef_string_utf8_to_utf16(nameStr.data(), nameStr.size(),
@@ -2148,7 +2186,12 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                                                   auto* base =
                                                           reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                                                   base->release(base);
-                                              }));
+                                              });
+                if (!gendisp::postUiTask(task)) {
+                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
+                    base->release(base);
+                    gendisp::sendTaskRejected(g_ipc, corrId, msgId);
+                }
             };
             if (h.messageId == gen::V8GetStringValueRequest::kMessageId) {
                 auto req = gen::V8GetStringValueRequest::decode(payload.data(), payload.size());
@@ -2522,7 +2565,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     g_ipc                 = ipc.get();
-    genhandlers::g_ipc    = ipc.get(); // Generated forwarders fire events through this pointer.
+    genhandlers::g_ipc = ipc.get();
 
     installLifeSpanHooks();
     auto* client = new Client();
@@ -2548,10 +2591,8 @@ int main(int argc, char* argv[]) {
                 g_publishEndpoint();
             }
         });
-        if (!cef_post_task(TID_UI, publishEndpoint)) {
+        if (!gendisp::postUiTask(publishEndpoint)) {
             std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule context-ready endpoint publication\n");
-            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(publishEndpoint);
-            base->release(base);
             ipc->stop();
             g_ipc = nullptr;
             genhandlers::g_ipc = nullptr;
@@ -2564,7 +2605,7 @@ int main(int argc, char* argv[]) {
         std::string command;
         if (std::getline(std::cin, command) && command == "CEF4J_SHUTDOWN") {
             std::fprintf(stderr, "[cef4j-runtime-server] shutdown: parent command received\n");
-            cef_post_task(TID_UI, new gendisp::LambdaTask(beginRuntimeShutdown));
+            (void)gendisp::postUiTask(new gendisp::LambdaTask(beginRuntimeShutdown));
         }
     }).detach();
 

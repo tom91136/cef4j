@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class CommandLine {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_command_line_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_command_line_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:76</a>
      */
     public CompletableFuture<Integer> isValid() {
-        return session
-            .request(new CommandLineIsValidRequest(handle), CommandLineIsValidResponse.DECODER)
-            .thenApply(CommandLineIsValidResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineIsValidRequest(handle), CommandLineIsValidResponse.DECODER),
+            CommandLineIsValidResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:83</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
-        return session
-            .request(new CommandLineIsReadOnlyRequest(handle), CommandLineIsReadOnlyResponse.DECODER)
-            .thenApply(CommandLineIsReadOnlyResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineIsReadOnlyRequest(handle), CommandLineIsReadOnlyResponse.DECODER),
+            CommandLineIsReadOnlyResponse::result);
     }
 
     /**
@@ -66,10 +68,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:90</a>
      */
     public CompletableFuture<CommandLine> copy() {
-        return session
-            .request(new CommandLineCopyRequest(handle), CommandLineCopyResponse.DECODER)
-            .thenApply(CommandLineCopyResponse::result)
-            .thenApply(__h -> new CommandLine(session, __h));
+        return CefFutures.map(
+            session.request(new CommandLineCopyRequest(handle), CommandLineCopyResponse.DECODER),
+            __r -> new CommandLine(session, __r.result()));
     }
 
     /**
@@ -79,9 +80,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:104</a>
      */
     public CompletableFuture<Void> initFromString(@Nonnull String commandLine) {
-        return session
-            .request(new CommandLineInitFromStringRequest(handle, commandLine), CommandLineInitFromStringResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineInitFromStringRequest(handle, commandLine), CommandLineInitFromStringResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -91,9 +92,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:111</a>
      */
     public CompletableFuture<Void> reset() {
-        return session
-            .request(new CommandLineResetRequest(handle), CommandLineResetResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineResetRequest(handle), CommandLineResetResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -103,9 +104,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:118</a>
      */
     public CompletableFuture<Void> getArgv(String[] argv) {
-        return session
-            .request(new CommandLineGetArgvRequest(handle, argv), CommandLineGetArgvResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineGetArgvRequest(handle, argv), CommandLineGetArgvResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -115,9 +116,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:126</a>
      */
     public CompletableFuture<String> getCommandLineString() {
-        return session
-            .request(new CommandLineGetCommandLineStringRequest(handle), CommandLineGetCommandLineStringResponse.DECODER)
-            .thenApply(CommandLineGetCommandLineStringResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineGetCommandLineStringRequest(handle), CommandLineGetCommandLineStringResponse.DECODER),
+            CommandLineGetCommandLineStringResponse::result);
     }
 
     /**
@@ -127,9 +128,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:133</a>
      */
     public CompletableFuture<String> getProgram() {
-        return session
-            .request(new CommandLineGetProgramRequest(handle), CommandLineGetProgramResponse.DECODER)
-            .thenApply(CommandLineGetProgramResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineGetProgramRequest(handle), CommandLineGetProgramResponse.DECODER),
+            CommandLineGetProgramResponse::result);
     }
 
     /**
@@ -139,9 +140,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:139</a>
      */
     public CompletableFuture<Void> setProgram(@Nonnull String program) {
-        return session
-            .request(new CommandLineSetProgramRequest(handle, program), CommandLineSetProgramResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineSetProgramRequest(handle, program), CommandLineSetProgramResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -151,9 +152,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:145</a>
      */
     public CompletableFuture<Integer> hasSwitches() {
-        return session
-            .request(new CommandLineHasSwitchesRequest(handle), CommandLineHasSwitchesResponse.DECODER)
-            .thenApply(CommandLineHasSwitchesResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineHasSwitchesRequest(handle), CommandLineHasSwitchesResponse.DECODER),
+            CommandLineHasSwitchesResponse::result);
     }
 
     /**
@@ -163,9 +164,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:151</a>
      */
     public CompletableFuture<Integer> hasSwitch(@Nonnull String name) {
-        return session
-            .request(new CommandLineHasSwitchRequest(handle, name), CommandLineHasSwitchResponse.DECODER)
-            .thenApply(CommandLineHasSwitchResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineHasSwitchRequest(handle, name), CommandLineHasSwitchResponse.DECODER),
+            CommandLineHasSwitchResponse::result);
     }
 
     /**
@@ -175,9 +176,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:157</a>
      */
     public CompletableFuture<String> getSwitchValue(@Nonnull String name) {
-        return session
-            .request(new CommandLineGetSwitchValueRequest(handle, name), CommandLineGetSwitchValueResponse.DECODER)
-            .thenApply(CommandLineGetSwitchValueResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineGetSwitchValueRequest(handle, name), CommandLineGetSwitchValueResponse.DECODER),
+            CommandLineGetSwitchValueResponse::result);
     }
 
     /**
@@ -187,9 +188,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:171</a>
      */
     public CompletableFuture<Void> appendSwitch(@Nonnull String name) {
-        return session
-            .request(new CommandLineAppendSwitchRequest(handle, name), CommandLineAppendSwitchResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineAppendSwitchRequest(handle, name), CommandLineAppendSwitchResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -199,9 +200,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:177</a>
      */
     public CompletableFuture<Void> appendSwitchWithValue(@Nonnull String name, @Nonnull String value) {
-        return session
-            .request(new CommandLineAppendSwitchWithValueRequest(handle, name, value), CommandLineAppendSwitchWithValueResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineAppendSwitchWithValueRequest(handle, name, value), CommandLineAppendSwitchWithValueResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -211,9 +212,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:194</a>
      */
     public CompletableFuture<Integer> hasArguments() {
-        return session
-            .request(new CommandLineHasArgumentsRequest(handle), CommandLineHasArgumentsResponse.DECODER)
-            .thenApply(CommandLineHasArgumentsResponse::result);
+        return CefFutures.map(
+            session.request(new CommandLineHasArgumentsRequest(handle), CommandLineHasArgumentsResponse.DECODER),
+            CommandLineHasArgumentsResponse::result);
     }
 
     /**
@@ -223,9 +224,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:200</a>
      */
     public CompletableFuture<Void> getArguments(String[] arguments) {
-        return session
-            .request(new CommandLineGetArgumentsRequest(handle, arguments), CommandLineGetArgumentsResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineGetArgumentsRequest(handle, arguments), CommandLineGetArgumentsResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -235,9 +236,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:206</a>
      */
     public CompletableFuture<Void> appendArgument(@Nonnull String argument) {
-        return session
-            .request(new CommandLineAppendArgumentRequest(handle, argument), CommandLineAppendArgumentResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineAppendArgumentRequest(handle, argument), CommandLineAppendArgumentResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -247,9 +248,9 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:212</a>
      */
     public CompletableFuture<Void> prependWrapper(@Nonnull String wrapper) {
-        return session
-            .request(new CommandLinePrependWrapperRequest(handle, wrapper), CommandLinePrependWrapperResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLinePrependWrapperRequest(handle, wrapper), CommandLinePrependWrapperResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -260,8 +261,8 @@ public final class CommandLine {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:186</a>
      */
     public CompletableFuture<Void> removeSwitch(@Nonnull String name) {
-        return session
-            .request(new CommandLineRemoveSwitchRequest(handle, name), CommandLineRemoveSwitchResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new CommandLineRemoveSwitchRequest(handle, name), CommandLineRemoveSwitchResponse.DECODER),
+            r -> null);
     }
 }

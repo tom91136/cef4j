@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
@@ -30,9 +31,10 @@ public final class MediaSink {
     /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
       * will fail with an empty / null-receiver response. */
     public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return session
-            .request(new ReleaseHandleRequest(handle, "cef_media_sink_t"), ReleaseHandleResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(
+                new ReleaseHandleRequest(handle, "cef_media_sink_t"), ReleaseHandleResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -42,9 +44,9 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:231</a>
      */
     public CompletableFuture<String> getId() {
-        return session
-            .request(new MediaSinkGetIdRequest(handle), MediaSinkGetIdResponse.DECODER)
-            .thenApply(MediaSinkGetIdResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSinkGetIdRequest(handle), MediaSinkGetIdResponse.DECODER),
+            MediaSinkGetIdResponse::result);
     }
 
     /**
@@ -54,9 +56,9 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:237</a>
      */
     public CompletableFuture<String> getName() {
-        return session
-            .request(new MediaSinkGetNameRequest(handle), MediaSinkGetNameResponse.DECODER)
-            .thenApply(MediaSinkGetNameResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSinkGetNameRequest(handle), MediaSinkGetNameResponse.DECODER),
+            MediaSinkGetNameResponse::result);
     }
 
     /**
@@ -66,9 +68,9 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:243</a>
      */
     public CompletableFuture<Integer> getIconType() {
-        return session
-            .request(new MediaSinkGetIconTypeRequest(handle), MediaSinkGetIconTypeResponse.DECODER)
-            .thenApply(MediaSinkGetIconTypeResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSinkGetIconTypeRequest(handle), MediaSinkGetIconTypeResponse.DECODER),
+            MediaSinkGetIconTypeResponse::result);
     }
 
     /**
@@ -78,9 +80,9 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:249</a>
      */
     public CompletableFuture<Void> getDeviceInfo(@Nonnull RemoteHandle callback) {
-        return session
-            .request(new MediaSinkGetDeviceInfoRequest(handle, callback), MediaSinkGetDeviceInfoResponse.DECODER)
-            .thenApply(r -> null);
+        return CefFutures.map(
+            session.request(new MediaSinkGetDeviceInfoRequest(handle, callback), MediaSinkGetDeviceInfoResponse.DECODER),
+            r -> null);
     }
 
     /**
@@ -90,9 +92,9 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:256</a>
      */
     public CompletableFuture<Integer> isCastSink() {
-        return session
-            .request(new MediaSinkIsCastSinkRequest(handle), MediaSinkIsCastSinkResponse.DECODER)
-            .thenApply(MediaSinkIsCastSinkResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSinkIsCastSinkRequest(handle), MediaSinkIsCastSinkResponse.DECODER),
+            MediaSinkIsCastSinkResponse::result);
     }
 
     /**
@@ -102,9 +104,9 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:262</a>
      */
     public CompletableFuture<Integer> isDialSink() {
-        return session
-            .request(new MediaSinkIsDialSinkRequest(handle), MediaSinkIsDialSinkResponse.DECODER)
-            .thenApply(MediaSinkIsDialSinkResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSinkIsDialSinkRequest(handle), MediaSinkIsDialSinkResponse.DECODER),
+            MediaSinkIsDialSinkResponse::result);
     }
 
     /**
@@ -114,8 +116,8 @@ public final class MediaSink {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:268</a>
      */
     public CompletableFuture<Integer> isCompatibleWith(@Nonnull RemoteHandle source) {
-        return session
-            .request(new MediaSinkIsCompatibleWithRequest(handle, source), MediaSinkIsCompatibleWithResponse.DECODER)
-            .thenApply(MediaSinkIsCompatibleWithResponse::result);
+        return CefFutures.map(
+            session.request(new MediaSinkIsCompatibleWithRequest(handle, source), MediaSinkIsCompatibleWithResponse.DECODER),
+            MediaSinkIsCompatibleWithResponse::result);
     }
 }
