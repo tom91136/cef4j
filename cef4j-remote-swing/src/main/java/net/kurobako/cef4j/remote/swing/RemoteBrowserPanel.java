@@ -396,12 +396,23 @@ public final class RemoteBrowserPanel extends JPanel {
 
     public synchronized void release() {
         if (!attachedOnce) return;
-        if (frameTransport != null) {
-            frameTransport.close();
-            frameTransport = null;
+        RuntimeException failure = null;
+        FrameTransport transport = frameTransport;
+        frameTransport = null;
+        if (transport != null) {
+            try {
+                transport.close();
+            } catch (RuntimeException closeFailure) {
+                failure = closeFailure;
+            }
         }
         if (lifecycleRegistration != null) {
-            lifecycleRegistration.unregister();
+            try {
+                lifecycleRegistration.unregister();
+            } catch (RuntimeException closeFailure) {
+                if (failure == null) failure = closeFailure;
+                else failure.addSuppressed(closeFailure);
+            }
             lifecycleRegistration = null;
         }
         hostRef.set(null);
@@ -412,6 +423,7 @@ public final class RemoteBrowserPanel extends JPanel {
                     new IllegalStateException("RemoteBrowserPanel released before browser ready"));
         }
         repaint();
+        if (failure != null) throw failure;
     }
 
     private CefSession requireSession() {

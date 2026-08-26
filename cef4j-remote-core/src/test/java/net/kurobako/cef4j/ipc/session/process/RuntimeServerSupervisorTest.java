@@ -29,6 +29,20 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(900)
 final class RuntimeServerSupervisorTest {
     @Test
+    void closeRejectsNewStartsAndListenersWithoutExecutorLeak() {
+        RuntimeServerSupervisor supervisor =
+                new RuntimeServerSupervisor(RuntimeServerSupervisor.Configuration.defaults(Path.of("missing")));
+        supervisor.close();
+
+        CompletableFuture<RuntimeServerSupervisor.Connection> started = supervisor.start();
+
+        assertThat(started).isCompletedExceptionally();
+        assertThatThrownBy(() -> supervisor.onConnection(ignored -> {}))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("supervisor is closed");
+    }
+
+    @Test
     void terminatesSpawnedProcessWhenTransportConnectionFails(@TempDir Path temporary) throws Exception {
         Path pidFile = temporary.resolve("server.pid");
         RuntimeServerSupervisor.Configuration configuration = new RuntimeServerSupervisor.Configuration(

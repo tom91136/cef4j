@@ -42,6 +42,7 @@ public final class CefSessionImpl implements CefSession {
             new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, LatestEvent> latestEvents = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, InterceptBinding<?>> interceptHandlers = new ConcurrentHashMap<>();
+    private final Object registrationLock = new Object();
     private final CopyOnWriteArrayList<Runnable> closeHandlers = new CopyOnWriteArrayList<>();
     private final java.util.concurrent.atomic.AtomicBoolean closeNotified =
             new java.util.concurrent.atomic.AtomicBoolean();
@@ -198,9 +199,12 @@ public final class CefSessionImpl implements CefSession {
     public <E extends CefMessageView> HandlerRegistration on(
             int messageId, @Nonnull CefMessageDecoder<E> dec, @Nonnull Consumer<E> handler) {
         EventBinding<E> binding = new EventBinding<>(dec, handler);
-        eventHandlers
-                .computeIfAbsent(messageId, k -> new CopyOnWriteArrayList<>())
-                .add(binding);
+        synchronized (registrationLock) {
+            requireOpen();
+            eventHandlers
+                    .computeIfAbsent(messageId, k -> new CopyOnWriteArrayList<>())
+                    .add(binding);
+        }
         return () -> {
             CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(messageId);
             if (list != null && list.remove(binding) && list.isEmpty()) eventHandlers.remove(messageId, list);
@@ -212,9 +216,12 @@ public final class CefSessionImpl implements CefSession {
     public <E extends CefMessageView> HandlerRegistration onLatest(
             int messageId, @Nonnull CefMessageDecoder<E> dec, @Nonnull Consumer<E> handler) {
         EventBinding<E> binding = new EventBinding<>(dec, handler);
-        eventHandlers
-                .computeIfAbsent(messageId, k -> new CopyOnWriteArrayList<>())
-                .add(binding);
+        synchronized (registrationLock) {
+            requireOpen();
+            eventHandlers
+                    .computeIfAbsent(messageId, k -> new CopyOnWriteArrayList<>())
+                    .add(binding);
+        }
         LatestEvent latest = latestEvents.get(messageId);
         if (latest != null) binding.dispatch(latest.sequence, latest.payload());
         return () -> {
@@ -228,7 +235,11 @@ public final class CefSessionImpl implements CefSession {
     public <E extends CefMessageView> HandlerRegistration intercept(
             int messageId, @Nonnull CefMessageDecoder<E> dec, @Nonnull InterceptHandler<E> handler) {
         InterceptBinding<E> binding = new InterceptBinding<>(dec, handler);
-        InterceptBinding<?> previous = interceptHandlers.put(messageId, binding);
+        InterceptBinding<?> previous;
+        synchronized (registrationLock) {
+            requireOpen();
+            previous = interceptHandlers.put(messageId, binding);
+        }
         if (previous != null) {
             LOG.warn("intercept handler for messageId={} replaced", messageId);
         }
@@ -252,7 +263,11 @@ public final class CefSessionImpl implements CefSession {
     public void close() {
         if (!closeStarted.compareAndSet(false, true)) return;
         disconnectHandled.set(true);
-        closed = true;
+        synchronized (registrationLock) {
+            closed = true;
+            eventHandlers.clear();
+            interceptHandlers.clear();
+        }
         failAllPending(new CefTransportException("session closed"));
         notifyClosed();
         latestEvents.clear();
@@ -433,7 +448,11 @@ public final class CefSessionImpl implements CefSession {
 
     private void handleDisconnect() {
         if (!disconnectHandled.compareAndSet(false, true)) return;
-        closed = true;
+        synchronized (registrationLock) {
+            closed = true;
+            eventHandlers.clear();
+            interceptHandlers.clear();
+        }
         failAllPending(new CefTransportException("transport disconnected"));
         latestEvents.clear();
         notifyClosed();
@@ -450,6 +469,10 @@ public final class CefSessionImpl implements CefSession {
             }
         }
         closeHandlers.clear();
+    }
+
+    private void requireOpen() {
+        if (closed) throw new IllegalStateException("session closed");
     }
 
     private static final class Pending<R extends CefMessageView> {

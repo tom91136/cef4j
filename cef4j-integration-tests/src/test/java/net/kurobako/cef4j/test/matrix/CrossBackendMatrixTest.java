@@ -6,6 +6,8 @@ import java.util.List;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserContract;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,6 +34,9 @@ class CrossBackendMatrixTest {
     @ParameterizedTest(name = "shared contract: {0}")
     @MethodSource("backends")
     void satisfiesSharedBrowserContract(BrowserBackend backend) throws Exception {
+        Assumptions.assumeTrue(
+                CefTestCompatibility.supports(backend),
+                "CEF 138-141 native browser-info handshake race (chromiumembedded/cef#4001; fixed in CEF 142)");
         BrowserContract.verify(backend);
     }
 }

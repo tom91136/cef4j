@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +19,47 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class FrameCodecTest {
+    @Test
+    void pipelineCloseIsBoundedWhenCodecDoesNotReturn() throws Exception {
+        CountDownLatch encodeEntered = new CountDownLatch(1);
+        CountDownLatch releaseEncode = new CountDownLatch(1);
+        CountDownLatch codecClosed = new CountDownLatch(1);
+        FrameCodec codec = new FrameCodec() {
+            @Override
+            public CodecDescriptor descriptor() {
+                return new CodecDescriptor("stuck", "application/x-stuck", false);
+            }
+
+            @Override
+            public EncodedFrame encode(RawFrame frame) {
+                encodeEntered.countDown();
+                while (releaseEncode.getCount() != 0) {
+                    try {
+                        releaseEncode.await();
+                    } catch (InterruptedException ignored) {
+                        // XXX: Model a native codec that does not respond to interruption.
+                    }
+                }
+                return encoded(descriptor(), frame.metadata().sourceSequence(), EncodedFrame.NO_BASE_SEQUENCE, true);
+            }
+
+            @Override
+            public void close() {
+                codecClosed.countDown();
+            }
+        };
+        EncodedFramePipeline pipeline = new EncodedFramePipeline(codec, ignored -> {}, Duration.ofMillis(100), false);
+        pipeline.submit(frame(1, 1, 1, new byte[] {0, 0, 0, (byte) 255}));
+        assertThat(encodeEntered.await(2, TimeUnit.SECONDS)).isTrue();
+
+        long started = System.nanoTime();
+        pipeline.close();
+
+        assertThat(Duration.ofNanos(System.nanoTime() - started)).isLessThan(Duration.ofSeconds(2));
+        releaseEncode.countDown();
+        assertThat(codecClosed.await(2, TimeUnit.SECONDS)).isTrue();
+    }
+
     @Test
     void rawFramesRejectUndersizedAndOverflowingLayouts() {
         FrameMetadata metadata = new FrameMetadata(

@@ -7,6 +7,7 @@ import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.backend.BrowserContract;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -25,13 +26,13 @@ class NativeSwingContractTest {
 
     @Test
     void browserInfoHandshakeCarveMatchesAffectedCefRange() {
-        assertThat(NativeSwingBrowserBackend.hasReliableBrowserInfoHandshake(137))
+        assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(137))
                 .isTrue();
-        assertThat(NativeSwingBrowserBackend.hasReliableBrowserInfoHandshake(138))
+        assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(138))
                 .isFalse();
-        assertThat(NativeSwingBrowserBackend.hasReliableBrowserInfoHandshake(141))
+        assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(141))
                 .isFalse();
-        assertThat(NativeSwingBrowserBackend.hasReliableBrowserInfoHandshake(142))
+        assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(142))
                 .isTrue();
     }
 
@@ -55,7 +56,7 @@ class NativeSwingContractTest {
     @Test
     void nativeBrowserPanelSatisfiesSharedBrowserContract() throws Exception {
         Assumptions.assumeTrue(
-                NativeSwingBrowserBackend.hasReliableBrowserInfoHandshake(NativeSwingBrowserBackend.cefApiVersion()),
+                CefTestCompatibility.supports(new NativeSwingBrowserBackend()),
                 "CEF 138-141 browser-info handshake race (chromiumembedded/cef#4001; fixed in CEF 142)");
         BrowserContract.verify(new NativeSwingBrowserBackend());
     }

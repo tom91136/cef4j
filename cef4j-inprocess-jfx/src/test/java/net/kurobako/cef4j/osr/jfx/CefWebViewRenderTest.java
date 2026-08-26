@@ -117,6 +117,7 @@ class CefWebViewRenderTest {
                         .isTrue();
             } finally {
                 CompletableFuture<Void> released = onFxThread(view::releaseAsync);
+                assertThat(onFxThread(view::releaseAsync)).isSameAs(released);
                 if (released != null) released.get(10, TimeUnit.SECONDS);
             }
         } finally {

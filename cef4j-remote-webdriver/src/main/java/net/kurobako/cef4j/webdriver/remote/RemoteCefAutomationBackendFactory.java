@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.webdriver.remote;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -154,13 +155,23 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
      * its own bounded shutdown policy.
      */
     static void closeDevToolsThenRuntime(CdpTransport devTools, RemoteBrowserRuntime runtime) {
+        closeDevToolsThenRuntime(
+                devTools,
+                runtime,
+                Duration.ofSeconds(DEVTOOLS_CLOSE_TIMEOUT_SECONDS),
+                failure -> LOG.warn(
+                        "remote DevTools detach did not complete before runtime shutdown: {}", failure.toString()));
+    }
+
+    static void closeDevToolsThenRuntime(
+            CdpTransport devTools, RemoteBrowserRuntime runtime, Duration timeout, Consumer<Throwable> failureHandler) {
         try {
-            devTools.closeAsync().toCompletableFuture().get(DEVTOOLS_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            devTools.closeAsync().toCompletableFuture().get(timeout.toNanos(), TimeUnit.NANOSECONDS);
         } catch (InterruptedException failure) {
             Thread.currentThread().interrupt();
-            LOG.warn("interrupted while waiting for remote DevTools detach");
+            failureHandler.accept(failure);
         } catch (ExecutionException | TimeoutException failure) {
-            LOG.warn("remote DevTools detach did not complete before runtime shutdown: {}", failure.toString());
+            failureHandler.accept(failure);
         } finally {
             runtime.close();
         }

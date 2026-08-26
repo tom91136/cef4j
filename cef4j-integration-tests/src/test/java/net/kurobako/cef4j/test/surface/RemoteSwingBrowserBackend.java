@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.remote.swing.RemoteBrowserPanel;
 import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
@@ -63,10 +64,12 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
         private final JFrame frame;
         private volatile int width;
         private volatile int height;
+        private final Duration navigationTimeout;
 
         Session(SessionConfig config) throws Exception {
             this.width = config.width();
             this.height = config.height();
+            this.navigationTimeout = config.startupTimeout();
             AtomicReference<RemoteBrowserPanel> panelRef = new AtomicReference<>();
             AtomicReference<JFrame> frameRef = new AtomicReference<>();
             onEdt(() -> {
@@ -82,20 +85,28 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             });
             this.panel = Objects.requireNonNull(panelRef.get(), "remote Swing panel");
             this.frame = Objects.requireNonNull(frameRef.get(), "remote Swing frame");
-            this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
-            this.navigation = new RemoteNavigationProbe(runtime.session);
+            try {
+                this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
+            } catch (Exception failure) {
+                closeSurface(failure);
+                throw failure;
+            }
+            AtomicReference<RemoteHandle> handleRef = new AtomicReference<>();
+            this.navigation = new RemoteNavigationProbe(runtime.session, handleRef::get);
             try {
                 panel.attach(runtime.session);
                 onEdt(() -> {
                     frame.setVisible(true);
                 });
-                panel.awaitBrowserHandle(config.startupTimeout());
+                handleRef.set(panel.awaitBrowserHandle(config.startupTimeout()));
+                Objects.requireNonNull(handleRef.get(), "remote Swing browser");
                 if (!config.initialUrl().isEmpty()) {
                     loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
                 }
             } catch (Exception e) {
-                navigation.close();
-                runtime.close();
+                closeSurface(e);
+                closeAfterFailure(navigation, e);
+                closeAfterFailure(runtime, e);
                 throw e;
             }
         }
@@ -103,7 +114,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            return navigation.load(url, () -> panel.loadUrl(url));
+            return navigation.load(url, navigationTimeout, () -> panel.loadUrl(url));
         }
 
         @Override
@@ -139,16 +150,53 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
 
         @Override
         public void close() {
+            RuntimeException failure = null;
+            try {
+                closeSurface(null);
+            } catch (RuntimeException cleanupFailure) {
+                failure = cleanupFailure;
+            }
+            try {
+                navigation.close();
+            } catch (RuntimeException cleanupFailure) {
+                failure = merge(failure, cleanupFailure);
+            }
+            try {
+                runtime.close();
+            } catch (RuntimeException cleanupFailure) {
+                failure = merge(failure, cleanupFailure);
+            }
+            if (failure != null) throw failure;
+        }
+
+        private void closeSurface(@javax.annotation.Nullable Exception original) {
             try {
                 onEdt(() -> {
-                    panel.release();
-                    frame.dispose();
+                    try {
+                        panel.release();
+                    } finally {
+                        frame.dispose();
+                    }
                 });
-            } catch (Exception ignored) {
-                // Cleanup continues with independently owned resources.
+            } catch (Exception cleanupFailure) {
+                if (original == null)
+                    throw new IllegalStateException("failed to close remote Swing surface", cleanupFailure);
+                original.addSuppressed(cleanupFailure);
             }
-            navigation.close();
-            runtime.close();
         }
+    }
+
+    private static void closeAfterFailure(AutoCloseable resource, Exception original) {
+        try {
+            resource.close();
+        } catch (Exception cleanupFailure) {
+            original.addSuppressed(cleanupFailure);
+        }
+    }
+
+    private static RuntimeException merge(@javax.annotation.Nullable RuntimeException failure, RuntimeException next) {
+        if (failure == null) return next;
+        failure.addSuppressed(next);
+        return failure;
     }
 }

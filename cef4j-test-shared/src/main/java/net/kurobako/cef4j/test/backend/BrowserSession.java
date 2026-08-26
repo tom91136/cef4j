@@ -16,7 +16,7 @@ import net.kurobako.cef4j.test.TestDeadline;
  */
 public interface BrowserSession extends AutoCloseable {
 
-    /** Navigate the main frame to {@code url}; future completes when the load reports SUCCESS or FAIL. */
+    /** Navigate the main frame to {@code url}; completion means its renderer context is ready for script evaluation. */
     @Nonnull
     CompletableFuture<Void> loadUrl(@Nonnull String url);
 

@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -72,12 +73,33 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
                             || bearerToken.get().contains("\n"))) {
                 throw new CefTransportException("invalid WebSocket bearer token");
             }
-            HttpClient.Builder clientBuilder = HttpClient.newBuilder();
+            HttpClient.Builder clientBuilder = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(IO_TIMEOUT_MS));
             sslContext.ifPresent(clientBuilder::sslContext);
             WebSocket.Builder socketBuilder = clientBuilder.build().newWebSocketBuilder();
             bearerToken.ifPresent(token -> socketBuilder.header("Authorization", "Bearer " + token));
-            transport.socket = socketBuilder.buildAsync(uri, transport).join();
+            CompletableFuture<WebSocket> connecting = socketBuilder.buildAsync(uri, transport);
+            CompletableFuture<WebSocket> ownedConnection = connecting.whenComplete((socket, ignored) -> {
+                transport.socket = socket;
+                if (socket != null && transport.closed) socket.abort();
+            });
+            try {
+                transport.socket = ownedConnection.get(IO_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException failure) {
+                transport.closed = true;
+                WebSocket socket = transport.socket;
+                if (socket != null) socket.abort();
+                connecting.cancel(true);
+                ownedConnection.cancel(true);
+                throw failure;
+            }
             return transport;
+        } catch (InterruptedException e) {
+            transport.closed = true;
+            Thread.currentThread().interrupt();
+            throw new CefTransportException(endpoint + ": connect interrupted", e);
+        } catch (ExecutionException | TimeoutException e) {
+            transport.closed = true;
+            throw new CefTransportException(endpoint + ": connect failed", e);
         } catch (RuntimeException e) {
             transport.closed = true;
             throw new CefTransportException(endpoint + ": connect failed", e);

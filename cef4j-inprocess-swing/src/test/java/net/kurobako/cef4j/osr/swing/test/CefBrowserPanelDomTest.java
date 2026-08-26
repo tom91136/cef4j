@@ -35,6 +35,7 @@ class CefBrowserPanelDomTest extends SwingBrowserPanelTestBase {
     void selectElementChangeEventFires() throws Exception {
         CefBrowserPanel panel = createAttachedPanel();
 
+        long loadBaseline = loadGeneration(panel);
         loadContent(
                 panel,
                 "<html><body>"
@@ -50,7 +51,7 @@ class CefBrowserPanelDomTest extends SwingBrowserPanelTestBase {
                         + "</script>"
                         + "</body></html>");
 
-        assertThat(waitForLoadEnd(panel, 5_000)).isTrue();
+        assertThat(waitForLoadEnd(panel, loadBaseline, 5_000)).isTrue();
 
         executeJavaScript(
                 panel,

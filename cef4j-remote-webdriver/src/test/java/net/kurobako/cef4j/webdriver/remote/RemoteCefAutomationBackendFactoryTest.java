@@ -2,6 +2,7 @@ package net.kurobako.cef4j.webdriver.remote;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
@@ -34,11 +35,10 @@ class RemoteCefAutomationBackendFactoryTest {
         long started = System.nanoTime();
 
         RemoteCefAutomationBackendFactory.closeDevToolsThenRuntime(
-                new NeverClosingDevTools(), new TestRuntime(runtimeClosed));
+                new NeverClosingDevTools(), new TestRuntime(runtimeClosed), Duration.ofMillis(50), ignored -> {});
 
         assertThat(runtimeClosed).isTrue();
-        assertThat(java.util.concurrent.TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - started))
-                .isLessThan(10);
+        assertThat(Duration.ofNanos(System.nanoTime() - started)).isLessThan(Duration.ofSeconds(2));
     }
 
     private static final class NeverClosingDevTools implements CdpTransport {

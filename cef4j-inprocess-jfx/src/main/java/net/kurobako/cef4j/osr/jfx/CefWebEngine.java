@@ -92,6 +92,7 @@ public final class CefWebEngine {
 
     private void loadInternal(String url) {
         String next = url == null || url.isEmpty() ? "about:blank" : url;
+        view.getScriptEngine().cancelPending("page navigation replaced the renderer context");
         location.set(next);
         document.set(null);
         loadWorker.beginLoad(next);
@@ -511,13 +512,12 @@ public final class CefWebEngine {
     }
 
     void updateLoadState(boolean isLoading, boolean back, boolean forward) {
-        loading.set(isLoading);
         canGoBack.set(back);
         canGoForward.set(forward);
-        loadWorker.updateRunning(isLoading);
-        if (!isLoading) {
-            loadProgress.set(1.0);
-        } else if (loadProgress.get() >= 1.0) {
+        if (!isLoading) return;
+        loading.set(true);
+        loadWorker.updateRunning(true);
+        if (loadProgress.get() >= 1.0) {
             loadProgress.set(0.0);
         }
     }
@@ -528,16 +528,22 @@ public final class CefWebEngine {
         loadWorker.updateProgress(clamped);
     }
 
-    void markLoadFinished() {
+    void markLoadFinished(@Nullable String completedUrl) {
+        if (!matchesCurrentNavigation(completedUrl)) return;
         loading.set(false);
         loadProgress.set(1.0);
         loadWorker.markSucceeded();
     }
 
-    void markLoadFailed(Throwable failure) {
+    void markLoadFailed(@Nullable String failedUrl, Throwable failure) {
+        if (!matchesCurrentNavigation(failedUrl)) return;
         loading.set(false);
         document.set(null);
         loadWorker.markFailed(failure);
+    }
+
+    private boolean matchesCurrentNavigation(@Nullable String callbackUrl) {
+        return callbackUrl == null || callbackUrl.isEmpty() || callbackUrl.equals(location.get());
     }
 
     void refreshHistory(List<CefWebHistory.EntrySnapshot> entries, int currentIndex) {

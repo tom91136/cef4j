@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.session;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -113,6 +114,24 @@ class CefSessionImplTest {
         TestMessages.BytesView v = fut.get(2, TimeUnit.SECONDS);
         assertThat(v.messageId).isEqualTo(MSG_PING);
         assertThat(v.bytes).isEqualTo("pong".getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void rejectsRegistrationsAfterClose() {
+        session.close();
+
+        assertThatThrownBy(() -> session.on(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), ignored -> {}))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("session closed");
+        assertThatThrownBy(() -> session.onLatest(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), ignored -> {}))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("session closed");
+        assertThatThrownBy(() -> session.intercept(
+                        MSG_INTERCEPT,
+                        TestMessages.bytesDecoder(MSG_INTERCEPT),
+                        ignored -> new TestMessages.BytesEncoder(MSG_INTERCEPT, new byte[0])))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("session closed");
     }
 
     @Test

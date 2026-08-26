@@ -72,6 +72,7 @@ public final class RuntimeServerProcess implements Closeable {
     private final String frameTransport;
     private final String endpoint;
     private final RuntimeServerHandshake handshake;
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     public static RuntimeServerProcess spawn(@Nonnull Path binary, @Nonnull String bindEndpoint) throws IOException {
         return spawn(binary, "zmq", bindEndpoint, "shared-file", DEFAULT_BOOTSTRAP_TIMEOUT);
@@ -440,6 +441,7 @@ public final class RuntimeServerProcess implements Closeable {
 
     @Override
     public void close() {
+        if (!closed.compareAndSet(false, true)) return;
         List<ProcessHandle> descendants = descendantsOf(process);
         if (!process.isAlive()) {
             destroy(descendants, true);

@@ -176,6 +176,58 @@ static std::function<void()> g_publishEndpoint;
 static bool g_contextInitialized = false;
 static bool g_endpointPublished = false;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
+struct InterceptWorker {
+    std::thread thread;
+    std::unique_ptr<std::atomic<bool>> finished;
+};
+static std::mutex g_interceptWorkersMutex;
+static std::vector<InterceptWorker> g_interceptWorkers;
+
+static void startInterceptWorker(std::function<void()> work) {
+    std::vector<std::thread> completed;
+    {
+        std::lock_guard<std::mutex> lock(g_interceptWorkersMutex);
+        for (auto it = g_interceptWorkers.begin(); it != g_interceptWorkers.end();) {
+            if (it->finished->load(std::memory_order_acquire)) {
+                completed.push_back(std::move(it->thread));
+                it = g_interceptWorkers.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        g_interceptWorkers.emplace_back();
+        auto& worker = g_interceptWorkers.back();
+        try {
+            worker.finished = std::make_unique<std::atomic<bool>>(false);
+            auto* finishedFlag = worker.finished.get();
+            worker.thread = std::thread([work = std::move(work), finishedFlag]() mutable {
+                try {
+                    work();
+                } catch (const std::exception& failure) {
+                    std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed: %s\n", failure.what());
+                } catch (...) {
+                    std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed\n");
+                }
+                finishedFlag->store(true, std::memory_order_release);
+            });
+        } catch (...) {
+            g_interceptWorkers.pop_back();
+            throw;
+        }
+    }
+    for (auto& worker : completed) worker.join();
+}
+
+static void joinInterceptWorkers() {
+    std::vector<InterceptWorker> workers;
+    {
+        std::lock_guard<std::mutex> lock(g_interceptWorkersMutex);
+        workers.swap(g_interceptWorkers);
+    }
+    for (auto& worker : workers) {
+        if (worker.thread.joinable()) worker.thread.join();
+    }
+}
 
 static std::unordered_map<int, cef_browser_t*> g_liveBrowsers;
 static bool g_runtimeShuttingDown = false;
@@ -183,6 +235,12 @@ static bool g_runtimeQuitPosted = false;
 static decltype(genhandlers::g_lifeSpanHandlerForwarder.on_after_created) g_forwardOnAfterCreated = nullptr;
 static decltype(genhandlers::g_lifeSpanHandlerForwarder.do_close) g_forwardDoClose = nullptr;
 static decltype(genhandlers::g_lifeSpanHandlerForwarder.on_before_close) g_forwardOnBeforeClose = nullptr;
+
+static cef_browser_t* canonicalBrowser(cef_browser_t* browser) {
+    if (!browser) return nullptr;
+    auto existing = g_liveBrowsers.find(browser->get_identifier(browser));
+    return existing == g_liveBrowsers.end() ? browser : existing->second;
+}
 
 static void trackBrowser(cef_browser_t* browser) {
     if (!browser) return;
@@ -518,7 +576,7 @@ struct Client : cef_client_t {
                 cef_string_userfree_free(nameUF);
             }
             if (name == "v8ctx_created") {
-                std::int32_t handleId = gendisp::tables::browser.insert(browser);
+                std::int32_t handleId = gendisp::tables::browser.insert(canonicalBrowser(browser));
                 if (handleId == 0) return 1;
                 std::string url;
                 auto* args = msg->get_argument_list(msg);
@@ -1710,7 +1768,7 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                 reinterpret_cast<cef_base_ref_counted_t*>(this));
         on_context_created = [](cef_render_process_handler_t* /*self*/, cef_browser_t* /*browser*/,
                                 cef_frame_t* frame, cef_v8_context_t* /*context*/) {
-            if (!frame || !frame->is_valid(frame)) return;
+            if (!frame || !frame->is_valid(frame) || !frame->is_main(frame)) return;
             cef_string_t name{};
             cef_string_utf8_to_utf16("v8ctx_created", 13, &name);
             auto* msg = cef_process_message_create(&name);
@@ -1984,7 +2042,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             std::int32_t origMsgId = h.messageId;
             std::int32_t echoMsgId = req.echoMessageId;
             std::vector<std::uint8_t> echoBytes = std::move(req.echoPayload);
-            std::thread([origCorrId, origMsgId, echoMsgId, echoBytes = std::move(echoBytes)]() mutable {
+            startInterceptWorker([origCorrId, origMsgId, echoMsgId, echoBytes = std::move(echoBytes)]() mutable {
                 std::int32_t corrId = g_intercepts.allocateCorrId();
                 if (g_ipc) {
                     g_ipc->send(Kind::Intercept, 0, corrId, echoMsgId, echoBytes.data(), echoBytes.size());
@@ -1999,7 +2057,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 if (g_ipc) {
                     g_ipc->send(Kind::Response, 0, origCorrId, origMsgId, wire.data(), wire.size());
                 }
-            }).detach();
+            });
             return;
         }
         case kMsgSetViewportSize: {
@@ -2617,6 +2675,7 @@ int main(int argc, char* argv[]) {
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: CEF message loop returned\n");
     releaseAllDevToolsRegistrations();
     releaseTrackedBrowsers();
+    joinInterceptWorkers();
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");
     g_publishEndpoint = {};
     g_contextInitialized = false;

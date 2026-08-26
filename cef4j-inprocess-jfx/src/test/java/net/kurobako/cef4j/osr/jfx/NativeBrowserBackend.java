@@ -10,9 +10,13 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -20,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.OS;
+import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
@@ -30,6 +35,11 @@ import net.kurobako.cef4j.test.backend.BrowserSession;
 public final class NativeBrowserBackend implements BrowserBackend {
 
     private static volatile boolean cefInitialised;
+    private static final ExecutorService NAVIGATION_WAITER = Executors.newCachedThreadPool(r -> {
+        Thread thread = new Thread(r, "cef4j-native-jfx-navigation");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     @Override
     @Nonnull
@@ -76,47 +86,144 @@ public final class NativeBrowserBackend implements BrowserBackend {
 
         private final CefWebView webView;
         private final Stage stage;
+        private final Duration navigationTimeout;
+        private final AtomicReference<PendingNavigation> pendingNavigation = new AtomicReference<>();
 
         NativeSession(SessionConfig config) throws Exception {
             int w = config.width();
             int h = config.height();
             Object[] holder = new Object[2];
             onFxThread(() -> {
-                CefWebView v = new CefWebView();
-                Stage s = new Stage();
-                s.initStyle(StageStyle.UNDECORATED);
-                s.setScene(new Scene(new StackPane(v), w, h));
-                s.show();
-                holder[0] = v;
-                holder[1] = s;
+                CefWebView v = null;
+                Stage s = null;
+                try {
+                    v = new CefWebView();
+                    s = new Stage();
+                    s.initStyle(StageStyle.UNDECORATED);
+                    s.setScene(new Scene(new StackPane(v), w, h));
+                    s.show();
+                    holder[0] = v;
+                    holder[1] = s;
+                } catch (RuntimeException | Error failure) {
+                    if (s != null) s.close();
+                    if (v != null) v.release();
+                    throw failure;
+                }
             });
             this.webView = (CefWebView) holder[0];
             this.stage = (Stage) holder[1];
-            if (!config.initialUrl().isEmpty()) {
-                loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            this.navigationTimeout = config.startupTimeout();
+            try {
+                if (!config.initialUrl().isEmpty()) {
+                    loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                }
+            } catch (Exception failure) {
+                rollback();
+                throw failure;
             }
         }
 
         @Override
         @Nonnull
+        @SuppressWarnings("FutureReturnValueIgnored")
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            CompletableFuture<Void> done = new CompletableFuture<>();
+            PendingNavigation next = new PendingNavigation();
+            if (!pendingNavigation.compareAndSet(null, next)) {
+                return CompletableFuture.failedFuture(new IllegalStateException("a navigation is already pending"));
+            }
             try {
                 onFxThread(() -> {
                     Worker<Void> worker = webView.getEngine().getLoadWorker();
-                    worker.stateProperty().addListener((obs, old, ns) -> {
-                        if (ns == Worker.State.SUCCEEDED) done.complete(null);
-                        else if (ns == Worker.State.FAILED || ns == Worker.State.CANCELLED) {
-                            done.completeExceptionally(
-                                    new RuntimeException("load reached terminal state " + ns + " for " + url));
+                    next.worker = worker;
+                    next.paintBaseline = webView.framesPainted.sum();
+                    ChangeListener<Worker.State> listener = new ChangeListener<Worker.State>() {
+                        @Override
+                        public void changed(
+                                ObservableValue<? extends Worker.State> observable,
+                                Worker.State previous,
+                                Worker.State current) {
+                            if (current == Worker.State.SUCCEEDED) {
+                                worker.stateProperty().removeListener(this);
+                                awaitNavigationReady(next);
+                            } else if (current == Worker.State.FAILED || current == Worker.State.CANCELLED) {
+                                worker.stateProperty().removeListener(this);
+                                next.result.completeExceptionally(
+                                        new RuntimeException("load reached terminal state " + current + " for " + url));
+                            }
                         }
-                    });
-                    webView.load(url);
+                    };
+                    next.listener = listener;
+                    worker.stateProperty().addListener(listener);
+                    try {
+                        webView.load(url);
+                    } catch (RuntimeException failure) {
+                        worker.stateProperty().removeListener(listener);
+                        throw failure;
+                    }
                 });
             } catch (Exception e) {
-                done.completeExceptionally(e);
+                next.result.completeExceptionally(e);
             }
-            return done;
+            next.result.whenComplete((ignored, failure) -> {
+                pendingNavigation.compareAndSet(next, null);
+                removeListener(next);
+            });
+            return next.result;
+        }
+
+        @SuppressWarnings("FutureReturnValueIgnored")
+        private void awaitNavigationReady(PendingNavigation navigation) {
+            CompletableFuture.runAsync(
+                    () -> {
+                        try {
+                            TestDeadline.after(navigationTimeout)
+                                    .until(
+                                            () -> navigation.result.isCancelled()
+                                                    || isNavigationReady(navigation.paintBaseline),
+                                            Duration.ofMillis(50),
+                                            "await native navigation readiness");
+                            if (!navigation.result.isCancelled()) navigation.result.complete(null);
+                        } catch (Throwable failure) {
+                            navigation.result.completeExceptionally(failure);
+                        }
+                    },
+                    NAVIGATION_WAITER);
+        }
+
+        private boolean isNavigationReady(long paintBaseline) {
+            CefBrowser browser = webView.getBrowser();
+            return browser != null
+                    && browser.isValid()
+                    && webView.framesPainted.sum() > paintBaseline
+                    && browser.getMainFrame()
+                            .filter(frame -> frame.isValid() && frame.getUrl().isPresent())
+                            .isPresent();
+        }
+
+        private static void removeListener(PendingNavigation navigation) {
+            Worker<Void> worker = navigation.worker;
+            ChangeListener<Worker.State> listener = navigation.listener;
+            if (worker == null || listener == null) return;
+            Runnable remove = () -> worker.stateProperty().removeListener(listener);
+            if (javafx.application.Platform.isFxApplicationThread()) remove.run();
+            else {
+                try {
+                    javafx.application.Platform.runLater(remove);
+                } catch (RuntimeException ignored) {
+                    // XXX: JavaFX is already stopping, so the property cannot dispatch this listener again.
+                }
+            }
+        }
+
+        private void rollback() {
+            try {
+                onFxThread(() -> {
+                    if (stage.isShowing()) stage.close();
+                    webView.release();
+                });
+            } catch (Exception ignored) {
+                // XXX: Preserve the construction failure; these resources belong to the terminating test process.
+            }
         }
 
         @Override
@@ -153,6 +260,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
 
         @Override
         public void close() {
+            PendingNavigation navigation = pendingNavigation.getAndSet(null);
+            if (navigation != null) navigation.result.cancel(true);
             try {
                 AtomicReference<CompletableFuture<Void>> released = new AtomicReference<>();
                 onFxThread(() -> {
@@ -163,6 +272,13 @@ public final class NativeBrowserBackend implements BrowserBackend {
             } catch (Exception e) {
                 throw new IllegalStateException("native JavaFX browser did not close cleanly", e);
             }
+        }
+
+        private static final class PendingNavigation {
+            private final CompletableFuture<Void> result = new CompletableFuture<>();
+            private volatile long paintBaseline;
+            private volatile @javax.annotation.Nullable Worker<Void> worker;
+            private volatile @javax.annotation.Nullable ChangeListener<Worker.State> listener;
         }
     }
 }

@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javax.annotation.Nonnull;
+import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.remote.jfx.RemoteWebView;
 import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.TestDeadline;
@@ -86,10 +87,12 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         private final Stage stage;
         private volatile int width;
         private volatile int height;
+        private final Duration navigationTimeout;
 
         Session(SessionConfig config) throws Exception {
             this.width = config.width();
             this.height = config.height();
+            this.navigationTimeout = config.startupTimeout();
             AtomicReference<RemoteWebView> viewRef = new AtomicReference<>();
             AtomicReference<Stage> stageRef = new AtomicReference<>();
             onFxThread(() -> {
@@ -108,20 +111,28 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             });
             this.view = Objects.requireNonNull(viewRef.get(), "remote JavaFX view");
             this.stage = Objects.requireNonNull(stageRef.get(), "remote JavaFX stage");
-            this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
-            this.navigation = new RemoteNavigationProbe(runtime.session);
+            try {
+                this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
+            } catch (Exception failure) {
+                closeSurface(failure);
+                throw failure;
+            }
+            AtomicReference<RemoteHandle> handleRef = new AtomicReference<>();
+            this.navigation = new RemoteNavigationProbe(runtime.session, handleRef::get);
             try {
                 view.attach(runtime.session);
                 onFxThread(() -> {
                     stage.show();
                 });
-                view.awaitBrowserHandle(config.startupTimeout());
+                handleRef.set(view.awaitBrowserHandle(config.startupTimeout()));
+                Objects.requireNonNull(handleRef.get(), "remote JavaFX browser");
                 if (!config.initialUrl().isEmpty()) {
                     loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
                 }
             } catch (Exception e) {
-                navigation.close();
-                runtime.close();
+                closeSurface(e);
+                closeAfterFailure(navigation, e);
+                closeAfterFailure(runtime, e);
                 throw e;
             }
         }
@@ -129,7 +140,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            return navigation.load(url, () -> view.loadUrl(url));
+            return navigation.load(url, navigationTimeout, () -> view.loadUrl(url));
         }
 
         @Override
@@ -163,17 +174,54 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
 
         @Override
         public void close() {
+            RuntimeException failure = null;
+            try {
+                closeSurface(null);
+            } catch (RuntimeException cleanupFailure) {
+                failure = cleanupFailure;
+            }
+            try {
+                navigation.close();
+            } catch (RuntimeException cleanupFailure) {
+                failure = merge(failure, cleanupFailure);
+            }
+            try {
+                runtime.close();
+            } catch (RuntimeException cleanupFailure) {
+                failure = merge(failure, cleanupFailure);
+            }
+            if (failure != null) throw failure;
+        }
+
+        private void closeSurface(@javax.annotation.Nullable Exception original) {
             try {
                 onFxThread(() -> {
-                    view.release();
-                    stage.close();
+                    try {
+                        view.release();
+                    } finally {
+                        stage.close();
+                    }
                 });
-            } catch (Exception ignored) {
-                // Cleanup continues with independently owned resources.
+            } catch (Exception cleanupFailure) {
+                if (original == null)
+                    throw new IllegalStateException("failed to close remote JavaFX surface", cleanupFailure);
+                original.addSuppressed(cleanupFailure);
             }
-            navigation.close();
-            runtime.close();
         }
+    }
+
+    private static void closeAfterFailure(AutoCloseable resource, Exception original) {
+        try {
+            resource.close();
+        } catch (Exception cleanupFailure) {
+            original.addSuppressed(cleanupFailure);
+        }
+    }
+
+    private static RuntimeException merge(@javax.annotation.Nullable RuntimeException failure, RuntimeException next) {
+        if (failure == null) return next;
+        failure.addSuppressed(next);
+        return failure;
     }
 
     private static void awaitViewSize(RemoteWebView view, int width, int height) throws Exception {

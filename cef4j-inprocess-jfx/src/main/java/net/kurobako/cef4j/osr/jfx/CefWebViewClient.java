@@ -51,6 +51,7 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefRunContextMenuCallback;
 import net.kurobako.cef4j.gen.CefRunQuickMenuCallback;
 import net.kurobako.cef4j.gen.CefSize;
+import net.kurobako.cef4j.gen.CefTransitionType;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.gen.CefWindowOpenDisposition;
 
@@ -139,6 +140,14 @@ final class CefWebViewClient implements CefClient {
     public Optional<CefLoadHandler> getLoadHandler() {
         return Optional.of(new CefLoadHandler() {
             @Override
+            public void onLoadStart(
+                    @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefTransitionType transitionType) {
+                if (isMainFrame(frame)) {
+                    view.scriptEngine.cancelPending("page navigation replaced the renderer context");
+                }
+            }
+
+            @Override
             public void onLoadingStateChange(
                     @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                 Platform.runLater(() -> view.engine.updateLoadState(isLoading, canGoBack, canGoForward));
@@ -149,8 +158,9 @@ final class CefWebViewClient implements CefClient {
             public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                 if (!isMainFrame(frame)) return;
                 scrollbarLoadHandler.onLoadEnd(browser, frame, httpStatusCode);
+                String completedUrl = frame == null ? null : frame.getUrl().orElse(null);
                 Platform.runLater(() -> {
-                    view.engine.markLoadFinished();
+                    view.engine.markLoadFinished(completedUrl);
                     view.requestViewRefresh(false);
                 });
                 refreshHistoryFromBrowser(browser);
@@ -164,7 +174,7 @@ final class CefWebViewClient implements CefClient {
                     @Nullable String errorText,
                     @Nullable String failedUrl) {
                 if (!isMainFrame(frame)) return;
-                Platform.runLater(() -> view.engine.markLoadFailed(new RuntimeException(errorText)));
+                Platform.runLater(() -> view.engine.markLoadFailed(failedUrl, new RuntimeException(errorText)));
             }
         });
     }

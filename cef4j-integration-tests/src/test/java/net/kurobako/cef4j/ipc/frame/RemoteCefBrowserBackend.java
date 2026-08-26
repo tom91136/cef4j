@@ -12,7 +12,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
@@ -70,45 +69,82 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         private final Browser browser;
         private final SharedFileFrameTransport frameTransport;
         private final RemoteNavigationProbe navigation;
-        private final AtomicReference<PaintInfo> latestPaint = new AtomicReference<>();
         private final ArrayBlockingQueue<PaintInfo> paintQueue = new ArrayBlockingQueue<>(1);
+        private final Duration navigationTimeout;
 
         IpcSession(SessionConfig config) throws Exception {
             RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-            this.server = launchServer(environment.binary(), environment.resources(), config.startupTimeout());
-            this.transport = ZmqTransport.connect(server.endpoint());
-            this.session = new CefSessionImpl(transport, Duration.ofSeconds(30));
-            this.navigation = new RemoteNavigationProbe(session);
+            this.navigationTimeout = config.startupTimeout();
+            RuntimeServerProcess nextServer = null;
+            ZmqTransport nextTransport = null;
+            CefSession nextSession = null;
+            SharedFileFrameTransport nextFrameTransport = null;
+            RemoteNavigationProbe nextNavigation = null;
+            RemoteHandle nextBrowserHandle;
+            Browser nextBrowser;
+            try {
+                nextServer = launchServer(environment.binary(), environment.resources(), config.startupTimeout());
+                nextTransport = ZmqTransport.connect(nextServer.endpoint());
+                nextSession = new CefSessionImpl(nextTransport, Duration.ofSeconds(30));
+                nextFrameTransport = SharedFileFrameTransport.bindAll(nextSession);
+                nextFrameTransport.onFrame((w, h, pixels, meta) -> {
+                    PaintInfo paint = new PaintInfo(w, h, pixels.remaining());
+                    while (!paintQueue.offer(paint)) paintQueue.poll();
+                });
 
-            this.frameTransport = SharedFileFrameTransport.bindAll(session);
-            frameTransport.onFrame((w, h, pixels, meta) -> {
-                PaintInfo p = new PaintInfo(w, h, pixels.remaining());
-                latestPaint.set(p);
-                while (!paintQueue.offer(p)) paintQueue.poll();
-            });
+                CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
+                CefSession.HandlerRegistration registration = nextSession.onLatest(
+                        LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
+                        LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                        event -> handleFuture.complete(event.browser()));
+                try {
+                    nextBrowserHandle = handleFuture.get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                } finally {
+                    registration.close();
+                }
+                nextBrowser = new Browser(nextSession, nextBrowserHandle);
+                RemoteHandle expectedBrowser = nextBrowserHandle;
+                nextNavigation = new RemoteNavigationProbe(nextSession, () -> expectedBrowser);
+                nextSession
+                        .request(
+                                new SetViewportSizeRequest(nextBrowserHandle, config.width(), config.height()),
+                                SetViewportSizeResponse.DECODER)
+                        .get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            } catch (Exception failure) {
+                closeAfterFailure(nextNavigation, failure);
+                closeAfterFailure(nextFrameTransport, failure);
+                closeAfterFailure(nextSession, failure);
+                closeAfterFailure(nextTransport, failure);
+                closeAfterFailure(nextServer, failure);
+                throw failure;
+            }
+            this.server = nextServer;
+            this.transport = nextTransport;
+            this.session = nextSession;
+            this.frameTransport = nextFrameTransport;
+            this.browserHandle = nextBrowserHandle;
+            this.browser = nextBrowser;
+            this.navigation = nextNavigation;
 
-            CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, e -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(e.browser());
-                    });
-            this.browserHandle = handleFuture.get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
-            this.browser = new Browser(session, browserHandle);
-
-            session.request(
-                            new SetViewportSizeRequest(browserHandle, config.width(), config.height()),
-                            SetViewportSizeResponse.DECODER)
-                    .get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
-
-            if (!config.initialUrl().isEmpty()) {
-                loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            try {
+                if (!config.initialUrl().isEmpty()) {
+                    loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                }
+            } catch (Exception failure) {
+                try {
+                    close();
+                } catch (RuntimeException cleanupFailure) {
+                    failure.addSuppressed(cleanupFailure);
+                }
+                throw failure;
             }
         }
 
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            return navigation.load(url, () -> browser.getMainFrame().thenCompose(frame -> frame.loadUrl(url)));
+            return navigation.load(
+                    url, navigationTimeout, () -> browser.getMainFrame().thenCompose(frame -> frame.loadUrl(url)));
         }
 
         @Override
@@ -132,11 +168,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         @Nonnull
         public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
             PaintInfo p = paintQueue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (p == null) {
-                PaintInfo fallback = latestPaint.get();
-                if (fallback != null) return fallback;
-                throw new TimeoutException("no paint within " + timeout);
-            }
+            if (p == null) throw new TimeoutException("no paint within " + timeout);
             return p;
         }
 
@@ -150,28 +182,37 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
 
         @Override
         public void close() {
-            navigation.close();
-            try {
-                frameTransport.close();
-            } catch (RuntimeException ignored) {
-                // Cleanup continues with independently owned resources.
-            }
-            try {
-                session.close();
-            } catch (Exception ignored) {
-                // Cleanup continues with independently owned resources.
-            }
-            try {
-                transport.close();
-            } catch (RuntimeException ignored) {
-                // Cleanup continues with independently owned resources.
-            }
-            try {
-                server.close();
-            } catch (RuntimeException ignored) {
-                // Cleanup is best effort in the disposable test process.
-            }
+            RuntimeException failure = null;
+            failure = RemoteCefBrowserBackend.close(failure, navigation);
+            failure = RemoteCefBrowserBackend.close(failure, frameTransport);
+            failure = RemoteCefBrowserBackend.close(failure, session);
+            failure = RemoteCefBrowserBackend.close(failure, transport);
+            failure = RemoteCefBrowserBackend.close(failure, server);
+            if (failure != null) throw failure;
         }
+    }
+
+    private static void closeAfterFailure(@javax.annotation.Nullable AutoCloseable resource, Exception original) {
+        if (resource == null) return;
+        try {
+            resource.close();
+        } catch (Exception cleanupFailure) {
+            original.addSuppressed(cleanupFailure);
+        }
+    }
+
+    @javax.annotation.Nullable
+    private static RuntimeException close(@javax.annotation.Nullable RuntimeException failure, AutoCloseable resource) {
+        try {
+            resource.close();
+        } catch (Exception cleanupFailure) {
+            RuntimeException next = cleanupFailure instanceof RuntimeException
+                    ? (RuntimeException) cleanupFailure
+                    : new IllegalStateException("resource cleanup failed", cleanupFailure);
+            if (failure == null) return next;
+            failure.addSuppressed(next);
+        }
+        return failure;
     }
 
     /** Launches the packaged runtime server directly with only platform-specific native search paths on its process. */

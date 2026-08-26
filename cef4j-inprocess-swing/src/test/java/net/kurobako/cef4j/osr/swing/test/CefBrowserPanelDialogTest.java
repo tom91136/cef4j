@@ -83,7 +83,6 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                         public void onLoadingStateChange(
                                 @Nullable CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                             state.loading = isLoading;
-                            if (!isLoading) state.loadEnded = true;
                         }
                     });
                 }

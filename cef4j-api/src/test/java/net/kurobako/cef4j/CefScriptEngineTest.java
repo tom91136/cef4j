@@ -690,6 +690,21 @@ class CefScriptEngineTest extends CefTestBase {
     }
 
     @Test
+    @Order(97)
+    void navigationCancelsOldContextWorkWithoutDisposingEngine() throws Exception {
+        int callback = pumpAndGet(evaluator.createCallback(arguments -> {}), 5_000);
+        CompletableFuture<String> pending = evaluator.evaluate("1 + 1");
+
+        evaluator.cancelPending("test navigation");
+
+        assertThat(pending).isCompletedExceptionally();
+        assertThat(evaluator.pendingRequestCount()).isZero();
+        assertThat(evaluator.callbackCount()).isZero();
+        assertThat(pumpAndGet(evaluator.evaluate("6 * 7"), 5_000)).isEqualTo("42");
+        evaluator.release(callback);
+    }
+
+    @Test
     @Order(98)
     void timeoutRemovesPendingRequestAndCallback() throws Exception {
         CefScriptEngine disposable =

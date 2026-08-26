@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assumptions;
 
 /** Shared behavioural contract run unchanged against in-process and Remote CEF browser surfaces. */
 public final class BrowserContract {
-    private static final Duration MAX_EVALUATION_ATTEMPT = Duration.ofSeconds(5);
     private static final Duration MAX_PAINT_ATTEMPT = Duration.ofSeconds(5);
     private static final Duration CONTRACT_TIMEOUT = Duration.ofMinutes(2);
 
@@ -58,8 +57,11 @@ public final class BrowserContract {
                     .isEqualTo("first");
 
             deadline.await(session.loadUrl(site.url("/second")), "navigate to second page", timeout);
-            assertEventuallyEquals(
-                    session, "document.getElementById('marker').textContent", "second", deadline, timeout);
+            assertThat(unquote(deadline.await(
+                            session.evaluateJavascript("document.getElementById('marker').textContent"),
+                            "read second marker",
+                            timeout)))
+                    .isEqualTo("second");
 
             if (backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)) {
                 assertPaint(resizeUntilPaint(session, 512, 384, deadline.remainingUpTo(timeout)), 512, 384);
@@ -147,7 +149,7 @@ public final class BrowserContract {
             TestDeadline deadline,
             Duration operationTimeout)
             throws Exception {
-        long attemptTimeout = Math.max(1L, Math.min(MAX_EVALUATION_ATTEMPT.toNanos(), operationTimeout.toNanos() / 4L));
+        long attemptTimeout = Math.max(1L, Math.min(Duration.ofSeconds(5).toNanos(), operationTimeout.toNanos() / 4L));
         String value = null;
         TimeoutException lastTimeout = null;
         Duration phaseBudget = deadline.remainingUpTo(operationTimeout);

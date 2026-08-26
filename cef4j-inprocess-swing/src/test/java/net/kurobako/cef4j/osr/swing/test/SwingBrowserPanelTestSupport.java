@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
@@ -65,7 +66,7 @@ final class SwingBrowserPanelTestSupport {
         volatile boolean loading;
         volatile boolean canGoBack;
         volatile boolean canGoForward;
-        volatile boolean loadEnded;
+        final AtomicLong loadGeneration = new AtomicLong();
         final CountDownLatch browserReady = new CountDownLatch(1);
         final CountDownLatch browserClosed = new CountDownLatch(1);
     }
@@ -194,7 +195,7 @@ final class SwingBrowserPanelTestSupport {
                             state.canGoBack = canGoBack;
                             state.canGoForward = canGoForward;
                             if (!isLoading) {
-                                state.loadEnded = true;
+                                state.loadGeneration.incrementAndGet();
                             }
                         }
                     });
@@ -372,11 +373,14 @@ final class SwingBrowserPanelTestSupport {
         }));
     }
 
-    static boolean waitForLoadEnd(CefBrowserPanel panel, long timeoutMillis) throws Exception {
+    static long loadGeneration(CefBrowserPanel panel) {
         PanelState state = STATES.get(panel);
-        if (state == null) return false;
-        state.loadEnded = false;
-        return waitUntil(() -> state.loadEnded, timeoutMillis);
+        return state == null ? 0 : state.loadGeneration.get();
+    }
+
+    static boolean waitForLoadEnd(CefBrowserPanel panel, long baseline, long timeoutMillis) throws Exception {
+        PanelState state = STATES.get(panel);
+        return state != null && waitUntil(() -> state.loadGeneration.get() > baseline, timeoutMillis);
     }
 
     static boolean waitUntil(BooleanSupplier condition, long timeoutMillis) throws Exception {

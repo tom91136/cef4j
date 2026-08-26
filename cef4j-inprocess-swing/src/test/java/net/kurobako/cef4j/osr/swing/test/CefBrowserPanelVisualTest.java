@@ -29,6 +29,7 @@ class CefBrowserPanelVisualTest extends SwingBrowserPanelTestBase {
     void resizePanelTriggersRepaint() throws Exception {
         CefBrowserPanel panel = createAttachedPanel();
 
+        long loadBaseline = loadGeneration(panel);
         loadContent(
                 panel,
                 "<html><body><script>"
@@ -38,7 +39,7 @@ class CefBrowserPanelVisualTest extends SwingBrowserPanelTestBase {
                         + "});"
                         + "</script></body></html>");
 
-        assertThat(waitForLoadEnd(panel, 5_000)).isTrue();
+        assertThat(waitForLoadEnd(panel, loadBaseline, 5_000)).isTrue();
         String initialTitle = getTitle(panel);
 
         onSwingThread(() -> {

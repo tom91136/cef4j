@@ -35,9 +35,8 @@ import org.slf4j.LoggerFactory;
  * <p>Thread safety: all public methods are safe to call from any thread. IPC ordering is per-frame as guaranteed by
  * CEF.
  *
- * <p><b>Navigation and pending futures:</b> if the page navigates away before the renderer sends a reply, pending
- * futures from the previous page will never complete. Use {@link java.util.concurrent.CompletableFuture#orTimeout} or
- * {@link java.util.concurrent.CompletableFuture#completeOnTimeout} to avoid indefinite hangs.
+ * <p>Call {@link #cancelPending(String)} when the target frame navigates so requests and callbacks belonging to the old
+ * renderer context cannot leak into the next page.
  */
 @SuppressWarnings({"resource", "unused"})
 public final class CefScriptEngine {
@@ -192,7 +191,7 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<String> evaluate(@Nonnull String expression) {
         Objects.requireNonNull(expression, "expression");
-        return transform(sendEval(frame(), expression, MODE_JSON), result -> {
+        return transform(sendEval(expression, MODE_JSON), result -> {
             if (result.isError()) throw new CefScriptException(result.error().orElse(null));
             if (result.isJson()) return result.json().orElse(null);
             if (result.isVoid()) return null;
@@ -210,7 +209,7 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<Integer> evaluateHandle(@Nonnull String expression) {
         Objects.requireNonNull(expression, "expression");
-        return transform(sendEval(frame(), expression, MODE_HANDLE), result -> {
+        return transform(sendEval(expression, MODE_HANDLE), result -> {
             if (result.isError()) throw new CefScriptException(result.error().orElse(null));
             if (result.isHandle()) return result.handle();
             throw new IllegalStateException("Unexpected result type for handle eval: " + result);
@@ -228,7 +227,7 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<Result> getProperty(int handleId, @Nonnull String key, boolean asHandle) {
         Objects.requireNonNull(key, "key");
-        return sendRequest(frame(), MSG_GET, 4, null, (args, reqId) -> {
+        return sendRequest(MSG_GET, 4, null, (args, reqId) -> {
             args.setInt(0, reqId);
             args.setInt(1, handleId);
             args.setString(2, key);
@@ -249,7 +248,7 @@ public final class CefScriptEngine {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(valueJson, "valueJson");
         return transform(
-                sendRequest(frame(), MSG_SET, 4, null, (args, reqId) -> {
+                sendRequest(MSG_SET, 4, null, (args, reqId) -> {
                     args.setInt(0, reqId);
                     args.setInt(1, handleId);
                     args.setString(2, key);
@@ -276,7 +275,7 @@ public final class CefScriptEngine {
             int handleId, @Nonnull String method, @Nonnull String argsJson, boolean asHandle) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(argsJson, "argsJson");
-        return sendRequest(frame(), MSG_CALL, 5, null, (args, reqId) -> {
+        return sendRequest(MSG_CALL, 5, null, (args, reqId) -> {
             args.setInt(0, reqId);
             args.setInt(1, handleId);
             args.setString(2, method);
@@ -296,7 +295,7 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<Result> invoke(int handleId, @Nonnull String argsJson, boolean asHandle) {
         Objects.requireNonNull(argsJson, "argsJson");
-        return sendRequest(frame(), MSG_INVOKE, 4, null, (args, reqId) -> {
+        return sendRequest(MSG_INVOKE, 4, null, (args, reqId) -> {
             args.setInt(0, reqId);
             args.setInt(1, handleId);
             args.setString(2, argsJson);
@@ -344,21 +343,24 @@ public final class CefScriptEngine {
     public CompletableFuture<Integer> createCallback(@Nonnull CallbackHandler handler) {
         Objects.requireNonNull(handler, "handler");
         int callbackId = nextCallbackId.getAndIncrement();
-        callbacks.put(callbackId, handler);
-        CompletableFuture<Integer> result = transform(
-                sendRequest(frame(), MSG_CREATE_CALLBACK, 2, () -> callbacks.remove(callbackId), (args, reqId) -> {
-                    args.setInt(0, reqId);
-                    args.setInt(1, callbackId);
-                }),
-                reply -> {
-                    if (reply.isError()) {
+        CompletableFuture<Integer> result;
+        synchronized (lifecycleLock) {
+            callbacks.put(callbackId, handler);
+            result = transform(
+                    sendRequest(MSG_CREATE_CALLBACK, 2, () -> callbacks.remove(callbackId), (args, reqId) -> {
+                        args.setInt(0, reqId);
+                        args.setInt(1, callbackId);
+                    }),
+                    reply -> {
+                        if (reply.isError()) {
+                            callbacks.remove(callbackId);
+                            throw new CefScriptException(reply.error().orElse(null));
+                        }
+                        if (reply.isHandle()) return reply.handle();
                         callbacks.remove(callbackId);
-                        throw new CefScriptException(reply.error().orElse(null));
-                    }
-                    if (reply.isHandle()) return reply.handle();
-                    callbacks.remove(callbackId);
-                    throw new IllegalStateException("Unexpected result type for createCallback: " + reply);
-                });
+                        throw new IllegalStateException("Unexpected result type for createCallback: " + reply);
+                    });
+        }
         result.whenComplete((ignored, error) -> {
             if (error != null) callbacks.remove(callbackId);
         });
@@ -461,15 +463,27 @@ public final class CefScriptEngine {
         synchronized (lifecycleLock) {
             if (disposed) return;
             disposed = true;
-            CefScriptException ex = new CefScriptException("CefScriptEngine disposed");
-            pending.forEach((id, future) -> future.completeExceptionally(ex));
-            pending.clear();
-            callbacks.clear();
+            cancelPendingLocked("CefScriptEngine disposed");
         }
     }
 
-    private CompletableFuture<Result> sendEval(CefFrame frame, String expression, int mode) {
-        return sendRequest(frame, MSG_EVAL, 3, null, (args, reqId) -> {
+    /** Fails requests and forgets callback handles owned by the renderer context that is being replaced. */
+    public void cancelPending(@Nonnull String reason) {
+        Objects.requireNonNull(reason, "reason");
+        synchronized (lifecycleLock) {
+            if (!disposed) cancelPendingLocked(reason);
+        }
+    }
+
+    private void cancelPendingLocked(String reason) {
+        CefScriptException failure = new CefScriptException(reason);
+        pending.forEach((id, future) -> future.completeExceptionally(failure));
+        pending.clear();
+        callbacks.clear();
+    }
+
+    private CompletableFuture<Result> sendEval(String expression, int mode) {
+        return sendRequest(MSG_EVAL, 3, null, (args, reqId) -> {
             args.setInt(0, reqId);
             args.setString(1, expression);
             args.setInt(2, mode);
@@ -478,7 +492,6 @@ public final class CefScriptEngine {
 
     @SuppressWarnings("FutureReturnValueIgnored")
     private CompletableFuture<Result> sendRequest(
-            CefFrame frame,
             String messageName,
             int argCount,
             @Nullable Runnable onFailure,
@@ -487,6 +500,13 @@ public final class CefScriptEngine {
             if (disposed) {
                 if (onFailure != null) onFailure.run();
                 return CompletableFuture.failedFuture(new CefScriptException("CefScriptEngine disposed"));
+            }
+            CefFrame frame;
+            try {
+                frame = frame();
+            } catch (RuntimeException failure) {
+                if (onFailure != null) onFailure.run();
+                return CompletableFuture.failedFuture(failure);
             }
             int reqId = nextId.getAndIncrement();
             CompletableFuture<Result> future = new CompletableFuture<>();

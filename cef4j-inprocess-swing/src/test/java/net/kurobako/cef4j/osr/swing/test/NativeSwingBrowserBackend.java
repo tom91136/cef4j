@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +29,7 @@ import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefErrorCode;
 import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
@@ -36,12 +38,14 @@ import net.kurobako.cef4j.gen.CefProcessMessage;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.gen.CefTransitionType;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 
 final class NativeSwingBrowserBackend implements BrowserBackend {
     @Override
@@ -52,21 +56,9 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
     @Override
     public boolean isAvailable() {
-        if (OS.isMacOS() && cefApiVersion() <= 116) return false;
+        if (OS.isMacOS() && CefTestCompatibility.cefApiVersion() <= 116) return false;
         String os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT);
         return !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
-    }
-
-    static int cefApiVersion() {
-        String value = System.getProperty("cef.api.version", System.getProperty("cef4j.test.cefApiVersion"));
-        if (value == null || value.isBlank()) value = System.getProperty("cef.version");
-        if (value == null || value.isBlank()) return Integer.MAX_VALUE;
-        int separator = value.indexOf('.');
-        return Integer.parseInt((separator < 0 ? value : value.substring(0, separator)).trim());
-    }
-
-    static boolean hasReliableBrowserInfoHandshake(int apiVersion) {
-        return apiVersion < 138 || apiVersion >= 142;
     }
 
     @Override
@@ -100,7 +92,10 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
     private static final class Session implements BrowserSession {
         private final BlockingQueue<PaintInfo> paints = new ArrayBlockingQueue<>(1);
         private final AtomicReference<CefBrowser> browser = new AtomicReference<>();
-        private final AtomicReference<CompletableFuture<Void>> pendingLoad = new AtomicReference<>();
+        private final AtomicReference<PendingLoad> pendingLoad = new AtomicReference<>();
+        private final AtomicLong paintGeneration = new AtomicLong();
+        private final java.util.concurrent.atomic.AtomicBoolean releaseRequested =
+                new java.util.concurrent.atomic.AtomicBoolean();
         private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
         private final CefScriptEngine scripts = new CefScriptEngine(() -> Optional.ofNullable(browser.get())
                 .flatMap(CefBrowser::getMainFrame)
@@ -117,95 +112,187 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             AtomicReference<ObservedPanel> panelRef = new AtomicReference<>();
             AtomicReference<JFrame> frameRef = new AtomicReference<>();
             onEdt(() -> {
-                ObservedPanel nextPanel = new ObservedPanel(paints);
-                nextPanel.setPreferredSize(new Dimension(width, height));
-                JFrame nextFrame = new JFrame("cef4j native Swing contract");
-                nextFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                nextFrame.setLayout(new BorderLayout());
-                nextFrame.add(nextPanel, BorderLayout.CENTER);
-                nextFrame.pack();
-                nextFrame.setVisible(true);
+                ObservedPanel nextPanel = new ObservedPanel(paints, paintGeneration, this::completePendingLoad);
+                JFrame nextFrame = null;
+                try {
+                    nextPanel.setPreferredSize(new Dimension(width, height));
+                    nextFrame = new JFrame("cef4j native Swing contract");
+                    nextFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    nextFrame.setLayout(new BorderLayout());
+                    nextFrame.add(nextPanel, BorderLayout.CENTER);
+                    nextFrame.pack();
+                    nextFrame.setVisible(true);
 
-                CefClient client = new CefClient() {
-                    @Override
-                    public Optional<CefRenderHandler> getRenderHandler() {
-                        return Optional.of(nextPanel.createRenderHandler());
-                    }
+                    CefClient client = new CefClient() {
+                        @Override
+                        public Optional<CefRenderHandler> getRenderHandler() {
+                            return Optional.of(nextPanel.createRenderHandler());
+                        }
 
-                    @Override
-                    public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
-                        return Optional.of(new CefLifeSpanHandler() {
-                            @Override
-                            public void onAfterCreated(@Nullable CefBrowser created) {
-                                if (created == null) return;
-                                SwingUtilities.invokeLater(() -> {
-                                    browser.set(created);
-                                    nextPanel.browser(created);
-                                    ready.countDown();
-                                });
-                            }
-
-                            @Override
-                            public void onBeforeClose(@Nullable CefBrowser closing) {
-                                browser.set(null);
-                                nextPanel.browser(null);
-                                browserClosed.complete(null);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public Optional<CefLoadHandler> getLoadHandler() {
-                        return Optional.of(new CefLoadHandler() {
-                            @Override
-                            public void onLoadingStateChange(
-                                    @Nullable CefBrowser ignored,
-                                    boolean loading,
-                                    boolean canGoBack,
-                                    boolean canGoForward) {
-                                if (!loading) {
-                                    CompletableFuture<Void> completion = pendingLoad.getAndSet(null);
-                                    if (completion != null) completion.complete(null);
+                        @Override
+                        public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
+                            return Optional.of(new CefLifeSpanHandler() {
+                                @Override
+                                public void onAfterCreated(@Nullable CefBrowser created) {
+                                    if (created == null) return;
+                                    SwingUtilities.invokeLater(() -> {
+                                        if (releaseRequested.get()) {
+                                            created.getHost().ifPresent(host -> host.closeBrowser(true));
+                                            return;
+                                        }
+                                        browser.set(created);
+                                        nextPanel.browser(created);
+                                        ready.countDown();
+                                    });
                                 }
-                            }
-                        });
-                    }
 
-                    @Override
-                    public boolean onProcessMessageReceived(
-                            @Nullable CefBrowser sourceBrowser,
-                            @Nullable CefFrame sourceFrame,
-                            @Nonnull CefProcessId sourceProcess,
-                            @Nullable CefProcessMessage message) {
-                        return scripts.handleMessage(sourceBrowser, sourceFrame, sourceProcess, message);
-                    }
-                };
+                                @Override
+                                public void onBeforeClose(@Nullable CefBrowser closing) {
+                                    browser.set(null);
+                                    nextPanel.browser(null);
+                                    browserClosed.complete(null);
+                                }
+                            });
+                        }
 
-                CefWindowInfo windowInfo =
-                        Cef.createWindowlessInfo(new CefRect(0, 0, Math.max(1, width), Math.max(1, height)));
-                CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
-                browserSettings.windowlessFrameRate = 60;
-                CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
-                panelRef.set(nextPanel);
-                frameRef.set(nextFrame);
+                        @Override
+                        public Optional<CefLoadHandler> getLoadHandler() {
+                            return Optional.of(new CefLoadHandler() {
+                                @Override
+                                public void onLoadStart(
+                                        @Nullable CefBrowser ignored,
+                                        @Nullable CefFrame loadedFrame,
+                                        @Nonnull CefTransitionType transitionType) {
+                                    if (loadedFrame != null && loadedFrame.isMain()) {
+                                        scripts.cancelPending("page navigation replaced the renderer context");
+                                    }
+                                    PendingLoad current = pendingLoad.get();
+                                    if (current != null && loadedFrame != null && loadedFrame.isMain()) {
+                                        String startedUrl = loadedFrame.getUrl().orElse("");
+                                        if (!current.started && current.url.equals(startedUrl)) current.started = true;
+                                        if (current.started) current.activeUrl = startedUrl;
+                                    }
+                                }
+
+                                @Override
+                                public void onLoadEnd(
+                                        @Nullable CefBrowser ignored,
+                                        @Nullable CefFrame loadedFrame,
+                                        int httpStatusCode) {
+                                    PendingLoad current = pendingLoad.get();
+                                    if (current != null
+                                            && current.started
+                                            && loadedFrame != null
+                                            && loadedFrame.isMain()
+                                            && loadedFrame
+                                                    .getUrl()
+                                                    .filter(current.activeUrl::equals)
+                                                    .isPresent()) {
+                                        current.terminal = true;
+                                        completePendingLoad();
+                                    }
+                                }
+
+                                @Override
+                                public void onLoadError(
+                                        @Nullable CefBrowser ignored,
+                                        @Nullable CefFrame loadedFrame,
+                                        @Nonnull CefErrorCode errorCode,
+                                        @Nullable String errorText,
+                                        @Nullable String failedUrl) {
+                                    PendingLoad current = pendingLoad.get();
+                                    if (current != null
+                                            && loadedFrame != null
+                                            && loadedFrame.isMain()
+                                            && (current.started || current.url.equals(failedUrl))
+                                            && pendingLoad.compareAndSet(current, null)) {
+                                        current.result.completeExceptionally(new IllegalStateException(
+                                                Objects.requireNonNullElse(errorText, "load failed")));
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public boolean onProcessMessageReceived(
+                                @Nullable CefBrowser sourceBrowser,
+                                @Nullable CefFrame sourceFrame,
+                                @Nonnull CefProcessId sourceProcess,
+                                @Nullable CefProcessMessage message) {
+                            return scripts.handleMessage(sourceBrowser, sourceFrame, sourceProcess, message);
+                        }
+                    };
+
+                    CefWindowInfo windowInfo =
+                            Cef.createWindowlessInfo(new CefRect(0, 0, Math.max(1, width), Math.max(1, height)));
+                    CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
+                    browserSettings.windowlessFrameRate = 60;
+                    if (CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null)
+                            == 0) {
+                        throw new IllegalStateException("CEF rejected native Swing browser creation");
+                    }
+                    panelRef.set(nextPanel);
+                    frameRef.set(nextFrame);
+                } catch (RuntimeException | Error failure) {
+                    releaseRequested.set(true);
+                    nextPanel.release();
+                    if (nextFrame != null) nextFrame.dispose();
+                    throw failure;
+                }
             });
             panel = Objects.requireNonNull(panelRef.get(), "native Swing panel");
             frame = Objects.requireNonNull(frameRef.get(), "native Swing frame");
-            if (!ready.await(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS)) {
-                throw new IllegalStateException("native Swing browser startup timed out");
-            }
-            if (!config.initialUrl().isEmpty()) {
-                loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            try {
+                if (!ready.await(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS)) {
+                    throw new IllegalStateException("native Swing browser startup timed out");
+                }
+                if (!config.initialUrl().isEmpty()) {
+                    loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                }
+            } catch (Exception failure) {
+                releaseRequested.set(true);
+                scripts.dispose();
+                onEdt(() -> {
+                    panel.release();
+                    frame.dispose();
+                });
+                throw failure;
             }
         }
 
         @Override
         @Nonnull
+        @SuppressWarnings("FutureReturnValueIgnored")
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            CompletableFuture<Void> completion = new CompletableFuture<>();
-            pendingLoad.set(completion);
-            Optional.ofNullable(browser.get()).flatMap(CefBrowser::getMainFrame).ifPresent(f -> f.loadUrl(url));
-            return completion;
+            CefFrame mainFrame = Optional.ofNullable(browser.get())
+                    .flatMap(CefBrowser::getMainFrame)
+                    .orElse(null);
+            if (mainFrame == null) {
+                return CompletableFuture.failedFuture(new IllegalStateException("native Swing main frame unavailable"));
+            }
+            PendingLoad next = new PendingLoad(url, paintGeneration.get());
+            if (!pendingLoad.compareAndSet(null, next)) {
+                return CompletableFuture.failedFuture(new IllegalStateException("a navigation is already pending"));
+            }
+            scripts.cancelPending("page navigation replaced the renderer context");
+            try {
+                mainFrame.loadUrl(url);
+            } catch (RuntimeException failure) {
+                pendingLoad.compareAndSet(next, null);
+                next.result.completeExceptionally(failure);
+            }
+            next.result.whenComplete((ignored, failure) -> pendingLoad.compareAndSet(next, null));
+            return next.result;
+        }
+
+        private void completePendingLoad() {
+            PendingLoad current = pendingLoad.get();
+            if (current != null
+                    && current.terminal
+                    && paintGeneration.get() > current.paintBaseline
+                    && pendingLoad.compareAndSet(current, null)) {
+                current.result.complete(null);
+            }
         }
 
         @Override
@@ -259,6 +346,9 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
         @Override
         public void close() {
+            if (!releaseRequested.compareAndSet(false, true)) return;
+            PendingLoad load = pendingLoad.getAndSet(null);
+            if (load != null) load.result.cancel(true);
             scripts.dispose();
             try {
                 onEdt(() -> {
@@ -275,9 +365,14 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
     private static final class ObservedPanel extends CefBrowserPanel {
         private static final long serialVersionUID = 1L;
         private final transient BlockingQueue<BrowserSession.PaintInfo> paints;
+        private final transient AtomicLong paintGeneration;
+        private final transient Runnable paintListener;
 
-        ObservedPanel(BlockingQueue<BrowserSession.PaintInfo> paints) {
+        ObservedPanel(
+                BlockingQueue<BrowserSession.PaintInfo> paints, AtomicLong paintGeneration, Runnable paintListener) {
             this.paints = paints;
+            this.paintGeneration = paintGeneration;
+            this.paintListener = paintListener;
         }
 
         @Override
@@ -287,8 +382,24 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
         @Override
         protected void onViewPainted(int width, int height) {
+            paintGeneration.incrementAndGet();
             BrowserSession.PaintInfo latest = new BrowserSession.PaintInfo(width, height, (long) width * height * 4L);
             while (!paints.offer(latest)) paints.poll();
+            paintListener.run();
+        }
+    }
+
+    private static final class PendingLoad {
+        private final String url;
+        private final long paintBaseline;
+        private final CompletableFuture<Void> result = new CompletableFuture<>();
+        private volatile boolean started;
+        private volatile boolean terminal;
+        private volatile String activeUrl = "";
+
+        private PendingLoad(String url, long paintBaseline) {
+            this.url = url;
+            this.paintBaseline = paintBaseline;
         }
     }
 }

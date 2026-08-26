@@ -4,10 +4,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -167,11 +168,23 @@ public final class ZmqTransport implements CefTransport {
         worker.setDaemon(true);
         worker.start();
         try {
-            this.endpoint = setup.join();
-        } catch (CompletionException e) {
+            this.endpoint = setup.get(handshakeTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
             closed = true;
             joinQuietly(worker);
             throw new IllegalStateException("Unable to initialize ZeroMQ transport " + requestedEndpoint, e.getCause());
+        } catch (TimeoutException e) {
+            closed = true;
+            worker.interrupt();
+            joinQuietly(worker);
+            throw new IllegalStateException(
+                    "ZeroMQ transport setup timed out after " + handshakeTimeoutMs + "ms for " + requestedEndpoint, e);
+        } catch (InterruptedException e) {
+            closed = true;
+            worker.interrupt();
+            joinQuietly(worker);
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while initializing ZeroMQ transport " + requestedEndpoint, e);
         }
     }
 

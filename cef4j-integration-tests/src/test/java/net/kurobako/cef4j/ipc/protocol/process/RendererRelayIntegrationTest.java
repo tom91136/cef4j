@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -44,6 +45,15 @@ class RendererRelayIntegrationTest {
                     .isNotNull();
             assertThat(ev.browser().id()).isPositive();
             assertThat(ev.frameUrl()).isNotNull();
+
+            String target = "data:text/html,cef4j-navigation-probe";
+            Browser browser = new Browser(session, ev.browser());
+            browser.getMainFrame().thenCompose(frame -> frame.loadUrl(target)).get(20, TimeUnit.SECONDS);
+
+            V8ContextCreatedEvent navigated = events.poll(20, TimeUnit.SECONDS);
+            assertThat(navigated).isNotNull();
+            assertThat(navigated.browser()).isEqualTo(ev.browser());
+            assertThat(navigated.frameUrl()).contains("cef4j-navigation-probe");
         }
     }
 }

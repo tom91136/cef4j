@@ -26,15 +26,63 @@ class RemoteNavigationProbeTest {
     void waitsForBothQueueAcknowledgementAndMatchingRendererContext() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
-                RemoteNavigationProbe navigation = new RemoteNavigationProbe(session)) {
-            CompletableFuture<Void> queued = new CompletableFuture<>();
-            CompletableFuture<Void> loaded = navigation.load("https://ready.test", () -> queued);
+                RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1))) {
+            CountDownLatch firstObserved = new CountDownLatch(1);
+            AtomicReference<CountDownLatch> observed = new AtomicReference<>(firstObserved);
+            CefSession.HandlerRegistration registration = session.on(
+                    V8ContextCreatedEvent.MESSAGE_ID,
+                    V8ContextCreatedEvent.DECODER,
+                    event -> Objects.requireNonNull(observed.get(), "event barrier")
+                            .countDown());
+            try {
+                CompletableFuture<Void> queued = new CompletableFuture<>();
+                CompletableFuture<Void> loaded =
+                        navigation.load("https://ready.test", Duration.ofSeconds(2), () -> queued);
 
-            sendContext(pair.b, "https://ready.test");
-            assertThat(loaded).isNotDone();
-            queued.complete(null);
+                sendContext(pair.b, "https://other.test");
+                assertThat(firstObserved.await(2, TimeUnit.SECONDS)).isTrue();
+                assertThat(loaded).isNotDone();
+                queued.complete(null);
+                assertThat(loaded).isNotDone();
+                CountDownLatch secondObserved = new CountDownLatch(1);
+                observed.set(secondObserved);
+                sendContext(pair.b, new RemoteHandle(2), "https://ready.test");
+                assertThat(secondObserved.await(2, TimeUnit.SECONDS)).isTrue();
+                assertThat(loaded).isNotDone();
+                sendContext(pair.b, "https://ready.test");
 
-            assertThat(loaded.get(2, TimeUnit.SECONDS)).isNull();
+                assertThat(loaded.get(2, TimeUnit.SECONDS)).isNull();
+            } finally {
+                registration.close();
+            }
+        } finally {
+            pair.b.close();
+        }
+    }
+
+    @Test
+    void remembersMatchingRendererContextObservedBeforeQueueAcknowledgement() throws Exception {
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
+                RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1))) {
+            CountDownLatch observed = new CountDownLatch(1);
+            CefSession.HandlerRegistration registration = session.on(
+                    V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, event -> observed.countDown());
+            try {
+                CompletableFuture<Void> queued = new CompletableFuture<>();
+                CompletableFuture<Void> loaded =
+                        navigation.load("https://ready.test", Duration.ofSeconds(2), () -> queued);
+
+                sendContext(pair.b, "https://ready.test");
+                assertThat(observed.await(2, TimeUnit.SECONDS)).isTrue();
+                assertThat(loaded).isNotDone();
+
+                queued.complete(null);
+
+                assertThat(loaded.get(2, TimeUnit.SECONDS)).isNull();
+            } finally {
+                registration.close();
+            }
         } finally {
             pair.b.close();
         }
@@ -44,9 +92,10 @@ class RemoteNavigationProbeTest {
     void closeCancelsQueuedNavigation() {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2))) {
-            RemoteNavigationProbe navigation = new RemoteNavigationProbe(session);
+            RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1));
             CompletableFuture<Void> queued = new CompletableFuture<>();
-            CompletableFuture<Void> loaded = navigation.load("https://pending.test", () -> queued);
+            CompletableFuture<Void> loaded =
+                    navigation.load("https://pending.test", Duration.ofSeconds(2), () -> queued);
 
             navigation.close();
 
@@ -62,21 +111,22 @@ class RemoteNavigationProbeTest {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         ExecutorService caller = Executors.newSingleThreadExecutor();
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2))) {
-            RemoteNavigationProbe navigation = new RemoteNavigationProbe(session);
+            RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1));
             CompletableFuture<Void> queued = new CompletableFuture<>();
             AtomicReference<CompletableFuture<Void>> loaded = new AtomicReference<>();
             CountDownLatch entered = new CountDownLatch(1);
             CountDownLatch release = new CountDownLatch(1);
-            Future<?> invocation = caller.submit(() -> loaded.set(navigation.load("https://pending.test", () -> {
-                entered.countDown();
-                try {
-                    if (!release.await(2, TimeUnit.SECONDS)) throw new IllegalStateException("not released");
-                } catch (InterruptedException interrupted) {
-                    Thread.currentThread().interrupt();
-                    throw new IllegalStateException(interrupted);
-                }
-                return queued;
-            })));
+            Future<?> invocation = caller.submit(() ->
+                    loaded.set(navigation.load("https://pending.test", Duration.ofSeconds(2), () -> {
+                        entered.countDown();
+                        try {
+                            if (!release.await(2, TimeUnit.SECONDS)) throw new IllegalStateException("not released");
+                        } catch (InterruptedException interrupted) {
+                            Thread.currentThread().interrupt();
+                            throw new IllegalStateException(interrupted);
+                        }
+                        return queued;
+                    })));
             assertThat(entered.await(2, TimeUnit.SECONDS)).isTrue();
 
             navigation.close();
@@ -93,7 +143,11 @@ class RemoteNavigationProbeTest {
     }
 
     private static void sendContext(LoopbackTransport peer, String url) throws Exception {
-        V8ContextCreatedEvent event = new V8ContextCreatedEvent(new RemoteHandle(1), url);
+        sendContext(peer, new RemoteHandle(1), url);
+    }
+
+    private static void sendContext(LoopbackTransport peer, RemoteHandle browser, String url) throws Exception {
+        V8ContextCreatedEvent event = new V8ContextCreatedEvent(browser, url);
         ByteBuffer frame =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + event.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
         Envelope.writeHeader(

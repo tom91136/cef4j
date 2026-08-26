@@ -11,6 +11,9 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javafx.application.Platform;
@@ -68,6 +71,12 @@ public class CefWebView extends Region {
     private static final CefKeyEventType KEY_CHAR = CefKeyEventType.of(CefKeyEventType.Kind.CHAR);
     private static final CefKeyEventType KEY_KEYUP = CefKeyEventType.of(CefKeyEventType.Kind.KEYUP);
     private static final CefPaintElementType PAINT_VIEW = CefPaintElementType.of(CefPaintElementType.Kind.VIEW);
+    private static final long FX_CALLBACK_TIMEOUT_SECONDS = 10;
+    private static final java.util.concurrent.Executor CREATED_BROWSER_CLOSER = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "cef4j-created-browser-closer");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final ImageView imageView = new ImageView();
     private final CefFrameBuffer<int[]> frameBuffer;
@@ -78,6 +87,7 @@ public class CefWebView extends Region {
     });
     private final CefClient client = new CefWebViewClient(this);
     private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
+    private final AtomicBoolean releaseStarted = new AtomicBoolean();
     private final ChangeListener<Boolean> windowShowingListener = (obs, wasShowing, isShowing) -> {
         if (isShowing) {
             maybeCreateBrowser(false);
@@ -408,6 +418,7 @@ public class CefWebView extends Region {
      * calling {@link #terminate()}.
      */
     public CompletableFuture<Void> releaseAsync() {
+        if (!releaseStarted.compareAndSet(false, true)) return browserClosed;
         boolean creationPending = browserCreationPosted;
         releaseRequested = true;
         popupSurface.hide();
@@ -1021,7 +1032,7 @@ public class CefWebView extends Region {
             // XXX: CEF 144-150 CreateInternal dereferences a cleared popup delegate if close runs inside
             // onAfterCreated; remove this deferral when the minimum supported CEF is above 150 and the popup-close
             // regression passes with synchronous close in this callback.
-            Platform.runLater(() -> created.close(true));
+            CREATED_BROWSER_CLOSER.execute(() -> created.close(true));
             return;
         }
         if (this.browser == null) {
@@ -1096,23 +1107,32 @@ public class CefWebView extends Region {
             return;
         }
         CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            try {
-                runnable.run();
-            } finally {
-                latch.countDown();
-            }
-        });
-        boolean interrupted = false;
-        while (true) {
-            try {
-                latch.await();
-                break;
-            } catch (InterruptedException e) {
-                interrupted = true;
-            }
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        try {
+            Platform.runLater(() -> {
+                try {
+                    runnable.run();
+                } catch (Throwable thrown) {
+                    failure.set(thrown);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        } catch (RuntimeException rejected) {
+            throw new IllegalStateException("JavaFX rejected a CEF callback", rejected);
         }
-        if (interrupted) Thread.currentThread().interrupt();
+        try {
+            if (!latch.await(FX_CALLBACK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                throw new IllegalStateException(
+                        "JavaFX did not process a CEF callback within " + FX_CALLBACK_TIMEOUT_SECONDS + " seconds");
+            }
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("interrupted while waiting for JavaFX callback", interrupted);
+        }
+        Throwable thrown = failure.get();
+        if (thrown instanceof RuntimeException) throw (RuntimeException) thrown;
+        if (thrown instanceof Error) throw (Error) thrown;
     }
 
     private static final class BrowserCleanupAction implements Runnable {

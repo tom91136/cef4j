@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -37,6 +38,7 @@ public final class LoopbackTransport implements CefTransport {
 
     private volatile boolean closed = false;
     private volatile boolean peerClosed = false;
+    private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
     /** Creates a connected pair. */
     public static Pair create() {
@@ -87,6 +89,7 @@ public final class LoopbackTransport implements CefTransport {
     @Override
     public void onDisconnect(@Nonnull Runnable handler) {
         this.disconnectHandler = handler;
+        if (peerClosed) notifyDisconnect();
     }
 
     @Override
@@ -106,13 +109,16 @@ public final class LoopbackTransport implements CefTransport {
 
     private void notifyPeerClosed() {
         peerClosed = true;
+        notifyDisconnect();
+    }
+
+    private void notifyDisconnect() {
         Runnable r = disconnectHandler;
-        if (r != null) {
+        if (r != null && disconnectNotified.compareAndSet(false, true)) {
             try {
                 r.run();
             } catch (RuntimeException ignored) {
-                // The disconnect handler is best-effort. Swallowing matches the shape that ZmqTransport will
-                // also need (callbacks fired from internal threads should not propagate into the transport core).
+                // XXX: A user callback cannot be allowed to break the transport reader thread.
             }
         }
     }

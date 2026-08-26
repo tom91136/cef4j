@@ -359,9 +359,15 @@ public final class RemoteWebView extends Region {
     public CompletableFuture<Void> resizeViewport(int width, int height) {
         RemoteViewportConstraints.validate(width, height);
         CompletableFuture<Void> pendingFxWork = new CompletableFuture<>();
-        Platform.runLater(() -> pendingFxWork.complete(null));
-        return pendingFxWork.thenCompose(ignored ->
-                browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, width, height)));
+        try {
+            Platform.runLater(() -> pendingFxWork.complete(null));
+        } catch (RuntimeException failure) {
+            pendingFxWork.completeExceptionally(failure);
+        }
+        return pendingFxWork
+                .orTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                .thenCompose(ignored -> browserHandle.thenCompose(
+                        handle -> requestViewportSize(requireSession(), handle, width, height)));
     }
 
     private CompletableFuture<Void> requestViewportSize(
@@ -504,12 +510,23 @@ public final class RemoteWebView extends Region {
      */
     public synchronized void release() {
         if (!attachedOnce) return;
-        if (frameTransport != null) {
-            frameTransport.close();
-            frameTransport = null;
+        RuntimeException failure = null;
+        FrameTransport transport = frameTransport;
+        frameTransport = null;
+        if (transport != null) {
+            try {
+                transport.close();
+            } catch (RuntimeException closeFailure) {
+                failure = closeFailure;
+            }
         }
         if (lifecycleRegistration != null) {
-            lifecycleRegistration.unregister();
+            try {
+                lifecycleRegistration.unregister();
+            } catch (RuntimeException closeFailure) {
+                if (failure == null) failure = closeFailure;
+                else failure.addSuppressed(closeFailure);
+            }
             lifecycleRegistration = null;
         }
         hostRef.set(null);
@@ -518,6 +535,7 @@ public final class RemoteWebView extends Region {
             browserHandle.completeExceptionally(
                     new IllegalStateException("RemoteWebView released before browser ready"));
         }
+        if (failure != null) throw failure;
     }
 
     /**

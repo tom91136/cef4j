@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.frame;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class EncodedFramePipeline implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(EncodedFramePipeline.class);
+    private static final Duration DEFAULT_CLOSE_TIMEOUT = Duration.ofSeconds(5);
 
     private final FrameCodec codec;
     private final Consumer<EncodedFrame> consumer;
@@ -28,10 +30,32 @@ public final class EncodedFramePipeline implements AutoCloseable {
     private final AtomicReference<Thread> workerThread = new AtomicReference<>();
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean closed = new AtomicBoolean();
+    private final AtomicBoolean codecCloseStarted = new AtomicBoolean();
+    private final CountDownLatch codecClosed = new CountDownLatch(1);
+    private final Duration closeTimeout;
+    private final boolean warnOnCloseTimeout;
 
     public EncodedFramePipeline(@Nonnull FrameCodec codec, @Nonnull Consumer<EncodedFrame> consumer) {
+        this(codec, consumer, DEFAULT_CLOSE_TIMEOUT, true);
+    }
+
+    EncodedFramePipeline(
+            @Nonnull FrameCodec codec, @Nonnull Consumer<EncodedFrame> consumer, @Nonnull Duration closeTimeout) {
+        this(codec, consumer, closeTimeout, true);
+    }
+
+    EncodedFramePipeline(
+            @Nonnull FrameCodec codec,
+            @Nonnull Consumer<EncodedFrame> consumer,
+            @Nonnull Duration closeTimeout,
+            boolean warnOnCloseTimeout) {
         this.codec = Objects.requireNonNull(codec, "codec");
         this.consumer = Objects.requireNonNull(consumer, "consumer");
+        this.closeTimeout = Objects.requireNonNull(closeTimeout, "closeTimeout");
+        this.warnOnCloseTimeout = warnOnCloseTimeout;
+        if (closeTimeout.isZero() || closeTimeout.isNegative()) {
+            throw new IllegalArgumentException("closeTimeout must be positive");
+        }
         this.worker = Executors.newSingleThreadExecutor(r -> {
             Thread thread =
                     new Thread(r, "cef4j-frame-codec-" + codec.descriptor().id());
@@ -76,6 +100,7 @@ public final class EncodedFramePipeline implements AutoCloseable {
             }
         } finally {
             scheduled.set(false);
+            if (closed.get()) closeCodec();
             synchronized (commandLock) {
                 if (!closed.get() && latest.get() != null && scheduled.compareAndSet(false, true)) {
                     worker.execute(this::drain);
@@ -86,36 +111,42 @@ public final class EncodedFramePipeline implements AutoCloseable {
 
     @Override
     public void close() {
-        CountDownLatch codecClosed = new CountDownLatch(1);
         synchronized (commandLock) {
             if (!closed.compareAndSet(false, true)) return;
             latest.set(null);
-            worker.execute(() -> {
-                try {
-                    codec.close();
-                } finally {
-                    codecClosed.countDown();
-                }
-            });
+            worker.execute(this::closeCodec);
             worker.shutdown();
         }
         if (Thread.currentThread() == workerThread.get()) return;
         boolean interrupted = false;
-        while (true) {
-            try {
-                codecClosed.await();
-                break;
-            } catch (InterruptedException ignored) {
-                interrupted = true;
-            }
+        boolean terminated = false;
+        long deadline = System.nanoTime() + closeTimeout.toNanos();
+        try {
+            long remaining = deadline - System.nanoTime();
+            if (remaining > 0) terminated = codecClosed.await(remaining, TimeUnit.NANOSECONDS);
+            remaining = deadline - System.nanoTime();
+            if (terminated && remaining > 0) terminated = worker.awaitTermination(remaining, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException ignored) {
+            interrupted = true;
         }
-        while (true) {
-            try {
-                if (worker.awaitTermination(1, TimeUnit.DAYS)) break;
-            } catch (InterruptedException ignored) {
-                interrupted = true;
+        if (!terminated) {
+            worker.shutdownNow();
+            if (warnOnCloseTimeout) {
+                LOG.warn(
+                        "frame codec {} did not close within {}",
+                        codec.descriptor().id(),
+                        closeTimeout);
             }
         }
         if (interrupted) Thread.currentThread().interrupt();
+    }
+
+    private void closeCodec() {
+        if (!codecCloseStarted.compareAndSet(false, true)) return;
+        try {
+            codec.close();
+        } finally {
+            codecClosed.countDown();
+        }
     }
 }

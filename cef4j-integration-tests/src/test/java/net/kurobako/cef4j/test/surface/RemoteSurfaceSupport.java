@@ -32,11 +32,30 @@ final class RemoteSurfaceSupport {
 
     static RuntimeFixture open(Duration timeout) throws Exception {
         RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
-        RuntimeServerProcess server =
-                RemoteCefBrowserBackend.launchServer(environment.binary(), environment.resources(), timeout);
-        ZmqTransport transport = ZmqTransport.connect(server.endpoint());
-        CefSession session = new CefSessionImpl(transport, timeout);
-        return new RuntimeFixture(server, transport, session);
+        RuntimeServerProcess server = null;
+        ZmqTransport transport = null;
+        try {
+            server = RemoteCefBrowserBackend.launchServer(environment.binary(), environment.resources(), timeout);
+            transport = ZmqTransport.connect(server.endpoint());
+            CefSession session = new CefSessionImpl(transport, timeout);
+            return new RuntimeFixture(server, transport, session);
+        } catch (Exception failure) {
+            if (transport != null) {
+                try {
+                    transport.close();
+                } catch (RuntimeException cleanupFailure) {
+                    failure.addSuppressed(cleanupFailure);
+                }
+            }
+            if (server != null) {
+                try {
+                    server.close();
+                } catch (RuntimeException cleanupFailure) {
+                    failure.addSuppressed(cleanupFailure);
+                }
+            }
+            throw failure;
+        }
     }
 
     static final class RuntimeFixture implements AutoCloseable {
@@ -52,22 +71,26 @@ final class RemoteSurfaceSupport {
 
         @Override
         public void close() {
-            try {
-                session.close();
-            } catch (Exception ignored) {
-                // Cleanup continues with independently owned resources.
-            }
-            try {
-                transport.close();
-            } catch (RuntimeException ignored) {
-                // Cleanup continues with independently owned resources.
-            }
-            try {
-                server.close();
-            } catch (RuntimeException ignored) {
-                // Cleanup is best effort in the disposable test process.
-            }
+            RuntimeException failure = null;
+            failure = RemoteSurfaceSupport.close(failure, session);
+            failure = RemoteSurfaceSupport.close(failure, transport);
+            failure = RemoteSurfaceSupport.close(failure, server);
+            if (failure != null) throw failure;
         }
+    }
+
+    @javax.annotation.Nullable
+    private static RuntimeException close(@javax.annotation.Nullable RuntimeException failure, AutoCloseable resource) {
+        try {
+            resource.close();
+        } catch (Exception cleanupFailure) {
+            RuntimeException next = cleanupFailure instanceof RuntimeException
+                    ? (RuntimeException) cleanupFailure
+                    : new IllegalStateException("resource cleanup failed", cleanupFailure);
+            if (failure == null) return next;
+            failure.addSuppressed(next);
+        }
+        return failure;
     }
 
     static final class FrameProbe {
