@@ -14,6 +14,10 @@
     <name>cef4j-remote-core</name>
     <description>Portable transports, sessions, handles, and runtime-server lifecycle for Remote CEF</description>
 
+    <properties>
+        <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.zeromq</groupId>

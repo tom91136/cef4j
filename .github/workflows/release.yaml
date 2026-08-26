@@ -122,10 +122,11 @@ jobs:
           JAVA_HOME: ${{ steps.jdk21.outputs.path }}
           JDK_VERSION: '21'
           CEF_PLATFORM: ${{ matrix.platform }}
-          ARCH: ${{ matrix.arch }}
+          CEF_EXTRA_ARGS: '--disable-gpu'
+          SUREFIRE_PLATFORM_ARG: ''
+          SPOTBUGS_SKIP: true
           CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.arch }}
           CEF_VERSION: ${{ env.CEF_VERSION }}
-          CEF_API: ${{ env.CEF_API }}
           JAVAFX_VERSION: ${{ matrix.platform == 'linuxarm64' && '21.0.1' || env.JAVAFX_VERSION }}
           JAVAFX_TEST_VERSION: ${{ matrix.platform == 'linuxarm64' && '21.0.1' || env.JAVAFX_VERSION }}
           JAVAFX_TESTS: 'true'

@@ -38,8 +38,6 @@
         <cef4j.reactor.runtime.root>${maven.multiModuleProjectDirectory}/cef4j-platform/target/reactor-runtime</cef4j.reactor.runtime.root>
         <cef4j.reactor.runtime.dir>${cef4j.reactor.runtime.root}/cef-runtime/${cef.platform}</cef4j.reactor.runtime.dir>
         <runtime.server.executable>cef4j-runtime-server</runtime.server.executable>
-        <cef4j.nonJavafxModules>!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample</cef4j.nonJavafxModules>
-
         <!-- Dependency versions -->
         <scala.version>3.8.4</scala.version>
         <cats.version>2.13.0</cats.version>
@@ -63,8 +61,6 @@
         <commons.compress.version>1.28.0</commons.compress.version>
         <selenium.version>4.47.0</selenium.version>
         <spotbugs.version>4.10.3.0</spotbugs.version>
-        <!-- Max-effort analysis exceeds the plugin's 10-minute default on hosted ARM64 runners. -->
-        <spotbugs.timeout>1800000</spotbugs.timeout>
         <maven.source.version>3.4.0</maven.source.version>
         <maven.release.version>3.3.1</maven.release.version>
         <maven.gpg.version>3.2.8</maven.gpg.version>
@@ -74,6 +70,7 @@
         <spotbugs.skip>false</spotbugs.skip>
         <!-- Java 17-only build tooling (currently cef4j-codegen) overrides this. -->
         <bytecode.check.skip>false</bytecode.check.skip>
+        <java11.runtime.smoke.skip>true</java11.runtime.smoke.skip>
 
         <!-- exec-maven-plugin: skip by default, override in modules that need it.
              Dummy mainClass required because Maven validates required params before checking skip. -->
@@ -101,7 +98,6 @@
         <module>cef4j-platform-all</module>
         <module>cef4j-api</module>
         <module>cef4j-inprocess-swing</module>
-        <module>cef4j-inprocess-jfx</module>
         <module>cef4j-http</module>
         <module>cef4j-cdp</module>
         <module>cef4j-codecs-jackson</module>
@@ -112,15 +108,12 @@
         <module>cef4j-runtime-packager</module>
         <module>cef4j-remote-api</module>
         <module>cef4j-remote-frame</module>
-        <module>cef4j-remote-jfx</module>
         <module>cef4j-remote-swing</module>
         <module>cef4j-webdriver</module>
         <module>cef4j-remote-webdriver</module>
         <module>cef4j-inprocess-webdriver</module>
         <module>cef4j-test-support</module>
         <module>cef4j-test-shared</module>
-        <module>cef4j-integration-tests</module>
-        <module>cef4j-sample</module>
     </modules>
 
     <dependencyManagement>
@@ -388,6 +381,21 @@
 
     <profiles>
         <profile>
+            <id>javafx-modules</id>
+            <activation>
+                <property>
+                    <name>!skipJavafx</name>
+                </property>
+            </activation>
+            <modules>
+                <module>cef4j-inprocess-jfx</module>
+                <module>cef4j-remote-jfx</module>
+                <module>cef4j-integration-tests</module>
+                <module>cef4j-sample</module>
+            </modules>
+        </profile>
+
+        <profile>
             <id>release</id>
             <build>
                 <plugins>
@@ -486,19 +494,26 @@
                 </property>
             </activation>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <jdkToolchain>
-                                    <version>11</version>
-                                </jdkToolchain>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>java11-runtime-smoke</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${java11.runtime.smoke.skip}</skipTests>
+                                    <jdkToolchain>
+                                        <version>11</version>
+                                    </jdkToolchain>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
 

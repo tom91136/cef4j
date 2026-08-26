@@ -18,9 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Test CI build environment helpers
-        run: bash .github/ci/build-env-test.sh
-
       - &setup-java
         uses: actions/setup-java@v5
         with:
@@ -70,6 +67,12 @@ jobs:
             distro: corretto
             sysroot: true
             msvc: false
+            cef_args: '--disable-gpu'
+            surefire_extra_arg: ''
+            javafx17: '13.0.2'
+            javafx21: '21.0.12'
+            javafx25: '25.0.4'
+            skip_spotbugs_jdk17: false
 
           - label: Linux ARM64
             runner: ubuntu-24.04-arm
@@ -78,6 +81,12 @@ jobs:
             distro: corretto
             sysroot: true
             msvc: false
+            cef_args: '--disable-gpu'
+            surefire_extra_arg: ''
+            javafx17: ''
+            javafx21: '21.0.1'
+            javafx25: '25.0.4'
+            skip_spotbugs_jdk17: true
 
           - label: Windows x64
             runner: windows-2025-vs2026
@@ -85,6 +94,12 @@ jobs:
             cef-platform: windows64
             distro: corretto
             msvc: true
+            cef_args: '--disable-gpu'
+            surefire_extra_arg: '-Djdk.net.URLClassPath.disableClassPathURLCheck=true'
+            javafx17: '13.0.2'
+            javafx21: '21.0.12'
+            javafx25: '25.0.4'
+            skip_spotbugs_jdk17: false
 
           - label: Windows ARM
             runner: windows-11-arm
@@ -92,6 +107,12 @@ jobs:
             cef-platform: windowsarm64
             distro: zulu
             msvc: true
+            cef_args: '--disable-gpu'
+            surefire_extra_arg: '-Djdk.net.URLClassPath.disableClassPathURLCheck=true'
+            javafx17: ''
+            javafx21: ''
+            javafx25: ''
+            skip_spotbugs_jdk17: false
 
           - label: macOS Intel
             runner: macos-26-intel
@@ -99,6 +120,12 @@ jobs:
             cef-platform: macosx64
             distro: corretto
             msvc: false
+            cef_args: '--use-gl=angle,--use-angle=swiftshader,--enable-unsafe-swiftshader,--use-mock-keychain'
+            surefire_extra_arg: ''
+            javafx17: '13.0.2'
+            javafx21: '21.0.12'
+            javafx25: '25.0.4'
+            skip_spotbugs_jdk17: false
 
           - label: macOS ARM
             runner: macos-26
@@ -106,6 +133,12 @@ jobs:
             cef-platform: macosarm64
             distro: corretto
             msvc: false
+            cef_args: '--use-gl=angle,--use-angle=swiftshader,--enable-unsafe-swiftshader,--use-mock-keychain'
+            surefire_extra_arg: ''
+            javafx17: '17.0.15'
+            javafx21: '21.0.12'
+            javafx25: '25.0.4'
+            skip_spotbugs_jdk17: false
 
         cef:
           - { version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', api: '109' }
@@ -116,9 +149,8 @@ jobs:
 
     env:
       CEF_VERSION: ${{ matrix.cef.version }}
-      CEF_API: ${{ matrix.cef.api }}
       CEF_PLATFORM: ${{ matrix.os.cef-platform }}
-      ARCH: ${{ matrix.os.arch }}
+      CEF_EXTRA_ARGS: ${{ matrix.os.cef_args }}
       CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.os.arch }}
 
     steps:
@@ -184,6 +216,9 @@ jobs:
         env:
           JAVA_HOME: ${{ steps.jdk17.outputs.path }}
           JDK_VERSION: '17'
+          JAVAFX_VERSION: ${{ matrix.os.javafx17 }}
+          SUREFIRE_PLATFORM_ARG: ''
+          SPOTBUGS_SKIP: ${{ matrix.os.skip_spotbugs_jdk17 }}
           JAVA11_SMOKE: true
         run: .github/ci/build.sh
 
@@ -192,6 +227,9 @@ jobs:
         env:
           JAVA_HOME: ${{ steps.jdk21.outputs.path }}
           JDK_VERSION: '21'
+          JAVAFX_VERSION: ${{ matrix.os.javafx21 }}
+          SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
+          SPOTBUGS_SKIP: true
         run: .github/ci/build.sh
 
       - name: JDK 25
@@ -199,6 +237,9 @@ jobs:
         env:
           JAVA_HOME: ${{ steps.jdk25.outputs.path }}
           JDK_VERSION: '25'
+          JAVAFX_VERSION: ${{ matrix.os.javafx25 }}
+          SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
+          SPOTBUGS_SKIP: true
         run: .github/ci/build.sh
 
       - name: Upload test reports on failure

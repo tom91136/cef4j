@@ -12,6 +12,10 @@
     <name>cef4j-cdp</name>
     <description>Version-aligned, transport-neutral Chrome DevTools Protocol API</description>
 
+    <properties>
+        <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

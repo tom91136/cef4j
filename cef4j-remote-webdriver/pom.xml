@@ -14,6 +14,10 @@
     <name>cef4j-remote-webdriver</name>
     <description>WebDriver adapter for transport-independent Remote CEF runtimes</description>
 
+    <properties>
+        <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>

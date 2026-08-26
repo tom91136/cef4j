@@ -6,6 +6,7 @@
     <artifactId>cef4j-remote-frame</artifactId>
     <name>cef4j-remote-frame</name>
     <description>Transport-neutral raw/encoded frame API with shared-file, inline, codec, and MJPEG support</description>
+    <properties><java11.runtime.smoke.skip>false</java11.runtime.smoke.skip></properties>
     <dependencies>
         <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-core</artifactId></dependency>
         <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-api</artifactId></dependency>

@@ -14,6 +14,10 @@
     <name>cef4j-codecs-jackson</name>
     <description>Jackson codecs for cef4j CDP, Remote CEF recording, and WebDriver</description>
 
+    <properties>
+        <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
