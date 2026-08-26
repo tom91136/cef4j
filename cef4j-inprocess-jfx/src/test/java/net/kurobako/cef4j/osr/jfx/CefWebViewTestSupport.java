@@ -12,6 +12,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.OS;
@@ -176,5 +179,15 @@ final class CefWebViewTestSupport {
             Thread.sleep(20);
         }
         return condition.getAsBoolean();
+    }
+
+    static boolean waitForRenderedColor(CefWebView view, double x, double y, Color expected, long timeoutMillis)
+            throws Exception {
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setViewport(new Rectangle2D(x, y, 1, 1));
+        return waitUntil(
+                () -> expected.equals(onFxThreadUnchecked(
+                        () -> view.snapshot(parameters, null).getPixelReader().getColor(0, 0))),
+                timeoutMillis);
     }
 }

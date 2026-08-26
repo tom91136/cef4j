@@ -3,6 +3,8 @@ package net.kurobako.cef4j.osr.swing.test;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.awt.BorderLayout;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -20,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
@@ -65,7 +66,6 @@ final class SwingBrowserPanelTestSupport {
         volatile boolean canGoBack;
         volatile boolean canGoForward;
         volatile boolean loadEnded;
-        final AtomicInteger viewPaints = new AtomicInteger();
         final CountDownLatch browserReady = new CountDownLatch(1);
         final CountDownLatch browserClosed = new CountDownLatch(1);
     }
@@ -138,12 +138,7 @@ final class SwingBrowserPanelTestSupport {
 
         onSwingThread(() -> {
             PanelState state = new PanelState();
-            CefBrowserPanel panel = new CefBrowserPanel() {
-                @Override
-                protected void onViewPainted(int width, int height) {
-                    state.viewPaints.incrementAndGet();
-                }
-            };
+            CefBrowserPanel panel = new CefBrowserPanel();
             STATES.put(panel, state);
             panelRef.set(panel);
             stateRef.set(state);
@@ -353,9 +348,28 @@ final class SwingBrowserPanelTestSupport {
         return state != null && state.loading;
     }
 
-    static int viewPaintCount(CefBrowserPanel panel) {
-        PanelState state = STATES.get(panel);
-        return state != null ? state.viewPaints.get() : 0;
+    static boolean waitForRenderedColor(CefBrowserPanel panel, int x, int y, int expectedArgb, long timeoutMillis)
+            throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        while (System.nanoTime() < deadline) {
+            if (expectedArgb == renderedColor(panel, x, y)) return true;
+            Thread.sleep(20);
+        }
+        return expectedArgb == renderedColor(panel, x, y);
+    }
+
+    private static int renderedColor(CefBrowserPanel panel, int x, int y) throws Exception {
+        return Objects.requireNonNull(onSwingThread(() -> {
+            BufferedImage snapshot = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = snapshot.createGraphics();
+            try {
+                graphics.translate(-x, -y);
+                panel.paint(graphics);
+                return snapshot.getRGB(0, 0);
+            } finally {
+                graphics.dispose();
+            }
+        }));
     }
 
     static boolean waitForLoadEnd(CefBrowserPanel panel, long timeoutMillis) throws Exception {

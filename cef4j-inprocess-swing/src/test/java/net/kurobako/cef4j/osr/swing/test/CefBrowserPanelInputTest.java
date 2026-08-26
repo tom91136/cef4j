@@ -3,11 +3,11 @@ package net.kurobako.cef4j.osr.swing.test;
 import static net.kurobako.cef4j.osr.swing.test.SwingBrowserPanelTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.function.BooleanSupplier;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.junit.jupiter.api.Test;
@@ -15,35 +15,33 @@ import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
 class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
+    private static final int PAGE_BACKGROUND = new Color(0x12, 0x34, 0x56).getRGB();
 
     @Test
     void mouseExitEventsReachThePage() throws Exception {
         CefBrowserPanel panel = createAttachedPanel();
 
-        String html = "<html><body style='margin:0;height:100vh'>"
+        String html = "<html><body style='margin:0;height:100vh;background:#123456'>"
                 + "<script>"
-                + "document.title = 'start';"
                 + "document.addEventListener('mousemove', function() { document.title = 'inside'; });"
                 + "document.addEventListener('mouseleave', function() { document.title = 'outside'; });"
+                + "document.title = 'start';"
                 + "</script>"
                 + "</body></html>";
         loadContent(panel, html);
 
-        assertThat(waitUntilDispatching(() -> "start".equals(getTitle(panel)), 10_000, () -> loadContent(panel, html)))
+        assertThat(waitUntil(() -> "start".equals(getTitle(panel)), 10_000))
                 .as("the input fixture page should finish loading")
+                .isTrue();
+        assertThat(waitForRenderedColor(panel, 80, 80, PAGE_BACKGROUND, 10_000))
+                .as("the page surface should be rendered before mouse input")
                 .isTrue();
 
         dispatchMouse(panel, MouseEvent.MOUSE_ENTERED, 80, 80, 0, MouseEvent.NOBUTTON, false, 0);
-        assertThat(waitUntilDispatching(
-                        () -> "inside".equals(getTitle(panel)),
-                        3_000,
-                        () -> dispatchMouse(panel, MouseEvent.MOUSE_MOVED, 80, 80, 0, MouseEvent.NOBUTTON, false, 0)))
-                .isTrue();
-        assertThat(waitUntilDispatching(
-                        () -> "outside".equals(getTitle(panel)),
-                        3_000,
-                        () -> dispatchMouse(panel, MouseEvent.MOUSE_EXITED, 805, 80, 0, MouseEvent.NOBUTTON, false, 0)))
-                .isTrue();
+        dispatchMouse(panel, MouseEvent.MOUSE_MOVED, 80, 80, 0, MouseEvent.NOBUTTON, false, 0);
+        assertThat(waitUntil(() -> "inside".equals(getTitle(panel)), 3_000)).isTrue();
+        dispatchMouse(panel, MouseEvent.MOUSE_EXITED, 805, 80, 0, MouseEvent.NOBUTTON, false, 0);
+        assertThat(waitUntil(() -> "outside".equals(getTitle(panel)), 3_000)).isTrue();
     }
 
     @Test
@@ -52,43 +50,22 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
 
         loadContent(
                 panel,
-                "<html><body>"
+                "<html><body style='margin:0;background:#123456'>"
                         + "<script>"
-                        + "document.title = '0';"
                         + "window.addEventListener('wheel', function(e) {"
                         + "  document.title = String(Math.round(e.deltaY));"
                         + "}, { passive: true });"
+                        + "document.title = '0';"
                         + "</script>"
                         + "</body></html>");
 
         assertThat(waitUntil(() -> "0".equals(getTitle(panel)), 5_000)).isTrue();
-        int paintsBeforeBarrier = viewPaintCount(panel);
-        executeJavaScript(panel, "document.body.style.backgroundColor = 'rgb(1, 2, 3)'");
-        assertThat(waitUntil(() -> viewPaintCount(panel) > paintsBeforeBarrier, 5_000))
+        assertThat(waitForRenderedColor(panel, 120, 120, PAGE_BACKGROUND, 10_000))
+                .as("the page surface should be rendered before wheel input")
                 .isTrue();
         leftClick(panel, 120, 120);
-        assertThat(waitUntilDispatching(
-                        () -> !"0".equals(getTitle(panel)), 10_000, () -> dispatchWheel(panel, 120, 120, 3)))
-                .isTrue();
-    }
-
-    private static boolean waitUntilDispatching(BooleanSupplier condition, long timeoutMillis, ThrowingRunnable action)
-            throws Exception {
-        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            action.run();
-            long pollEnd = System.nanoTime() + java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(100);
-            while (System.nanoTime() < pollEnd) {
-                if (condition.getAsBoolean()) return true;
-                Thread.sleep(10);
-            }
-        }
-        return condition.getAsBoolean();
-    }
-
-    @FunctionalInterface
-    interface ThrowingRunnable {
-        void run() throws Exception;
+        dispatchWheel(panel, 120, 120, 3);
+        assertThat(waitUntil(() -> !"0".equals(getTitle(panel)), 10_000)).isTrue();
     }
 
     private static void leftClick(CefBrowserPanel panel, double x, double y) throws Exception {

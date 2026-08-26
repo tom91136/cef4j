@@ -21,10 +21,10 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
         onFxThread(() -> view.getEngine()
                 .loadContent("<html><body style='margin:0;background:#123456'>"
                         + "<script>"
-                        + "document.title = '0';"
                         + "window.addEventListener('wheel', function(e) {"
                         + "  document.title = String(Math.round(e.deltaX));"
                         + "}, { passive: true });"
+                        + "document.title = '0';"
                         + "</script>"
                         + "</body></html>"));
 
@@ -32,13 +32,13 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
                 .isTrue();
         assertThat(waitUntilOnFx(() -> "0".equals(view.getEngine().getTitle()), 3_000))
                 .isTrue();
-        assertPageRendered(view);
+        assertThat(waitForRenderedColor(view, 120, 120, PAGE_BACKGROUND, 10_000))
+                .as("the page surface should be rendered before horizontal input")
+                .isTrue();
 
         leftClick(view, 120, 120);
-        assertThat(waitUntilFiringOnFx(
-                        () -> !"0".equals(view.getEngine().getTitle()),
-                        SCROLL_DELIVERY_TIMEOUT_MILLIS,
-                        () -> fireScroll(view, 120, 120, -140, 0)))
+        onFxThread(() -> fireScroll(view, 120, 120, -140, 0));
+        assertThat(waitUntilOnFx(() -> !"0".equals(view.getEngine().getTitle()), SCROLL_DELIVERY_TIMEOUT_MILLIS))
                 .isTrue();
     }
 
@@ -49,10 +49,10 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
         onFxThread(() -> view.getEngine()
                 .loadContent("<html><body style='margin:0;background:#123456'>"
                         + "<script>"
-                        + "document.title = '0';"
                         + "window.addEventListener('wheel', function(e) {"
                         + "  document.title = String(Math.round(e.deltaY));"
                         + "}, { passive: true });"
+                        + "document.title = '0';"
                         + "</script>"
                         + "</body></html>"));
 
@@ -60,21 +60,13 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
                 .isTrue();
         assertThat(waitUntilOnFx(() -> "0".equals(view.getEngine().getTitle()), 3_000))
                 .isTrue();
-        assertPageRendered(view);
+        assertThat(waitForRenderedColor(view, 120, 120, PAGE_BACKGROUND, 10_000))
+                .as("the page surface should be rendered before vertical input")
+                .isTrue();
 
         leftClick(view, 120, 120);
-        assertThat(waitUntilFiringOnFx(
-                        () -> !"0".equals(view.getEngine().getTitle()),
-                        SCROLL_DELIVERY_TIMEOUT_MILLIS,
-                        () -> fireScroll(view, 120, 120, 0, 160)))
-                .isTrue();
-    }
-
-    private static void assertPageRendered(WebView view) throws Exception {
-        assertThat(waitUntilOnFx(
-                        () -> PAGE_BACKGROUND.equals(
-                                view.snapshot(null, null).getPixelReader().getColor(120, 120)),
-                        10_000))
+        onFxThread(() -> fireScroll(view, 120, 120, 0, 160));
+        assertThat(waitUntilOnFx(() -> !"0".equals(view.getEngine().getTitle()), SCROLL_DELIVERY_TIMEOUT_MILLIS))
                 .isTrue();
     }
 }

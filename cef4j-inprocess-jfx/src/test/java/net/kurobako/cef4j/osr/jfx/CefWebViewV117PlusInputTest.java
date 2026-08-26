@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 import javafx.concurrent.Worker;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -14,6 +12,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
@@ -29,6 +28,7 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(30)
 @ExtendWith(DisplayLock.class)
 class CefWebViewV117PlusInputTest {
+    private static final Color PAGE_BACKGROUND = Color.web("#123456");
 
     @BeforeAll
     static void setup(@TempDir Path tempDir) throws Exception {
@@ -62,29 +62,27 @@ class CefWebViewV117PlusInputTest {
         CefWebView view = createAttachedView();
 
         onFxThread(() -> view.getEngine()
-                .loadContent("<html><body style='margin:0;height:100vh'>"
+                .loadContent("<html><body style='margin:0;height:100vh;background:#123456'>"
                         + "<script>"
-                        + "document.title = 'start';"
                         + "document.addEventListener('mousemove', function() { document.title = 'inside'; });"
                         + "document.addEventListener('mouseleave', function() { document.title = 'outside'; });"
+                        + "document.title = 'start';"
                         + "</script>"
                         + "</body></html>"));
 
         assertThat(waitUntil(() -> workerState(view) == Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
+        assertThat(waitUntil(() -> "start".equals(title(view)), 3_000)).isTrue();
+        assertThat(waitForRenderedColor(view, 80, 80, PAGE_BACKGROUND, 10_000))
+                .as("the page surface should be rendered before mouse input")
+                .isTrue();
 
         onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_ENTERED, 80, 80));
-        assertThat(waitUntilFiring(
-                        () -> "inside".equals(title(view)),
-                        3_000,
-                        () -> onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_MOVED, 80, 80))))
-                .isTrue();
+        onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_MOVED, 80, 80));
+        assertThat(waitUntil(() -> "inside".equals(title(view)), 3_000)).isTrue();
 
-        assertThat(waitUntilFiring(
-                        () -> "outside".equals(title(view)),
-                        3_000,
-                        () -> onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_EXITED, 805, 80))))
-                .isTrue();
+        onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_EXITED, 805, 80));
+        assertThat(waitUntil(() -> "outside".equals(title(view)), 3_000)).isTrue();
     }
 
     private static CefWebView createAttachedView() throws Exception {
@@ -121,25 +119,6 @@ class CefWebViewV117PlusInputTest {
                 false,
                 false,
                 new PickResult(view, x, y)));
-    }
-
-    @FunctionalInterface
-    interface ThrowingRunnable {
-        void run() throws Exception;
-    }
-
-    private static boolean waitUntilFiring(BooleanSupplier condition, long timeoutMillis, ThrowingRunnable action)
-            throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            action.run();
-            long pollEnd = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(100);
-            while (System.nanoTime() < pollEnd) {
-                if (condition.getAsBoolean()) return true;
-                Thread.sleep(10);
-            }
-        }
-        return condition.getAsBoolean();
     }
 
     @Nullable

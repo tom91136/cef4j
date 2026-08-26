@@ -26,9 +26,11 @@ import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Labeled;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -40,6 +42,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -311,18 +314,14 @@ final class FxWebViewRuntimeTestSupport {
                 timeoutMillis);
     }
 
-    static boolean waitUntilFiringOnFx(Callable<Boolean> condition, long timeoutMillis, Runnable fxAction)
+    static boolean waitForRenderedColor(WebView view, double x, double y, Color expected, long timeoutMillis)
             throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            onFxThread(fxAction);
-            long pollEnd = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(100);
-            while (System.nanoTime() < pollEnd) {
-                if (Boolean.TRUE.equals(onFxThread(condition))) return true;
-                Thread.sleep(10);
-            }
-        }
-        return Boolean.TRUE.equals(onFxThread(condition));
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setViewport(new Rectangle2D(x, y, 1, 1));
+        return waitUntilOnFx(
+                () -> expected.equals(
+                        view.snapshot(parameters, null).getPixelReader().getColor(0, 0)),
+                timeoutMillis);
     }
 
     static boolean waitForWorkerState(WebEngine engine, Worker.State state, long timeoutMillis) throws Exception {
