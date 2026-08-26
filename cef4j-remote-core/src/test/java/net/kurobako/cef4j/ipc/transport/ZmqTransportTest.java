@@ -2,15 +2,19 @@ package net.kurobako.cef4j.ipc.transport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -161,5 +165,191 @@ final class ZmqTransportTest extends CefTransportContractTest {
                         .isFalse();
             }
         }
+    }
+
+    @Test
+    void unverifiedReconnectionTerminatesEstablishedSession() throws Exception {
+        try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
+                TcpProxy proxy = new TcpProxy()) {
+            int serverPort = port(server.endpoint());
+            CompletableFuture<Void> initialBridge = proxy.bridgeTo(serverPort);
+            try (ZmqTransport client = ZmqTransport.connect(proxy.endpoint())) {
+                initialBridge.get(5, TimeUnit.SECONDS);
+                CountDownLatch initialFrame = new CountDownLatch(1);
+                client.onReceive(frame -> initialFrame.countDown());
+                server.send(ByteBuffer.wrap(new byte[] {1}));
+                assertThat(initialFrame.await(5, TimeUnit.SECONDS)).isTrue();
+
+                CountDownLatch terminalDisconnect = new CountDownLatch(1);
+                client.onDisconnect(terminalDisconnect::countDown);
+                proxy.disconnect();
+
+                assertThat(terminalDisconnect.await(5, TimeUnit.SECONDS)).isTrue();
+                assertThat(client.isConnected()).isFalse();
+            }
+        }
+    }
+
+    @Test
+    void reconnectsEstablishedSessionWhenContinuityIsConfirmed() throws Exception {
+        try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*", () -> true);
+                TcpProxy proxy = new TcpProxy()) {
+            int serverPort = port(server.endpoint());
+            CompletableFuture<Void> initialBridge = proxy.bridgeTo(serverPort);
+            try (ZmqTransport client = ZmqTransport.connect(proxy.endpoint(), () -> true)) {
+                initialBridge.get(5, TimeUnit.SECONDS);
+                CountDownLatch initialFrame = new CountDownLatch(1);
+                client.onReceive(frame -> initialFrame.countDown());
+                server.send(ByteBuffer.wrap(new byte[] {1}));
+                assertThat(initialFrame.await(5, TimeUnit.SECONDS)).isTrue();
+
+                CountDownLatch terminalDisconnect = new CountDownLatch(1);
+                client.onDisconnect(terminalDisconnect::countDown);
+                proxy.disconnect();
+                proxy.bridgeTo(serverPort).get(5, TimeUnit.SECONDS);
+
+                CountDownLatch reconnectedFrame = new CountDownLatch(1);
+                client.onReceive(frame -> reconnectedFrame.countDown());
+                server.send(ByteBuffer.wrap(new byte[] {2}));
+                assertThat(reconnectedFrame.await(5, TimeUnit.SECONDS)).isTrue();
+                assertThat(terminalDisconnect.await(250, TimeUnit.MILLISECONDS)).isFalse();
+                assertThat(client.isConnected()).isTrue();
+            }
+        }
+    }
+
+    @Test
+    void establishedSessionDoesNotRemainConnectedToAStalledGreeting() throws Exception {
+        byte[] zmtpGreetingPrefix = {(byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 1, 0x7f};
+        try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
+                TcpProxy proxy = new TcpProxy()) {
+            CompletableFuture<Void> initialBridge = proxy.bridgeTo(port(server.endpoint()));
+            try (ZmqTransport client = ZmqTransport.connect(proxy.endpoint(), 1_000, () -> true)) {
+                initialBridge.get(5, TimeUnit.SECONDS);
+                CountDownLatch initialFrame = new CountDownLatch(1);
+                client.onReceive(frame -> initialFrame.countDown());
+                server.send(ByteBuffer.wrap(new byte[] {1}));
+                assertThat(initialFrame.await(5, TimeUnit.SECONDS)).isTrue();
+
+                CountDownLatch terminalDisconnect = new CountDownLatch(1);
+                client.onDisconnect(terminalDisconnect::countDown);
+                proxy.disconnect();
+
+                Thread peer = new Thread(
+                        () -> {
+                            try (Socket socket = proxy.accept()) {
+                                socket.getOutputStream().write(zmtpGreetingPrefix);
+                                socket.getOutputStream().flush();
+                                terminalDisconnect.await(5, TimeUnit.SECONDS);
+                            } catch (Exception expected) {
+                                return;
+                            }
+                        },
+                        "stalled-established-zmtp-peer");
+                peer.setDaemon(true);
+                peer.start();
+                assertThat(terminalDisconnect.await(5, TimeUnit.SECONDS)).isTrue();
+                assertThat(client.isConnected()).isFalse();
+            }
+        }
+    }
+
+    private static int port(String endpoint) {
+        return Integer.parseInt(endpoint.substring(endpoint.lastIndexOf(':') + 1));
+    }
+
+    private static final class TcpProxy implements AutoCloseable {
+        private final ServerSocket listener;
+        private final Object lock = new Object();
+
+        @Nullable
+        private Socket client;
+
+        @Nullable
+        private Socket server;
+
+        private TcpProxy() throws Exception {
+            listener = new ServerSocket(0, 2, InetAddress.getLoopbackAddress());
+        }
+
+        private String endpoint() {
+            return "tcp://127.0.0.1:" + listener.getLocalPort();
+        }
+
+        private Socket accept() throws Exception {
+            return listener.accept();
+        }
+
+        private CompletableFuture<Void> bridgeTo(int port) {
+            return CompletableFuture.runAsync(() -> {
+                try {
+                    Socket nextClient = listener.accept();
+                    Socket nextServer = connect(port);
+                    synchronized (lock) {
+                        client = nextClient;
+                        server = nextServer;
+                    }
+                    relay(nextClient, nextServer);
+                    relay(nextServer, nextClient);
+                } catch (Exception failure) {
+                    throw new java.util.concurrent.CompletionException(failure);
+                }
+            });
+        }
+
+        private static Socket connect(int port) throws Exception {
+            IOException lastFailure = null;
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+            while (System.nanoTime() < deadline) {
+                Socket socket = new Socket();
+                try {
+                    socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 100);
+                    return socket;
+                } catch (IOException failure) {
+                    close(socket);
+                    lastFailure = failure;
+                    Thread.sleep(10);
+                }
+            }
+            throw lastFailure == null ? new IOException("connection timed out") : lastFailure;
+        }
+
+        private void disconnect() {
+            synchronized (lock) {
+                close(client);
+                close(server);
+                client = null;
+                server = null;
+            }
+        }
+
+        @Override
+        public void close() {
+            disconnect();
+            close(listener);
+        }
+
+        private static void close(@Nullable java.io.Closeable resource) {
+            if (resource == null) return;
+            try {
+                resource.close();
+            } catch (Exception expected) {
+                return;
+            }
+        }
+    }
+
+    private static void relay(Socket source, Socket destination) {
+        Thread relay = new Thread(
+                () -> {
+                    try {
+                        source.getInputStream().transferTo(destination.getOutputStream());
+                    } catch (Exception expected) {
+                        return;
+                    }
+                },
+                "zmq-test-proxy");
+        relay.setDaemon(true);
+        relay.start();
     }
 }

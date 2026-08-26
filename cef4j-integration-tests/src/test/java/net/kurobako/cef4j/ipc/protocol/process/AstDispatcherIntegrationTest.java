@@ -17,7 +17,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -40,7 +40,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void browserIsValidThroughAstDispatcher() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
@@ -63,7 +63,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void cefLifeSpanHandlerOnAfterCreatedFires() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> viaTyped = new CompletableFuture<>();
@@ -86,7 +86,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void facadeCloseReleasesRuntimeServerHandle() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
@@ -123,7 +123,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void browserGetMainFrameReturnsTypedFrameFacade() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
@@ -146,7 +146,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void frameLoadUrlAndGetUrlRoundTrip() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
@@ -178,7 +178,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void twoConcurrentBrowsersHaveIndependentState() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
@@ -231,7 +231,7 @@ class AstDispatcherIntegrationTest {
     @Test
     void createBrowserMintsAdditionalHandle() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();

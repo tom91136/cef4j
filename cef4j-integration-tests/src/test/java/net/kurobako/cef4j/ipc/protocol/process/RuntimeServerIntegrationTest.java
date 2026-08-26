@@ -33,11 +33,13 @@ import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransports;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -129,6 +131,21 @@ class RuntimeServerIntegrationTest {
     }
 
     @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void namedPipeReportsRemoteProcessExit() throws Exception {
+        String endpoint = "pipe://cef4j-disconnect-" + Long.toUnsignedString(System.nanoTime());
+        try (RuntimeServerProcess server = startServerWithEnv("local", endpoint);
+                CefTransport transport = CefTransports.connect("local", server.endpoint());
+                CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
+            CountDownLatch closed = new CountDownLatch(1);
+            session.onClose(closed::countDown);
+            server.kill();
+            assertThat(closed.await(20, TimeUnit.SECONDS)).isTrue();
+            assertThat(transport.isConnected()).isFalse();
+        }
+    }
+
+    @Test
     void webSocketTransportBootstrapsRuntimeServerSession() throws Exception {
         try (RuntimeServerProcess server = startServerWithEnv("websocket", "ws://127.0.0.1:0/cef4j");
                 CefTransport transport = server.connect();
@@ -147,7 +164,7 @@ class RuntimeServerIntegrationTest {
     @Test
     void zmqRuntimeRejectsASecondDealerPeer() throws Exception {
         try (RuntimeServerProcess server = startServerWithEnv();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30));
                 ZContext context = new ZContext()) {
             ZMQ.Socket secondPeer = context.createSocket(SocketType.DEALER);
@@ -173,7 +190,7 @@ class RuntimeServerIntegrationTest {
     void loadUrlRoundTripsThroughRuntimeServer() throws Exception {
         HttpServer fixture = startFixture();
         try (RuntimeServerProcess server = startServerWithEnv();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
@@ -218,7 +235,7 @@ class RuntimeServerIntegrationTest {
     void cefDisplayHandlerOnAddressChangeFiresOnNavigation() throws Exception {
         HttpServer fixture = startFixture();
         try (RuntimeServerProcess server = startServerWithEnv();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 

@@ -99,6 +99,43 @@ class CefSessionImplTest {
     }
 
     @Test
+    void runtimeServerSessionClosesTransportWhenReadySendFails() {
+        AtomicInteger closes = new AtomicInteger();
+        CefTransport transport = new CefTransport() {
+            @Override
+            public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+                throw new CefTransportException("ready send failed");
+            }
+
+            @Override
+            public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {}
+
+            @Override
+            public void onDisconnect(@Nonnull Runnable handler) {}
+
+            @Override
+            public boolean isConnected() {
+                return true;
+            }
+
+            @Override
+            public boolean isRuntimeServerClient() {
+                return true;
+            }
+
+            @Override
+            public void close() {
+                closes.incrementAndGet();
+            }
+        };
+
+        assertThatThrownBy(() -> new CefSessionImpl(transport, Duration.ofSeconds(2)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasCauseInstanceOf(CefTransportException.class);
+        assertThat(closes).hasValue(1);
+    }
+
+    @Test
     void requestResolvesWhenResponseArrives() throws Exception {
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, "ping".getBytes(StandardCharsets.UTF_8)),

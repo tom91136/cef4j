@@ -14,7 +14,7 @@ import net.kurobako.cef4j.ipc.frame.SharedFileFrameTransport;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.backend.BrowserSession;
@@ -33,10 +33,10 @@ final class RemoteSurfaceSupport {
     static RuntimeFixture open(Duration timeout) throws Exception {
         RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
         RuntimeServerProcess server = null;
-        ZmqTransport transport = null;
+        CefTransport transport = null;
         try {
             server = RemoteCefBrowserBackend.launchServer(environment.binary(), environment.resources(), timeout);
-            transport = ZmqTransport.connect(server.endpoint());
+            transport = server.connect();
             CefSession session = new CefSessionImpl(transport, timeout);
             return new RuntimeFixture(server, transport, session);
         } catch (Exception failure) {
@@ -60,10 +60,10 @@ final class RemoteSurfaceSupport {
 
     static final class RuntimeFixture implements AutoCloseable {
         final RuntimeServerProcess server;
-        final ZmqTransport transport;
+        final CefTransport transport;
         final CefSession session;
 
-        RuntimeFixture(RuntimeServerProcess server, ZmqTransport transport, CefSession session) {
+        RuntimeFixture(RuntimeServerProcess server, CefTransport transport, CefSession session) {
             this.server = server;
             this.transport = transport;
             this.session = session;

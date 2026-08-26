@@ -328,7 +328,7 @@ public final class RuntimeServerProcess implements Closeable {
     /** Connects using the provider selected by the runtime server. */
     @Nonnull
     public CefTransport connect() throws CefTransportException {
-        return supervise(CefTransports.connect(transport, endpoint));
+        return supervise(CefTransports.connect(transport, endpoint, process::isAlive));
     }
 
     /** Connects an authenticated WebSocket generation, optionally trusting a caller-supplied TLS context. */

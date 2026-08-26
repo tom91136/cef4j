@@ -14,7 +14,7 @@ import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.JsResult;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -109,7 +109,7 @@ class V8EvalIntegrationTest {
     @Test
     void retainsObjectAsV8HandleAndDrillsIntoProperty() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
@@ -161,7 +161,7 @@ class V8EvalIntegrationTest {
     @Test
     void executesJsFunctionFromJvmHandle() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
@@ -198,7 +198,7 @@ class V8EvalIntegrationTest {
     @Test
     void primitiveValuesDoNotPopulateHandleEvenWhenRetainRequested() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
@@ -236,7 +236,7 @@ class V8EvalIntegrationTest {
 
     private EvaluateJavascriptResponse runEval(String code) throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame = setupFrame(session);
             return session.request(

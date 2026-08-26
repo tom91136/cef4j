@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -109,6 +110,7 @@ public final class ZmqTransport implements CefTransport {
 
     private volatile String endpoint;
     private final boolean runtimeServerClient;
+    private final BooleanSupplier reconnectContinuity;
     private final int handshakeTimeoutMs;
     private final long handshakeTimeoutNanos;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
@@ -124,10 +126,11 @@ public final class ZmqTransport implements CefTransport {
 
     private volatile boolean closed = false;
     private volatile boolean disconnected = false;
-    private volatile boolean peerReady = false;
     private boolean tcpConnected = false;
     private boolean zmtpHandshaken = false;
+    private boolean peerEstablished = false;
     private long handshakeDeadlineNanos = 0;
+    private long reconnectDeadlineNanos = 0;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
     private int sentFrames = 0;
     private int receivedFrames = 0;
@@ -135,7 +138,11 @@ public final class ZmqTransport implements CefTransport {
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
     public static ZmqTransport bind(@Nonnull String endpoint) {
-        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS);
+        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, () -> false);
+    }
+
+    static ZmqTransport bind(String endpoint, BooleanSupplier reconnectContinuity) {
+        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
     }
 
     /** Connect to a previously bound endpoint. */
@@ -143,9 +150,18 @@ public final class ZmqTransport implements CefTransport {
         return connect(endpoint, HANDSHAKE_TIMEOUT_MS);
     }
 
+    @Nonnull
+    public static ZmqTransport connect(@Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity) {
+        return new ZmqTransport(false, endpoint, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
+    }
+
     static ZmqTransport connect(String endpoint, int handshakeTimeoutMs) {
+        return new ZmqTransport(false, endpoint, handshakeTimeoutMs, () -> false);
+    }
+
+    static ZmqTransport connect(String endpoint, int handshakeTimeoutMs, BooleanSupplier reconnectContinuity) {
         if (handshakeTimeoutMs <= 0) throw new IllegalArgumentException("handshakeTimeoutMs must be positive");
-        return new ZmqTransport(false, endpoint, handshakeTimeoutMs);
+        return new ZmqTransport(false, endpoint, handshakeTimeoutMs, reconnectContinuity);
     }
 
     static long sharedContextGeneration() {
@@ -157,8 +173,10 @@ public final class ZmqTransport implements CefTransport {
         return endpoint;
     }
 
-    private ZmqTransport(boolean isBind, String requestedEndpoint, int handshakeTimeoutMs) {
+    private ZmqTransport(
+            boolean isBind, String requestedEndpoint, int handshakeTimeoutMs, BooleanSupplier reconnectContinuity) {
         this.runtimeServerClient = !isBind;
+        this.reconnectContinuity = java.util.Objects.requireNonNull(reconnectContinuity, "reconnectContinuity");
         this.handshakeTimeoutMs = handshakeTimeoutMs;
         this.handshakeTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(handshakeTimeoutMs);
         this.endpoint = requestedEndpoint;
@@ -220,8 +238,8 @@ public final class ZmqTransport implements CefTransport {
             while (!closed) {
                 int n = poller.poll(POLL_TIMEOUT_MS);
                 if (n < 0) break;
-                if (poller.pollin(0)) drainIncoming(main);
                 if (drainMonitor()) break;
+                if (poller.pollin(0) && drainIncoming(main)) break;
                 restartStalledHandshake(main);
                 if (!outbound.isEmpty()) drainOutbound(main);
                 dispatchPendingIfReady();
@@ -320,46 +338,69 @@ public final class ZmqTransport implements CefTransport {
             LOG.debug("monitor on {} received {}", endpoint, event);
             if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
                 tcpConnected = true;
-                peerReady = true;
-                disconnected = false;
                 if (!zmtpHandshaken && handshakeDeadlineNanos == 0) {
                     handshakeDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
                 }
             } else if (event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
+                if (!acceptReconnection()) continue;
                 zmtpHandshaken = true;
-                peerReady = true;
+                peerEstablished = true;
+                reconnectDeadlineNanos = 0;
                 handshakeDeadlineNanos = 0;
             } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL) {
                 zmtpHandshaken = false;
-                if (runtimeServerClient && receivedFrames == 0) {
-                    peerReady = false;
-                }
+                if (peerEstablished) beginReconnectGrace();
             } else if (event == ZMonitor.Event.DISCONNECTED) {
                 tcpConnected = false;
                 zmtpHandshaken = false;
                 handshakeDeadlineNanos = 0;
-                if (runtimeServerClient && receivedFrames == 0) {
-                    peerReady = false;
+                if (runtimeServerClient && !peerEstablished) {
                     continue;
                 }
-                if (!peerReady) continue;
-                disconnected = true;
-                fireDisconnectIfReady();
+                beginReconnectGrace();
             }
         }
+        return disconnected || reconnectExpired();
+    }
+
+    private void beginReconnectGrace() {
+        if (!reconnectContinuity.getAsBoolean()) {
+            markTerminalDisconnected();
+            return;
+        }
+        if (reconnectDeadlineNanos == 0) {
+            reconnectDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
+        }
+    }
+
+    private boolean acceptReconnection() {
+        if (reconnectDeadlineNanos == 0) return true;
+        if (reconnectContinuity.getAsBoolean()) return true;
+        markTerminalDisconnected();
         return false;
+    }
+
+    private boolean reconnectExpired() {
+        if (reconnectDeadlineNanos == 0) return false;
+        if (reconnectContinuity.getAsBoolean() && System.nanoTime() < reconnectDeadlineNanos) return false;
+        markTerminalDisconnected();
+        return true;
+    }
+
+    private void markTerminalDisconnected() {
+        reconnectDeadlineNanos = 0;
+        disconnected = true;
+        fireDisconnectIfReady();
     }
 
     private void restartStalledHandshake(ZMQ.Socket main) {
         if (!runtimeServerClient || zmtpHandshaken || !tcpConnected || handshakeDeadlineNanos == 0) return;
-        if (receivedFrames > 0) return;
         if (System.nanoTime() < handshakeDeadlineNanos) return;
         restartConnection(main, "handshake timeout");
     }
 
     private void restartConnection(ZMQ.Socket main, String reason) {
         LOG.debug("restarting {} after {}", endpoint, reason);
-        peerReady = false;
         zmtpHandshaken = false;
         main.disconnect(endpoint);
         main.connect(endpoint);
@@ -367,16 +408,19 @@ public final class ZmqTransport implements CefTransport {
         handshakeDeadlineNanos = 0;
     }
 
-    private void drainIncoming(ZMQ.Socket main) {
+    private boolean drainIncoming(ZMQ.Socket main) {
         byte[] frame;
         while ((frame = main.recv(ZMQ.DONTWAIT)) != null) {
+            if (!acceptReconnection()) return true;
             receivedFrames++;
             zmtpHandshaken = true;
-            peerReady = true;
+            peerEstablished = true;
+            reconnectDeadlineNanos = 0;
             handshakeDeadlineNanos = 0;
             if (receivedFrames == 1) LOG.debug("first frame received on {}", endpoint);
             pending.add(frame);
         }
+        return false;
     }
 
     private void drainOutbound(ZMQ.Socket main) {

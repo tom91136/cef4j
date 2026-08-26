@@ -17,7 +17,7 @@ import net.kurobako.cef4j.ipc.session.middleware.RecordingCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -34,7 +34,7 @@ class ApiRecordingReplayIntegrationTest {
         int liveCanGoBack;
         try (RuntimeServerProcess server = RemoteCefBrowserBackend.launchServer(
                         environment.binary(), environment.resources(), Duration.ofSeconds(20));
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 RecordingCefSession recording =
                         RecordingCefSession.toFile(new CefSessionImpl(transport, Duration.ofSeconds(30)), trace)) {
             AtomicReference<RemoteHandle> browserHandle = new AtomicReference<>();

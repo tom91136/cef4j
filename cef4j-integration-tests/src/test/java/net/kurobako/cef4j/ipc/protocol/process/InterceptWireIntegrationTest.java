@@ -13,7 +13,7 @@ import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -45,7 +45,7 @@ class InterceptWireIntegrationTest {
     @Test
     void interceptHandlerReturnIsRoutedBackToRuntimeServer() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             byte[] requestPayload = "ping".getBytes(java.nio.charset.StandardCharsets.UTF_8);

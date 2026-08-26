@@ -18,7 +18,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
@@ -115,7 +115,7 @@ class RuntimeServerProcessTest {
         // emits a LifeSpanHandlerOnAfterCreatedEvent with handle=42.
         Path script = writeLauncherScript(tmp);
         try (RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CountDownLatch sawEvent = new CountDownLatch(1);

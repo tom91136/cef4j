@@ -66,6 +66,11 @@ public final class RecordingTransport implements CefTransport {
     }
 
     @Override
+    public boolean isRuntimeServerClient() {
+        return delegate.isRuntimeServerClient();
+    }
+
+    @Override
     public void close() {
         try {
             delegate.close();

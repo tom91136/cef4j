@@ -101,6 +101,48 @@ class RecordingReplayTest {
     }
 
     @Test
+    void recordingPreservesRuntimeServerClientCapability(@TempDir Path tmp) throws Exception {
+        Path logFile = tmp.resolve("runtime-client.log");
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        CefTransport runtimeClient = new CefTransport() {
+            @Override
+            public void send(ByteBuffer frame) throws CefTransportException {
+                pair.a.send(frame);
+            }
+
+            @Override
+            public void onReceive(java.util.function.Consumer<ByteBuffer> handler) {
+                pair.a.onReceive(handler);
+            }
+
+            @Override
+            public void onDisconnect(Runnable handler) {
+                pair.a.onDisconnect(handler);
+            }
+
+            @Override
+            public boolean isConnected() {
+                return pair.a.isConnected();
+            }
+
+            @Override
+            public boolean isRuntimeServerClient() {
+                return true;
+            }
+
+            @Override
+            public void close() {
+                pair.a.close();
+            }
+        };
+        try (RecordingTransport recording = new RecordingTransport(runtimeClient, MessageLog.writer(logFile))) {
+            assertThat(recording.isRuntimeServerClient()).isTrue();
+        } finally {
+            pair.b.close();
+        }
+    }
+
+    @Test
     void inboundFrameForwardedEvenWhenRecordingFails() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         MessageLog.Writer broken = new MessageLog.Writer(new DataOutputStream(new OutputStream() {

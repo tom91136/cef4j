@@ -23,7 +23,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
@@ -63,7 +63,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
     private static final class IpcSession implements BrowserSession {
 
         private final RuntimeServerProcess server;
-        private final ZmqTransport transport;
+        private final CefTransport transport;
         private final CefSession session;
         private final RemoteHandle browserHandle;
         private final Browser browser;
@@ -76,7 +76,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
             RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
             this.navigationTimeout = config.startupTimeout();
             RuntimeServerProcess nextServer = null;
-            ZmqTransport nextTransport = null;
+            CefTransport nextTransport = null;
             CefSession nextSession = null;
             SharedFileFrameTransport nextFrameTransport = null;
             RemoteNavigationProbe nextNavigation = null;
@@ -84,7 +84,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
             Browser nextBrowser;
             try {
                 nextServer = launchServer(environment.binary(), environment.resources(), config.startupTimeout());
-                nextTransport = ZmqTransport.connect(nextServer.endpoint());
+                nextTransport = nextServer.connect();
                 nextSession = new CefSessionImpl(nextTransport, Duration.ofSeconds(30));
                 nextFrameTransport = SharedFileFrameTransport.bindAll(nextSession);
                 nextFrameTransport.onFrame((w, h, pixels, meta) -> {

@@ -104,6 +104,7 @@ public final class CefSessionImpl implements CefSession {
                 }
             }
         } catch (CefTransportException e) {
+            transport.close();
             if (ownTimer) timer.shutdownNow();
             throw new IllegalStateException("failed to establish runtime server session", e);
         } catch (java.util.concurrent.ExecutionException e) {
@@ -448,12 +449,14 @@ public final class CefSessionImpl implements CefSession {
 
     private void handleDisconnect() {
         if (!disconnectHandled.compareAndSet(false, true)) return;
+        CefTransportException failure = new CefTransportException("transport disconnected");
         synchronized (registrationLock) {
             closed = true;
             eventHandlers.clear();
             interceptHandlers.clear();
         }
-        failAllPending(new CefTransportException("transport disconnected"));
+        runtimeSessionReady.completeExceptionally(failure);
+        failAllPending(failure);
         latestEvents.clear();
         notifyClosed();
         if (ownTimer) timer.shutdownNow();

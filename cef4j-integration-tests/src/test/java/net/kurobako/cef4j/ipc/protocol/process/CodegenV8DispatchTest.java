@@ -14,7 +14,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
-import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -50,7 +50,7 @@ class CodegenV8DispatchTest {
     @Test
     void codegenIsStringMatchesEvalKind() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Bootstrap: wait for an after-created browser + V8 context.
@@ -86,7 +86,7 @@ class CodegenV8DispatchTest {
     @Test
     void codegenDrillsIntoPropertiesAndReadsLeafValues() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             // Same bootstrap dance as the first test.
@@ -137,7 +137,7 @@ class CodegenV8DispatchTest {
     @Test
     void rendererReleaseHandleDropsRendererTableEntry() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
-                ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
