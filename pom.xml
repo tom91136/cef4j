@@ -505,6 +505,7 @@
                                     <goal>test</goal>
                                 </goals>
                                 <configuration>
+                                    <argLine combine.self="override"/>
                                     <skipTests>${java11.runtime.smoke.skip}</skipTests>
                                     <jdkToolchain>
                                         <version>11</version>

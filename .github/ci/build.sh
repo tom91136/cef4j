@@ -116,8 +116,10 @@ verify_linux_abi() {
 java -version
 [ "${is_linux:-}" = 1 ] && clang++ --version
 
+cef_api=${CEF_VERSION%%.*}
 properties=(
     "-Dcef.version=${CEF_VERSION}"
+    "-Dcef.api.version=${cef_api}"
 )
 if [ -n "${JAVAFX_VERSION}" ]; then
     properties+=("-Djavafx.version=${JAVAFX_VERSION}")
@@ -134,13 +136,12 @@ properties+=(
 [ "${JAVAFX_TESTS}" = true ] || properties+=("-DskipJavafx=true")
 [ "${JAVA11_SMOKE:-false}" != true ] || properties+=("-Djava11.runtime.smoke=true")
 
-cef_api=${CEF_VERSION%%.*}
 if [ "${CEF_PLATFORM}" = linuxarm64 ] && [ "${cef_api}" -lt 139 ]; then
-    libcef="${repo_root}/cef4j-platform/target/reactor-runtime/cef-runtime/${CEF_PLATFORM}/libcef.so"
+    libcef="${repo_root}/.cef-dist/cef_binary_${CEF_VERSION}_${CEF_PLATFORM}_minimal/Release/libcef.so"
     dynamic_loader=$(LC_ALL=C readelf -Wl "${JAVA_HOME}/bin/java" \
         | sed -n 's/.*interpreter: \([^]]*\)].*/\1/p')
     [ -x "${dynamic_loader}" ] || { echo "unable to locate Java dynamic loader" >&2; exit 1; }
-    cef_java_wrapper="${repo_root}/target/ci-cef-preloaded/bin/java"
+    cef_java_wrapper="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/cef4j-java-preload-${CEF_PLATFORM}-${cef_api}/bin/java"
     mkdir -p "$(dirname -- "${cef_java_wrapper}")"
     printf '#!/usr/bin/env bash\nexec %q --preload %q %q "$@"\n' \
         "${dynamic_loader}" "${libcef}" "${JAVA_HOME}/bin/java" > "${cef_java_wrapper}"
