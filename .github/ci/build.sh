@@ -137,14 +137,15 @@ properties+=(
 [ "${JAVA11_SMOKE:-false}" != true ] || properties+=("-Djava11.runtime.smoke=true")
 
 if [ "${CEF_PLATFORM}" = linuxarm64 ] && [ "${cef_api}" -lt 139 ]; then
-    libcef="${repo_root}/.cef-dist/cef_binary_${CEF_VERSION}_${CEF_PLATFORM}_minimal/Release/libcef.so"
+    libcef="${repo_root}/cef4j-platform/target/reactor-runtime/cef-runtime/${CEF_PLATFORM}/libcef.so"
     dynamic_loader=$(LC_ALL=C readelf -Wl "${JAVA_HOME}/bin/java" \
         | sed -n 's/.*interpreter: \([^]]*\)].*/\1/p')
     [ -x "${dynamic_loader}" ] || { echo "unable to locate Java dynamic loader" >&2; exit 1; }
     cef_java_wrapper="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/cef4j-java-preload-${CEF_PLATFORM}-${cef_api}/bin/java"
     mkdir -p "$(dirname -- "${cef_java_wrapper}")"
-    printf '#!/usr/bin/env bash\nexec %q --preload %q %q "$@"\n' \
-        "${dynamic_loader}" "${libcef}" "${JAVA_HOME}/bin/java" > "${cef_java_wrapper}"
+    printf '#!/usr/bin/env bash\nif [[ -f %q ]]; then\n  exec %q --preload %q %q "$@"\nfi\nexec %q "$@"\n' \
+        "${libcef}" "${dynamic_loader}" "${libcef}" "${JAVA_HOME}/bin/java" "${JAVA_HOME}/bin/java" \
+        > "${cef_java_wrapper}"
     chmod +x "${cef_java_wrapper}"
     properties+=("-Djvm=${cef_java_wrapper}")
     echo "Legacy ARM64 CEF will be loaded before the Surefire JVM: ${libcef}"
