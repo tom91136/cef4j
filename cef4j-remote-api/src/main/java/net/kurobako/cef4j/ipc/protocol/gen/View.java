@@ -17,6 +17,7 @@ public final class View implements AutoCloseable {
 
     private final CefSession session;
     private final RemoteHandle handle;
+    private final Object closeLock = new Object();
     @Nullable private CompletableFuture<Void> closeFuture;
 
     public View(@Nonnull CefSession session, @Nonnull RemoteHandle handle) {
@@ -29,14 +30,16 @@ public final class View implements AutoCloseable {
         return handle;
     }
 
-    public synchronized CompletableFuture<Void> closeAsync() {
-        if (closeFuture == null) {
-            closeFuture = CefFutures.map(
-                session.request(
-                    new ReleaseHandleRequest(handle, "cef_view_t"), ReleaseHandleResponse.DECODER),
-                r -> null);
+    public CompletableFuture<Void> closeAsync() {
+        synchronized (closeLock) {
+            if (closeFuture == null) {
+                closeFuture = CefFutures.map(
+                    session.request(
+                        new ReleaseHandleRequest(handle, "cef_view_t"), ReleaseHandleResponse.DECODER),
+                    r -> null);
+            }
+            return closeFuture;
         }
-        return closeFuture;
     }
 
     public CompletableFuture<Void> releaseHandle() {

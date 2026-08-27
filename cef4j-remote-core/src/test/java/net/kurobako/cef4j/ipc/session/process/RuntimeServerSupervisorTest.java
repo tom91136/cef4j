@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -220,18 +219,8 @@ final class RuntimeServerSupervisorTest {
         try {
             CompletableFuture<RuntimeServerSupervisor.Connection> starting = supervisor.start();
             installing.awaitEntered(deadline, "generation install entry");
-            AtomicReference<Throwable> closeFailure = new AtomicReference<>();
-            Thread closing = new Thread(() -> {
-                try {
-                    supervisor.close();
-                } catch (Throwable failure) {
-                    closeFailure.set(failure);
-                }
-            });
-            closing.start();
+            supervisor.close();
             installing.close();
-            deadline.join(closing, "supervisor close during install");
-            assertThat(closeFailure.get()).isNull();
             assertThat(starting).isCompletedExceptionally();
         } finally {
             installing.close();

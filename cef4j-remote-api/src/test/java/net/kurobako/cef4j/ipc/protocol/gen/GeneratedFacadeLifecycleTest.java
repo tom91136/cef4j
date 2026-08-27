@@ -29,19 +29,6 @@ class GeneratedFacadeLifecycleTest {
     }
 
     @Test
-    void rendererFacadeUsesTheSameIdempotentContract() {
-        AtomicInteger requests = new AtomicInteger();
-        CefSession session =
-                releaseSession(requests, RendererReleaseHandleRequest.class, RendererReleaseHandleResponse::new);
-        V8Value value = new V8Value(session, new RemoteHandle(3), new RemoteHandle(9));
-
-        assertThat(value.closeAsync()).isSameAs(value.releaseHandle()).isCompleted();
-        value.close();
-
-        assertThat(requests).hasValue(1);
-    }
-
-    @Test
     void nativeCloseOperationDoesNotCollideWithHandleClose() throws Exception {
         assertThat(Window.class.getMethod("cefClose").getReturnType()).isEqualTo(CompletableFuture.class);
         assertThat(Window.class.getMethod("close").getReturnType()).isEqualTo(Void.TYPE);

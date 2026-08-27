@@ -18,6 +18,7 @@ public final class V8StackFrame implements AutoCloseable {
     private final CefSession session;
     private final RemoteHandle frame;
     private final RemoteHandle handle;
+    private final Object closeLock = new Object();
     @Nullable private CompletableFuture<Void> closeFuture;
 
     public V8StackFrame(@Nonnull CefSession session, @Nonnull RemoteHandle frame, @Nonnull RemoteHandle handle) {
@@ -37,15 +38,17 @@ public final class V8StackFrame implements AutoCloseable {
         return frame;
     }
 
-    public synchronized CompletableFuture<Void> closeAsync() {
-        if (closeFuture == null) {
-            closeFuture = CefFutures.map(
-                session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_v8_stack_frame_t"),
-                    RendererReleaseHandleResponse.DECODER),
-                r -> null);
+    public CompletableFuture<Void> closeAsync() {
+        synchronized (closeLock) {
+            if (closeFuture == null) {
+                closeFuture = CefFutures.map(
+                    session.request(
+                        new RendererReleaseHandleRequest(frame, handle, "cef_v8_stack_frame_t"),
+                        RendererReleaseHandleResponse.DECODER),
+                    r -> null);
+            }
+            return closeFuture;
         }
-        return closeFuture;
     }
 
     public CompletableFuture<Void> releaseHandle() {

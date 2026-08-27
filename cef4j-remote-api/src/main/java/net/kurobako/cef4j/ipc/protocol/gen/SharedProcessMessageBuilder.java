@@ -17,6 +17,7 @@ public final class SharedProcessMessageBuilder implements AutoCloseable {
 
     private final CefSession session;
     private final RemoteHandle handle;
+    private final Object closeLock = new Object();
     @Nullable private CompletableFuture<Void> closeFuture;
 
     public SharedProcessMessageBuilder(@Nonnull CefSession session, @Nonnull RemoteHandle handle) {
@@ -29,14 +30,16 @@ public final class SharedProcessMessageBuilder implements AutoCloseable {
         return handle;
     }
 
-    public synchronized CompletableFuture<Void> closeAsync() {
-        if (closeFuture == null) {
-            closeFuture = CefFutures.map(
-                session.request(
-                    new ReleaseHandleRequest(handle, "cef_shared_process_message_builder_t"), ReleaseHandleResponse.DECODER),
-                r -> null);
+    public CompletableFuture<Void> closeAsync() {
+        synchronized (closeLock) {
+            if (closeFuture == null) {
+                closeFuture = CefFutures.map(
+                    session.request(
+                        new ReleaseHandleRequest(handle, "cef_shared_process_message_builder_t"), ReleaseHandleResponse.DECODER),
+                    r -> null);
+            }
+            return closeFuture;
         }
-        return closeFuture;
     }
 
     public CompletableFuture<Void> releaseHandle() {

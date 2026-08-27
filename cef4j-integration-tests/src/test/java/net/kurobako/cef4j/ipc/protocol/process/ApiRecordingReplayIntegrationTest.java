@@ -47,6 +47,7 @@ class ApiRecordingReplayIntegrationTest {
             try (lifecycle;
                     Browser browser = new Browser(recording, Objects.requireNonNull(browserHandle.get()))) {
                 liveCanGoBack = browser.canGoBack().get(20, TimeUnit.SECONDS);
+                browser.closeAsync().get(20, TimeUnit.SECONDS);
             }
         }
 
@@ -61,6 +62,7 @@ class ApiRecordingReplayIntegrationTest {
             RemoteHandle handle = Objects.requireNonNull(replayedHandle.get());
             try (Browser browser = new Browser(replay, handle)) {
                 assertThat(browser.canGoBack().get(5, TimeUnit.SECONDS)).isEqualTo(liveCanGoBack);
+                browser.closeAsync().get(5, TimeUnit.SECONDS);
             }
         } finally {
             lifecycle.close();

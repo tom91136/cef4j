@@ -40,6 +40,7 @@ object JavaFacadeEmitter {
        |
        |    private final CefSession session;
        |$frameField    private final RemoteHandle handle;
+       |    private final Object closeLock = new Object();
        |    @Nullable private CompletableFuture<Void> closeFuture;
        |
        |$ctor
@@ -59,21 +60,23 @@ object JavaFacadeEmitter {
   private def renderClose(spec: FacadeSpec): String = {
     val request =
       if (spec.affinity == ProcessAffinity.Renderer)
-        s"""            closeFuture = CefFutures.map(
-           |                session.request(
-           |                    new RendererReleaseHandleRequest(frame, handle, "${spec.cefStructName}"),
-           |                    RendererReleaseHandleResponse.DECODER),
-           |                r -> null);""".stripMargin
+        s"""                closeFuture = CefFutures.map(
+           |                    session.request(
+           |                        new RendererReleaseHandleRequest(frame, handle, "${spec.cefStructName}"),
+           |                        RendererReleaseHandleResponse.DECODER),
+           |                    r -> null);""".stripMargin
       else
-        s"""            closeFuture = CefFutures.map(
-           |                session.request(
-           |                    new ReleaseHandleRequest(handle, "${spec.cefStructName}"), ReleaseHandleResponse.DECODER),
-           |                r -> null);""".stripMargin
-    s"""    public synchronized CompletableFuture<Void> closeAsync() {
-       |        if (closeFuture == null) {
+        s"""                closeFuture = CefFutures.map(
+           |                    session.request(
+           |                        new ReleaseHandleRequest(handle, "${spec.cefStructName}"), ReleaseHandleResponse.DECODER),
+           |                    r -> null);""".stripMargin
+    s"""    public CompletableFuture<Void> closeAsync() {
+       |        synchronized (closeLock) {
+       |            if (closeFuture == null) {
        |$request
+       |            }
+       |            return closeFuture;
        |        }
-       |        return closeFuture;
        |    }
        |
        |    public CompletableFuture<Void> releaseHandle() {

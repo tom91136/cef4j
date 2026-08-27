@@ -18,6 +18,7 @@ public final class CefV8Exception implements AutoCloseable {
     private final CefSession session;
     private final RemoteHandle frame;
     private final RemoteHandle handle;
+    private final Object closeLock = new Object();
     @Nullable private CompletableFuture<Void> closeFuture;
 
     public CefV8Exception(@Nonnull CefSession session, @Nonnull RemoteHandle frame, @Nonnull RemoteHandle handle) {
@@ -37,15 +38,17 @@ public final class CefV8Exception implements AutoCloseable {
         return frame;
     }
 
-    public synchronized CompletableFuture<Void> closeAsync() {
-        if (closeFuture == null) {
-            closeFuture = CefFutures.map(
-                session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_v8_exception_t"),
-                    RendererReleaseHandleResponse.DECODER),
-                r -> null);
+    public CompletableFuture<Void> closeAsync() {
+        synchronized (closeLock) {
+            if (closeFuture == null) {
+                closeFuture = CefFutures.map(
+                    session.request(
+                        new RendererReleaseHandleRequest(frame, handle, "cef_v8_exception_t"),
+                        RendererReleaseHandleResponse.DECODER),
+                    r -> null);
+            }
+            return closeFuture;
         }
-        return closeFuture;
     }
 
     public CompletableFuture<Void> releaseHandle() {

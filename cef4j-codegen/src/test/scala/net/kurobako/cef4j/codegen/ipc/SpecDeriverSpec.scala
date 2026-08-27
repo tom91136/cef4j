@@ -98,7 +98,9 @@ class SpecDeriverSpec extends munit.FunSuite {
     val source = JavaFacadeEmitter.emit(SpecDeriver.deriveFacades(List(decl), "test.gen").head)
 
     assert(source.contains("public final class Browser implements AutoCloseable"))
-    assert(source.contains("public synchronized CompletableFuture<Void> closeAsync()"))
+    assert(source.contains("private final Object closeLock = new Object();"))
+    assert(source.contains("public CompletableFuture<Void> closeAsync()"))
+    assert(source.contains("synchronized (closeLock)"))
     assert(source.contains("if (closeFuture == null)"))
     assert(source.contains("public CompletableFuture<Void> releaseHandle()"))
     assert(source.contains("return closeAsync();"))
@@ -106,6 +108,15 @@ class SpecDeriverSpec extends munit.FunSuite {
     assert(source.contains("@SuppressWarnings(\"FutureReturnValueIgnored\")"))
     assert(source.contains("closeAsync();"))
     assert(!source.contains("closeAsync().join();"))
+  }
+
+  test("renderer facade releases its frame-bound handle") {
+    val source = JavaFacadeEmitter.emit(
+      FacadeSpec("RendererObject", "test.gen", "cef_renderer_object_t", Nil, ProcessAffinity.Renderer)
+    )
+
+    assert(source.contains("new RendererReleaseHandleRequest(frame, handle, \"cef_renderer_object_t\")"))
+    assert(source.contains("RendererReleaseHandleResponse.DECODER"))
   }
 
   test("ObjectStruct method with unsupported return type is skipped wholesale") {
