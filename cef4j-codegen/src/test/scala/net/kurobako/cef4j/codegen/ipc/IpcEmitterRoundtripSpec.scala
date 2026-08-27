@@ -66,7 +66,6 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
     buf.flip()
 
     val decoderField = cls.getField("DECODER").get(null)
-    // Synthetic lambda classes must be invoked through their declared interface.
     val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
     val decodeMethod = decoderIface.getMethod("decode", classOf[ByteBuffer])
     val decoded      = decodeMethod.invoke(decoderField, buf)
@@ -96,14 +95,13 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
     val ctor     = cls.getConstructor(java.lang.Integer.TYPE, java.lang.Long.TYPE)
     val instance = ctor.newInstance(java.lang.Integer.valueOf(7), java.lang.Long.valueOf(1234567890L))
     val size     = cls.getMethod("encodedSize").invoke(instance).asInstanceOf[Int]
-    assertEquals(size, 12) // 4 + 8
+    assertEquals(size, 12)
 
     val buf = ByteBuffer.allocate(size)
     cls.getMethod("encodeInto", classOf[ByteBuffer]).invoke(instance, buf)
     buf.flip()
 
     val decoderField = cls.getField("DECODER").get(null)
-    // Synthetic lambda classes must be invoked through their declared interface.
     val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
     val decodeMethod = decoderIface.getMethod("decode", classOf[ByteBuffer])
     val decoded      = decodeMethod.invoke(decoderField, buf)
@@ -202,8 +200,6 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
     assert(!source.contains("(void)len"))
     assert(!source.contains("decode(const std::uint8_t* src, std::size_t len) noexcept"))
   }
-
-  // Co-compile stubs because codegen precedes remote-core in the reactor.
 
   private val stubSources: Map[String, String] = Map(
     "javax.annotation.Nonnull"                    -> "package javax.annotation; public @interface Nonnull {}",

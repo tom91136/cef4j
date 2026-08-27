@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDialogHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDialogHandler {
@@ -30,10 +30,11 @@ public interface CefDialogHandler {
     default Boolean onFileDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int mode, String title, String defaultFilePath, String[] acceptFilters, String[] acceptExtensions, String[] acceptDescriptions, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDialogHandler handler) {
-        session.intercept(DialogHandlerOnFileDialogEvent.MESSAGE_ID, DialogHandlerOnFileDialogEvent.DECODER, ev -> {
-            Boolean answer = handler.onFileDialog(ev.browser(), ev.mode(), ev.title(), ev.defaultFilePath(), ev.acceptFilters(), ev.acceptExtensions(), ev.acceptDescriptions(), ev.callback());
-            return new DialogHandlerOnFileDialogResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefDialogHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(DialogHandlerOnFileDialogEvent.MESSAGE_ID, DialogHandlerOnFileDialogEvent.DECODER, ev -> {
+                    Boolean answer = handler.onFileDialog(ev.browser(), ev.mode(), ev.title(), ev.defaultFilePath(), ev.acceptFilters(), ev.acceptExtensions(), ev.acceptDescriptions(), ev.callback());
+                    return new DialogHandlerOnFileDialogResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

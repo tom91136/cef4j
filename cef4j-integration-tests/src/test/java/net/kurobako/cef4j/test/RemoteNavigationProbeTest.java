@@ -8,9 +8,6 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
@@ -109,35 +106,29 @@ class RemoteNavigationProbeTest {
     @Test
     void closeWhileNavigationIsBeingQueuedCancelsTheReturnedStage() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
-        ExecutorService caller = Executors.newSingleThreadExecutor();
-        try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2))) {
+        try (TestExecutor caller = TestExecutor.single("navigation-queue-caller");
+                CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
+                TestGate queueing = new TestGate()) {
             RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1));
             CompletableFuture<Void> queued = new CompletableFuture<>();
             AtomicReference<CompletableFuture<Void>> loaded = new AtomicReference<>();
-            CountDownLatch entered = new CountDownLatch(1);
-            CountDownLatch release = new CountDownLatch(1);
-            Future<?> invocation = caller.submit(() ->
-                    loaded.set(navigation.load("https://pending.test", Duration.ofSeconds(2), () -> {
-                        entered.countDown();
-                        try {
-                            if (!release.await(2, TimeUnit.SECONDS)) throw new IllegalStateException("not released");
-                        } catch (InterruptedException interrupted) {
-                            Thread.currentThread().interrupt();
-                            throw new IllegalStateException(interrupted);
-                        }
+            CompletableFuture<Void> invocation = CompletableFuture.runAsync(
+                    () -> loaded.set(navigation.load("https://pending.test", Duration.ofSeconds(2), () -> {
+                        queueing.enter();
                         return queued;
-                    })));
-            assertThat(entered.await(2, TimeUnit.SECONDS)).isTrue();
+                    })),
+                    caller);
+            TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(2));
+            queueing.awaitEntered(deadline, "navigation queue entry");
 
             navigation.close();
-            release.countDown();
+            queueing.release();
 
-            invocation.get(2, TimeUnit.SECONDS);
+            deadline.await(invocation, "navigation queue completion");
             assertThat(Objects.requireNonNull(loaded.get(), "navigation result"))
                     .isCancelled();
             assertThat(queued).isCancelled();
         } finally {
-            caller.shutdownNow();
             pair.b.close();
         }
     }

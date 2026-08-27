@@ -11,10 +11,10 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -22,12 +22,16 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
+import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestGate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-@Timeout(900)
+@Timeout(120)
 final class RuntimeServerSupervisorTest {
+    private static final Duration TEST_TIMEOUT = Duration.ofSeconds(60);
+
     @Test
     void closeRejectsNewStartsAndListenersWithoutExecutorLeak() {
         RuntimeServerSupervisor supervisor =
@@ -57,14 +61,17 @@ final class RuntimeServerSupervisorTest {
                 0,
                 Map.of("CEF4J_STUB_PID_FILE", pidFile.toString()));
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
-            assertThatThrownBy(() -> supervisor.start().get(30, TimeUnit.SECONDS))
+            TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
+            assertThatThrownBy(() -> deadline.await(supervisor.start(), "failed transport startup"))
                     .hasRootCauseInstanceOf(CefTransportException.class);
         }
 
         long pid = Long.parseLong(Files.readString(pidFile));
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false) && System.nanoTime() < deadline)
-            Thread.sleep(10);
+        TestDeadline.after(Duration.ofSeconds(5))
+                .until(
+                        () -> !ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false),
+                        Duration.ofMillis(10),
+                        "spawned process exit");
         assertThat(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false))
                 .isFalse();
     }
@@ -85,10 +92,11 @@ final class RuntimeServerSupervisorTest {
         LinkedBlockingQueue<RuntimeServerSupervisor.Connection> generations = new LinkedBlockingQueue<>();
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
+            TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(300, TimeUnit.SECONDS);
-            assertThat(generations.poll(300, TimeUnit.SECONDS)).isSameAs(first);
-            RuntimeServerSupervisor.Connection second = generations.poll(300, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection first = deadline.await(supervisor.start(), "first generation startup");
+            assertThat(poll(generations, deadline, "first generation delivery")).isSameAs(first);
+            RuntimeServerSupervisor.Connection second = poll(generations, deadline, "replacement generation delivery");
             assertThat(second).isNotNull();
             assertThat(second.pid()).isNotEqualTo(first.pid());
         }
@@ -108,11 +116,12 @@ final class RuntimeServerSupervisorTest {
                 1,
                 Map.of("CEF4J_STUB_EXIT_AFTER_MS", "20"));
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
-            supervisor.start().get(300, TimeUnit.SECONDS);
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-            while (supervisor.state() != RuntimeServerSupervisor.State.FAILED && System.nanoTime() < deadline) {
-                Thread.sleep(10);
-            }
+            TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
+            deadline.await(supervisor.start(), "crashing generation startup");
+            deadline.until(
+                    () -> supervisor.state() == RuntimeServerSupervisor.State.FAILED,
+                    Duration.ofMillis(10),
+                    "recovery budget exhaustion");
             assertThat(supervisor.state()).isEqualTo(RuntimeServerSupervisor.State.FAILED);
             assertThat(supervisor.current()).isEmpty();
         }
@@ -140,12 +149,13 @@ final class RuntimeServerSupervisorTest {
         LinkedBlockingQueue<RuntimeServerSupervisor.Connection> generations = new LinkedBlockingQueue<>();
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
+            TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(300, TimeUnit.SECONDS);
-            assertThat(generations.poll(300, TimeUnit.SECONDS)).isSameAs(first);
+            RuntimeServerSupervisor.Connection first = deadline.await(supervisor.start(), "first generation startup");
+            assertThat(poll(generations, deadline, "first generation delivery")).isSameAs(first);
 
             supervisor.restart();
-            RuntimeServerSupervisor.Connection second = generations.poll(300, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection second = poll(generations, deadline, "restarted generation delivery");
             assertThat(second).isNotNull();
             assertThat(second.generation()).isEqualTo(first.generation() + 1);
             assertThat(second.pid()).isNotEqualTo(first.pid());
@@ -159,7 +169,7 @@ final class RuntimeServerSupervisorTest {
 
     @Test
     void listenerRegisteredDuringInstallReceivesGenerationOnce(@TempDir Path temporary) throws Exception {
-        CountDownLatch installing = new CountDownLatch(1);
+        TestGate installing = new TestGate();
         RuntimeServerSupervisor.Configuration configuration = new RuntimeServerSupervisor.Configuration(
                         launcher(temporary),
                         "zmq",
@@ -174,13 +184,16 @@ final class RuntimeServerSupervisorTest {
                 .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
         AtomicInteger deliveries = new AtomicInteger();
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
+            TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
             CompletableFuture<RuntimeServerSupervisor.Connection> started = supervisor.start();
-            assertThat(installing.await(300, TimeUnit.SECONDS)).isTrue();
+            installing.awaitEntered(deadline, "generation install entry");
             AutoCloseable registration = supervisor.onConnection(connection -> deliveries.incrementAndGet());
             try {
-                started.get(300, TimeUnit.SECONDS);
+                installing.close();
+                deadline.await(started, "generation install completion");
                 assertThat(deliveries).hasValue(1);
             } finally {
+                installing.close();
                 registration.close();
             }
         }
@@ -189,7 +202,7 @@ final class RuntimeServerSupervisorTest {
     @Test
     void closeDuringGenerationInstallLeavesSupervisorClosed(@TempDir Path temporary) throws Exception {
         Path pidFile = temporary.resolve("install-race.pid");
-        CountDownLatch installing = new CountDownLatch(1);
+        TestGate installing = new TestGate();
         RuntimeServerSupervisor.Configuration configuration = new RuntimeServerSupervisor.Configuration(
                         launcher(temporary),
                         "zmq",
@@ -203,17 +216,37 @@ final class RuntimeServerSupervisorTest {
                         Map.of("CEF4J_STUB_PID_FILE", pidFile.toString()))
                 .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
         RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
-        var unused = supervisor.start();
-        assertThat(installing.await(300, TimeUnit.SECONDS)).isTrue();
-        supervisor.close();
+        TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
+        try {
+            CompletableFuture<RuntimeServerSupervisor.Connection> starting = supervisor.start();
+            installing.awaitEntered(deadline, "generation install entry");
+            AtomicReference<Throwable> closeFailure = new AtomicReference<>();
+            Thread closing = new Thread(() -> {
+                try {
+                    supervisor.close();
+                } catch (Throwable failure) {
+                    closeFailure.set(failure);
+                }
+            });
+            closing.start();
+            installing.close();
+            deadline.join(closing, "supervisor close during install");
+            assertThat(closeFailure.get()).isNull();
+            assertThat(starting).isCompletedExceptionally();
+        } finally {
+            installing.close();
+            supervisor.close();
+        }
 
         assertThat(supervisor.state()).isEqualTo(RuntimeServerSupervisor.State.CLOSED);
         assertThat(supervisor.current()).isEmpty();
 
         long pid = Long.parseLong(Files.readString(pidFile));
-        long pidDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false) && System.nanoTime() < pidDeadline)
-            Thread.sleep(10);
+        TestDeadline.after(Duration.ofSeconds(5))
+                .until(
+                        () -> !ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false),
+                        Duration.ofMillis(10),
+                        "installed process exit");
         assertThat(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false))
                 .isFalse();
     }
@@ -233,6 +266,12 @@ final class RuntimeServerSupervisorTest {
         return script;
     }
 
+    private static <T> T poll(LinkedBlockingQueue<T> queue, TestDeadline deadline, String phase) throws Exception {
+        T value = queue.poll(deadline.remainingNanos(), TimeUnit.NANOSECONDS);
+        if (value == null) throw new java.util.concurrent.TimeoutException(phase);
+        return value;
+    }
+
     private static final class EmptyMessage implements CefMessageEncoder, CefMessageView {
         @Override
         public int messageId() {
@@ -250,9 +289,9 @@ final class RuntimeServerSupervisorTest {
 
     private static final class BlockingOnCloseSession implements CefSession {
         private final CefSession delegate;
-        private final CountDownLatch installing;
+        private final TestGate installing;
 
-        BlockingOnCloseSession(CefSession delegate, CountDownLatch installing) {
+        BlockingOnCloseSession(CefSession delegate, TestGate installing) {
             this.delegate = delegate;
             this.installing = installing;
         }
@@ -277,12 +316,7 @@ final class RuntimeServerSupervisorTest {
 
         @Override
         public HandlerRegistration onClose(@Nonnull Runnable handler) {
-            installing.countDown();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            installing.enter();
             return () -> {};
         }
 

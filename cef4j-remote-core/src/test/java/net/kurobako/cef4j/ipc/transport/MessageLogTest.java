@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -49,7 +50,6 @@ class MessageLogTest {
         Path file = tmp.resolve("bad.bin");
         byte[] bytes = new byte[16];
         System.arraycopy(MessageLog.MAGIC, 0, bytes, 0, MessageLog.MAGIC.length);
-        // version = 99 in big-endian
         bytes[8] = 0;
         bytes[9] = 0;
         bytes[10] = 0;
@@ -76,19 +76,24 @@ class MessageLogTest {
         Path file = tmp.resolve("concurrent.bin");
         int threads = 4;
         int per = 100;
-        try (MessageLog.Writer w = MessageLog.writer(file)) {
+        try (MessageLog.Writer w = MessageLog.writer(file);
+                TestExecutor executor = TestExecutor.fixed(threads, "concurrent-message-log")) {
             List<java.util.concurrent.CompletableFuture<Void>> tasks = new ArrayList<>();
             for (int t = 0; t < threads; t++) {
                 final int tid = t;
-                tasks.add(java.util.concurrent.CompletableFuture.runAsync(() -> {
-                    for (int i = 0; i < per; i++) {
-                        try {
-                            w.append(MessageLog.Direction.OUTBOUND, tid * 1000L + i, new byte[] {(byte) tid, (byte) i});
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }));
+                tasks.add(java.util.concurrent.CompletableFuture.runAsync(
+                        () -> {
+                            for (int i = 0; i < per; i++) {
+                                try {
+                                    w.append(MessageLog.Direction.OUTBOUND, tid * 1000L + i, new byte[] {
+                                        (byte) tid, (byte) i
+                                    });
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        },
+                        executor));
             }
             java.util.concurrent.CompletableFuture.allOf(
                             tasks.toArray(new java.util.concurrent.CompletableFuture<?>[0]))

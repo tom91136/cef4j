@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -20,19 +21,26 @@ final class UdsTransportTest extends CefTransportContractTest {
     @Override
     protected Pair newPair() throws Exception {
         Path path = tmpDir.resolve("uds-" + System.nanoTime() + ".sock");
-        AFUNIXServerSocket server = AFUNIXServerSocket.newInstance();
-        server.bind(AFUNIXSocketAddress.of(path));
-        CompletableFuture<UdsTransport> accepted = CompletableFuture.supplyAsync(() -> {
+        try (AFUNIXServerSocket server = AFUNIXServerSocket.newInstance();
+                TestExecutor executor = TestExecutor.single("uds-test-accept")) {
+            server.bind(AFUNIXSocketAddress.of(path));
+            CompletableFuture<UdsTransport> accepted = CompletableFuture.supplyAsync(
+                    () -> {
+                        try {
+                            return UdsTransport.accepted(path, server.accept());
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    executor);
+            UdsTransport client = UdsTransport.connect(UdsTransport.endpoint(path));
             try {
-                return UdsTransport.accepted(path, server.accept());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                return new Pair(client, accepted.get(10, TimeUnit.SECONDS));
+            } catch (Exception failure) {
+                client.close();
+                throw failure;
             }
-        });
-        UdsTransport client = UdsTransport.connect(UdsTransport.endpoint(path));
-        UdsTransport peer = accepted.get(10, TimeUnit.SECONDS);
-        server.close();
-        return new Pair(client, peer);
+        }
     }
 
     @Test

@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
@@ -73,8 +75,7 @@ abstract class CefTestBase {
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
         if (OS.isMacOS()) {
-            // macOS daemon thread: createBrowserSync requires the CEF thread (daemon), but tests
-            // run on the test thread. Use async createBrowser and intercept via onAfterCreated.
+            // XXX: Use synchronous creation when CEF permits createBrowserSync from the macOS test thread.
             CountDownLatch created = new CountDownLatch(1);
             AtomicReference<CefBrowser> ref = new AtomicReference<>();
             CefClient interceptor = new CefClient() {
@@ -107,28 +108,40 @@ abstract class CefTestBase {
 
     static void closeBrowser(@Nullable CefBrowser browser) throws InterruptedException {
         if (browser == null) return;
-        browser.getHost().ifPresent(host -> host.closeBrowser(true));
-
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
-        while (browser.isValid() && System.nanoTime() < deadline) {
-            if (!OS.isMacOS()) Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(5);
-        }
-        if (browser.isValid()) {
-            throw new AssertionError("Timed out waiting for CEF browser closure");
+        try {
+            try (CefBrowserHost host = browser.getHost().orElseThrow()) {
+                host.closeBrowser(true);
+            }
+            try {
+                TestDeadline.after(Duration.ofSeconds(10))
+                        .until(
+                                () -> !browser.isValid(),
+                                () -> {
+                                    if (!OS.isMacOS()) Cef.INSTANCE.doMessageLoopWork();
+                                },
+                                Duration.ofMillis(5),
+                                "CEF browser closure");
+            } catch (java.util.concurrent.TimeoutException timedOut) {
+                throw new AssertionError(timedOut);
+            }
+        } finally {
+            browser.close();
         }
     }
 
     static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
-        if (OS.isMacOS()) {
-            // macOS daemon thread: message loop runs on daemon thread, just wait on the latch.
-            return latch.await(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+        try {
+            TestDeadline deadline = TestDeadline.after(Duration.ofMillis(timeoutMs));
+            if (OS.isMacOS()) deadline.await(latch, "CEF callback");
+            else
+                deadline.until(
+                        () -> latch.getCount() == 0,
+                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Duration.ofMillis(5),
+                        "CEF callback");
+            return true;
+        } catch (java.util.concurrent.TimeoutException timedOut) {
+            return false;
         }
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(5);
-        }
-        return latch.getCount() == 0;
     }
 }

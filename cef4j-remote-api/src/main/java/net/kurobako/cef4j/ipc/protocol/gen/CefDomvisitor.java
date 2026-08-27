@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDomvisitor)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDomvisitor {
@@ -23,8 +23,9 @@ public interface CefDomvisitor {
     default void visit(net.kurobako.cef4j.ipc.session.RemoteHandle document) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDomvisitor handler) {
-        session.on(DomvisitorVisitEvent.MESSAGE_ID, DomvisitorVisitEvent.DECODER,
-                ev -> handler.visit(ev.document()));
+    static CefSession.HandlerRegistration register(CefSession session, CefDomvisitor handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(DomvisitorVisitEvent.MESSAGE_ID, DomvisitorVisitEvent.DECODER,
+                        ev -> handler.visit(ev.document())));
     }
 }

@@ -22,16 +22,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * Validates the AST-derived dispatcher path end-to-end. Unlike {@link RemoteHandleIntegrationTest}, which exercises
- * hand-written Slice C messages (whose server-side dispatch is also hand-written), this test calls a method whose
- * Request/Response classes and server-side switch case are entirely codegen-emitted from the CEF AST.
- *
- * <p>{@code cef_browser_t::is_valid()} is a no-arg, primitive-returning method — the simplest shape supported by the
- * first-pass {@code CppDispatcherEmitter}. A non-zero result confirms: AST-derived wire codecs round-trip correctly,
- * the JVM-side {@link Browser} facade dispatches through {@link CefSession}, and the server's generated dispatcher
- * decoded, retained the handle, posted the call onto the CEF UI thread, and encoded the response.
- */
 @Timeout(600)
 class AstDispatcherIntegrationTest {
 

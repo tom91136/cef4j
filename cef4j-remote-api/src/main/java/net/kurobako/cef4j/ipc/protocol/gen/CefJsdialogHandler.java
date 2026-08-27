@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefJsdialogHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefJsdialogHandler {
@@ -42,14 +42,15 @@ public interface CefJsdialogHandler {
     default void onDialogClosed(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefJsdialogHandler handler) {
-        session.intercept(JsdialogHandlerOnBeforeUnloadDialogEvent.MESSAGE_ID, JsdialogHandlerOnBeforeUnloadDialogEvent.DECODER, ev -> {
-            Boolean answer = handler.onBeforeUnloadDialog(ev.browser(), ev.messageText(), ev.isReload(), ev.callback());
-            return new JsdialogHandlerOnBeforeUnloadDialogResponse(answer != null && answer.booleanValue());
-        });
-        session.on(JsdialogHandlerOnResetDialogStateEvent.MESSAGE_ID, JsdialogHandlerOnResetDialogStateEvent.DECODER,
-                ev -> handler.onResetDialogState(ev.browser()));
-        session.on(JsdialogHandlerOnDialogClosedEvent.MESSAGE_ID, JsdialogHandlerOnDialogClosedEvent.DECODER,
-                ev -> handler.onDialogClosed(ev.browser()));
+    static CefSession.HandlerRegistration register(CefSession session, CefJsdialogHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(JsdialogHandlerOnBeforeUnloadDialogEvent.MESSAGE_ID, JsdialogHandlerOnBeforeUnloadDialogEvent.DECODER, ev -> {
+                    Boolean answer = handler.onBeforeUnloadDialog(ev.browser(), ev.messageText(), ev.isReload(), ev.callback());
+                    return new JsdialogHandlerOnBeforeUnloadDialogResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(JsdialogHandlerOnResetDialogStateEvent.MESSAGE_ID, JsdialogHandlerOnResetDialogStateEvent.DECODER,
+                        ev -> handler.onResetDialogState(ev.browser())),
+                session.on(JsdialogHandlerOnDialogClosedEvent.MESSAGE_ID, JsdialogHandlerOnDialogClosedEvent.DECODER,
+                        ev -> handler.onDialogClosed(ev.browser())));
     }
 }

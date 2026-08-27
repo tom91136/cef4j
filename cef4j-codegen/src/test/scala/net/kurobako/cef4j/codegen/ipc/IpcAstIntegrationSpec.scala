@@ -87,10 +87,15 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
     facades.foreach { f =>
       val java = JavaFacadeEmitter.emit(f)
       assert(java.contains(s"class ${f.className}"), s"Java facade emit missing class for ${f.className}")
+      assert(java.contains("implements AutoCloseable"), s"Java facade ${f.className} is not AutoCloseable")
       assert(java.contains("CefSession"), s"Java facade ${f.className} missing CefSession reference")
       assert(java.contains("CefFutures.map"), s"Java facade ${f.className} does not propagate cancellation")
       assert(!java.contains(".thenApply"), s"Java facade ${f.className} bypasses cancellation propagation")
       assert(java.contains("RemoteHandle"), s"Java facade ${f.className} missing RemoteHandle reference")
+      assert(java.contains("synchronized CompletableFuture<Void> closeAsync()"))
+      assert(java.contains("public void close()"))
+      assert(!java.contains("closeAsync().join()"))
+      assert(java.contains("return closeAsync();"))
       f.methods.foreach { m =>
         assert(
           java.contains(s" ${m.methodName}("),
@@ -129,6 +134,8 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       val java = JavaHandlerEmitter.emit(h)
       assert(java.contains(s"interface ${h.className}"), s"Java handler emit missing interface for ${h.className}")
       assert(java.contains("CefSession"), s"Java handler ${h.className} missing CefSession reference")
+      assert(java.contains("static CefSession.HandlerRegistration register("))
+      assert(java.contains("return CefSession.HandlerRegistration.combine("))
       h.methods.foreach { m =>
         val voidShape = java.contains(s"default void ${m.methodName}(")
         val boolShape = java.contains(s"default Boolean ${m.methodName}(")
@@ -150,5 +157,15 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       }
     }
     if (missing.nonEmpty) fail(s"Handlers reference unknown event types (first 5): ${missing.take(5).mkString(", ")}")
+  }
+
+  test("every JVM visitor route exposes its closeable registration") {
+    val visitors = SpecDeriver.deriveJvmVisitors(decls, "net.kurobako.cef4j.ipc.protocol.gen")
+    assert(visitors.nonEmpty)
+    visitors.foreach { visitor =>
+      val java = JavaJvmVisitorEmitter.emit(visitor)
+      assert(java.contains("static CefSession.HandlerRegistration route("))
+      assert(java.contains("return session.on("))
+    }
   }
 }

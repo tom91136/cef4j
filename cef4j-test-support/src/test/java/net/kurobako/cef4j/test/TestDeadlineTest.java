@@ -6,9 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
@@ -40,15 +42,12 @@ class TestDeadlineTest {
 
     @Test
     void queueBarrierRunsAfterAlreadyQueuedWork() throws Exception {
-        java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
-        try {
+        try (TestExecutor executor = TestExecutor.single("deadline-queue-barrier")) {
             StringBuilder order = new StringBuilder();
             executor.execute(() -> order.append("first"));
             TestDeadline.after(Duration.ofSeconds(1))
                     .runOn(false, executor::execute, () -> order.append("-barrier"), "serial queue barrier");
             assertThat(order).hasToString("first-barrier");
-        } finally {
-            executor.shutdownNow();
         }
     }
 
@@ -76,5 +75,42 @@ class TestDeadlineTest {
         Objects.requireNonNull(queued.get()).run();
 
         assertThat(ran).isFalse();
+    }
+
+    @Test
+    void oneDeadlineBoundsLatchesAndThreads() throws Exception {
+        TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(1));
+        CountDownLatch latch = new CountDownLatch(1);
+        Thread worker = new Thread(latch::countDown);
+
+        worker.start();
+        deadline.await(latch, "worker entry");
+        deadline.join(worker, "worker exit");
+
+        assertThat(worker.isAlive()).isFalse();
+    }
+
+    @Test
+    void testGateReleasesBlockedWorkOnClose() throws Exception {
+        TestGate gate = new TestGate();
+        Thread worker = new Thread(gate::enter);
+        TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(1));
+
+        worker.start();
+        gate.awaitEntered(deadline, "gate entry");
+        gate.close();
+        deadline.join(worker, "gate exit");
+
+        assertThat(worker.isAlive()).isFalse();
+    }
+
+    @Test
+    void pollingCanDriveTheSystemUnderTest() throws Exception {
+        AtomicInteger progress = new AtomicInteger();
+
+        TestDeadline.after(Duration.ofSeconds(1))
+                .until(() -> progress.get() == 3, progress::incrementAndGet, Duration.ofMillis(1), "progress");
+
+        assertThat(progress).hasValue(3);
     }
 }

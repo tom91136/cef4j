@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefRequestHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefRequestHandler {
@@ -95,34 +95,35 @@ public interface CefRequestHandler {
     default void onDocumentAvailableInMainFrame(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefRequestHandler handler) {
-        session.intercept(RequestHandlerOnBeforeBrowseEvent.MESSAGE_ID, RequestHandlerOnBeforeBrowseEvent.DECODER, ev -> {
-            Boolean answer = handler.onBeforeBrowse(ev.browser(), ev.frame(), ev.request(), ev.userGesture(), ev.isRedirect());
-            return new RequestHandlerOnBeforeBrowseResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(RequestHandlerOnOpenUrlfromTabEvent.MESSAGE_ID, RequestHandlerOnOpenUrlfromTabEvent.DECODER, ev -> {
-            Boolean answer = handler.onOpenUrlfromTab(ev.browser(), ev.frame(), ev.targetUrl(), ev.targetDisposition(), ev.userGesture());
-            return new RequestHandlerOnOpenUrlfromTabResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(RequestHandlerGetAuthCredentialsEvent.MESSAGE_ID, RequestHandlerGetAuthCredentialsEvent.DECODER, ev -> {
-            Boolean answer = handler.getAuthCredentials(ev.browser(), ev.originUrl(), ev.isProxy(), ev.host(), ev.port(), ev.realm(), ev.scheme(), ev.callback());
-            return new RequestHandlerGetAuthCredentialsResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(RequestHandlerOnCertificateErrorEvent.MESSAGE_ID, RequestHandlerOnCertificateErrorEvent.DECODER, ev -> {
-            Boolean answer = handler.onCertificateError(ev.browser(), ev.certError(), ev.requestUrl(), ev.sslInfo(), ev.callback());
-            return new RequestHandlerOnCertificateErrorResponse(answer != null && answer.booleanValue());
-        });
-        session.on(RequestHandlerOnRenderViewReadyEvent.MESSAGE_ID, RequestHandlerOnRenderViewReadyEvent.DECODER,
-                ev -> handler.onRenderViewReady(ev.browser()));
-        session.intercept(RequestHandlerOnRenderProcessUnresponsiveEvent.MESSAGE_ID, RequestHandlerOnRenderProcessUnresponsiveEvent.DECODER, ev -> {
-            Boolean answer = handler.onRenderProcessUnresponsive(ev.browser(), ev.callback());
-            return new RequestHandlerOnRenderProcessUnresponsiveResponse(answer != null && answer.booleanValue());
-        });
-        session.on(RequestHandlerOnRenderProcessResponsiveEvent.MESSAGE_ID, RequestHandlerOnRenderProcessResponsiveEvent.DECODER,
-                ev -> handler.onRenderProcessResponsive(ev.browser()));
-        session.on(RequestHandlerOnRenderProcessTerminatedEvent.MESSAGE_ID, RequestHandlerOnRenderProcessTerminatedEvent.DECODER,
-                ev -> handler.onRenderProcessTerminated(ev.browser(), ev.status(), ev.errorCode(), ev.errorString()));
-        session.on(RequestHandlerOnDocumentAvailableInMainFrameEvent.MESSAGE_ID, RequestHandlerOnDocumentAvailableInMainFrameEvent.DECODER,
-                ev -> handler.onDocumentAvailableInMainFrame(ev.browser()));
+    static CefSession.HandlerRegistration register(CefSession session, CefRequestHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(RequestHandlerOnBeforeBrowseEvent.MESSAGE_ID, RequestHandlerOnBeforeBrowseEvent.DECODER, ev -> {
+                    Boolean answer = handler.onBeforeBrowse(ev.browser(), ev.frame(), ev.request(), ev.userGesture(), ev.isRedirect());
+                    return new RequestHandlerOnBeforeBrowseResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(RequestHandlerOnOpenUrlfromTabEvent.MESSAGE_ID, RequestHandlerOnOpenUrlfromTabEvent.DECODER, ev -> {
+                    Boolean answer = handler.onOpenUrlfromTab(ev.browser(), ev.frame(), ev.targetUrl(), ev.targetDisposition(), ev.userGesture());
+                    return new RequestHandlerOnOpenUrlfromTabResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(RequestHandlerGetAuthCredentialsEvent.MESSAGE_ID, RequestHandlerGetAuthCredentialsEvent.DECODER, ev -> {
+                    Boolean answer = handler.getAuthCredentials(ev.browser(), ev.originUrl(), ev.isProxy(), ev.host(), ev.port(), ev.realm(), ev.scheme(), ev.callback());
+                    return new RequestHandlerGetAuthCredentialsResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(RequestHandlerOnCertificateErrorEvent.MESSAGE_ID, RequestHandlerOnCertificateErrorEvent.DECODER, ev -> {
+                    Boolean answer = handler.onCertificateError(ev.browser(), ev.certError(), ev.requestUrl(), ev.sslInfo(), ev.callback());
+                    return new RequestHandlerOnCertificateErrorResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(RequestHandlerOnRenderViewReadyEvent.MESSAGE_ID, RequestHandlerOnRenderViewReadyEvent.DECODER,
+                        ev -> handler.onRenderViewReady(ev.browser())),
+                session.intercept(RequestHandlerOnRenderProcessUnresponsiveEvent.MESSAGE_ID, RequestHandlerOnRenderProcessUnresponsiveEvent.DECODER, ev -> {
+                    Boolean answer = handler.onRenderProcessUnresponsive(ev.browser(), ev.callback());
+                    return new RequestHandlerOnRenderProcessUnresponsiveResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(RequestHandlerOnRenderProcessResponsiveEvent.MESSAGE_ID, RequestHandlerOnRenderProcessResponsiveEvent.DECODER,
+                        ev -> handler.onRenderProcessResponsive(ev.browser())),
+                session.on(RequestHandlerOnRenderProcessTerminatedEvent.MESSAGE_ID, RequestHandlerOnRenderProcessTerminatedEvent.DECODER,
+                        ev -> handler.onRenderProcessTerminated(ev.browser(), ev.status(), ev.errorCode(), ev.errorString())),
+                session.on(RequestHandlerOnDocumentAvailableInMainFrameEvent.MESSAGE_ID, RequestHandlerOnDocumentAvailableInMainFrameEvent.DECODER,
+                        ev -> handler.onDocumentAvailableInMainFrame(ev.browser())));
     }
 }

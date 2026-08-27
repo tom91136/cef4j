@@ -2,6 +2,8 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Proxy;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -95,141 +97,139 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(1)
-    void eval_simpleArithmetic() throws Exception {
+    void evalSimpleArithmetic() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("1 + 2");
-        // The first renderer round-trip includes V8 context and message-channel warm-up. Native ARM runners can
-        // exceed the steady-state five-second allowance under load; subsequent evaluations retain the tighter bound.
         String result = pumpAndGet(future, 15_000);
         assertThat(result).isEqualTo("3");
     }
 
     @Test
     @Order(2)
-    void eval_stringResult() throws Exception {
+    void evalStringResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("'hello ' + 'world'"), 5_000);
         assertThat(result).isEqualTo("\"hello world\"");
     }
 
     @Test
     @Order(3)
-    void eval_booleanResult() throws Exception {
+    void evalBooleanResult() throws Exception {
         assertThat(pumpAndGet(evaluator.evaluate("true"), 5_000)).isEqualTo("true");
         assertThat(pumpAndGet(evaluator.evaluate("false"), 5_000)).isEqualTo("false");
     }
 
     @Test
     @Order(4)
-    void eval_nullResult() throws Exception {
+    void evalNullResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("null"), 5_000);
         assertThat(result).isEqualTo("null");
     }
 
     @Test
     @Order(5)
-    void eval_undefinedResult() throws Exception {
+    void evalUndefinedResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("undefined"), 5_000);
         assertThat(result).isEqualTo("null");
     }
 
     @Test
     @Order(6)
-    void eval_objectResult() throws Exception {
+    void evalObjectResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("({a: 1, b: 'two'})"), 5_000);
         assertThat(result).isEqualTo("{\"a\":1,\"b\":\"two\"}");
     }
 
     @Test
     @Order(7)
-    void eval_arrayResult() throws Exception {
+    void evalArrayResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("[1, 2, 3]"), 5_000);
         assertThat(result).isEqualTo("[1,2,3]");
     }
 
     @Test
     @Order(8)
-    void eval_nestedObjectResult() throws Exception {
+    void evalNestedObjectResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("({x: {y: {z: 42}}})"), 5_000);
         assertThat(result).isEqualTo("{\"x\":{\"y\":{\"z\":42}}}");
     }
 
     @Test
     @Order(9)
-    void eval_floatResult() throws Exception {
+    void evalFloatResult() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("3.14"), 5_000);
         assertThat(result).isEqualTo("3.14");
     }
 
     @Test
     @Order(10)
-    void eval_largeNumber() throws Exception {
+    void evalLargeNumber() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("Number.MAX_SAFE_INTEGER"), 5_000);
         assertThat(result).isEqualTo("9007199254740991");
     }
 
     @Test
     @Order(11)
-    void eval_emptyObject() throws Exception {
+    void evalEmptyObject() throws Exception {
         assertThat(pumpAndGet(evaluator.evaluate("({})"), 5_000)).isEqualTo("{}");
     }
 
     @Test
     @Order(12)
-    void eval_emptyArray() throws Exception {
+    void evalEmptyArray() throws Exception {
         assertThat(pumpAndGet(evaluator.evaluate("[]"), 5_000)).isEqualTo("[]");
     }
 
     @Test
     @Order(13)
-    void eval_specialCharactersInString() throws Exception {
+    void evalSpecialCharactersInString() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("'line1\\nline2\\ttab'"), 5_000);
         assertThat(result).isEqualTo("\"line1\\nline2\\ttab\"");
     }
 
     @Test
     @Order(14)
-    void eval_unicodeString() throws Exception {
+    void evalUnicodeString() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("'\\u00e9\\u00e8\\u00ea'"), 5_000);
         assertThat(result).contains("é");
     }
 
     @Test
     @Order(20)
-    void eval_syntaxError_completesExceptionally() throws Exception {
+    void evalSyntaxErrorCompletesExceptionally() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("function(");
         assertPumpedExceptionally(future, 5_000, "SyntaxError");
     }
 
     @Test
     @Order(21)
-    void eval_thrownError_completesExceptionally() throws Exception {
+    void evalThrownErrorCompletesExceptionally() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("throw new Error('boom')");
         assertPumpedExceptionally(future, 5_000, "boom");
     }
 
     @Test
     @Order(22)
-    void eval_thrownString_completesExceptionally() throws Exception {
+    void evalThrownStringCompletesExceptionally() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("throw 'plain string error'");
         assertPumpedExceptionally(future, 5_000, "plain string error");
     }
 
     @Test
     @Order(23)
-    void eval_referenceError_completesExceptionally() throws Exception {
+    void evalReferenceErrorCompletesExceptionally() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("nonExistentVariable");
         assertPumpedExceptionally(future, 5_000, "not defined");
     }
 
     @Test
     @Order(24)
-    void eval_typeError_completesExceptionally() throws Exception {
+    void evalTypeErrorCompletesExceptionally() throws Exception {
         CompletableFuture<String> future = evaluator.evaluate("null.property");
         assertPumpedExceptionally(future, 5_000, "Cannot read");
     }
 
     @Test
     @Order(30)
-    void handle_evalAndGetProperty() throws Exception {
+    void handleEvalAndGetProperty() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({name: 'test', value: 42})"), 5_000);
         assertThat(handle).isGreaterThan(0);
 
@@ -246,7 +246,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(31)
-    void handle_setProperty() throws Exception {
+    void handleSetProperty() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({x: 0})"), 5_000);
 
         pumpAndGet(evaluator.setProperty(handle, "x", "99"), 5_000);
@@ -259,7 +259,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(32)
-    void handle_setPropertyString() throws Exception {
+    void handleSetPropertyString() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({})"), 5_000);
 
         pumpAndGet(evaluator.setProperty(handle, "msg", "\"hello\""), 5_000);
@@ -272,7 +272,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(33)
-    void handle_setPropertyObject() throws Exception {
+    void handleSetPropertyObject() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({})"), 5_000);
 
         pumpAndGet(evaluator.setProperty(handle, "nested", "{\"a\": 1}"), 5_000);
@@ -285,7 +285,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(34)
-    void handle_callMethod() throws Exception {
+    void handleCallMethod() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({add: function(a, b) { return a + b; }})"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "add", "[3, 4]", false), 5_000);
@@ -297,7 +297,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(35)
-    void handle_callMethodReturningString() throws Exception {
+    void handleCallMethodReturningString() throws Exception {
         int handle =
                 pumpAndGet(evaluator.evaluateHandle("({greet: function(name) { return 'hello ' + name; }})"), 5_000);
 
@@ -309,7 +309,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(36)
-    void handle_callMethodReturningObject() throws Exception {
+    void handleCallMethodReturningObject() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({make: function() { return {x: 1, y: 2}; }})"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "make", "[]", false), 5_000);
@@ -320,7 +320,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(37)
-    void handle_callMethodReturningHandle() throws Exception {
+    void handleCallMethodReturningHandle() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({make: function() { return {nested: true}; }})"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "make", "[]", true), 5_000);
@@ -336,7 +336,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(38)
-    void handle_getPropertyAsHandle() throws Exception {
+    void handleGetPropertyAsHandle() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({child: {a: 1, b: 2}})"), 5_000);
 
         CefScriptEngine.Result childResult = pumpAndGet(evaluator.getProperty(handle, "child", true), 5_000);
@@ -355,7 +355,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(39)
-    void handle_invalidHandle_returnsError() throws Exception {
+    void handleInvalidHandleReturnsError() throws Exception {
         CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(999999, "anything", false), 5_000);
         assertThat(result.isError()).isTrue();
         assertThat(result.error()).contains("handle not found");
@@ -363,35 +363,35 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(40)
-    void eval_arrayOfObjects() throws Exception {
+    void evalArrayOfObjects() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("[{a:1},{a:2},{a:3}]"), 5_000);
         assertThat(result).isEqualTo("[{\"a\":1},{\"a\":2},{\"a\":3}]");
     }
 
     @Test
     @Order(41)
-    void eval_dateToJson() throws Exception {
+    void evalDateToJson() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("new Date('2025-01-15T00:00:00.000Z')"), 5_000);
         assertThat(result).isEqualTo("\"2025-01-15T00:00:00.000Z\"");
     }
 
     @Test
     @Order(42)
-    void eval_regexToJson() throws Exception {
+    void evalRegexToJson() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("/abc/g"), 5_000);
         assertThat(result).isEqualTo("{}");
     }
 
     @Test
     @Order(43)
-    void eval_mapDoesNotSerialize() throws Exception {
+    void evalMapDoesNotSerialize() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("new Map([['a',1]])"), 5_000);
         assertThat(result).isEqualTo("{}");
     }
 
     @Test
     @Order(44)
-    void eval_multilineExpression() throws Exception {
+    void evalMultilineExpression() throws Exception {
         String expr = "(function() {\n  var x = 10;\n  var y = 20;\n  return x + y;\n})()";
         String result = pumpAndGet(evaluator.evaluate(expr), 5_000);
         assertThat(result).isEqualTo("30");
@@ -399,21 +399,21 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(45)
-    void eval_iife() throws Exception {
+    void evalIife() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("(function() { return 'iife'; })()"), 5_000);
         assertThat(result).isEqualTo("\"iife\"");
     }
 
     @Test
     @Order(46)
-    void eval_arrowFunction() throws Exception {
+    void evalArrowFunction() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("(() => 42)()"), 5_000);
         assertThat(result).isEqualTo("42");
     }
 
     @Test
     @Order(50)
-    void eval_setGlobalVariable_thenRead() throws Exception {
+    void evalSetGlobalVariableThenRead() throws Exception {
         pumpAndGet(evaluator.evaluate("window.__testVal = 123"), 5_000);
         String result = pumpAndGet(evaluator.evaluate("window.__testVal"), 5_000);
         assertThat(result).isEqualTo("123");
@@ -421,7 +421,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(51)
-    void eval_mutateGlobalObject() throws Exception {
+    void evalMutateGlobalObject() throws Exception {
         pumpAndGet(evaluator.evaluate("window.__obj = {count: 0}"), 5_000);
         pumpAndGet(evaluator.evaluate("window.__obj.count++"), 5_000);
         pumpAndGet(evaluator.evaluate("window.__obj.count++"), 5_000);
@@ -431,7 +431,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(52)
-    void handle_mutateViaHandle() throws Exception {
+    void handleMutateViaHandle() throws Exception {
         pumpAndGet(evaluator.evaluate("window.__counter = {n: 0}"), 5_000);
         int handle = pumpAndGet(evaluator.evaluateHandle("window.__counter"), 5_000);
 
@@ -448,7 +448,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(60)
-    void handle_callWithNoArgs() throws Exception {
+    void handleCallWithNoArgs() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({f: function() { return 'no args'; }})"), 5_000);
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "f", "[]", false), 5_000);
         assertThat(result.json()).hasValue("\"no args\"");
@@ -457,7 +457,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(61)
-    void handle_callWithMixedArgs() throws Exception {
+    void handleCallWithMixedArgs() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({f: function(n, s, b) { return '' + n + s + b; }})"), 5_000);
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "f", "[42, \"hello\", true]", false), 5_000);
         assertThat(result.json()).hasValue("\"42hellotrue\"");
@@ -466,7 +466,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(62)
-    void handle_callWithObjectArg() throws Exception {
+    void handleCallWithObjectArg() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({f: function(obj) { return obj.x + obj.y; }})"), 5_000);
         CefScriptEngine.Result result =
                 pumpAndGet(evaluator.call(handle, "f", "[{\"x\": 10, \"y\": 20}]", false), 5_000);
@@ -476,7 +476,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(63)
-    void handle_callWithArrayArg() throws Exception {
+    void handleCallWithArrayArg() throws Exception {
         int handle = pumpAndGet(
                 evaluator.evaluateHandle("({sum: function(arr) { return arr.reduce((a,b) => a+b, 0); }})"), 5_000);
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "sum", "[[1,2,3,4,5]]", false), 5_000);
@@ -486,7 +486,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(70)
-    void handle_chainedOperations() throws Exception {
+    void handleChainedOperations() throws Exception {
         pumpAndGet(
                 evaluator.evaluate("window.__Builder = function() {"
                         + "  this.items = [];"
@@ -520,7 +520,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(71)
-    void handle_accessDomDocument() throws Exception {
+    void handleAccessDomDocument() throws Exception {
         int docHandle = pumpAndGet(evaluator.evaluateHandle("document"), 5_000);
         assertThat(docHandle).isGreaterThan(0);
 
@@ -544,7 +544,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(80)
-    void eval_multipleConcurrentRequests() throws Exception {
+    void evalMultipleConcurrentRequests() throws Exception {
         CompletableFuture<String> f1 = evaluator.evaluate("1 + 1");
         CompletableFuture<String> f2 = evaluator.evaluate("2 + 2");
         CompletableFuture<String> f3 = evaluator.evaluate("3 + 3");
@@ -558,7 +558,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(81)
-    void eval_interleavedJsonAndHandleRequests() throws Exception {
+    void evalInterleavedJsonAndHandleRequests() throws Exception {
         CompletableFuture<String> jsonFuture = evaluator.evaluate("'json result'");
         CompletableFuture<Integer> handleFuture = evaluator.evaluateHandle("({type: 'handle'})");
         CompletableFuture<String> jsonFuture2 = evaluator.evaluate("100 * 2");
@@ -574,7 +574,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(90)
-    void callback_invokedWithHandleArgs() throws Exception {
+    void callbackInvokedWithHandleArgs() throws Exception {
         CompletableFuture<int[]> received = new CompletableFuture<>();
         int cbHandle = pumpAndGet(evaluator.createCallback(received::complete), 5_000);
         assertThat(cbHandle).isGreaterThan(0);
@@ -593,7 +593,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(91)
-    void callback_invokedMultipleTimes() throws Exception {
+    void callbackInvokedMultipleTimes() throws Exception {
         java.util.List<int[]> invocations = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
         int cbHandle = pumpAndGet(evaluator.createCallback(invocations::add), 5_000);
 
@@ -601,11 +601,12 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.invoke(cbHandle, "[\"b\"]", false), 5_000);
         pumpAndGet(evaluator.invoke(cbHandle, "[\"c\"]", false), 5_000);
 
-        long deadline = System.currentTimeMillis() + 5_000;
-        while (invocations.size() < 3 && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
+        TestDeadline.after(Duration.ofSeconds(5))
+                .until(
+                        () -> invocations.size() == 3,
+                        Cef.INSTANCE::doMessageLoopWork,
+                        Duration.ofMillis(16),
+                        "callback delivery");
         assertThat(invocations).hasSize(3);
         assertThat(invocations.get(0)).hasSize(1);
         assertThat(invocations.get(1)).hasSize(1);
@@ -619,7 +620,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(92)
-    void callback_noArgs() throws Exception {
+    void callbackNoArgs() throws Exception {
         CompletableFuture<int[]> received = new CompletableFuture<>();
         int cbHandle = pumpAndGet(evaluator.createCallback(received::complete), 5_000);
 
@@ -633,7 +634,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(93)
-    void callback_objectArgPreservesProperties() throws Exception {
+    void callbackObjectArgPreservesProperties() throws Exception {
         CompletableFuture<int[]> received = new CompletableFuture<>();
         int cbHandle = pumpAndGet(evaluator.createCallback(received::complete), 5_000);
 
@@ -656,7 +657,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(94)
-    void callback_nullArgIsMinusOne() throws Exception {
+    void callbackNullArgIsMinusOne() throws Exception {
         CompletableFuture<int[]> received = new CompletableFuture<>();
         int cbHandle = pumpAndGet(evaluator.createCallback(received::complete), 5_000);
 
@@ -673,9 +674,9 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(99)
-    void terminate_cancelsPendingFutures() {
-        CefScriptEngine disposable =
-                new CefScriptEngine(() -> browser.getMainFrame().orElse(null));
+    void disposeCancelsPendingFutures() {
+        CefFrame frame = nonRespondingFrame();
+        CefScriptEngine disposable = new CefScriptEngine(() -> frame);
 
         CompletableFuture<String> pending1 = disposable.evaluate("1");
         CompletableFuture<String> pending2 = disposable.evaluate("2");
@@ -683,7 +684,7 @@ class CefScriptEngineTest extends CefTestBase {
         assertThat(pending1).isNotDone();
         assertThat(pending2).isNotDone();
 
-        disposable.dispose();
+        disposable.close();
 
         assertThat(pending1).isCompletedExceptionally();
         assertThat(pending2).isCompletedExceptionally();
@@ -691,9 +692,9 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(97)
-    void navigationCancelsOldContextWorkWithoutDisposingEngine() throws Exception {
+    void cancelPendingClearsOldContextWorkWithoutDisposingEngine() throws Exception {
         int callback = pumpAndGet(evaluator.createCallback(arguments -> {}), 5_000);
-        CompletableFuture<String> pending = evaluator.evaluate("1 + 1");
+        CompletableFuture<String> pending = evaluator.evaluate("new Promise(() => {})");
 
         evaluator.cancelPending("test navigation");
 
@@ -707,8 +708,8 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(98)
     void timeoutRemovesPendingRequestAndCallback() throws Exception {
-        CefScriptEngine disposable =
-                new CefScriptEngine(() -> browser.getMainFrame().orElse(null));
+        CefFrame frame = nonRespondingFrame();
+        CefScriptEngine disposable = new CefScriptEngine(() -> frame);
 
         CompletableFuture<String> evaluation =
                 disposable.evaluate("new Promise(() => {})").orTimeout(1, TimeUnit.MILLISECONDS);
@@ -731,7 +732,7 @@ class CefScriptEngineTest extends CefTestBase {
     }
 
     @Test
-    @Order(50)
+    @Order(95)
     void handleOperationsAcceptArbitraryPropertyNames() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({})"), 5_000);
         String key = "quote'\\slash\nline\u2028separator";
@@ -744,7 +745,7 @@ class CefScriptEngineTest extends CefTestBase {
     }
 
     @Test
-    @Order(51)
+    @Order(96)
     void callAcceptsArbitraryMethodNames() throws Exception {
         String method = "quote'\\slash\nline\u2028separator";
         int handle = pumpAndGet(evaluator.evaluateHandle("({[" + jsString(method) + "]: value => value + 1})"), 5_000);
@@ -763,28 +764,31 @@ class CefScriptEngineTest extends CefTestBase {
                         .replace("\u2028", "\\u2028") + "'";
     }
 
+    private static CefFrame nonRespondingFrame() {
+        return (CefFrame) Proxy.newProxyInstance(
+                CefFrame.class.getClassLoader(), new Class<?>[] {CefFrame.class}, (proxy, method, arguments) -> {
+                    if (method.getName().equals("sendProcessMessage")) {
+                        return null;
+                    }
+                    throw new UnsupportedOperationException(method.getName());
+                });
+    }
+
     private static <T> T pumpAndGet(CompletableFuture<T> future, long timeoutMs) throws Exception {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (!future.isDone() && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
-        assertThat(future)
-                .as("future should complete within " + timeoutMs + "ms")
-                .isDone();
-        return future.get(0, TimeUnit.MILLISECONDS);
+        TestDeadline deadline = TestDeadline.after(Duration.ofMillis(timeoutMs));
+        deadline.until(
+                future::isDone, () -> Cef.INSTANCE.doMessageLoopWork(), Duration.ofMillis(16), "script completion");
+        return deadline.await(future, "script result");
     }
 
     private static void assertPumpedExceptionally(CompletableFuture<?> future, long timeoutMs, String messageContains)
             throws Exception {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (!future.isDone() && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
-        assertThat(future)
-                .as("future should complete within " + timeoutMs + "ms")
-                .isDone();
+        TestDeadline.after(Duration.ofMillis(timeoutMs))
+                .until(
+                        future::isDone,
+                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Duration.ofMillis(16),
+                        "exceptional script completion");
         assertThat(future).isCompletedExceptionally();
         try {
             future.get();
@@ -795,33 +799,22 @@ class CefScriptEngineTest extends CefTestBase {
         }
     }
 
-    private static void pumpUntilAllDone(long timeoutMs, CompletableFuture<?>... futures) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            boolean allDone = true;
-            for (CompletableFuture<?> f : futures) {
-                if (!f.isDone()) {
-                    allDone = false;
-                    break;
-                }
-            }
-            if (allDone) return;
-            Thread.sleep(16);
-        }
-        for (CompletableFuture<?> f : futures) {
-            assertThat(f).as("all futures should complete").isDone();
-        }
+    private static void pumpUntilAllDone(long timeoutMs, CompletableFuture<?>... futures) throws Exception {
+        CompletableFuture<Void> all = CompletableFuture.allOf(futures);
+        TestDeadline.after(Duration.ofMillis(timeoutMs))
+                .until(
+                        all::isDone,
+                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Duration.ofMillis(16),
+                        "script completions");
     }
 
-    private static void pumpUntilDone(CompletableFuture<?> future, long timeoutMs) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (!future.isDone() && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
-        assertThat(future)
-                .as("future should complete within " + timeoutMs + "ms")
-                .isDone();
+    private static void pumpUntilDone(CompletableFuture<?> future, long timeoutMs) throws Exception {
+        TestDeadline.after(Duration.ofMillis(timeoutMs))
+                .until(
+                        future::isDone,
+                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Duration.ofMillis(16),
+                        "script completion");
     }
 }

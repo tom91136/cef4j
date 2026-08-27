@@ -2,9 +2,10 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 
 class CefLifecycleTest {
@@ -24,7 +25,7 @@ class CefLifecycleTest {
         waiter.interrupt();
         assertThat(completed).isFalse();
         shutdown.countDown();
-        waiter.join(TimeUnit.SECONDS.toMillis(2));
+        TestDeadline.after(Duration.ofSeconds(2)).join(waiter, "shutdown waiter");
 
         assertThat(completed).isTrue();
         assertThat(interrupted).isTrue();

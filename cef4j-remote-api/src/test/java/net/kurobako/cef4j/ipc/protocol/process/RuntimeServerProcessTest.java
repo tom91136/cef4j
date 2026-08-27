@@ -23,14 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-@Timeout(600)
+@Timeout(120)
 class RuntimeServerProcessTest {
-
-    /**
-     * Writes a tiny launcher script that runs {@link StubRuntimeServerMain} with the test's classpath. We use a script
-     * (vs. passing {@code java} + args directly to {@link RuntimeServerProcess#spawn}) so RuntimeServerProcess only
-     * needs a path-to-binary argument - the same shape it will eventually take for the real C++ server.
-     */
     private static Path writeLauncherScript(Path dir) throws IOException {
         return writeLauncherScript(dir, true);
     }
@@ -79,15 +73,19 @@ class RuntimeServerProcessTest {
     void closeTerminatesRuntimeServerProcess(@TempDir Path tmp) throws Exception {
         Path script = writeLauncherScript(tmp);
         RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
-        long pid = server.pid();
-        assertThat(server.isAlive()).isTrue();
-        server.close();
-        assertThat(server.isAlive())
-                .as("server pid=%d should not be alive after close()", pid)
-                .isFalse();
-        assertThat(server.onExit().get(1, TimeUnit.SECONDS))
-                .as("cooperative runtime shutdown should preserve a clean exit code")
-                .isZero();
+        try {
+            long pid = server.pid();
+            assertThat(server.isAlive()).isTrue();
+            server.close();
+            assertThat(server.isAlive())
+                    .as("server pid=%d should not be alive after close()", pid)
+                    .isFalse();
+            assertThat(server.onExit().get(1, TimeUnit.SECONDS))
+                    .as("cooperative runtime shutdown should preserve a clean exit code")
+                    .isZero();
+        } finally {
+            server.close();
+        }
     }
 
     @Test
@@ -109,25 +107,26 @@ class RuntimeServerProcessTest {
     void closeTerminatesLauncherDescendants(@TempDir Path tmp) throws Exception {
         Path script = writeLauncherScript(tmp, false);
         RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
-        List<ProcessHandle> descendants;
-        try (java.util.stream.Stream<ProcessHandle> handles =
-                ProcessHandle.of(server.pid()).orElseThrow().descendants()) {
-            descendants = handles.collect(Collectors.toList());
+        try {
+            List<ProcessHandle> descendants;
+            try (java.util.stream.Stream<ProcessHandle> handles =
+                    ProcessHandle.of(server.pid()).orElseThrow().descendants()) {
+                descendants = handles.collect(Collectors.toList());
+            }
+            assertThat(descendants)
+                    .as("launcher should own the stub server process")
+                    .isNotEmpty();
+
+            server.close();
+
+            assertThat(descendants).noneMatch(ProcessHandle::isAlive);
+        } finally {
+            server.close();
         }
-        assertThat(descendants)
-                .as("launcher should own the stub server process")
-                .isNotEmpty();
-
-        server.close();
-
-        assertThat(descendants).noneMatch(ProcessHandle::isAlive);
     }
 
     @Test
     void roundTripRequestAndEventThroughRuntimeServerAndSession(@TempDir Path tmp) throws Exception {
-        // Validates the full server bootstrap + session conversation: spawn process, parse ENDPOINT, request →
-        // ack, event delivery. The stub server acks any request with an empty RESPONSE and unconditionally
-        // emits a LifeSpanHandlerOnAfterCreatedEvent with handle=42.
         Path script = writeLauncherScript(tmp);
         try (RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
                 CefTransport transport = server.connect();
@@ -135,22 +134,23 @@ class RuntimeServerProcessTest {
 
             CountDownLatch sawEvent = new CountDownLatch(1);
             int[] capturedHandle = {-1};
-            session.onLatest(
+            try (CefSession.HandlerRegistration registration = session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         capturedHandle[0] = ev.browser().id();
                         sawEvent.countDown();
-                    });
+                    })) {
+                assertThat(registration).isNotNull();
+                ReleaseHandleResponse ack = session.request(
+                                new ReleaseHandleRequest(new RemoteHandle(99), "cef_browser_t"),
+                                ReleaseHandleResponse.DECODER)
+                        .get(30, TimeUnit.SECONDS);
+                assertThat(ack).isNotNull();
 
-            ReleaseHandleResponse ack = session.request(
-                            new ReleaseHandleRequest(new RemoteHandle(99), "cef_browser_t"),
-                            ReleaseHandleResponse.DECODER)
-                    .get(30, TimeUnit.SECONDS);
-            assertThat(ack).isNotNull();
-
-            assertThat(sawEvent.await(30, TimeUnit.SECONDS))
-                    .as("BrowserCreatedEvent should arrive within 30s")
-                    .isTrue();
-            assertThat(capturedHandle[0]).isEqualTo(42);
+                assertThat(sawEvent.await(30, TimeUnit.SECONDS))
+                        .as("BrowserCreatedEvent should arrive within 30s")
+                        .isTrue();
+                assertThat(capturedHandle[0]).isEqualTo(42);
+            }
         }
     }
 

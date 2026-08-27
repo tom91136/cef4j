@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefRunFileDialogCallback)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefRunFileDialogCallback {
@@ -25,8 +25,9 @@ public interface CefRunFileDialogCallback {
     default void onFileDialogDismissed(String[] filePaths) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefRunFileDialogCallback handler) {
-        session.on(RunFileDialogCallbackOnFileDialogDismissedEvent.MESSAGE_ID, RunFileDialogCallbackOnFileDialogDismissedEvent.DECODER,
-                ev -> handler.onFileDialogDismissed(ev.filePaths()));
+    static CefSession.HandlerRegistration register(CefSession session, CefRunFileDialogCallback handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(RunFileDialogCallbackOnFileDialogDismissedEvent.MESSAGE_ID, RunFileDialogCallbackOnFileDialogDismissedEvent.DECODER,
+                        ev -> handler.onFileDialogDismissed(ev.filePaths())));
     }
 }

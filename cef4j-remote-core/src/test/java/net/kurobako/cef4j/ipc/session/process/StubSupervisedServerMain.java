@@ -6,7 +6,6 @@ import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
-/** Minimal process used to verify crash/restart supervision without loading CEF. */
 public final class StubSupervisedServerMain {
     public static void main(String[] args) throws Exception {
         String pidFile = System.getenv("CEF4J_STUB_PID_FILE");
@@ -27,8 +26,7 @@ public final class StubSupervisedServerMain {
             System.out.flush();
             byte[] readyRequest = awaitReadyRequest(socket);
             byte[] readyResponse = readyRequest.clone();
-            // Envelope kind is the byte at offset 4: REQUEST=1, RESPONSE=2. The readiness
-            // response preserves corrId=0/messageId=0 from the validated request.
+            // XXX: Replace byte-level envelope mutation when the shared test stub can depend on the session codec.
             readyResponse[4] = 2;
             socket.send(readyResponse);
             String exit = System.getenv("CEF4J_STUB_EXIT_AFTER_MS");
@@ -38,8 +36,6 @@ public final class StubSupervisedServerMain {
             }
             String drop = System.getenv("CEF4J_STUB_DROP_AFTER_MS");
             if (drop != null) {
-                // Start the fault timer only after the client has completed the explicit
-                // runtime-session-ready exchange, so this exercises recovery rather than startup.
                 Thread.sleep(Long.parseLong(drop));
                 socket.close();
                 Thread.sleep(30_000);
@@ -53,7 +49,7 @@ public final class StubSupervisedServerMain {
         long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
         byte[] request;
         while ((request = socket.recv(0)) == null && System.nanoTime() < deadline) {
-            // recv uses the bounded timeout configured above
+            // XXX: Replace polling when JeroMQ exposes an interruptible bounded receive primitive.
         }
         if (request == null) throw new IllegalStateException("runtime readiness request timed out");
         if (request.length != 14 || request[4] != 1) {

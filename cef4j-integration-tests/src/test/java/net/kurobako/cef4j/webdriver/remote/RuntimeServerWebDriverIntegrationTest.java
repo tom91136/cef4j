@@ -32,7 +32,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-/** Exercises the complete W3C HTTP -> CDP -> transport -> packaged CEF path. */
 @Timeout(600)
 class RuntimeServerWebDriverIntegrationTest {
     private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();

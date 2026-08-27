@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -12,10 +13,11 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a runtime-server-side
  * ref-counted CEF object.
  */
-public final class BrowserView {
+public final class BrowserView implements AutoCloseable {
 
     private final CefSession session;
     private final RemoteHandle handle;
+    @Nullable private CompletableFuture<Void> closeFuture;
 
     public BrowserView(@Nonnull CefSession session, @Nonnull RemoteHandle handle) {
         this.session = session;
@@ -27,14 +29,24 @@ public final class BrowserView {
         return handle;
     }
 
+    public synchronized CompletableFuture<Void> closeAsync() {
+        if (closeFuture == null) {
+            closeFuture = CefFutures.map(
+                session.request(
+                    new ReleaseHandleRequest(handle, "cef_browser_view_t"), ReleaseHandleResponse.DECODER),
+                r -> null);
+        }
+        return closeFuture;
+    }
 
-    /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
-      * will fail with an empty / null-receiver response. */
-    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return CefFutures.map(
-            session.request(
-                new ReleaseHandleRequest(handle, "cef_browser_view_t"), ReleaseHandleResponse.DECODER),
-            r -> null);
+    public CompletableFuture<Void> releaseHandle() {
+        return closeAsync();
+    }
+
+    @Override
+    @SuppressWarnings("FutureReturnValueIgnored")
+    public void close() {
+        closeAsync();
     }
 
     /**

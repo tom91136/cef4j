@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDisplayHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDisplayHandler {
@@ -115,34 +115,35 @@ public interface CefDisplayHandler {
     default Boolean onContentsBoundsChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Rect newBounds) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDisplayHandler handler) {
-        session.on(DisplayHandlerOnAddressChangeEvent.MESSAGE_ID, DisplayHandlerOnAddressChangeEvent.DECODER,
-                ev -> handler.onAddressChange(ev.browser(), ev.frame(), ev.url()));
-        session.on(DisplayHandlerOnTitleChangeEvent.MESSAGE_ID, DisplayHandlerOnTitleChangeEvent.DECODER,
-                ev -> handler.onTitleChange(ev.browser(), ev.title()));
-        session.on(DisplayHandlerOnFaviconUrlchangeEvent.MESSAGE_ID, DisplayHandlerOnFaviconUrlchangeEvent.DECODER,
-                ev -> handler.onFaviconUrlchange(ev.browser(), ev.iconUrls()));
-        session.on(DisplayHandlerOnFullscreenModeChangeEvent.MESSAGE_ID, DisplayHandlerOnFullscreenModeChangeEvent.DECODER,
-                ev -> handler.onFullscreenModeChange(ev.browser(), ev.fullscreen()));
-        session.intercept(DisplayHandlerOnTooltipEvent.MESSAGE_ID, DisplayHandlerOnTooltipEvent.DECODER, ev -> {
-            Boolean answer = handler.onTooltip(ev.browser(), ev.text());
-            return new DisplayHandlerOnTooltipResponse(answer != null && answer.booleanValue());
-        });
-        session.on(DisplayHandlerOnStatusMessageEvent.MESSAGE_ID, DisplayHandlerOnStatusMessageEvent.DECODER,
-                ev -> handler.onStatusMessage(ev.browser(), ev.value()));
-        session.intercept(DisplayHandlerOnConsoleMessageEvent.MESSAGE_ID, DisplayHandlerOnConsoleMessageEvent.DECODER, ev -> {
-            Boolean answer = handler.onConsoleMessage(ev.browser(), ev.level(), ev.message(), ev.source(), ev.line());
-            return new DisplayHandlerOnConsoleMessageResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(DisplayHandlerOnAutoResizeEvent.MESSAGE_ID, DisplayHandlerOnAutoResizeEvent.DECODER, ev -> {
-            Boolean answer = handler.onAutoResize(ev.browser(), ev.newSize());
-            return new DisplayHandlerOnAutoResizeResponse(answer != null && answer.booleanValue());
-        });
-        session.on(DisplayHandlerOnMediaAccessChangeEvent.MESSAGE_ID, DisplayHandlerOnMediaAccessChangeEvent.DECODER,
-                ev -> handler.onMediaAccessChange(ev.browser(), ev.hasVideoAccess(), ev.hasAudioAccess()));
-        session.intercept(DisplayHandlerOnContentsBoundsChangeEvent.MESSAGE_ID, DisplayHandlerOnContentsBoundsChangeEvent.DECODER, ev -> {
-            Boolean answer = handler.onContentsBoundsChange(ev.browser(), ev.newBounds());
-            return new DisplayHandlerOnContentsBoundsChangeResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefDisplayHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(DisplayHandlerOnAddressChangeEvent.MESSAGE_ID, DisplayHandlerOnAddressChangeEvent.DECODER,
+                        ev -> handler.onAddressChange(ev.browser(), ev.frame(), ev.url())),
+                session.on(DisplayHandlerOnTitleChangeEvent.MESSAGE_ID, DisplayHandlerOnTitleChangeEvent.DECODER,
+                        ev -> handler.onTitleChange(ev.browser(), ev.title())),
+                session.on(DisplayHandlerOnFaviconUrlchangeEvent.MESSAGE_ID, DisplayHandlerOnFaviconUrlchangeEvent.DECODER,
+                        ev -> handler.onFaviconUrlchange(ev.browser(), ev.iconUrls())),
+                session.on(DisplayHandlerOnFullscreenModeChangeEvent.MESSAGE_ID, DisplayHandlerOnFullscreenModeChangeEvent.DECODER,
+                        ev -> handler.onFullscreenModeChange(ev.browser(), ev.fullscreen())),
+                session.intercept(DisplayHandlerOnTooltipEvent.MESSAGE_ID, DisplayHandlerOnTooltipEvent.DECODER, ev -> {
+                    Boolean answer = handler.onTooltip(ev.browser(), ev.text());
+                    return new DisplayHandlerOnTooltipResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(DisplayHandlerOnStatusMessageEvent.MESSAGE_ID, DisplayHandlerOnStatusMessageEvent.DECODER,
+                        ev -> handler.onStatusMessage(ev.browser(), ev.value())),
+                session.intercept(DisplayHandlerOnConsoleMessageEvent.MESSAGE_ID, DisplayHandlerOnConsoleMessageEvent.DECODER, ev -> {
+                    Boolean answer = handler.onConsoleMessage(ev.browser(), ev.level(), ev.message(), ev.source(), ev.line());
+                    return new DisplayHandlerOnConsoleMessageResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(DisplayHandlerOnAutoResizeEvent.MESSAGE_ID, DisplayHandlerOnAutoResizeEvent.DECODER, ev -> {
+                    Boolean answer = handler.onAutoResize(ev.browser(), ev.newSize());
+                    return new DisplayHandlerOnAutoResizeResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(DisplayHandlerOnMediaAccessChangeEvent.MESSAGE_ID, DisplayHandlerOnMediaAccessChangeEvent.DECODER,
+                        ev -> handler.onMediaAccessChange(ev.browser(), ev.hasVideoAccess(), ev.hasAudioAccess())),
+                session.intercept(DisplayHandlerOnContentsBoundsChangeEvent.MESSAGE_ID, DisplayHandlerOnContentsBoundsChangeEvent.DECODER, ev -> {
+                    Boolean answer = handler.onContentsBoundsChange(ev.browser(), ev.newBounds());
+                    return new DisplayHandlerOnContentsBoundsChangeResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

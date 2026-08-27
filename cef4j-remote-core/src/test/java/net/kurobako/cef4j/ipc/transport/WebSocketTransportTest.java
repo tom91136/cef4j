@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Base64;
 import java.util.HashMap;
@@ -22,26 +23,37 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 
 final class WebSocketTransportTest extends CefTransportContractTest {
     @Override
     protected Pair newPair() throws Exception {
-        try (ServerSocket server = new ServerSocket(0)) {
-            CompletableFuture<RawWebSocketPeer> accepted = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return RawWebSocketPeer.accept(server.accept());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+        try (ServerSocket server = new ServerSocket(0);
+                TestExecutor executor = TestExecutor.single("websocket-test-accept")) {
+            CompletableFuture<RawWebSocketPeer> accepted = CompletableFuture.supplyAsync(
+                    () -> {
+                        try {
+                            return RawWebSocketPeer.accept(server.accept());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    executor);
             WebSocketTransport client =
                     WebSocketTransport.connect("ws://127.0.0.1:" + server.getLocalPort() + "/cef4j");
-            return new Pair(client, accepted.get(10, TimeUnit.SECONDS));
+            try {
+                return new Pair(client, accepted.get(10, TimeUnit.SECONDS));
+            } catch (Exception failure) {
+                client.close();
+                throw failure;
+            }
         }
     }
 
@@ -50,7 +62,6 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         assertThat(CefTransports.available()).contains("websocket");
     }
 
-    /** Minimal RFC 6455 server peer used to run the shared transport contract without another dependency. */
     private static final class RawWebSocketPeer implements CefTransport {
         private static final int MAX_FRAME_SIZE = 64 * 1024 * 1024;
         private static final String ACCEPT_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -58,6 +69,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         private final Socket socket;
         private final DataInputStream input;
         private final OutputStream output;
+        private final Thread reader;
         private final Object sendLock = new Object();
         private final Object receiveLock = new Object();
         private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
@@ -76,7 +88,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
             this.socket = socket;
             this.input = new DataInputStream(input);
             this.output = output;
-            Thread reader = new Thread(this::readLoop, "raw-websocket-test-peer");
+            reader = new Thread(this::readLoop, "raw-websocket-test-peer");
             reader.setDaemon(true);
             reader.start();
         }
@@ -160,17 +172,35 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         public void close() {
             if (closed) return;
             closed = true;
+            sendCloseFrame();
+            closeSocket();
+            if (reader != Thread.currentThread()) {
+                try {
+                    TestDeadline.after(Duration.ofSeconds(2)).join(reader, "WebSocket test reader");
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException(interrupted);
+                } catch (TimeoutException timedOut) {
+                    throw new IllegalStateException(timedOut);
+                }
+            }
+        }
+
+        private void sendCloseFrame() {
             synchronized (sendLock) {
                 try {
                     writeFrame(0x8, new byte[] {0x03, (byte) 0xE8});
                 } catch (IOException ignored) {
-                    // Socket close below is the fallback close signal.
+                    return;
                 }
             }
+        }
+
+        private void closeSocket() {
             try {
                 socket.close();
             } catch (IOException ignored) {
-                // Idempotent best-effort test cleanup.
+                return;
             }
         }
 
@@ -217,17 +247,11 @@ final class WebSocketTransportTest extends CefTransportContractTest {
                     fragmented = !fin;
                     if (fin) accept(message.toByteArray());
                 }
-            } catch (EOFException ignored) {
-                // Normal peer socket shutdown.
             } catch (IOException ignored) {
-                // Disconnect is the externally observable result.
+                return;
             } finally {
                 markDisconnected();
-                try {
-                    socket.close();
-                } catch (IOException ignored) {
-                    // Already disconnected.
-                }
+                closeSocket();
             }
         }
 

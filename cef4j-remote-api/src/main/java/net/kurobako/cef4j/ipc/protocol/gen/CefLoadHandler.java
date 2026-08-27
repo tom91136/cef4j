@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefLoadHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefLoadHandler {
@@ -49,14 +49,15 @@ public interface CefLoadHandler {
     default void onLoadError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int errorCode, String errorText, String failedUrl) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefLoadHandler handler) {
-        session.on(LoadHandlerOnLoadingStateChangeEvent.MESSAGE_ID, LoadHandlerOnLoadingStateChangeEvent.DECODER,
-                ev -> handler.onLoadingStateChange(ev.browser(), ev.isLoading(), ev.canGoBack(), ev.canGoForward()));
-        session.on(LoadHandlerOnLoadStartEvent.MESSAGE_ID, LoadHandlerOnLoadStartEvent.DECODER,
-                ev -> handler.onLoadStart(ev.browser(), ev.frame(), ev.transitionType()));
-        session.on(LoadHandlerOnLoadEndEvent.MESSAGE_ID, LoadHandlerOnLoadEndEvent.DECODER,
-                ev -> handler.onLoadEnd(ev.browser(), ev.frame(), ev.httpStatusCode()));
-        session.on(LoadHandlerOnLoadErrorEvent.MESSAGE_ID, LoadHandlerOnLoadErrorEvent.DECODER,
-                ev -> handler.onLoadError(ev.browser(), ev.frame(), ev.errorCode(), ev.errorText(), ev.failedUrl()));
+    static CefSession.HandlerRegistration register(CefSession session, CefLoadHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(LoadHandlerOnLoadingStateChangeEvent.MESSAGE_ID, LoadHandlerOnLoadingStateChangeEvent.DECODER,
+                        ev -> handler.onLoadingStateChange(ev.browser(), ev.isLoading(), ev.canGoBack(), ev.canGoForward())),
+                session.on(LoadHandlerOnLoadStartEvent.MESSAGE_ID, LoadHandlerOnLoadStartEvent.DECODER,
+                        ev -> handler.onLoadStart(ev.browser(), ev.frame(), ev.transitionType())),
+                session.on(LoadHandlerOnLoadEndEvent.MESSAGE_ID, LoadHandlerOnLoadEndEvent.DECODER,
+                        ev -> handler.onLoadEnd(ev.browser(), ev.frame(), ev.httpStatusCode())),
+                session.on(LoadHandlerOnLoadErrorEvent.MESSAGE_ID, LoadHandlerOnLoadErrorEvent.DECODER,
+                        ev -> handler.onLoadError(ev.browser(), ev.frame(), ev.errorCode(), ev.errorText(), ev.failedUrl())));
     }
 }

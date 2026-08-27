@@ -9,11 +9,6 @@ import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 
-/**
- * Test-side counterpart to a {@link net.kurobako.cef4j.ipc.session.CefSession}. Wraps a {@link CefTransport} (typically
- * the other end of a {@code LoopbackTransport.Pair}) and exposes envelope-aware send helpers plus a queue of received
- * frames so the test can drive the server-side conversation explicitly.
- */
 final class TestPeer implements AutoCloseable {
 
     final CefTransport transport;
@@ -58,7 +53,7 @@ final class TestPeer implements AutoCloseable {
     private void sendKind(Envelope.Kind k, int corrId, int messageId, byte[] payload) throws CefTransportException {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + payload.length).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, k, /*flags*/ 0, corrId, messageId, payload.length);
+        Envelope.writeHeader(buf, k, 0, corrId, messageId, payload.length);
         buf.put(payload);
         buf.flip();
         transport.send(buf);

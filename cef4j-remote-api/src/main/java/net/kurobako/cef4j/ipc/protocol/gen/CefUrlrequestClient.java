@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefUrlrequestClient)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefUrlrequestClient {
@@ -61,18 +61,19 @@ public interface CefUrlrequestClient {
     default Boolean getAuthCredentials(int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefUrlrequestClient handler) {
-        session.on(UrlrequestClientOnRequestCompleteEvent.MESSAGE_ID, UrlrequestClientOnRequestCompleteEvent.DECODER,
-                ev -> handler.onRequestComplete(ev.request()));
-        session.on(UrlrequestClientOnUploadProgressEvent.MESSAGE_ID, UrlrequestClientOnUploadProgressEvent.DECODER,
-                ev -> handler.onUploadProgress(ev.request(), ev.current(), ev.total()));
-        session.on(UrlrequestClientOnDownloadProgressEvent.MESSAGE_ID, UrlrequestClientOnDownloadProgressEvent.DECODER,
-                ev -> handler.onDownloadProgress(ev.request(), ev.current(), ev.total()));
-        session.on(UrlrequestClientOnDownloadDataEvent.MESSAGE_ID, UrlrequestClientOnDownloadDataEvent.DECODER,
-                ev -> handler.onDownloadData(ev.request(), ev.data()));
-        session.intercept(UrlrequestClientGetAuthCredentialsEvent.MESSAGE_ID, UrlrequestClientGetAuthCredentialsEvent.DECODER, ev -> {
-            Boolean answer = handler.getAuthCredentials(ev.isProxy(), ev.host(), ev.port(), ev.realm(), ev.scheme(), ev.callback());
-            return new UrlrequestClientGetAuthCredentialsResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefUrlrequestClient handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(UrlrequestClientOnRequestCompleteEvent.MESSAGE_ID, UrlrequestClientOnRequestCompleteEvent.DECODER,
+                        ev -> handler.onRequestComplete(ev.request())),
+                session.on(UrlrequestClientOnUploadProgressEvent.MESSAGE_ID, UrlrequestClientOnUploadProgressEvent.DECODER,
+                        ev -> handler.onUploadProgress(ev.request(), ev.current(), ev.total())),
+                session.on(UrlrequestClientOnDownloadProgressEvent.MESSAGE_ID, UrlrequestClientOnDownloadProgressEvent.DECODER,
+                        ev -> handler.onDownloadProgress(ev.request(), ev.current(), ev.total())),
+                session.on(UrlrequestClientOnDownloadDataEvent.MESSAGE_ID, UrlrequestClientOnDownloadDataEvent.DECODER,
+                        ev -> handler.onDownloadData(ev.request(), ev.data())),
+                session.intercept(UrlrequestClientGetAuthCredentialsEvent.MESSAGE_ID, UrlrequestClientGetAuthCredentialsEvent.DECODER, ev -> {
+                    Boolean answer = handler.getAuthCredentials(ev.isProxy(), ev.host(), ev.port(), ev.realm(), ev.scheme(), ev.callback());
+                    return new UrlrequestClientGetAuthCredentialsResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

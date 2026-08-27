@@ -7,6 +7,11 @@ import org.junit.jupiter.api.Test;
 class CefWebViewClientTest {
 
     @Test
+    void webViewIsAutoCloseable() {
+        assertThat(AutoCloseable.class).isAssignableFrom(CefWebView.class);
+    }
+
+    @Test
     void convertsCefWindowsEpochToStableJavaDate() {
         assertThat(CefWebViewClient.completionDate(0)).hasTime(0);
         assertThat(CefWebViewClient.completionDate(11_644_473_600_000_000L)).hasTime(0);

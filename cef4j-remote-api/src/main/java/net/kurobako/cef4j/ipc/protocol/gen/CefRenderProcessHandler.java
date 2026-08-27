@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefRenderProcessHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefRenderProcessHandler {
@@ -85,24 +85,25 @@ public interface CefRenderProcessHandler {
     default Boolean onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefRenderProcessHandler handler) {
-        session.on(RenderProcessHandlerOnWebKitInitializedEvent.MESSAGE_ID, RenderProcessHandlerOnWebKitInitializedEvent.DECODER,
-                ev -> handler.onWebKitInitialized());
-        session.on(RenderProcessHandlerOnBrowserCreatedEvent.MESSAGE_ID, RenderProcessHandlerOnBrowserCreatedEvent.DECODER,
-                ev -> handler.onBrowserCreated(ev.browser(), ev.extraInfo()));
-        session.on(RenderProcessHandlerOnBrowserDestroyedEvent.MESSAGE_ID, RenderProcessHandlerOnBrowserDestroyedEvent.DECODER,
-                ev -> handler.onBrowserDestroyed(ev.browser()));
-        session.on(RenderProcessHandlerOnContextCreatedEvent.MESSAGE_ID, RenderProcessHandlerOnContextCreatedEvent.DECODER,
-                ev -> handler.onContextCreated(ev.browser(), ev.frame(), ev.context()));
-        session.on(RenderProcessHandlerOnContextReleasedEvent.MESSAGE_ID, RenderProcessHandlerOnContextReleasedEvent.DECODER,
-                ev -> handler.onContextReleased(ev.browser(), ev.frame(), ev.context()));
-        session.on(RenderProcessHandlerOnUncaughtExceptionEvent.MESSAGE_ID, RenderProcessHandlerOnUncaughtExceptionEvent.DECODER,
-                ev -> handler.onUncaughtException(ev.browser(), ev.frame(), ev.context(), ev.exception(), ev.stackTrace()));
-        session.on(RenderProcessHandlerOnFocusedNodeChangedEvent.MESSAGE_ID, RenderProcessHandlerOnFocusedNodeChangedEvent.DECODER,
-                ev -> handler.onFocusedNodeChanged(ev.browser(), ev.frame(), ev.node()));
-        session.intercept(RenderProcessHandlerOnProcessMessageReceivedEvent.MESSAGE_ID, RenderProcessHandlerOnProcessMessageReceivedEvent.DECODER, ev -> {
-            Boolean answer = handler.onProcessMessageReceived(ev.browser(), ev.frame(), ev.sourceProcess(), ev.message());
-            return new RenderProcessHandlerOnProcessMessageReceivedResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefRenderProcessHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(RenderProcessHandlerOnWebKitInitializedEvent.MESSAGE_ID, RenderProcessHandlerOnWebKitInitializedEvent.DECODER,
+                        ev -> handler.onWebKitInitialized()),
+                session.on(RenderProcessHandlerOnBrowserCreatedEvent.MESSAGE_ID, RenderProcessHandlerOnBrowserCreatedEvent.DECODER,
+                        ev -> handler.onBrowserCreated(ev.browser(), ev.extraInfo())),
+                session.on(RenderProcessHandlerOnBrowserDestroyedEvent.MESSAGE_ID, RenderProcessHandlerOnBrowserDestroyedEvent.DECODER,
+                        ev -> handler.onBrowserDestroyed(ev.browser())),
+                session.on(RenderProcessHandlerOnContextCreatedEvent.MESSAGE_ID, RenderProcessHandlerOnContextCreatedEvent.DECODER,
+                        ev -> handler.onContextCreated(ev.browser(), ev.frame(), ev.context())),
+                session.on(RenderProcessHandlerOnContextReleasedEvent.MESSAGE_ID, RenderProcessHandlerOnContextReleasedEvent.DECODER,
+                        ev -> handler.onContextReleased(ev.browser(), ev.frame(), ev.context())),
+                session.on(RenderProcessHandlerOnUncaughtExceptionEvent.MESSAGE_ID, RenderProcessHandlerOnUncaughtExceptionEvent.DECODER,
+                        ev -> handler.onUncaughtException(ev.browser(), ev.frame(), ev.context(), ev.exception(), ev.stackTrace())),
+                session.on(RenderProcessHandlerOnFocusedNodeChangedEvent.MESSAGE_ID, RenderProcessHandlerOnFocusedNodeChangedEvent.DECODER,
+                        ev -> handler.onFocusedNodeChanged(ev.browser(), ev.frame(), ev.node())),
+                session.intercept(RenderProcessHandlerOnProcessMessageReceivedEvent.MESSAGE_ID, RenderProcessHandlerOnProcessMessageReceivedEvent.DECODER, ev -> {
+                    Boolean answer = handler.onProcessMessageReceived(ev.browser(), ev.frame(), ev.sourceProcess(), ev.message());
+                    return new RenderProcessHandlerOnProcessMessageReceivedResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

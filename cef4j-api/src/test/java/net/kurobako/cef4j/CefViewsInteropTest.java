@@ -28,7 +28,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(1)
-    void panel_createAndQueryChildCount() {
+    void panelCreateAndQueryChildCount() {
         Optional<CefPanel> optPanel = CefPanel.create(null);
         assertThat(optPanel).as("CefPanel.create(null)").isPresent();
 
@@ -40,19 +40,21 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(2)
-    void panel_setFillLayout() {
+    void panelSetFillLayout() {
         try (CefPanel panel = CefPanel.create(null).orElseThrow()) {
-            Optional<CefFillLayout> layout = panel.setToFillLayout();
-            assertThat(layout).as("setToFillLayout").isPresent();
+            try (CefFillLayout layout = panel.setToFillLayout().orElseThrow()) {
+                assertThat(layout).isNotNull();
+            }
         }
     }
 
     @Test
     @Order(3)
-    void panel_setBoxLayout() {
+    void panelSetBoxLayout() {
         try (CefPanel panel = CefPanel.create(null).orElseThrow()) {
-            Optional<CefBoxLayout> layout = panel.setToBoxLayout(new CefBoxLayoutSettings.Mutable().toImmutable());
-            if (layout.isPresent()) {
+            try (CefBoxLayout layout = panel.setToBoxLayout(new CefBoxLayoutSettings.Mutable().toImmutable())
+                    .orElseThrow()) {
+                assertThat(layout).isNotNull();
                 assertThat(panel.getLayout())
                         .as("getLayout after setToBoxLayout")
                         .isPresent();
@@ -62,7 +64,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(20)
-    void browserView_createAndGetBrowser() throws Exception {
+    void browserViewCreateAndGetBrowser() {
         CefBrowserSettings.Mutable bs = new CefBrowserSettings.Mutable();
         bs.windowlessFrameRate = 30;
 
@@ -73,19 +75,16 @@ class CefViewsInteropTest extends CefTestBase {
         assertThat(optBv).as("CefBrowserView.create").isPresent();
 
         try (CefBrowserView bv = optBv.get()) {
-            pumpFor(500);
-
-            Optional<CefBrowser> browser = bv.getBrowser();
-            browser.ifPresent(cefBrowser ->
-                    assertThat(cefBrowser.isValid()).as("browser isValid").isTrue());
-
+            assertThat(bv.getBrowser())
+                    .as("browser before the view is attached to a window")
+                    .isEmpty();
             assertThat(bv).as("browser view instance").isNotNull();
         }
     }
 
     @Test
     @Order(30)
-    void window_createTopLevelAndSetTitle() throws Exception {
+    void windowCreateTopLevelAndSetTitle() throws Exception {
         AtomicBoolean windowCreated = new AtomicBoolean(false);
         CountDownLatch createdLatch = new CountDownLatch(1);
 
@@ -101,7 +100,7 @@ class CefViewsInteropTest extends CefTestBase {
         assertThat(optWindow).as("CefWindow.createTopLevel").isPresent();
 
         try (CefWindow window = optWindow.get()) {
-            pumpUntil(createdLatch, 5_000);
+            assertThat(pumpUntil(createdLatch, 5_000)).as("window creation").isTrue();
 
             assertThat(windowCreated.get()).as("onWindowCreated fired").isTrue();
 
@@ -115,7 +114,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(31)
-    void window_stateQueries() throws Exception {
+    void windowStateQueries() throws Exception {
         CountDownLatch createdLatch = new CountDownLatch(1);
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
@@ -125,7 +124,7 @@ class CefViewsInteropTest extends CefTestBase {
         };
 
         try (CefWindow window = CefWindow.createTopLevel(delegate).orElseThrow()) {
-            pumpUntil(createdLatch, 5_000);
+            assertThat(pumpUntil(createdLatch, 5_000)).as("window creation").isTrue();
 
             assertThat(window.isClosed()).as("isClosed after creation").isFalse();
             window.isMaximized();
@@ -140,7 +139,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(32)
-    void window_activateDeactivate() throws Exception {
+    void windowActivateDeactivate() throws Exception {
         CountDownLatch createdLatch = new CountDownLatch(1);
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
@@ -150,7 +149,7 @@ class CefViewsInteropTest extends CefTestBase {
         };
 
         try (CefWindow window = CefWindow.createTopLevel(delegate).orElseThrow()) {
-            pumpUntil(createdLatch, 5_000);
+            assertThat(pumpUntil(createdLatch, 5_000)).as("window creation").isTrue();
 
             window.activate();
             window.deactivate();
@@ -161,7 +160,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(33)
-    void windowDelegate_canResizeFires() throws Exception {
+    void windowDelegateCanResizeFires() throws Exception {
         AtomicBoolean canResizeCalled = new AtomicBoolean(false);
         CountDownLatch createdLatch = new CountDownLatch(1);
 
@@ -179,15 +178,16 @@ class CefViewsInteropTest extends CefTestBase {
         };
 
         try (CefWindow window = CefWindow.createTopLevel(delegate).orElseThrow()) {
-            pumpUntil(createdLatch, 5_000);
+            assertThat(pumpUntil(createdLatch, 5_000)).as("window creation").isTrue();
 
             window.cefClose();
         }
+        assertThat(canResizeCalled).as("canResize callback").isTrue();
     }
 
     @Test
     @Order(34)
-    void window_getDisplay() throws Exception {
+    void windowGetDisplay() throws Exception {
         CountDownLatch createdLatch = new CountDownLatch(1);
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
@@ -197,12 +197,11 @@ class CefViewsInteropTest extends CefTestBase {
         };
 
         try (CefWindow window = CefWindow.createTopLevel(delegate).orElseThrow()) {
-            pumpUntil(createdLatch, 5_000);
+            assertThat(pumpUntil(createdLatch, 5_000)).as("window creation").isTrue();
 
-            Optional<CefDisplay> display = window.getDisplay();
-            display.ifPresent(cefDisplay -> assertThat(cefDisplay.getDeviceScaleFactor())
-                    .as("scale factor")
-                    .isGreaterThan(0f));
+            try (CefDisplay display = window.getDisplay().orElseThrow()) {
+                assertThat(display.getDeviceScaleFactor()).as("scale factor").isGreaterThan(0f);
+            }
 
             window.cefClose();
         }
@@ -210,11 +209,9 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(50)
-    void labelButton_createAndGetText() {
-        Optional<CefLabelButton> optBtn = CefLabelButton.create(null, "Click me");
-        if (optBtn.isEmpty()) return;
-
-        try (CefLabelButton btn = optBtn.get()) {
+    void labelButtonCreateAndGetText() {
+        try (CefLabelButton btn =
+                CefLabelButton.create(new CefButtonDelegate() {}, "Click me").orElseThrow()) {
             Optional<String> text = btn.getText();
             assertThat(text).as("button text").hasValue("Click me");
 
@@ -225,18 +222,16 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(51)
-    void labelButton_asMenuButton() {
-        Optional<CefLabelButton> optBtn = CefLabelButton.create(null, "Test");
-        if (optBtn.isEmpty()) return;
-
-        try (CefLabelButton btn = optBtn.get()) {
+    void labelButtonAsMenuButton() {
+        try (CefLabelButton btn =
+                CefLabelButton.create(new CefButtonDelegate() {}, "Test").orElseThrow()) {
             assertThat(btn.asMenuButton()).as("labelButton.asMenuButton()").isEmpty();
         }
     }
 
     @Test
     @Order(55)
-    void textfield_createAndSetValue() {
+    void textfieldCreateAndSetValue() {
         Optional<CefTextfield> optTf = CefTextfield.create(null);
         assertThat(optTf).as("CefTextfield.create").isPresent();
 
@@ -254,7 +249,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(56)
-    void textfield_readOnlyAndPasswordInput() {
+    void textfieldReadOnlyAndPasswordInput() {
         try (CefTextfield tf = CefTextfield.create(null).orElseThrow()) {
             assertThat(tf.isReadOnly()).as("initially not read-only").isFalse();
             tf.setReadOnly(true);
@@ -267,7 +262,7 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(57)
-    void textfield_selectionOperations() {
+    void textfieldSelectionOperations() {
         try (CefTextfield tf = CefTextfield.create(null).orElseThrow()) {
             tf.setText("hello world");
             tf.selectAll(false);
@@ -282,40 +277,27 @@ class CefViewsInteropTest extends CefTestBase {
 
     @Test
     @Order(60)
-    void display_getCountDoesNotCrash() {
+    void displayGetCountDoesNotCrash() {
         long count = CefDisplay.getCount();
         assertThat(count).as("display count").isGreaterThanOrEqualTo(0);
     }
 
     @Test
     @Order(61)
-    void display_getPrimary() {
-        Optional<CefDisplay> primary = CefDisplay.getPrimary();
-        if (primary.isPresent()) {
-            try (CefDisplay display = primary.get()) {
-                assertThat(display.getDeviceScaleFactor()).as("scale factor").isGreaterThan(0f);
-                CefRect bounds = display.getBounds();
-                assertThat(bounds).as("display bounds").isNotNull();
-            }
+    void displayGetPrimary() {
+        try (CefDisplay display = CefDisplay.getPrimary().orElseThrow()) {
+            assertThat(display.getDeviceScaleFactor()).as("scale factor").isGreaterThan(0f);
+            CefRect bounds = display.getBounds();
+            assertThat(bounds).as("display bounds").isNotNull();
         }
     }
 
     @Test
     @Order(70)
-    void menuButton_createDoesNotCrash() {
-        Optional<CefMenuButton> optBtn = CefMenuButton.create(null, "Menu");
-        if (optBtn.isEmpty()) return;
-
-        try (CefMenuButton btn = optBtn.get()) {
+    void menuButtonCreateDoesNotCrash() {
+        try (CefMenuButton btn =
+                CefMenuButton.create(new CefMenuButtonDelegate() {}, "Menu").orElseThrow()) {
             assertThat(btn).isNotNull();
-        }
-    }
-
-    private static void pumpFor(long durationMs) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + durationMs;
-        while (System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
         }
     }
 }

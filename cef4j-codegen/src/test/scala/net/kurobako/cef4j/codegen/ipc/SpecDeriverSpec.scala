@@ -81,6 +81,33 @@ class SpecDeriverSpec extends munit.FunSuite {
     assertEquals(res.fields, List(FieldSpec("result", FieldType.Bool)))
   }
 
+  test("facade close operation is named cefClose") {
+    val close = FnPtr("close", CType.Void, Nil)
+    val decl  = CefDecl.ObjectStruct("cef_window_t", List(close))
+
+    val facade = SpecDeriver.deriveFacades(List(decl), "test.gen").head
+
+    assertEquals(facade.methods.head.methodName, "cefClose")
+    assertEquals(facade.methods.head.cefMethodName, "close")
+  }
+
+  test("facade releases its handle through an idempotent AutoCloseable contract") {
+    val method = FnPtr("is_valid", CType.Bool, Nil)
+    val decl   = CefDecl.ObjectStruct("cef_browser_t", List(method))
+
+    val source = JavaFacadeEmitter.emit(SpecDeriver.deriveFacades(List(decl), "test.gen").head)
+
+    assert(source.contains("public final class Browser implements AutoCloseable"))
+    assert(source.contains("public synchronized CompletableFuture<Void> closeAsync()"))
+    assert(source.contains("if (closeFuture == null)"))
+    assert(source.contains("public CompletableFuture<Void> releaseHandle()"))
+    assert(source.contains("return closeAsync();"))
+    assert(source.contains("public void close()"))
+    assert(source.contains("@SuppressWarnings(\"FutureReturnValueIgnored\")"))
+    assert(source.contains("closeAsync();"))
+    assert(!source.contains("closeAsync().join();"))
+  }
+
   test("ObjectStruct method with unsupported return type is skipped wholesale") {
     val floatFn = FnPtr("get_zoom", CType.Float, Nil)
     val decl    = CefDecl.ObjectStruct("cef_browser_t", List(floatFn))

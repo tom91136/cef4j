@@ -3,6 +3,7 @@ package net.kurobako.cef4j.test;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -99,15 +100,38 @@ public final class TestDeadline {
 
     public void until(BooleanSupplier condition, Duration pollInterval, String phase)
             throws InterruptedException, TimeoutException {
+        until(condition, () -> {}, pollInterval, phase);
+    }
+
+    public void until(BooleanSupplier condition, Runnable progress, Duration pollInterval, String phase)
+            throws InterruptedException, TimeoutException {
         Objects.requireNonNull(condition, "condition");
+        Objects.requireNonNull(progress, "progress");
         Objects.requireNonNull(pollInterval, "pollInterval");
         long pollNanos = pollInterval.toNanos();
         if (pollNanos <= 0L) throw new IllegalArgumentException("poll interval must be positive");
         while (!condition.getAsBoolean()) {
+            progress.run();
+            if (condition.getAsBoolean()) return;
             long remaining = remainingNanos();
             if (remaining == 0L) throw timeout(phase);
             TimeUnit.NANOSECONDS.sleep(Math.min(remaining, pollNanos));
         }
+    }
+
+    public void await(CountDownLatch latch, String phase) throws InterruptedException, TimeoutException {
+        Objects.requireNonNull(latch, "latch");
+        Objects.requireNonNull(phase, "phase");
+        if (!latch.await(remainingNanos(), TimeUnit.NANOSECONDS)) throw timeout(phase);
+    }
+
+    public void join(Thread thread, String phase) throws InterruptedException, TimeoutException {
+        Objects.requireNonNull(thread, "thread");
+        Objects.requireNonNull(phase, "phase");
+        long remaining = remainingNanos();
+        if (remaining == 0L) throw timeout(phase);
+        thread.join(TimeUnit.NANOSECONDS.toMillis(remaining), (int) (remaining % 1_000_000L));
+        if (thread.isAlive()) throw timeout(phase);
     }
 
     private TimeoutException timeout(String phase) {

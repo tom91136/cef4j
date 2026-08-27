@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefResourceHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefResourceHandler {
@@ -34,12 +34,13 @@ public interface CefResourceHandler {
     default void cancel() {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefResourceHandler handler) {
-        session.intercept(ResourceHandlerProcessRequestEvent.MESSAGE_ID, ResourceHandlerProcessRequestEvent.DECODER, ev -> {
-            Boolean answer = handler.processRequest(ev.request(), ev.callback());
-            return new ResourceHandlerProcessRequestResponse(answer != null && answer.booleanValue());
-        });
-        session.on(ResourceHandlerCancelEvent.MESSAGE_ID, ResourceHandlerCancelEvent.DECODER,
-                ev -> handler.cancel());
+    static CefSession.HandlerRegistration register(CefSession session, CefResourceHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(ResourceHandlerProcessRequestEvent.MESSAGE_ID, ResourceHandlerProcessRequestEvent.DECODER, ev -> {
+                    Boolean answer = handler.processRequest(ev.request(), ev.callback());
+                    return new ResourceHandlerProcessRequestResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(ResourceHandlerCancelEvent.MESSAGE_ID, ResourceHandlerCancelEvent.DECODER,
+                        ev -> handler.cancel()));
     }
 }

@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefPermissionHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefPermissionHandler {
@@ -41,16 +41,17 @@ public interface CefPermissionHandler {
     default void onDismissPermissionPrompt(net.kurobako.cef4j.ipc.session.RemoteHandle browser, long promptId, int result) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefPermissionHandler handler) {
-        session.intercept(PermissionHandlerOnRequestMediaAccessPermissionEvent.MESSAGE_ID, PermissionHandlerOnRequestMediaAccessPermissionEvent.DECODER, ev -> {
-            Boolean answer = handler.onRequestMediaAccessPermission(ev.browser(), ev.frame(), ev.requestingOrigin(), ev.requestedPermissions(), ev.callback());
-            return new PermissionHandlerOnRequestMediaAccessPermissionResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(PermissionHandlerOnShowPermissionPromptEvent.MESSAGE_ID, PermissionHandlerOnShowPermissionPromptEvent.DECODER, ev -> {
-            Boolean answer = handler.onShowPermissionPrompt(ev.browser(), ev.promptId(), ev.requestingOrigin(), ev.requestedPermissions(), ev.callback());
-            return new PermissionHandlerOnShowPermissionPromptResponse(answer != null && answer.booleanValue());
-        });
-        session.on(PermissionHandlerOnDismissPermissionPromptEvent.MESSAGE_ID, PermissionHandlerOnDismissPermissionPromptEvent.DECODER,
-                ev -> handler.onDismissPermissionPrompt(ev.browser(), ev.promptId(), ev.result()));
+    static CefSession.HandlerRegistration register(CefSession session, CefPermissionHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(PermissionHandlerOnRequestMediaAccessPermissionEvent.MESSAGE_ID, PermissionHandlerOnRequestMediaAccessPermissionEvent.DECODER, ev -> {
+                    Boolean answer = handler.onRequestMediaAccessPermission(ev.browser(), ev.frame(), ev.requestingOrigin(), ev.requestedPermissions(), ev.callback());
+                    return new PermissionHandlerOnRequestMediaAccessPermissionResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(PermissionHandlerOnShowPermissionPromptEvent.MESSAGE_ID, PermissionHandlerOnShowPermissionPromptEvent.DECODER, ev -> {
+                    Boolean answer = handler.onShowPermissionPrompt(ev.browser(), ev.promptId(), ev.requestingOrigin(), ev.requestedPermissions(), ev.callback());
+                    return new PermissionHandlerOnShowPermissionPromptResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(PermissionHandlerOnDismissPermissionPromptEvent.MESSAGE_ID, PermissionHandlerOnDismissPermissionPromptEvent.DECODER,
+                        ev -> handler.onDismissPermissionPrompt(ev.browser(), ev.promptId(), ev.result())));
     }
 }

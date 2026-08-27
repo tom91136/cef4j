@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-final class CefHttpURLConnection extends HttpURLConnection {
+final class CefHttpURLConnection extends HttpURLConnection implements AutoCloseable {
 
     private static final byte[] EOF = new byte[0];
     private static final int MAX_REDIRECTS = 20;
@@ -264,6 +264,11 @@ final class CefHttpURLConnection extends HttpURLConnection {
         attempt.fail(new IOException("connection disconnected"));
         CefHttpEngine.Cancellation c = cancellation;
         if (c != null) c.cancel();
+    }
+
+    @Override
+    public void close() {
+        disconnect();
     }
 
     @Override

@@ -55,7 +55,7 @@ class UrlResourceHandlerTest {
 
         open(handler);
         open(handler);
-        handler.cancel();
+        handler.close();
 
         assertThat(first.closeCount()).isOne();
         assertThat(second.closeCount()).isOne();

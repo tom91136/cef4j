@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefResolveCallback)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefResolveCallback {
@@ -25,8 +25,9 @@ public interface CefResolveCallback {
     default void onResolveCompleted(int result, String[] resolvedIps) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefResolveCallback handler) {
-        session.on(ResolveCallbackOnResolveCompletedEvent.MESSAGE_ID, ResolveCallbackOnResolveCompletedEvent.DECODER,
-                ev -> handler.onResolveCompleted(ev.result(), ev.resolvedIps()));
+    static CefSession.HandlerRegistration register(CefSession session, CefResolveCallback handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(ResolveCallbackOnResolveCompletedEvent.MESSAGE_ID, ResolveCallbackOnResolveCompletedEvent.DECODER,
+                        ev -> handler.onResolveCompleted(ev.result(), ev.resolvedIps())));
     }
 }

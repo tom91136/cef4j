@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -12,11 +13,12 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a runtime-server-side
  * ref-counted CEF object.
  */
-public final class CefV8Exception {
+public final class CefV8Exception implements AutoCloseable {
 
     private final CefSession session;
     private final RemoteHandle frame;
     private final RemoteHandle handle;
+    @Nullable private CompletableFuture<Void> closeFuture;
 
     public CefV8Exception(@Nonnull CefSession session, @Nonnull RemoteHandle frame, @Nonnull RemoteHandle handle) {
         this.session = session;
@@ -28,7 +30,6 @@ public final class CefV8Exception {
     public RemoteHandle handle() {
         return handle;
     }
-
     /** The frame whose V8 context this handle lives in. Renderer-side dispatch enters this frame's
       * V8 context before invoking methods on the receiver. */
     @Nonnull
@@ -36,14 +37,25 @@ public final class CefV8Exception {
         return frame;
     }
 
-    /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
-      * cef_v8_exception_t only exists in the renderer subprocess's table state. */
-    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-        return CefFutures.map(
-            session.request(
-                new RendererReleaseHandleRequest(frame, handle, "cef_v8_exception_t"),
-                RendererReleaseHandleResponse.DECODER),
-            r -> null);
+    public synchronized CompletableFuture<Void> closeAsync() {
+        if (closeFuture == null) {
+            closeFuture = CefFutures.map(
+                session.request(
+                    new RendererReleaseHandleRequest(frame, handle, "cef_v8_exception_t"),
+                    RendererReleaseHandleResponse.DECODER),
+                r -> null);
+        }
+        return closeFuture;
+    }
+
+    public CompletableFuture<Void> releaseHandle() {
+        return closeAsync();
+    }
+
+    @Override
+    @SuppressWarnings("FutureReturnValueIgnored")
+    public void close() {
+        closeAsync();
     }
 
     /**

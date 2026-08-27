@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /** Swing component that displays and controls a browser owned by a Remote CEF runtime server. */
 @SuppressWarnings("serial")
-public final class RemoteBrowserPanel extends JPanel {
+public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteBrowserPanel.class);
     private static final int KEYEVENT_RAWKEYDOWN = 0;
     private static final int KEYEVENT_KEYUP = 2;
@@ -424,6 +424,11 @@ public final class RemoteBrowserPanel extends JPanel {
         }
         repaint();
         if (failure != null) throw failure;
+    }
+
+    @Override
+    public void close() {
+        release();
     }
 
     private CefSession requireSession() {

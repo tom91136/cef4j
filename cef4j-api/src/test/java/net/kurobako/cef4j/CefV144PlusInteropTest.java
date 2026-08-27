@@ -27,7 +27,7 @@ class CefV144PlusInteropTest extends CefTestBase {
     }
 
     @Test
-    void globals_base64Encode() {
+    void globalsBase64Encode() {
         byte[] data = "Hello, CEF!".getBytes(StandardCharsets.UTF_8);
         ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
         buf.put(data);
@@ -37,7 +37,7 @@ class CefV144PlusInteropTest extends CefTestBase {
     }
 
     @Test
-    void renderHandler_onAcceleratedPaintUsesTypedInfo() throws Exception {
+    void renderHandlerOnAcceleratedPaintUsesTypedInfo() throws Exception {
         Method acceleratedPaintMethod = Arrays.stream(CefRenderHandler.class.getMethods())
                 .filter(method -> method.getName().equals("onAcceleratedPaint"))
                 .findFirst()
@@ -49,7 +49,7 @@ class CefV144PlusInteropTest extends CefTestBase {
     }
 
     @Test
-    void acceleratedPaintInfo_crossPlatformTypesImplementSharedInterface() {
+    void acceleratedPaintInfoCrossPlatformTypesImplementSharedInterface() {
         CefAcceleratedPaintInfoCommon common = new CefAcceleratedPaintInfoCommon(
                 1L,
                 new CefSize(100, 100),

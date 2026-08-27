@@ -44,7 +44,6 @@ import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
-/** End-to-end runtime-server lifecycle and transport coverage. */
 @Timeout(600)
 class RuntimeServerIntegrationTest {
 

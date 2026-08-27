@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefContextMenuHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefContextMenuHandler {
@@ -75,28 +75,29 @@ public interface CefContextMenuHandler {
     default void onQuickMenuDismissed(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefContextMenuHandler handler) {
-        session.on(ContextMenuHandlerOnBeforeContextMenuEvent.MESSAGE_ID, ContextMenuHandlerOnBeforeContextMenuEvent.DECODER,
-                ev -> handler.onBeforeContextMenu(ev.browser(), ev.frame(), ev.params(), ev.model()));
-        session.intercept(ContextMenuHandlerRunContextMenuEvent.MESSAGE_ID, ContextMenuHandlerRunContextMenuEvent.DECODER, ev -> {
-            Boolean answer = handler.runContextMenu(ev.browser(), ev.frame(), ev.params(), ev.model(), ev.callback());
-            return new ContextMenuHandlerRunContextMenuResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(ContextMenuHandlerOnContextMenuCommandEvent.MESSAGE_ID, ContextMenuHandlerOnContextMenuCommandEvent.DECODER, ev -> {
-            Boolean answer = handler.onContextMenuCommand(ev.browser(), ev.frame(), ev.params(), ev.commandId(), ev.eventFlags());
-            return new ContextMenuHandlerOnContextMenuCommandResponse(answer != null && answer.booleanValue());
-        });
-        session.on(ContextMenuHandlerOnContextMenuDismissedEvent.MESSAGE_ID, ContextMenuHandlerOnContextMenuDismissedEvent.DECODER,
-                ev -> handler.onContextMenuDismissed(ev.browser(), ev.frame()));
-        session.intercept(ContextMenuHandlerRunQuickMenuEvent.MESSAGE_ID, ContextMenuHandlerRunQuickMenuEvent.DECODER, ev -> {
-            Boolean answer = handler.runQuickMenu(ev.browser(), ev.frame(), ev.location(), ev.size(), ev.editStateFlags(), ev.callback());
-            return new ContextMenuHandlerRunQuickMenuResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(ContextMenuHandlerOnQuickMenuCommandEvent.MESSAGE_ID, ContextMenuHandlerOnQuickMenuCommandEvent.DECODER, ev -> {
-            Boolean answer = handler.onQuickMenuCommand(ev.browser(), ev.frame(), ev.commandId(), ev.eventFlags());
-            return new ContextMenuHandlerOnQuickMenuCommandResponse(answer != null && answer.booleanValue());
-        });
-        session.on(ContextMenuHandlerOnQuickMenuDismissedEvent.MESSAGE_ID, ContextMenuHandlerOnQuickMenuDismissedEvent.DECODER,
-                ev -> handler.onQuickMenuDismissed(ev.browser(), ev.frame()));
+    static CefSession.HandlerRegistration register(CefSession session, CefContextMenuHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(ContextMenuHandlerOnBeforeContextMenuEvent.MESSAGE_ID, ContextMenuHandlerOnBeforeContextMenuEvent.DECODER,
+                        ev -> handler.onBeforeContextMenu(ev.browser(), ev.frame(), ev.params(), ev.model())),
+                session.intercept(ContextMenuHandlerRunContextMenuEvent.MESSAGE_ID, ContextMenuHandlerRunContextMenuEvent.DECODER, ev -> {
+                    Boolean answer = handler.runContextMenu(ev.browser(), ev.frame(), ev.params(), ev.model(), ev.callback());
+                    return new ContextMenuHandlerRunContextMenuResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(ContextMenuHandlerOnContextMenuCommandEvent.MESSAGE_ID, ContextMenuHandlerOnContextMenuCommandEvent.DECODER, ev -> {
+                    Boolean answer = handler.onContextMenuCommand(ev.browser(), ev.frame(), ev.params(), ev.commandId(), ev.eventFlags());
+                    return new ContextMenuHandlerOnContextMenuCommandResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(ContextMenuHandlerOnContextMenuDismissedEvent.MESSAGE_ID, ContextMenuHandlerOnContextMenuDismissedEvent.DECODER,
+                        ev -> handler.onContextMenuDismissed(ev.browser(), ev.frame())),
+                session.intercept(ContextMenuHandlerRunQuickMenuEvent.MESSAGE_ID, ContextMenuHandlerRunQuickMenuEvent.DECODER, ev -> {
+                    Boolean answer = handler.runQuickMenu(ev.browser(), ev.frame(), ev.location(), ev.size(), ev.editStateFlags(), ev.callback());
+                    return new ContextMenuHandlerRunQuickMenuResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(ContextMenuHandlerOnQuickMenuCommandEvent.MESSAGE_ID, ContextMenuHandlerOnQuickMenuCommandEvent.DECODER, ev -> {
+                    Boolean answer = handler.onQuickMenuCommand(ev.browser(), ev.frame(), ev.commandId(), ev.eventFlags());
+                    return new ContextMenuHandlerOnQuickMenuCommandResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(ContextMenuHandlerOnQuickMenuDismissedEvent.MESSAGE_ID, ContextMenuHandlerOnQuickMenuDismissedEvent.DECODER,
+                        ev -> handler.onQuickMenuDismissed(ev.browser(), ev.frame())));
     }
 }

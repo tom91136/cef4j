@@ -232,8 +232,9 @@ object SpecDeriver {
       knownDataStructs: Set[String],
       javadoc: String
   ): Option[FacadeMethod] = {
-    val methodName = snakeToCamel(fn.name)
-    val visible    = fn.params.filterNot {
+    val derivedName = snakeToCamel(fn.name)
+    val methodName  = if (derivedName == "close") "cefClose" else derivedName
+    val visible     = fn.params.filterNot {
       case Param(_, CType.BufferSize(_), _, _) => true
       case _                                   => false
     }

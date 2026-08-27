@@ -17,7 +17,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/** Exercises a code-generated synchronous handler return across the intercept wire. */
 @Timeout(600)
 class HandlerReturnIntegrationTest {
 

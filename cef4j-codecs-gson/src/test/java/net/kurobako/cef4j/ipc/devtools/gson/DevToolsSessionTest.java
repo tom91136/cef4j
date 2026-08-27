@@ -145,7 +145,7 @@ class DevToolsSessionTest {
     }
 
     @Test
-    @SuppressWarnings("try") // Explicit close simulates an unexpected transport disconnect.
+    @SuppressWarnings("try")
     void transportDisconnectFailsPendingCdpCalls() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
@@ -158,8 +158,6 @@ class DevToolsSessionTest {
             var pending = devTools.send("Page.captureScreenshot", null);
             peer.respond(peer.receive(), new BrowserHostSendDevToolsMessageResponse(1));
             peer.close();
-            // The session request and CDP close listener race deliberately here. Either path may
-            // complete the future first, but both must report the transport loss promptly.
             assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS)).satisfies(failure -> {
                 Throwable cause = Objects.requireNonNull(failure.getCause());
                 assertThat(cause).isInstanceOfAny(IllegalStateException.class, CefTransportException.class);

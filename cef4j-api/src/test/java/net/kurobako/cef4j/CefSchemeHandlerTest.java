@@ -89,7 +89,7 @@ class CefSchemeHandlerTest extends CefTestBase {
 
     @Test
     @Order(1)
-    void classpathScheme_loadsHtmlResource() throws Exception {
+    void classpathSchemeLoadsHtmlResource() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
         AtomicInteger httpStatus = new AtomicInteger(-1);
         AtomicReference<String> pageTitle = new AtomicReference<>();
@@ -148,7 +148,7 @@ class CefSchemeHandlerTest extends CefTestBase {
 
     @Test
     @Order(2)
-    void classpathScheme_returns404ForMissingResource() throws Exception {
+    void classpathSchemeReturns404ForMissingResource() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
 
         CefClient client = new CefClient() {

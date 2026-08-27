@@ -16,11 +16,6 @@ import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * End-to-end test that the codegen-emitted {@link NavigateRequest} / {@link NavigateResult} round-trip cleanly through
- * {@link CefSessionImpl}. If the generator drifts from the session contract, this test breaks at compile (interface
- * mismatch) or at runtime (encoded bytes don't decode).
- */
 @Timeout(10)
 class GeneratedMessagesIntegrationTest {
 
@@ -36,12 +31,11 @@ class GeneratedMessagesIntegrationTest {
                     if (h.kind == Envelope.Kind.REQUEST && h.messageId == NavigateRequest.MESSAGE_ID) {
                         NavigateRequest req = NavigateRequest.DECODER.decode(view.slice());
                         NavigateResult result = new NavigateResult(
-                                /*browserId*/ 1,
-                                /*httpStatus*/ 200,
-                                /*finalUrl*/ "https://example.com/redirected"
-                                        + req.url().length(),
-                                /*bytesLoaded*/ 4096L,
-                                /*ok*/ true);
+                                1,
+                                200,
+                                "https://example.com/redirected" + req.url().length(),
+                                4096L,
+                                true);
                         sendKind(peer, Envelope.Kind.RESPONSE, h.corrId, h.messageId, result);
                     }
                 } catch (Exception e) {
@@ -68,7 +62,7 @@ class GeneratedMessagesIntegrationTest {
             CefTransport peer, Envelope.Kind kind, int corrId, int messageId, CefMessageEncoder enc) throws Exception {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, kind, /*flags*/ 0, corrId, messageId, enc.encodedSize());
+        Envelope.writeHeader(buf, kind, 0, corrId, messageId, enc.encodedSize());
         enc.encodeInto(buf);
         buf.flip();
         peer.send(buf);

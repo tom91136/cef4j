@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 
 class NativeCleanerTest {
 
-    // NativeCleaner.INSTANCE is a process-wide singleton whose shutdown is terminal, so all state transitions must be
-    // exercised in one test in order.
     @Test
     void cleansPrunesDrainsAndSuppressesLateNativeActions() {
         AtomicInteger releases = new AtomicInteger();

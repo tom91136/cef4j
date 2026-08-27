@@ -19,13 +19,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * Validates the {@code SetViewportSizeRequest} → server {@code was_resized} → CEF repaint round-trip. Exercises the
- * open-issue #3 resize handshake: the server's render handler now reads per-browser viewport sizes from a map updated
- * by this request, and CEF emits a fresh paint at the new dimensions.
- *
- * <p>The mapped frame files use the same Java 11 API on every supported platform.
- */
 @Timeout(600)
 class ViewportResizeIntegrationTest {
 

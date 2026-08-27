@@ -26,14 +26,6 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * End-to-end through real CEF: starts a {@link HttpServer} fixture, opens connections via {@link CefStreamHandler}
- * backed by {@link CefUrlRequestHttpEngine#INSTANCE}, and verifies the response round-trips through Chromium's network
- * stack.
- *
- * <p>Runs in its own surefire fork because it boots CEF in daemon-thread mode (matching {@code CefDaemonRenderTest}).
- * Linux requires a display - wrap with {@code xvfb-run}.
- */
 @Timeout(60)
 class CefHttpIntegrationTest {
 

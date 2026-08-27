@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefResourceRequestHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefResourceRequestHandler {
@@ -63,18 +63,19 @@ public interface CefResourceRequestHandler {
     default void onResourceLoadComplete(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle response, int status, long receivedContentLength) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefResourceRequestHandler handler) {
-        session.intercept(ResourceRequestHandlerOnBeforeResourceLoadEvent.MESSAGE_ID, ResourceRequestHandlerOnBeforeResourceLoadEvent.DECODER, ev -> {
-            Boolean answer = handler.onBeforeResourceLoad(ev.browser(), ev.frame(), ev.request(), ev.callback());
-            return new ResourceRequestHandlerOnBeforeResourceLoadResponse(answer != null && answer.booleanValue());
-        });
-        session.on(ResourceRequestHandlerOnResourceRedirectEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceRedirectEvent.DECODER,
-                ev -> handler.onResourceRedirect(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.newUrl()));
-        session.intercept(ResourceRequestHandlerOnResourceResponseEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceResponseEvent.DECODER, ev -> {
-            Boolean answer = handler.onResourceResponse(ev.browser(), ev.frame(), ev.request(), ev.response());
-            return new ResourceRequestHandlerOnResourceResponseResponse(answer != null && answer.booleanValue());
-        });
-        session.on(ResourceRequestHandlerOnResourceLoadCompleteEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceLoadCompleteEvent.DECODER,
-                ev -> handler.onResourceLoadComplete(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.status(), ev.receivedContentLength()));
+    static CefSession.HandlerRegistration register(CefSession session, CefResourceRequestHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(ResourceRequestHandlerOnBeforeResourceLoadEvent.MESSAGE_ID, ResourceRequestHandlerOnBeforeResourceLoadEvent.DECODER, ev -> {
+                    Boolean answer = handler.onBeforeResourceLoad(ev.browser(), ev.frame(), ev.request(), ev.callback());
+                    return new ResourceRequestHandlerOnBeforeResourceLoadResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(ResourceRequestHandlerOnResourceRedirectEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceRedirectEvent.DECODER,
+                        ev -> handler.onResourceRedirect(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.newUrl())),
+                session.intercept(ResourceRequestHandlerOnResourceResponseEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceResponseEvent.DECODER, ev -> {
+                    Boolean answer = handler.onResourceResponse(ev.browser(), ev.frame(), ev.request(), ev.response());
+                    return new ResourceRequestHandlerOnResourceResponseResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(ResourceRequestHandlerOnResourceLoadCompleteEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceLoadCompleteEvent.DECODER,
+                        ev -> handler.onResourceLoadComplete(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.status(), ev.receivedContentLength())));
     }
 }

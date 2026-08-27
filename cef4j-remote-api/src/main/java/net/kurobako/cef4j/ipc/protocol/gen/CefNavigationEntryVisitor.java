@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefNavigationEntryVisitor)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefNavigationEntryVisitor {
@@ -24,10 +24,11 @@ public interface CefNavigationEntryVisitor {
     default Boolean visit(net.kurobako.cef4j.ipc.session.RemoteHandle entry, int current, int index, int total) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefNavigationEntryVisitor handler) {
-        session.intercept(NavigationEntryVisitorVisitEvent.MESSAGE_ID, NavigationEntryVisitorVisitEvent.DECODER, ev -> {
-            Boolean answer = handler.visit(ev.entry(), ev.current(), ev.index(), ev.total());
-            return new NavigationEntryVisitorVisitResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefNavigationEntryVisitor handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(NavigationEntryVisitorVisitEvent.MESSAGE_ID, NavigationEntryVisitorVisitEvent.DECODER, ev -> {
+                    Boolean answer = handler.visit(ev.entry(), ev.current(), ev.index(), ev.total());
+                    return new NavigationEntryVisitorVisitResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

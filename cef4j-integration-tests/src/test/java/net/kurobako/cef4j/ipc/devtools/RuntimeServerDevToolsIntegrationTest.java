@@ -21,8 +21,6 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,11 +47,11 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/** Exercises generated CDP commands and callbacks against a real packaged CEF runtime. */
 @Timeout(600)
 class RuntimeServerDevToolsIntegrationTest {
     private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(20);
@@ -99,7 +97,7 @@ class RuntimeServerDevToolsIntegrationTest {
         }
     }
 
-    @SuppressWarnings("try") // Named resources exist solely to unregister typed CDP callbacks on scope exit.
+    @SuppressWarnings("try")
     private static void exerciseGeneratedContract(CdpClient cdp, FixtureSite site, String run) throws Exception {
         Page.Client page = cdp.domains().page();
         Network.Client network = cdp.domains().network();
@@ -212,14 +210,15 @@ class RuntimeServerDevToolsIntegrationTest {
             consoleSubscription.close();
             int deliveriesBeforeUnsubscribe = consoleDeliveries.get();
             evaluate(runtime, "console.log('cef4j-after-unsubscribe', '" + run + "')", true, false);
-            evaluate(runtime, "1", true, false); // Response ordering barrier for the preceding console event.
+            // XXX: Replace the response-ordering barrier when console delivery exposes an acknowledgement future.
+            evaluate(runtime, "1", true, false);
             assertThat(consoleDeliveries.get()).isEqualTo(deliveriesBeforeUnsubscribe);
         } finally {
             consoleSubscription.close();
         }
     }
 
-    @SuppressWarnings("try") // The named resource unregisters the generated Fetch callback on scope exit.
+    @SuppressWarnings("try")
     private static void exerciseFetchInterception(
             Fetch.Client fetch, Runtime.Client runtime, FixtureSite site, String run) throws Exception {
         EventProbe<Fetch.RequestPausedEvent> paused = new EventProbe<>("Fetch.requestPaused");
@@ -413,17 +412,17 @@ class RuntimeServerDevToolsIntegrationTest {
         private static final byte[] PIXEL = Base64.getDecoder()
                 .decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZPWQAAAAASUVORK5CYII=");
         private final HttpServer server;
-        private final ExecutorService executor;
+        private final TestExecutor executor;
         private final List<URI> requests = new CopyOnWriteArrayList<>();
 
-        private FixtureSite(HttpServer server, ExecutorService executor) {
+        private FixtureSite(HttpServer server, TestExecutor executor) {
             this.server = server;
             this.executor = executor;
         }
 
         private static FixtureSite start() throws IOException {
             HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
-            ExecutorService executor = Executors.newCachedThreadPool();
+            TestExecutor executor = TestExecutor.fixed(4, "cdp-fixture-site");
             FixtureSite site = new FixtureSite(server, executor);
             server.setExecutor(executor);
             server.createContext("/", site::handle);
@@ -509,7 +508,7 @@ class RuntimeServerDevToolsIntegrationTest {
         @Override
         public void close() {
             server.stop(0);
-            executor.shutdownNow();
+            executor.close();
         }
     }
 }

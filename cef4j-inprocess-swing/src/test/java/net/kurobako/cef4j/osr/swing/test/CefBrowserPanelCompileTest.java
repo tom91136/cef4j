@@ -18,10 +18,12 @@ class CefBrowserPanelCompileTest {
         Function<CefBrowserPanel, CefRenderHandler> createRenderHandler = CefBrowserPanel::createRenderHandler;
         Function<CefBrowserPanel, CefBrowser> browser = CefBrowserPanel::browser;
         Consumer<CefBrowserPanel> dispose = CefBrowserPanel::release;
+        Consumer<CefBrowserPanel> close = CefBrowserPanel::close;
 
         assertThat(ctor).isNotNull();
         assertThat(createRenderHandler).isNotNull();
         assertThat(browser).isNotNull();
         assertThat(dispose).isNotNull();
+        assertThat(close).isNotNull();
     }
 }

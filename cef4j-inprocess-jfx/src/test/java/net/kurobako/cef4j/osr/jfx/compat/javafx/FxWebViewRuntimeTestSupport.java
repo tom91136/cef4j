@@ -423,7 +423,7 @@ final class FxWebViewRuntimeTestSupport {
         return Objects.requireNonNullElse(value, "");
     }
 
-    @SuppressWarnings("deprecation") // CefWebEngine.executeScript is deprecated but exercised for JFX parity
+    @SuppressWarnings("deprecation")
     static String evalToString(WebView view, String script) throws Exception {
         Object value = onFxThread(() -> view.getEngine().executeScript(script));
         return value != null ? value.toString() : "";

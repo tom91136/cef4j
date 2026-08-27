@@ -15,16 +15,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * End-to-end test for the renderer→browser→JVM relay path. The renderer subprocess installs a
- * {@code cef_render_process_handler_t} whose {@code on_context_created} sends a CEF process message to the browser
- * process; the browser-process {@code cef_client_t::on_process_message_received} translates that into a
- * {@link V8ContextCreatedEvent} and ships it over the IPC PAIR socket.
- *
- * <p>This is the foundation for the JVM observing renderer-process state (V8 context lifecycle, focused-node changes,
- * uncaught exceptions). Method dispatch in the reverse direction (JVM→renderer for V8 method calls) uses the same
- * process-message hop and is tracked separately.
- */
 @Timeout(600)
 class RendererRelayIntegrationTest {
 

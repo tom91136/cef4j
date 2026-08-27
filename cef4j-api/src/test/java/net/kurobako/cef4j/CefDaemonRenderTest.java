@@ -26,16 +26,6 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Tests the daemon-thread render path: {@code externalMessagePump=0, multiThreadedMessageLoop=0}.
- *
- * <p>This is the production code path used by CefWebView and CefBrowserPanel. CEF's message loop runs on an internal
- * daemon thread managed by {@link Cef}. Browser creation is async ({@link CefBrowserHost#createBrowser}), and all
- * callbacks (onPaint, onAfterCreated, etc.) arrive on the daemon thread.
- *
- * <p>Must run in its own surefire fork because CEF is initialised with different settings than the default
- * external-message-pump tests.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Timeout(60)
 class CefDaemonRenderTest {
@@ -65,7 +55,7 @@ class CefDaemonRenderTest {
 
     @Test
     @Order(1)
-    void daemonThread_onPaintFiresWithPixelData() throws Exception {
+    void daemonThreadOnPaintFiresWithPixelData() throws Exception {
         int viewWidth = 200;
         int viewHeight = 150;
 
@@ -127,22 +117,23 @@ class CefDaemonRenderTest {
         assertThat(ok).as("createBrowser should succeed").isNotEqualTo(0);
 
         CefBrowser browser = browserReady.get(10, TimeUnit.SECONDS);
-        assertThat(browser).isNotNull();
+        try {
+            byte[] pixels = firstPaint.get(15, TimeUnit.SECONDS);
 
-        byte[] pixels = firstPaint.get(15, TimeUnit.SECONDS);
-
-        assertThat(viewRectCalled.get()).as("getViewRect was called").isTrue();
-        assertThat(paintWidth.get()).as("paint width").isEqualTo(viewWidth);
-        assertThat(paintHeight.get()).as("paint height").isEqualTo(viewHeight);
-        assertThat(pixels).as("pixel buffer").isNotNull();
-        assertThat(pixels.length).as("pixel buffer size (BGRA)").isEqualTo(viewWidth * viewHeight * 4);
-
-        browser.getHost().ifPresent(host -> host.closeBrowser(true));
+            assertThat(viewRectCalled.get()).as("getViewRect was called").isTrue();
+            assertThat(paintWidth.get()).as("paint width").isEqualTo(viewWidth);
+            assertThat(paintHeight.get()).as("paint height").isEqualTo(viewHeight);
+            assertThat(pixels).as("pixel buffer").isNotNull();
+            assertThat(pixels.length).as("pixel buffer size (BGRA)").isEqualTo(viewWidth * viewHeight * 4);
+        } finally {
+            closeBrowser(browser);
+            browser.close();
+        }
     }
 
     @Test
     @Order(2)
-    void daemonThread_coloredPageRendersCorrectPixels() throws Exception {
+    void daemonThreadColoredPageRendersCorrectPixels() throws Exception {
         int viewWidth = 100;
         int viewHeight = 100;
 
@@ -158,35 +149,39 @@ class CefDaemonRenderTest {
         CefBrowserHost.createBrowser(windowInfo, client, "about:blank", browserSettings.toImmutable(), null, null);
 
         CefBrowser browser = browserReady.get(10, TimeUnit.SECONDS);
-        pageReady.get(10, TimeUnit.SECONDS);
+        ScheduledExecutorService poller = null;
+        try {
+            pageReady.get(10, TimeUnit.SECONDS);
+            try (CefFrame frame = browser.getMainFrame().orElseThrow()) {
+                frame.executeJavaScript(
+                        "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0);
+            }
 
-        browser.getMainFrame()
-                .ifPresent(frame -> frame.executeJavaScript(
-                        "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0));
+            poller = startInvalidatePoller(browser, colorPaint);
+            byte[] pixels = colorPaint.get(30, TimeUnit.SECONDS);
 
-        ScheduledExecutorService poller = startInvalidatePoller(browser, colorPaint);
-        byte[] pixels = colorPaint.get(30, TimeUnit.SECONDS);
-        poller.shutdownNow();
+            assertThat(pixels.length).isEqualTo(viewWidth * viewHeight * 4);
 
-        assertThat(pixels.length).isEqualTo(viewWidth * viewHeight * 4);
+            int centerOffset = ((viewHeight / 2) * viewWidth + (viewWidth / 2)) * 4;
+            int b = pixels[centerOffset] & 0xFF;
+            int g = pixels[centerOffset + 1] & 0xFF;
+            int r = pixels[centerOffset + 2] & 0xFF;
+            int a = pixels[centerOffset + 3] & 0xFF;
 
-        int centerOffset = ((viewHeight / 2) * viewWidth + (viewWidth / 2)) * 4;
-        int b = pixels[centerOffset] & 0xFF;
-        int g = pixels[centerOffset + 1] & 0xFF;
-        int r = pixels[centerOffset + 2] & 0xFF;
-        int a = pixels[centerOffset + 3] & 0xFF;
-
-        assertThat(r).as("red channel at center").isEqualTo(255);
-        assertThat(g).as("green channel at center").isEqualTo(0);
-        assertThat(b).as("blue channel at center").isEqualTo(0);
-        assertThat(a).as("alpha channel at center").isEqualTo(255);
-
-        browser.getHost().ifPresent(host -> host.closeBrowser(true));
+            assertThat(r).as("red channel at center").isEqualTo(255);
+            assertThat(g).as("green channel at center").isEqualTo(0);
+            assertThat(b).as("blue channel at center").isEqualTo(0);
+            assertThat(a).as("alpha channel at center").isEqualTo(255);
+        } finally {
+            if (poller != null) poller.shutdownNow();
+            closeBrowser(browser);
+            browser.close();
+        }
     }
 
     @Test
     @Order(3)
-    void daemonThread_multiBrowserRender() throws Exception {
+    void daemonThreadMultiBrowserRender() throws Exception {
         int viewSize = 80;
 
         CompletableFuture<byte[]> redPaint = new CompletableFuture<>();
@@ -222,53 +217,53 @@ class CefDaemonRenderTest {
 
         CefBrowser redBrowser = redBrowserReady.get(10, TimeUnit.SECONDS);
         CefBrowser blueBrowser = blueBrowserReady.get(10, TimeUnit.SECONDS);
-        redPageReady.get(10, TimeUnit.SECONDS);
-        bluePageReady.get(10, TimeUnit.SECONDS);
-
-        redBrowser
-                .getMainFrame()
-                .ifPresent(frame -> frame.executeJavaScript(
-                        "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0));
-        blueBrowser
-                .getMainFrame()
-                .ifPresent(frame -> frame.executeJavaScript(
-                        "document.body.style.margin='0'; document.body.style.background='blue';", "about:blank", 0));
-
         ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor();
-        java.util.concurrent.Future<?> unused = poller.scheduleAtFixedRate(
-                () -> {
-                    if (!redPaint.isDone()) {
-                        redBrowser
-                                .getHost()
-                                .ifPresent(
-                                        host -> host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW)));
-                    }
-                    if (!bluePaint.isDone()) {
-                        blueBrowser
-                                .getHost()
-                                .ifPresent(
-                                        host -> host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW)));
-                    }
-                },
-                100,
-                100,
-                TimeUnit.MILLISECONDS);
+        try {
+            redPageReady.get(10, TimeUnit.SECONDS);
+            bluePageReady.get(10, TimeUnit.SECONDS);
+            try (CefFrame frame = redBrowser.getMainFrame().orElseThrow()) {
+                frame.executeJavaScript(
+                        "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0);
+            }
+            try (CefFrame frame = blueBrowser.getMainFrame().orElseThrow()) {
+                frame.executeJavaScript(
+                        "document.body.style.margin='0'; document.body.style.background='blue';", "about:blank", 0);
+            }
 
-        byte[] redPixels = redPaint.get(15, TimeUnit.SECONDS);
-        byte[] bluePixels = bluePaint.get(15, TimeUnit.SECONDS);
-        poller.shutdownNow();
+            try (CefBrowserHost redHost = redBrowser.getHost().orElseThrow();
+                    CefBrowserHost blueHost = blueBrowser.getHost().orElseThrow()) {
+                java.util.concurrent.Future<?> unused = poller.scheduleAtFixedRate(
+                        () -> {
+                            if (!redPaint.isDone()) {
+                                redHost.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+                            }
+                            if (!bluePaint.isDone()) {
+                                blueHost.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+                            }
+                        },
+                        100,
+                        100,
+                        TimeUnit.MILLISECONDS);
 
-        int center = ((viewSize / 2) * viewSize + (viewSize / 2)) * 4;
-        assertThat(redPixels[center + 2] & 0xFF).as("red browser R").isEqualTo(255);
-        assertThat(redPixels[center + 1] & 0xFF).as("red browser G").isEqualTo(0);
-        assertThat(redPixels[center] & 0xFF).as("red browser B").isEqualTo(0);
+                byte[] redPixels = redPaint.get(15, TimeUnit.SECONDS);
+                byte[] bluePixels = bluePaint.get(15, TimeUnit.SECONDS);
 
-        assertThat(bluePixels[center + 2] & 0xFF).as("blue browser R").isEqualTo(0);
-        assertThat(bluePixels[center + 1] & 0xFF).as("blue browser G").isEqualTo(0);
-        assertThat(bluePixels[center] & 0xFF).as("blue browser B").isEqualTo(255);
+                int center = ((viewSize / 2) * viewSize + (viewSize / 2)) * 4;
+                assertThat(redPixels[center + 2] & 0xFF).as("red browser R").isEqualTo(255);
+                assertThat(redPixels[center + 1] & 0xFF).as("red browser G").isEqualTo(0);
+                assertThat(redPixels[center] & 0xFF).as("red browser B").isEqualTo(0);
 
-        redBrowser.getHost().ifPresent(host -> host.closeBrowser(true));
-        blueBrowser.getHost().ifPresent(host -> host.closeBrowser(true));
+                assertThat(bluePixels[center + 2] & 0xFF).as("blue browser R").isEqualTo(0);
+                assertThat(bluePixels[center + 1] & 0xFF).as("blue browser G").isEqualTo(0);
+                assertThat(bluePixels[center] & 0xFF).as("blue browser B").isEqualTo(255);
+            }
+        } finally {
+            poller.shutdownNow();
+            closeBrowser(redBrowser);
+            closeBrowser(blueBrowser);
+            redBrowser.close();
+            blueBrowser.close();
+        }
     }
 
     private static ScheduledExecutorService startInvalidatePoller(CefBrowser browser, CompletableFuture<?> doneFuture) {
@@ -276,15 +271,29 @@ class CefDaemonRenderTest {
         java.util.concurrent.Future<?> unused = poller.scheduleAtFixedRate(
                 () -> {
                     if (!doneFuture.isDone()) {
-                        browser.getHost()
-                                .ifPresent(
-                                        host -> host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW)));
+                        Optional<CefBrowserHost> host = browser.getHost();
+                        if (host.isEmpty()) {
+                            doneFuture.completeExceptionally(new IllegalStateException("browser host unavailable"));
+                        } else {
+                            try (CefBrowserHost current = host.get()) {
+                                current.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+                            }
+                        }
                     }
                 },
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
         return poller;
+    }
+
+    private static void closeBrowser(@Nullable CefBrowser browser) {
+        if (browser == null) return;
+        browser.getHost().ifPresent(host -> {
+            try (host) {
+                host.closeBrowser(true);
+            }
+        });
     }
 
     private static CefClient makeColorClient(

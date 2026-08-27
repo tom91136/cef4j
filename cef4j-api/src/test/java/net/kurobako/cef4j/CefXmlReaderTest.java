@@ -82,13 +82,13 @@ class CefXmlReaderTest extends CefTestBase {
             switch (whence) {
                 case 0:
                     newPos = (int) offset;
-                    break; // SEEK_SET
+                    break;
                 case 1:
                     newPos = pos + (int) offset;
-                    break; // SEEK_CUR
+                    break;
                 case 2:
                     newPos = data.length + (int) offset;
-                    break; // SEEK_END
+                    break;
                 default:
                     return -1;
             }

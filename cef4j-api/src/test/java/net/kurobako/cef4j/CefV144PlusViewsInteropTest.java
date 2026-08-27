@@ -20,23 +20,14 @@ class CefV144PlusViewsInteropTest extends CefTestBase {
     }
 
     @Test
-    void browserView_getRuntimeStyle() throws Exception {
+    void browserViewGetRuntimeStyle() {
         CefBrowserSettings.Mutable settings = new CefBrowserSettings.Mutable();
         CefClient client = new CefClient() {};
 
         try (CefBrowserView browserView = CefBrowserView.create(
                         client, "about:blank", settings.toImmutable(), null, null, null)
                 .orElseThrow()) {
-            pumpFor(500);
             assertThat(browserView.getRuntimeStyle()).isNotNull();
-        }
-    }
-
-    private static void pumpFor(long durationMs) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + durationMs;
-        while (System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
         }
     }
 }

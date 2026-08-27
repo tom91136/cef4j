@@ -11,14 +11,11 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Timeout.ThreadMode;
 
-/**
- * Contract that every {@link CefTransport} implementation must honour. Subclasses provide a connected pair via
- * {@link #newPair}; the rest of the assertions are shared.
- */
 @Timeout(value = 60, threadMode = ThreadMode.SEPARATE_THREAD)
 public abstract class CefTransportContractTest {
 
@@ -91,7 +88,7 @@ public abstract class CefTransportContractTest {
 
     @Test
     void largeMessageRoundTrips() throws Exception {
-        byte[] payload = new byte[2 * 1024 * 1024]; // 2 MiB
+        byte[] payload = new byte[2 * 1024 * 1024];
         new Random(42).nextBytes(payload);
         try (Pair p = newPair()) {
             CountDownLatch arrived = new CountDownLatch(1);
@@ -163,32 +160,37 @@ public abstract class CefTransportContractTest {
             });
             CountDownLatch start = new CountDownLatch(1);
             List<java.util.concurrent.CompletableFuture<Void>> tasks = new ArrayList<>();
-            for (int t = 0; t < threads; t++) {
-                final int tid = t;
-                tasks.add(java.util.concurrent.CompletableFuture.runAsync(() -> {
-                    try {
-                        if (!start.await(5, TimeUnit.SECONDS))
-                            throw new IllegalStateException("send start not released");
-                        for (int i = 0; i < perThread; i++) {
-                            ByteBuffer m = ByteBuffer.allocate(8).putInt(tid).putInt(i);
-                            m.flip();
-                            p.a.send(m);
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new java.util.concurrent.CompletionException(e);
-                    } catch (CefTransportException e) {
-                        throw new RuntimeException(e);
-                    }
-                }));
+            try (TestExecutor executor = TestExecutor.fixed(threads, "concurrent-transport-send")) {
+                for (int t = 0; t < threads; t++) {
+                    final int tid = t;
+                    tasks.add(java.util.concurrent.CompletableFuture.runAsync(
+                            () -> {
+                                try {
+                                    if (!start.await(5, TimeUnit.SECONDS))
+                                        throw new IllegalStateException("send start not released");
+                                    for (int i = 0; i < perThread; i++) {
+                                        ByteBuffer m = ByteBuffer.allocate(8)
+                                                .putInt(tid)
+                                                .putInt(i);
+                                        m.flip();
+                                        p.a.send(m);
+                                    }
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    throw new java.util.concurrent.CompletionException(e);
+                                } catch (CefTransportException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            },
+                            executor));
+                }
+                start.countDown();
+                java.util.concurrent.CompletableFuture.allOf(
+                                tasks.toArray(new java.util.concurrent.CompletableFuture<?>[0]))
+                        .get(10, TimeUnit.SECONDS);
             }
-            start.countDown();
-            java.util.concurrent.CompletableFuture.allOf(
-                            tasks.toArray(new java.util.concurrent.CompletableFuture<?>[0]))
-                    .get(10, TimeUnit.SECONDS);
             assertThat(done.await(30, TimeUnit.SECONDS)).isTrue();
 
-            // Per-thread sequences must remain monotonic; cross-thread ordering is not specified.
             int[] lastSeq = new int[threads];
             for (int i = 0; i < threads; i++) lastSeq[i] = -1;
             for (byte[] frame : received) {

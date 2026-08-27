@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefClient)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefClient {
@@ -24,10 +24,11 @@ public interface CefClient {
     default Boolean onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefClient handler) {
-        session.intercept(ClientOnProcessMessageReceivedEvent.MESSAGE_ID, ClientOnProcessMessageReceivedEvent.DECODER, ev -> {
-            Boolean answer = handler.onProcessMessageReceived(ev.browser(), ev.frame(), ev.sourceProcess(), ev.message());
-            return new ClientOnProcessMessageReceivedResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefClient handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(ClientOnProcessMessageReceivedEvent.MESSAGE_ID, ClientOnProcessMessageReceivedEvent.DECODER, ev -> {
+                    Boolean answer = handler.onProcessMessageReceived(ev.browser(), ev.frame(), ev.sourceProcess(), ev.message());
+                    return new ClientOnProcessMessageReceivedResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

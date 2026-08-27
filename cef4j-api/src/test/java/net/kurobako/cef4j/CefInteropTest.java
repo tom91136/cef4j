@@ -39,15 +39,12 @@ class CefInteropTest extends CefTestBase {
 
     @AfterAll
     static void shutdownCef() {
-        // Surefire runs every native test class in its own fork. On macOS, use cef4j's managed
-        // main-loop shutdown so Thread 0 is parked before normal JVM teardown can fire CEF's
-        // remaining CFRunLoop observers.
         if (OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test
     @Order(1)
-    void browserLifecycle_onAfterCreatedAndOnLoadEndFire() throws Exception {
+    void browserLifecycleOnAfterCreatedAndOnLoadEndFire() throws Exception {
 
         CountDownLatch createdLatch = new CountDownLatch(1);
         CountDownLatch loadEndLatch = new CountDownLatch(1);
@@ -101,7 +98,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(2)
-    void renderHandler_getViewRectAndOnPaintFire() throws Exception {
+    void renderHandlerGetViewRectAndOnPaintFire() throws Exception {
 
         int viewWidth = 320;
         int viewHeight = 240;
@@ -169,7 +166,7 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(3)
     @Timeout(30)
-    void displayHandler_onTitleChangeMarshalsString() throws Exception {
+    void displayHandlerOnTitleChangeMarshalsString() throws Exception {
 
         CountDownLatch titleLatch = new CountDownLatch(1);
         AtomicReference<String> receivedTitle = new AtomicReference<>();
@@ -209,7 +206,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(4)
-    void loadHandler_loadingStateSequence() throws Exception {
+    void loadHandlerLoadingStateSequence() throws Exception {
 
         CopyOnWriteArrayList<String> events = new CopyOnWriteArrayList<>();
         CountDownLatch doneLatch = new CountDownLatch(1);
@@ -263,7 +260,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(5)
-    void multipleBrowsers_sameClient() throws Exception {
+    void multipleBrowsersSameClient() throws Exception {
 
         CountDownLatch createdLatch = new CountDownLatch(2);
         CopyOnWriteArrayList<CefBrowser> browsers = new CopyOnWriteArrayList<>();
@@ -304,7 +301,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(6)
-    void displayHandler_consoleMessageFromJavaScript() throws Exception {
+    void displayHandlerConsoleMessageFromJavaScript() throws Exception {
 
         CountDownLatch consoleLatch = new CountDownLatch(1);
         AtomicReference<String> consoleMsg = new AtomicReference<>();
@@ -363,7 +360,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(7)
-    void frameHandler_frameCreatedAndMainFrameChanged() throws Exception {
+    void frameHandlerFrameCreatedAndMainFrameChanged() throws Exception {
 
         CountDownLatch frameCreatedLatch = new CountDownLatch(1);
         CountDownLatch mainFrameLatch = new CountDownLatch(1);
@@ -408,7 +405,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(8)
-    void requestHandler_renderViewReady() throws Exception {
+    void requestHandlerRenderViewReady() throws Exception {
 
         CountDownLatch readyLatch = new CountDownLatch(1);
 
@@ -440,7 +437,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(9)
-    void staticFactory_dictionaryValueRoundTrip() {
+    void staticFactoryDictionaryValueRoundTrip() {
         CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
         assertThat(dict.isValid()).isTrue();
 
@@ -467,7 +464,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(10)
-    void staticFactory_cefValueTypes() {
+    void staticFactoryCefValueTypes() {
         CefValue val = CefValue.create().orElseThrow();
         assertThat(val.isValid()).isTrue();
 
@@ -495,7 +492,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(11)
-    void staticFactory_responseEnumAndStrings() {
+    void staticFactoryResponseEnumAndStrings() {
         CefResponse resp = CefResponse.create().orElseThrow();
         assertThat(resp.isReadOnly()).isFalse();
 
@@ -520,7 +517,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(12)
-    void staticFactory_requestHeaderMap() {
+    void staticFactoryRequestHeaderMap() {
         CefRequest req = CefRequest.create().orElseThrow();
         assertThat(req.isReadOnly()).isFalse();
 
@@ -542,7 +539,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(13)
-    void staticFactory_commandLine() {
+    void staticFactoryCommandLine() {
         CefCommandLine cmd = CefCommandLine.create().orElseThrow();
         assertThat(cmd.isValid()).isTrue();
 
@@ -565,7 +562,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(14)
-    void globals_stringUtilities() throws Exception {
+    void globalsStringUtilities() throws Exception {
         assertThat(CefGlobals.getMimeType("html")).hasValue("text/html");
         assertThat(CefGlobals.getMimeType("json")).hasValue("application/json");
         assertThat(CefGlobals.getMimeType("png")).hasValue("image/png");
@@ -580,7 +577,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(15)
-    void globals_currentlyOnThread() {
+    void globalsCurrentlyOnThread() {
         if (OS.isMacOS()) {
             assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.UI)))
                     .isEqualTo(0);
@@ -593,7 +590,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(16)
-    void staticFactory_waitableEvent() {
+    void staticFactoryWaitableEvent() {
         CefWaitableEvent event = CefWaitableEvent.create(0, 0).orElseThrow();
         assertThat(event.isSignaled()).isFalse();
 
@@ -611,7 +608,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(17)
-    void staticFactory_globalRequestContext() {
+    void staticFactoryGlobalRequestContext() {
         CefRequestContext ctx = CefRequestContext.getGlobalContext().orElseThrow();
         assertThat(ctx.isGlobal()).isTrue();
         assertThat(ctx.isSame(ctx)).isTrue();
@@ -652,7 +649,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(19)
-    void objectPtr_isSameIsEqual_preservesArgValidity() {
+    void objectPtrIsSameIsEqualPreservesArgValidity() {
         CefDictionaryValue d1 = CefDictionaryValue.create().orElseThrow();
         CefDictionaryValue d2 = CefDictionaryValue.create().orElseThrow();
 
@@ -677,7 +674,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(20)
-    void objectPtr_setters_preserveArgValidity() {
+    void objectPtrSettersPreserveArgValidity() {
         CefDictionaryValue parent = CefDictionaryValue.create().orElseThrow();
 
         CefDictionaryValue child = CefDictionaryValue.create().orElseThrow();
@@ -697,7 +694,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(21)
-    void dictionaryCopy_isEqual() {
+    void dictionaryCopyIsEqual() {
         CefDictionaryValue original = CefDictionaryValue.create().orElseThrow();
         original.setString("a", "1");
         original.setInt("b", 2);
@@ -718,7 +715,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(22)
-    void cefValue_objectPtr_roundTrip() {
+    void cefValueObjectPtrRoundTrip() {
         CefValue val = CefValue.create().orElseThrow();
         CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
         dict.setString("inside", "value");
@@ -732,7 +729,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(23)
-    void byValueSize_pendingOnJvm_sizeofFromNative() throws Exception {
+    void byValueSizePendingOnJvmSizeofFromNative() throws Exception {
         CefWindowInfo.Mutable windowInfo;
         if (OS.isMacOS()) windowInfo = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
         else if (OS.isWindows()) windowInfo = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
@@ -811,7 +808,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(24)
-    void binaryValue_roundTrip() {
+    void binaryValueRoundTrip() {
         byte[] data = "Hello, binary!".getBytes(StandardCharsets.UTF_8);
         ByteBuffer direct = ByteBuffer.allocateDirect(data.length);
         direct.put(data);
@@ -839,7 +836,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(25)
-    void multimapValues_roundTrip() {
+    void multimapValuesRoundTrip() {
         CefRequest req = CefRequest.create().orElseThrow();
 
         Map<String, List<String>> headers = new HashMap<>();
@@ -856,7 +853,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(26)
-    void processMessage_createAndAccessArgList() {
+    void processMessageCreateAndAccessArgList() {
         CefProcessMessage msg = CefProcessMessage.create("test-msg").orElseThrow();
         assertThat(msg.isValid()).isTrue();
         assertThat(msg.isReadOnly()).isFalse();
@@ -885,7 +882,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(27)
-    void renderHandler_getScreenInfoWithNestedRect() throws Exception {
+    void renderHandlerGetScreenInfoWithNestedRect() throws Exception {
         AtomicBoolean screenInfoCalled = new AtomicBoolean(false);
         AtomicReference<CefScreenInfo.Mutable> captured = new AtomicReference<>();
         CountDownLatch paintLatch = new CountDownLatch(1);
@@ -947,7 +944,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(29)
-    void nativePeer_doubleCloseIsSafe() {
+    void nativePeerDoubleCloseIsSafe() {
         CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
         dict.setString("k", "v");
         assertThat(dict.isValid()).isTrue();
@@ -959,7 +956,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(30)
-    void closedPeerAsArgument_shouldThrow() {
+    void closedPeerAsArgumentShouldThrow() {
         ByteBuffer buf1 = ByteBuffer.allocateDirect(4);
         buf1.put(new byte[] {1, 2, 3, 4});
         ByteBuffer buf2 = ByteBuffer.allocateDirect(4);
@@ -973,7 +970,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(31)
-    void heapByteBuffer_throwsIllegalArgument() {
+    void heapByteBufferThrowsIllegalArgument() {
         ByteBuffer heap = ByteBuffer.allocate(10);
         heap.put("test".getBytes(StandardCharsets.UTF_8));
         assertThatThrownBy(() -> CefBinaryValue.create(heap))
@@ -984,7 +981,7 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(33)
     @Timeout(75)
-    void onBeforePopup_firesWithoutCrash() throws Exception {
+    void onBeforePopupFiresWithoutCrash() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
         CountDownLatch paintLatch = new CountDownLatch(1);
         CountDownLatch popupLatch = new CountDownLatch(1);
@@ -1040,9 +1037,6 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(loadLatch, 20_000)).as("page loaded").isTrue();
         assertThat(pumpUntil(paintLatch, 20_000)).as("first paint").isTrue();
 
-        // CEF 109/116 accept window.open here, while newer Chromium builds can still require a user gesture in
-        // hosted sessions despite --disable-popup-blocking. Trigger both paths: the handler cancels the popup, so
-        // whichever path wins only completes the same latch and no second browser is created.
         browser.getMainFrame().orElseThrow().executeJavaScript("window.open('about:blank', '_blank')", "test.js", 1);
         CefBrowserHost host = browser.getHost().orElseThrow();
         CefMouseEvent mouseEvent = new CefMouseEvent(50, 25, 0);
@@ -1052,8 +1046,6 @@ class CefInteropTest extends CefTestBase {
         host.sendMouseClickEvent(mouseEvent, left, false, 1);
         host.sendMouseClickEvent(mouseEvent, left, true, 1);
 
-        // macOS hosted sessions can reject synthetic mouse coordinates before an OSR view has a
-        // backing screen. Focus the anchor and inject Enter as a second genuine input path.
         browser.getMainFrame().orElseThrow().executeJavaScript("document.getElementById('link').focus()", "test.js", 1);
         pumpUntil(new CountDownLatch(1), 100);
         CefKeyEventType rawDown = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
@@ -1071,7 +1063,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(34)
-    void generatedSignatures_useTypedMappings() throws Exception {
+    void generatedSignaturesUseTypedMappings() throws Exception {
         Method popupMethod = findSingleMethod(CefLifeSpanHandler.class, "onBeforePopup");
         Class<?>[] popupParams = popupMethod.getParameterTypes();
         int popupFeaturesIndex = popupParams.length == 13 ? 7 : 6;
@@ -1085,7 +1077,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(32)
-    void closedPeerAsNestedArgument_shouldThrow() {
+    void closedPeerAsNestedArgumentShouldThrow() {
         CefDictionaryValue outer = CefDictionaryValue.create().orElseThrow();
         CefDictionaryValue inner = CefDictionaryValue.create().orElseThrow();
         inner.setString("k", "v");
@@ -1123,7 +1115,7 @@ class CefInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("NullableForbidden") // CEF callback null args for version-compat overloads
+    @SuppressWarnings("NullableForbidden")
     static final class CompatibleKeyboardHandler implements CefKeyboardHandler {
         private final AtomicReference<CefKeyEvent> capturedEvent;
         private final CountDownLatch keyLatch;
@@ -1133,12 +1125,12 @@ class CefInteropTest extends CefTestBase {
             this.keyLatch = keyLatch;
         }
 
-        @SuppressWarnings("MissingOverride") // v117+-only overload; v109/v116 don't declare this signature
+        @SuppressWarnings("MissingOverride")
         public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
             return capture(event);
         }
 
-        @SuppressWarnings("MissingOverride") // v117+-only overload; v109/v116 don't declare this signature
+        @SuppressWarnings("MissingOverride")
         public boolean onKeyEvent(
                 @Nullable CefBrowser browser, @Nonnull CefKeyEvent event, @Nullable NativePointer osEvent) {
             return capture(event);
@@ -1151,7 +1143,7 @@ class CefInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("NullableForbidden") // CEF callback null args for version-compat overloads
+    @SuppressWarnings("NullableForbidden")
     static final class CompatiblePopupLifeSpanHandler implements CefLifeSpanHandler {
         private final AtomicBoolean popupFired;
         private final CountDownLatch popupLatch;
@@ -1161,7 +1153,7 @@ class CefInteropTest extends CefTestBase {
             this.popupLatch = popupLatch;
         }
 
-        @SuppressWarnings("MissingOverride") // v132+ with popupId; absent on v109/v116/v117-v131
+        @SuppressWarnings("MissingOverride")
         public boolean onBeforePopup(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
@@ -1179,7 +1171,7 @@ class CefInteropTest extends CefTestBase {
             return cancelPopup();
         }
 
-        @SuppressWarnings("MissingOverride") // v109/v116/v117-v131 without popupId; absent on v132+
+        @SuppressWarnings("MissingOverride")
         public boolean onBeforePopup(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,

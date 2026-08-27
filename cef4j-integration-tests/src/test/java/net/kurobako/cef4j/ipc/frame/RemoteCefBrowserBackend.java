@@ -29,7 +29,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/** Packaged-runtime implementation of the shared browser test SPI. */
 public final class RemoteCefBrowserBackend implements BrowserBackend {
 
     @Override
@@ -152,7 +151,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
             return browser.getMainFrame()
                     .thenCompose(frame -> session.request(
-                                    new EvaluateJavascriptRequest(frame.handle(), script, /*retainHandle=*/ false),
+                                    new EvaluateJavascriptRequest(frame.handle(), script, false),
                                     EvaluateJavascriptResponse.DECODER)
                             .thenApply(resp -> net.kurobako.cef4j.ipc.session.JsResult.fromWire(
                                             resp.valueKind(),
@@ -215,7 +214,6 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         return failure;
     }
 
-    /** Launches the packaged runtime server directly with only platform-specific native search paths on its process. */
     public static RuntimeServerProcess launchServer(
             @Nonnull Path serverBinary, @Nonnull Path cefResources, @Nonnull Duration timeout) throws IOException {
         return RuntimeServerProcess.spawn(

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/** Runs one browser contract against the in-process and packaged-runtime backends. */
 @Timeout(600)
 @ExtendWith(DisplayLock.class)
 class CrossBackendMatrixTest {

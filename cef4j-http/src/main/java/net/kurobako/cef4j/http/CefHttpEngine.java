@@ -10,8 +10,13 @@ interface CefHttpEngine {
     @Nonnull
     Cancellation send(@Nonnull RequestSpec spec, @Nonnull ResponseSink sink);
 
-    interface Cancellation {
+    interface Cancellation extends AutoCloseable {
         void cancel();
+
+        @Override
+        default void close() {
+            cancel();
+        }
     }
 
     interface ResponseSink {

@@ -22,7 +22,6 @@ import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/** Shared-contract adapter that drives the real RemoteWebView JavaFX component. */
 final class RemoteJfxBrowserBackend implements BrowserBackend {
     private static final AtomicBoolean FX_STARTED = new AtomicBoolean();
 

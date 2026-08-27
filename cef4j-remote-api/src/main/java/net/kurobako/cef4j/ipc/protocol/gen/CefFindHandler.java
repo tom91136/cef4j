@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefFindHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefFindHandler {
@@ -23,8 +23,9 @@ public interface CefFindHandler {
     default void onFindResult(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int identifier, int count, Rect selectionRect, int activeMatchOrdinal, int finalUpdate) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefFindHandler handler) {
-        session.on(FindHandlerOnFindResultEvent.MESSAGE_ID, FindHandlerOnFindResultEvent.DECODER,
-                ev -> handler.onFindResult(ev.browser(), ev.identifier(), ev.count(), ev.selectionRect(), ev.activeMatchOrdinal(), ev.finalUpdate()));
+    static CefSession.HandlerRegistration register(CefSession session, CefFindHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(FindHandlerOnFindResultEvent.MESSAGE_ID, FindHandlerOnFindResultEvent.DECODER,
+                        ev -> handler.onFindResult(ev.browser(), ev.identifier(), ev.count(), ev.selectionRect(), ev.activeMatchOrdinal(), ev.finalUpdate())));
     }
 }

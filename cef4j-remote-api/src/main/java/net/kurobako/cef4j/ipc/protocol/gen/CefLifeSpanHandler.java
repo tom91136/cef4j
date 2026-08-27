@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefLifeSpanHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefLifeSpanHandler {
@@ -66,16 +66,17 @@ public interface CefLifeSpanHandler {
     default void onBeforeClose(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefLifeSpanHandler handler) {
-        session.on(LifeSpanHandlerOnBeforePopupAbortedEvent.MESSAGE_ID, LifeSpanHandlerOnBeforePopupAbortedEvent.DECODER,
-                ev -> handler.onBeforePopupAborted(ev.browser(), ev.popupId()));
-        session.onLatest(LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER,
-                ev -> handler.onAfterCreated(ev.browser()));
-        session.intercept(LifeSpanHandlerDoCloseEvent.MESSAGE_ID, LifeSpanHandlerDoCloseEvent.DECODER, ev -> {
-            Boolean answer = handler.doClose(ev.browser());
-            return new LifeSpanHandlerDoCloseResponse(answer != null && answer.booleanValue());
-        });
-        session.on(LifeSpanHandlerOnBeforeCloseEvent.MESSAGE_ID, LifeSpanHandlerOnBeforeCloseEvent.DECODER,
-                ev -> handler.onBeforeClose(ev.browser()));
+    static CefSession.HandlerRegistration register(CefSession session, CefLifeSpanHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(LifeSpanHandlerOnBeforePopupAbortedEvent.MESSAGE_ID, LifeSpanHandlerOnBeforePopupAbortedEvent.DECODER,
+                        ev -> handler.onBeforePopupAborted(ev.browser(), ev.popupId())),
+                session.onLatest(LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                        ev -> handler.onAfterCreated(ev.browser())),
+                session.intercept(LifeSpanHandlerDoCloseEvent.MESSAGE_ID, LifeSpanHandlerDoCloseEvent.DECODER, ev -> {
+                    Boolean answer = handler.doClose(ev.browser());
+                    return new LifeSpanHandlerDoCloseResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(LifeSpanHandlerOnBeforeCloseEvent.MESSAGE_ID, LifeSpanHandlerOnBeforeCloseEvent.DECODER,
+                        ev -> handler.onBeforeClose(ev.browser())));
     }
 }

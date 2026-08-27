@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefBrowserProcessHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefBrowserProcessHandler {
@@ -68,18 +68,19 @@ public interface CefBrowserProcessHandler {
     default void onScheduleMessagePumpWork(long delayMs) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefBrowserProcessHandler handler) {
-        session.on(BrowserProcessHandlerOnRegisterCustomPreferencesEvent.MESSAGE_ID, BrowserProcessHandlerOnRegisterCustomPreferencesEvent.DECODER,
-                ev -> handler.onRegisterCustomPreferences(ev.type(), ev.registrar()));
-        session.on(BrowserProcessHandlerOnContextInitializedEvent.MESSAGE_ID, BrowserProcessHandlerOnContextInitializedEvent.DECODER,
-                ev -> handler.onContextInitialized());
-        session.on(BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.MESSAGE_ID, BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.DECODER,
-                ev -> handler.onBeforeChildProcessLaunch(ev.commandLine()));
-        session.intercept(BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.MESSAGE_ID, BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.DECODER, ev -> {
-            Boolean answer = handler.onAlreadyRunningAppRelaunch(ev.commandLine(), ev.currentDirectory());
-            return new BrowserProcessHandlerOnAlreadyRunningAppRelaunchResponse(answer != null && answer.booleanValue());
-        });
-        session.on(BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.MESSAGE_ID, BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.DECODER,
-                ev -> handler.onScheduleMessagePumpWork(ev.delayMs()));
+    static CefSession.HandlerRegistration register(CefSession session, CefBrowserProcessHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(BrowserProcessHandlerOnRegisterCustomPreferencesEvent.MESSAGE_ID, BrowserProcessHandlerOnRegisterCustomPreferencesEvent.DECODER,
+                        ev -> handler.onRegisterCustomPreferences(ev.type(), ev.registrar())),
+                session.on(BrowserProcessHandlerOnContextInitializedEvent.MESSAGE_ID, BrowserProcessHandlerOnContextInitializedEvent.DECODER,
+                        ev -> handler.onContextInitialized()),
+                session.on(BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.MESSAGE_ID, BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.DECODER,
+                        ev -> handler.onBeforeChildProcessLaunch(ev.commandLine())),
+                session.intercept(BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.MESSAGE_ID, BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.DECODER, ev -> {
+                    Boolean answer = handler.onAlreadyRunningAppRelaunch(ev.commandLine(), ev.currentDirectory());
+                    return new BrowserProcessHandlerOnAlreadyRunningAppRelaunchResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.MESSAGE_ID, BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.DECODER,
+                        ev -> handler.onScheduleMessagePumpWork(ev.delayMs())));
     }
 }

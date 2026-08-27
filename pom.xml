@@ -852,7 +852,7 @@
                                  as each is cleaned up. -->
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>-XDshould-stop.ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false -Xep:NullableForbidden:ERROR -XepOpt:NullableForbidden:AllowedPackages=</arg>
+                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false -Xep:NullableForbidden:ERROR -XepOpt:NullableForbidden:AllowedPackages= -Xep:TestSpinWaitForbidden:ERROR</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
                             <path>

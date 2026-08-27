@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDownloadImageCallback)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDownloadImageCallback {
@@ -25,8 +25,9 @@ public interface CefDownloadImageCallback {
     default void onDownloadImageFinished(String imageUrl, int httpStatusCode, net.kurobako.cef4j.ipc.session.RemoteHandle image) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDownloadImageCallback handler) {
-        session.on(DownloadImageCallbackOnDownloadImageFinishedEvent.MESSAGE_ID, DownloadImageCallbackOnDownloadImageFinishedEvent.DECODER,
-                ev -> handler.onDownloadImageFinished(ev.imageUrl(), ev.httpStatusCode(), ev.image()));
+    static CefSession.HandlerRegistration register(CefSession session, CefDownloadImageCallback handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(DownloadImageCallbackOnDownloadImageFinishedEvent.MESSAGE_ID, DownloadImageCallbackOnDownloadImageFinishedEvent.DECODER,
+                        ev -> handler.onDownloadImageFinished(ev.imageUrl(), ev.httpStatusCode(), ev.image())));
     }
 }

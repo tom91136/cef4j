@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefPrintHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefPrintHandler {
@@ -57,20 +57,21 @@ public interface CefPrintHandler {
     default void onPrintReset(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefPrintHandler handler) {
-        session.on(PrintHandlerOnPrintStartEvent.MESSAGE_ID, PrintHandlerOnPrintStartEvent.DECODER,
-                ev -> handler.onPrintStart(ev.browser()));
-        session.on(PrintHandlerOnPrintSettingsEvent.MESSAGE_ID, PrintHandlerOnPrintSettingsEvent.DECODER,
-                ev -> handler.onPrintSettings(ev.browser(), ev.settings(), ev.getDefaults()));
-        session.intercept(PrintHandlerOnPrintDialogEvent.MESSAGE_ID, PrintHandlerOnPrintDialogEvent.DECODER, ev -> {
-            Boolean answer = handler.onPrintDialog(ev.browser(), ev.hasSelection(), ev.callback());
-            return new PrintHandlerOnPrintDialogResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(PrintHandlerOnPrintJobEvent.MESSAGE_ID, PrintHandlerOnPrintJobEvent.DECODER, ev -> {
-            Boolean answer = handler.onPrintJob(ev.browser(), ev.documentName(), ev.pdfFilePath(), ev.callback());
-            return new PrintHandlerOnPrintJobResponse(answer != null && answer.booleanValue());
-        });
-        session.on(PrintHandlerOnPrintResetEvent.MESSAGE_ID, PrintHandlerOnPrintResetEvent.DECODER,
-                ev -> handler.onPrintReset(ev.browser()));
+    static CefSession.HandlerRegistration register(CefSession session, CefPrintHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(PrintHandlerOnPrintStartEvent.MESSAGE_ID, PrintHandlerOnPrintStartEvent.DECODER,
+                        ev -> handler.onPrintStart(ev.browser())),
+                session.on(PrintHandlerOnPrintSettingsEvent.MESSAGE_ID, PrintHandlerOnPrintSettingsEvent.DECODER,
+                        ev -> handler.onPrintSettings(ev.browser(), ev.settings(), ev.getDefaults())),
+                session.intercept(PrintHandlerOnPrintDialogEvent.MESSAGE_ID, PrintHandlerOnPrintDialogEvent.DECODER, ev -> {
+                    Boolean answer = handler.onPrintDialog(ev.browser(), ev.hasSelection(), ev.callback());
+                    return new PrintHandlerOnPrintDialogResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(PrintHandlerOnPrintJobEvent.MESSAGE_ID, PrintHandlerOnPrintJobEvent.DECODER, ev -> {
+                    Boolean answer = handler.onPrintJob(ev.browser(), ev.documentName(), ev.pdfFilePath(), ev.callback());
+                    return new PrintHandlerOnPrintJobResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(PrintHandlerOnPrintResetEvent.MESSAGE_ID, PrintHandlerOnPrintResetEvent.DECODER,
+                        ev -> handler.onPrintReset(ev.browser())));
     }
 }

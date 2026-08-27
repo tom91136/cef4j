@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefRenderHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefRenderHandler {
@@ -71,20 +71,21 @@ public interface CefRenderHandler {
     default void onVirtualKeyboardRequested(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int inputMode) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefRenderHandler handler) {
-        session.on(RenderHandlerOnPopupShowEvent.MESSAGE_ID, RenderHandlerOnPopupShowEvent.DECODER,
-                ev -> handler.onPopupShow(ev.browser(), ev.show()));
-        session.on(RenderHandlerOnPopupSizeEvent.MESSAGE_ID, RenderHandlerOnPopupSizeEvent.DECODER,
-                ev -> handler.onPopupSize(ev.browser(), ev.rect()));
-        session.intercept(RenderHandlerStartDraggingEvent.MESSAGE_ID, RenderHandlerStartDraggingEvent.DECODER, ev -> {
-            Boolean answer = handler.startDragging(ev.browser(), ev.dragData(), ev.allowedOps(), ev.x(), ev.y());
-            return new RenderHandlerStartDraggingResponse(answer != null && answer.booleanValue());
-        });
-        session.on(RenderHandlerUpdateDragCursorEvent.MESSAGE_ID, RenderHandlerUpdateDragCursorEvent.DECODER,
-                ev -> handler.updateDragCursor(ev.browser(), ev.operation()));
-        session.on(RenderHandlerOnTextSelectionChangedEvent.MESSAGE_ID, RenderHandlerOnTextSelectionChangedEvent.DECODER,
-                ev -> handler.onTextSelectionChanged(ev.browser(), ev.selectedText(), ev.selectedRange()));
-        session.on(RenderHandlerOnVirtualKeyboardRequestedEvent.MESSAGE_ID, RenderHandlerOnVirtualKeyboardRequestedEvent.DECODER,
-                ev -> handler.onVirtualKeyboardRequested(ev.browser(), ev.inputMode()));
+    static CefSession.HandlerRegistration register(CefSession session, CefRenderHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(RenderHandlerOnPopupShowEvent.MESSAGE_ID, RenderHandlerOnPopupShowEvent.DECODER,
+                        ev -> handler.onPopupShow(ev.browser(), ev.show())),
+                session.on(RenderHandlerOnPopupSizeEvent.MESSAGE_ID, RenderHandlerOnPopupSizeEvent.DECODER,
+                        ev -> handler.onPopupSize(ev.browser(), ev.rect())),
+                session.intercept(RenderHandlerStartDraggingEvent.MESSAGE_ID, RenderHandlerStartDraggingEvent.DECODER, ev -> {
+                    Boolean answer = handler.startDragging(ev.browser(), ev.dragData(), ev.allowedOps(), ev.x(), ev.y());
+                    return new RenderHandlerStartDraggingResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(RenderHandlerUpdateDragCursorEvent.MESSAGE_ID, RenderHandlerUpdateDragCursorEvent.DECODER,
+                        ev -> handler.updateDragCursor(ev.browser(), ev.operation())),
+                session.on(RenderHandlerOnTextSelectionChangedEvent.MESSAGE_ID, RenderHandlerOnTextSelectionChangedEvent.DECODER,
+                        ev -> handler.onTextSelectionChanged(ev.browser(), ev.selectedText(), ev.selectedRange())),
+                session.on(RenderHandlerOnVirtualKeyboardRequestedEvent.MESSAGE_ID, RenderHandlerOnVirtualKeyboardRequestedEvent.DECODER,
+                        ev -> handler.onVirtualKeyboardRequested(ev.browser(), ev.inputMode())));
     }
 }

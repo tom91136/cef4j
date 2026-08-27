@@ -289,7 +289,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
         mappedShmName = null;
         mappedSize = 0;
         // XXX: Remove the Unsafe fallback when the minimum supported Java version provides scoped mapped memory.
-        if (mapping != null && !mapping.close()) {
+        if (mapping != null && !mapping.release()) {
             LOG.debug("explicit shared-frame unmap unavailable for browser={}", browserIdForLog());
         }
         try {

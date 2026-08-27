@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefMediaObserver)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefMediaObserver {
@@ -34,10 +34,11 @@ public interface CefMediaObserver {
     default void onRouteMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle route, byte[] message) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefMediaObserver handler) {
-        session.on(MediaObserverOnRouteStateChangedEvent.MESSAGE_ID, MediaObserverOnRouteStateChangedEvent.DECODER,
-                ev -> handler.onRouteStateChanged(ev.route(), ev.state()));
-        session.on(MediaObserverOnRouteMessageReceivedEvent.MESSAGE_ID, MediaObserverOnRouteMessageReceivedEvent.DECODER,
-                ev -> handler.onRouteMessageReceived(ev.route(), ev.message()));
+    static CefSession.HandlerRegistration register(CefSession session, CefMediaObserver handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(MediaObserverOnRouteStateChangedEvent.MESSAGE_ID, MediaObserverOnRouteStateChangedEvent.DECODER,
+                        ev -> handler.onRouteStateChanged(ev.route(), ev.state())),
+                session.on(MediaObserverOnRouteMessageReceivedEvent.MESSAGE_ID, MediaObserverOnRouteMessageReceivedEvent.DECODER,
+                        ev -> handler.onRouteMessageReceived(ev.route(), ev.message())));
     }
 }

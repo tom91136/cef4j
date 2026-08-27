@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefV8Interceptor)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefV8Interceptor {
@@ -35,14 +35,15 @@ public interface CefV8Interceptor {
     default Boolean setByindex(int index, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefV8Interceptor handler) {
-        session.intercept(V8InterceptorSetBynameEvent.MESSAGE_ID, V8InterceptorSetBynameEvent.DECODER, ev -> {
-            Boolean answer = handler.setByname(ev.name(), ev.object(), ev.value(), ev.exception());
-            return new V8InterceptorSetBynameResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(V8InterceptorSetByindexEvent.MESSAGE_ID, V8InterceptorSetByindexEvent.DECODER, ev -> {
-            Boolean answer = handler.setByindex(ev.index(), ev.object(), ev.value(), ev.exception());
-            return new V8InterceptorSetByindexResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefV8Interceptor handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(V8InterceptorSetBynameEvent.MESSAGE_ID, V8InterceptorSetBynameEvent.DECODER, ev -> {
+                    Boolean answer = handler.setByname(ev.name(), ev.object(), ev.value(), ev.exception());
+                    return new V8InterceptorSetBynameResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(V8InterceptorSetByindexEvent.MESSAGE_ID, V8InterceptorSetByindexEvent.DECODER, ev -> {
+                    Boolean answer = handler.setByindex(ev.index(), ev.object(), ev.value(), ev.exception());
+                    return new V8InterceptorSetByindexResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

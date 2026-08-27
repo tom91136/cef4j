@@ -7,7 +7,7 @@ import scala.concurrent.duration.*
 
 class CoverageIntegrationSpec extends munit.FunSuite {
 
-  // Preprocessing every CEF C API header can exceed two minutes on hosted Windows runners.
+  // XXX: Reduce this timeout when hosted Windows preprocessing is consistently below two minutes.
   override val munitTimeout = 5.minutes
 
   private val cefRoot: Path = {
@@ -19,7 +19,7 @@ class CoverageIntegrationSpec extends munit.FunSuite {
 
   private val cefInclude: Path = cefRoot.resolve("include")
 
-  // CEF headers use `#include "include/capi/..."` so the -I path must be the CEF root
+  // XXX: Remove the explicit CEF-root include path when upstream headers use paths relative to include/.
   private val includeDirs: List[Path] = List(cefRoot)
 
   private val compilerId: String =

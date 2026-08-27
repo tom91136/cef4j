@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * its render-handler view rect and calls {@code was_resized} so CEF re-queries dimensions and emits a fresh paint. The
  * server grows or shrinks its double-buffered shm regions with hysteresis as viewport requirements change.
  */
-public final class RemoteWebView extends Region {
+public final class RemoteWebView extends Region implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoteWebView.class);
 
@@ -536,6 +536,11 @@ public final class RemoteWebView extends Region {
                     new IllegalStateException("RemoteWebView released before browser ready"));
         }
         if (failure != null) throw failure;
+    }
+
+    @Override
+    public void close() {
+        release();
     }
 
     /**

@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDragHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDragHandler {
@@ -24,10 +24,11 @@ public interface CefDragHandler {
     default Boolean onDragEnter(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int mask) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDragHandler handler) {
-        session.intercept(DragHandlerOnDragEnterEvent.MESSAGE_ID, DragHandlerOnDragEnterEvent.DECODER, ev -> {
-            Boolean answer = handler.onDragEnter(ev.browser(), ev.dragData(), ev.mask());
-            return new DragHandlerOnDragEnterResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefDragHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(DragHandlerOnDragEnterEvent.MESSAGE_ID, DragHandlerOnDragEnterEvent.DECODER, ev -> {
+                    Boolean answer = handler.onDragEnter(ev.browser(), ev.dragData(), ev.mask());
+                    return new DragHandlerOnDragEnterResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

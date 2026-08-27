@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefFrameHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefFrameHandler {
@@ -58,16 +58,17 @@ public interface CefFrameHandler {
     default void onMainFrameChanged(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle oldFrame, net.kurobako.cef4j.ipc.session.RemoteHandle newFrame) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefFrameHandler handler) {
-        session.on(FrameHandlerOnFrameCreatedEvent.MESSAGE_ID, FrameHandlerOnFrameCreatedEvent.DECODER,
-                ev -> handler.onFrameCreated(ev.browser(), ev.frame()));
-        session.on(FrameHandlerOnFrameDestroyedEvent.MESSAGE_ID, FrameHandlerOnFrameDestroyedEvent.DECODER,
-                ev -> handler.onFrameDestroyed(ev.browser(), ev.frame()));
-        session.on(FrameHandlerOnFrameAttachedEvent.MESSAGE_ID, FrameHandlerOnFrameAttachedEvent.DECODER,
-                ev -> handler.onFrameAttached(ev.browser(), ev.frame(), ev.reattached()));
-        session.on(FrameHandlerOnFrameDetachedEvent.MESSAGE_ID, FrameHandlerOnFrameDetachedEvent.DECODER,
-                ev -> handler.onFrameDetached(ev.browser(), ev.frame()));
-        session.on(FrameHandlerOnMainFrameChangedEvent.MESSAGE_ID, FrameHandlerOnMainFrameChangedEvent.DECODER,
-                ev -> handler.onMainFrameChanged(ev.browser(), ev.oldFrame(), ev.newFrame()));
+    static CefSession.HandlerRegistration register(CefSession session, CefFrameHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(FrameHandlerOnFrameCreatedEvent.MESSAGE_ID, FrameHandlerOnFrameCreatedEvent.DECODER,
+                        ev -> handler.onFrameCreated(ev.browser(), ev.frame())),
+                session.on(FrameHandlerOnFrameDestroyedEvent.MESSAGE_ID, FrameHandlerOnFrameDestroyedEvent.DECODER,
+                        ev -> handler.onFrameDestroyed(ev.browser(), ev.frame())),
+                session.on(FrameHandlerOnFrameAttachedEvent.MESSAGE_ID, FrameHandlerOnFrameAttachedEvent.DECODER,
+                        ev -> handler.onFrameAttached(ev.browser(), ev.frame(), ev.reattached())),
+                session.on(FrameHandlerOnFrameDetachedEvent.MESSAGE_ID, FrameHandlerOnFrameDetachedEvent.DECODER,
+                        ev -> handler.onFrameDetached(ev.browser(), ev.frame())),
+                session.on(FrameHandlerOnMainFrameChangedEvent.MESSAGE_ID, FrameHandlerOnMainFrameChangedEvent.DECODER,
+                        ev -> handler.onMainFrameChanged(ev.browser(), ev.oldFrame(), ev.newFrame())));
     }
 }

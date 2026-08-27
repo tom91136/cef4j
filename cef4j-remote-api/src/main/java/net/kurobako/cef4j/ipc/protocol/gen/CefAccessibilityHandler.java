@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefAccessibilityHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefAccessibilityHandler {
@@ -31,10 +31,11 @@ public interface CefAccessibilityHandler {
     default void onAccessibilityLocationChange(net.kurobako.cef4j.ipc.session.RemoteHandle value) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefAccessibilityHandler handler) {
-        session.on(AccessibilityHandlerOnAccessibilityTreeChangeEvent.MESSAGE_ID, AccessibilityHandlerOnAccessibilityTreeChangeEvent.DECODER,
-                ev -> handler.onAccessibilityTreeChange(ev.value()));
-        session.on(AccessibilityHandlerOnAccessibilityLocationChangeEvent.MESSAGE_ID, AccessibilityHandlerOnAccessibilityLocationChangeEvent.DECODER,
-                ev -> handler.onAccessibilityLocationChange(ev.value()));
+    static CefSession.HandlerRegistration register(CefSession session, CefAccessibilityHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(AccessibilityHandlerOnAccessibilityTreeChangeEvent.MESSAGE_ID, AccessibilityHandlerOnAccessibilityTreeChangeEvent.DECODER,
+                        ev -> handler.onAccessibilityTreeChange(ev.value())),
+                session.on(AccessibilityHandlerOnAccessibilityLocationChangeEvent.MESSAGE_ID, AccessibilityHandlerOnAccessibilityLocationChangeEvent.DECODER,
+                        ev -> handler.onAccessibilityLocationChange(ev.value())));
     }
 }

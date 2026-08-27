@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @Timeout(30)
-@SuppressWarnings("deprecation") // CefWebEngine.executeScript is deprecated; tests exercise JFX parity
+@SuppressWarnings("deprecation")
 class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTestBase {
     private static final int CEF_REPEAT_COUNT = 3;
     private static final int JFX_REPEAT_COUNT = 1;

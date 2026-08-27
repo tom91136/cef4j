@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefResponseFilter)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefResponseFilter {
@@ -24,10 +24,11 @@ public interface CefResponseFilter {
     default Boolean initFilter() { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefResponseFilter handler) {
-        session.intercept(ResponseFilterInitFilterEvent.MESSAGE_ID, ResponseFilterInitFilterEvent.DECODER, ev -> {
-            Boolean answer = handler.initFilter();
-            return new ResponseFilterInitFilterResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefResponseFilter handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(ResponseFilterInitFilterEvent.MESSAGE_ID, ResponseFilterInitFilterEvent.DECODER, ev -> {
+                    Boolean answer = handler.initFilter();
+                    return new ResponseFilterInitFilterResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

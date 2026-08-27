@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -57,14 +58,13 @@ final class ZmqTransportTest extends CefTransportContractTest {
         try (ZmqTransport client = ZmqTransport.connect(endpoint)) {
             client.send(ByteBuffer.wrap("queued-before-bind".getBytes(StandardCharsets.UTF_8)));
             try (ZmqTransport server = ZmqTransport.bind(endpoint)) {
-                CountDownLatch arrived = new CountDownLatch(1);
+                CompletableFuture<String> arrived = new CompletableFuture<>();
                 server.onReceive(frame -> {
                     byte[] bytes = new byte[frame.remaining()];
                     frame.get(bytes);
-                    assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo("queued-before-bind");
-                    arrived.countDown();
+                    arrived.complete(new String(bytes, StandardCharsets.UTF_8));
                 });
-                assertThat(arrived.await(30, TimeUnit.SECONDS)).isTrue();
+                assertThat(arrived.get(30, TimeUnit.SECONDS)).isEqualTo("queued-before-bind");
             }
         }
     }
@@ -133,23 +133,20 @@ final class ZmqTransportTest extends CefTransportContractTest {
         CountDownLatch firstConnection = new CountDownLatch(1);
         CountDownLatch reconnected = new CountDownLatch(1);
         CountDownLatch disconnected = new CountDownLatch(1);
-        try (ServerSocket server = new ServerSocket(0, 2, InetAddress.getLoopbackAddress())) {
-            Thread peer = new Thread(
-                    () -> {
-                        try (Socket first = server.accept()) {
-                            firstConnection.countDown();
-                            first.getOutputStream().write(zmtpGreetingPrefix);
-                            first.getOutputStream().flush();
-                            try (Socket second = server.accept()) {
-                                if (second.isConnected()) reconnected.countDown();
-                            }
-                        } catch (Exception ignored) {
-                            // Closing the test server is the expected way to release a pending accept.
-                        }
-                    },
-                    "stalled-zmtp-peer");
-            peer.setDaemon(true);
-            peer.start();
+        try (TestExecutor peer = TestExecutor.single("stalled-zmtp-peer");
+                ServerSocket server = new ServerSocket(0, 2, InetAddress.getLoopbackAddress())) {
+            peer.execute(() -> {
+                try (Socket first = server.accept()) {
+                    firstConnection.countDown();
+                    first.getOutputStream().write(zmtpGreetingPrefix);
+                    first.getOutputStream().flush();
+                    try (Socket second = server.accept()) {
+                        if (second.isConnected()) reconnected.countDown();
+                    }
+                } catch (Exception ignored) {
+                    return;
+                }
+            });
             try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort(), 1_000)) {
                 transport.onDisconnect(disconnected::countDown);
                 transport.send(ByteBuffer.wrap(new byte[] {1}));
@@ -221,7 +218,8 @@ final class ZmqTransportTest extends CefTransportContractTest {
     @Test
     void establishedSessionDoesNotRemainConnectedToAStalledGreeting() throws Exception {
         byte[] zmtpGreetingPrefix = {(byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 1, 0x7f};
-        try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
+        try (TestExecutor peer = TestExecutor.single("stalled-established-zmtp-peer");
+                ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
                 TcpProxy proxy = new TcpProxy()) {
             CompletableFuture<Void> initialBridge = proxy.bridgeTo(port(server.endpoint()));
             try (ZmqTransport client = ZmqTransport.connect(proxy.endpoint(), 1_000, () -> true)) {
@@ -235,19 +233,15 @@ final class ZmqTransportTest extends CefTransportContractTest {
                 client.onDisconnect(terminalDisconnect::countDown);
                 proxy.disconnect();
 
-                Thread peer = new Thread(
-                        () -> {
-                            try (Socket socket = proxy.accept()) {
-                                socket.getOutputStream().write(zmtpGreetingPrefix);
-                                socket.getOutputStream().flush();
-                                terminalDisconnect.await(5, TimeUnit.SECONDS);
-                            } catch (Exception expected) {
-                                return;
-                            }
-                        },
-                        "stalled-established-zmtp-peer");
-                peer.setDaemon(true);
-                peer.start();
+                peer.execute(() -> {
+                    try (Socket socket = proxy.accept()) {
+                        socket.getOutputStream().write(zmtpGreetingPrefix);
+                        socket.getOutputStream().flush();
+                        terminalDisconnect.await(5, TimeUnit.SECONDS);
+                    } catch (Exception expected) {
+                        return;
+                    }
+                });
                 assertThat(terminalDisconnect.await(5, TimeUnit.SECONDS)).isTrue();
                 assertThat(client.isConnected()).isFalse();
             }
@@ -261,6 +255,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
     private static final class TcpProxy implements AutoCloseable {
         private final ServerSocket listener;
         private final Object lock = new Object();
+        private final TestExecutor executor = TestExecutor.fixed(3, "zmq-test-proxy");
 
         @Nullable
         private Socket client;
@@ -281,20 +276,22 @@ final class ZmqTransportTest extends CefTransportContractTest {
         }
 
         private CompletableFuture<Void> bridgeTo(int port) {
-            return CompletableFuture.runAsync(() -> {
-                try {
-                    Socket nextClient = listener.accept();
-                    Socket nextServer = connect(port);
-                    synchronized (lock) {
-                        client = nextClient;
-                        server = nextServer;
-                    }
-                    relay(nextClient, nextServer);
-                    relay(nextServer, nextClient);
-                } catch (Exception failure) {
-                    throw new java.util.concurrent.CompletionException(failure);
-                }
-            });
+            return CompletableFuture.runAsync(
+                    () -> {
+                        try {
+                            Socket nextClient = listener.accept();
+                            Socket nextServer = connect(port);
+                            synchronized (lock) {
+                                client = nextClient;
+                                server = nextServer;
+                            }
+                            relay(nextClient, nextServer);
+                            relay(nextServer, nextClient);
+                        } catch (Exception failure) {
+                            throw new java.util.concurrent.CompletionException(failure);
+                        }
+                    },
+                    executor);
         }
 
         private static Socket connect(int port) throws Exception {
@@ -327,6 +324,17 @@ final class ZmqTransportTest extends CefTransportContractTest {
         public void close() {
             disconnect();
             close(listener);
+            executor.close();
+        }
+
+        private void relay(Socket source, Socket destination) {
+            executor.execute(() -> {
+                try {
+                    source.getInputStream().transferTo(destination.getOutputStream());
+                } catch (Exception expected) {
+                    return;
+                }
+            });
         }
 
         private static void close(@Nullable java.io.Closeable resource) {
@@ -337,19 +345,5 @@ final class ZmqTransportTest extends CefTransportContractTest {
                 return;
             }
         }
-    }
-
-    private static void relay(Socket source, Socket destination) {
-        Thread relay = new Thread(
-                () -> {
-                    try {
-                        source.getInputStream().transferTo(destination.getOutputStream());
-                    } catch (Exception expected) {
-                        return;
-                    }
-                },
-                "zmq-test-proxy");
-        relay.setDaemon(true);
-        relay.start();
     }
 }

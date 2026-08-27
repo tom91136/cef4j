@@ -25,8 +25,8 @@ public interface CefPreferenceObserver {
      * Wires inbound {@link PreferenceObserverOnPreferenceChangedCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefPreferenceObserver} registered under that callbackId. Call once per session.
      */
-    static void route(CefSession session, JvmCallbackTable<CefPreferenceObserver> table) {
-        session.on(PreferenceObserverOnPreferenceChangedCallbackEvent.MESSAGE_ID, PreferenceObserverOnPreferenceChangedCallbackEvent.DECODER, ev -> {
+    static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefPreferenceObserver> table) {
+        return session.on(PreferenceObserverOnPreferenceChangedCallbackEvent.MESSAGE_ID, PreferenceObserverOnPreferenceChangedCallbackEvent.DECODER, ev -> {
             CefPreferenceObserver v = table.lookup(ev.callbackId());
             if (v != null) v.onPreferenceChanged(ev.name());
         });

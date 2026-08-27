@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * <p>CEF cannot be re-initialized after {@link #terminate()}.
  */
 @SuppressWarnings({"unused", "ImmutableEnumChecker"})
-public enum Cef {
+public enum Cef implements AutoCloseable {
     INSTANCE;
 
     /** CEF state. */
@@ -479,6 +479,11 @@ public enum Cef {
             state = State.TERMINATED;
         }
         log.debug("CEF terminated");
+    }
+
+    @Override
+    public void close() {
+        terminate();
     }
 
     static void awaitUninterruptibly(CountDownLatch latch) {

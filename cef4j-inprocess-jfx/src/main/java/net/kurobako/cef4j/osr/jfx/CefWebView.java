@@ -64,7 +64,7 @@ import net.kurobako.cef4j.gen.CefWindowInfo;
 
 /** JavaFX off-screen rendering view backed by a CEF browser. */
 @SuppressWarnings({"this-escape", "resource"})
-public class CefWebView extends Region {
+public class CefWebView extends Region implements AutoCloseable {
     private static final Cleaner CLEANER = Cleaner.create();
     private static final Object INITIALISE_LOCK = new Object();
     private static final CefKeyEventType KEY_RAWKEYDOWN = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
@@ -409,6 +409,11 @@ public class CefWebView extends Region {
     @SuppressWarnings("FutureReturnValueIgnored")
     public void release() {
         releaseAsync();
+    }
+
+    @Override
+    public void close() {
+        release();
     }
 
     /**

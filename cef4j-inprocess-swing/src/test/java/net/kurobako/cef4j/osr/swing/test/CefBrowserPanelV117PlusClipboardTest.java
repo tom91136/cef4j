@@ -12,8 +12,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
@@ -418,20 +420,16 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     }
 
     private static <T> T runWithTimeout(Callable<T> task, long timeoutMillis, String timeoutMessage) throws Exception {
-        CompletableFuture<T> future = CompletableFuture.supplyAsync(() -> {
-            try {
-                return task.call();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        ExecutorService executor = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "cef4j-test-clipboard");
+            thread.setDaemon(true);
+            return thread;
         });
+        Future<T> future = executor.submit(task);
         try {
             return future.get(timeoutMillis, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException && cause.getCause() instanceof Exception) {
-                throw (Exception) cause.getCause();
-            }
             if (cause instanceof Exception) {
                 throw (Exception) cause;
             }
@@ -439,6 +437,8 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
         } catch (TimeoutException e) {
             future.cancel(true);
             throw new TimeoutException(timeoutMessage);
+        } finally {
+            executor.shutdownNow();
         }
     }
 }

@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 
 final class FrameCodecTest {
@@ -49,15 +51,18 @@ final class FrameCodecTest {
             }
         };
         EncodedFramePipeline pipeline = new EncodedFramePipeline(codec, ignored -> {}, Duration.ofMillis(100), false);
-        pipeline.submit(frame(1, 1, 1, new byte[] {0, 0, 0, (byte) 255}));
-        assertThat(encodeEntered.await(2, TimeUnit.SECONDS)).isTrue();
+        try {
+            TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(2));
+            pipeline.submit(frame(1, 1, 1, new byte[] {0, 0, 0, (byte) 255}));
+            deadline.await(encodeEntered, "codec encode entry");
 
-        long started = System.nanoTime();
-        pipeline.close();
-
-        assertThat(Duration.ofNanos(System.nanoTime() - started)).isLessThan(Duration.ofSeconds(2));
-        releaseEncode.countDown();
-        assertThat(codecClosed.await(2, TimeUnit.SECONDS)).isTrue();
+            Thread closer = new Thread(pipeline::close, "bounded-frame-pipeline-close");
+            closer.start();
+            deadline.join(closer, "bounded pipeline close");
+        } finally {
+            releaseEncode.countDown();
+        }
+        TestDeadline.after(Duration.ofSeconds(2)).await(codecClosed, "codec close");
     }
 
     @Test
@@ -137,8 +142,7 @@ final class FrameCodecTest {
         assertThat(keyFrameEntered.await(100, TimeUnit.MILLISECONDS)).isFalse();
         assertThat(closeEntered.await(100, TimeUnit.MILLISECONDS)).isFalse();
         releaseEncode.countDown();
-        closer.join(5_000);
-        assertThat(closer.isAlive()).isFalse();
+        TestDeadline.after(Duration.ofSeconds(5)).join(closer, "serialized pipeline close");
         assertThat(keyFrameEntered.getCount()).isZero();
         assertThat(closeEntered.getCount()).isZero();
         assertThat(overlap).isFalse();
@@ -208,27 +212,35 @@ final class FrameCodecTest {
     @Test
     void servesChromeCompatibleMultipartMjpeg() throws Exception {
         TestFrameTransport frames = new TestFrameTransport();
-        try (MjpegHttpServer server = MjpegHttpServer.start(MjpegHttpServer.Configuration.loopback(0))) {
+        try (TestExecutor executor = TestExecutor.single("mjpeg-response-reader");
+                MjpegHttpServer server = MjpegHttpServer.start(MjpegHttpServer.Configuration.loopback(0))) {
             server.attach(frames);
-            CompletableFuture<byte[]> response = CompletableFuture.supplyAsync(() -> {
-                try {
-                    HttpURLConnection connection =
-                            (HttpURLConnection) server.endpoint().toURL().openConnection();
-                    connection.setConnectTimeout(3000);
-                    connection.setReadTimeout(5000);
-                    assertThat(connection.getContentType()).startsWith("multipart/x-mixed-replace");
-                    return connection.getInputStream().readNBytes(512);
-                } catch (Exception failure) {
-                    throw new RuntimeException(failure);
-                }
-            });
+            CompletableFuture<byte[]> response = CompletableFuture.supplyAsync(
+                    () -> {
+                        HttpURLConnection connection = null;
+                        try {
+                            connection = (HttpURLConnection)
+                                    server.endpoint().toURL().openConnection();
+                            connection.setConnectTimeout(3000);
+                            connection.setReadTimeout(5000);
+                            assertThat(connection.getContentType()).startsWith("multipart/x-mixed-replace");
+                            return connection.getInputStream().readNBytes(512);
+                        } catch (Exception failure) {
+                            throw new RuntimeException(failure);
+                        } finally {
+                            if (connection != null) connection.disconnect();
+                        }
+                    },
+                    executor);
             frames.emit(frame(23L, 2, 1, new byte[] {0, 0, (byte) 255, (byte) 255, (byte) 255, 0, 0, (byte) 255}));
-            byte[] multipart = response.get(8, TimeUnit.SECONDS);
+            byte[] multipart = TestDeadline.after(Duration.ofSeconds(8)).await(response, "MJPEG response");
             String header = new String(
                     multipart, 0, Math.min(multipart.length, 180), java.nio.charset.StandardCharsets.ISO_8859_1);
             assertThat(header).contains("Content-Type: image/jpeg").contains("X-Cef4j-Sequence: 23");
             assertThat(indexOf(multipart, new byte[] {(byte) 0xff, (byte) 0xd8}))
                     .isGreaterThan(0);
+        } finally {
+            frames.close();
         }
     }
 

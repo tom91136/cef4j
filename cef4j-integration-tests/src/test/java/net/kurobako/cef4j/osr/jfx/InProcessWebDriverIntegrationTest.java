@@ -28,6 +28,7 @@ import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.DisplayLock;
+import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessBrowserRuntime;
@@ -43,10 +44,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-/** Proves that the common W3C/CDP implementation can automate CEF hosted in this JVM. */
 @Timeout(600)
 @ExtendWith(DisplayLock.class)
 class InProcessWebDriverIntegrationTest {
+    private static final TestExecutor BROWSER_CREATOR = TestExecutor.single("in-process-browser-creator");
+
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
@@ -67,8 +69,12 @@ class InProcessWebDriverIntegrationTest {
 
     @AfterAll
     static void terminateCef() throws Exception {
-        closeAllWindows();
-        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
+        try {
+            closeAllWindows();
+            if (Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
+        } finally {
+            BROWSER_CREATOR.close();
+        }
     }
 
     @Test
@@ -102,49 +108,52 @@ class InProcessWebDriverIntegrationTest {
     }
 
     private static CompletableFuture<? extends InProcessBrowserRuntime> createBrowser() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Object[] created = Objects.requireNonNull(
-                        onFxThread(() -> {
-                            CefWebView view = new CefWebView();
-                            Stage stage = new Stage();
-                            stage.setScene(new Scene(new StackPane(view), 800, 600));
-                            stage.show();
-                            return new Object[] {view, stage};
-                        }),
-                        "created browser");
-                CefWebView view = (CefWebView) created[0];
-                Stage stage = (Stage) created[1];
-                if (!waitUntil(() -> view.getBrowser() != null, 20_000)) {
-                    onFxThread(() -> {
-                        stage.close();
-                        view.release();
-                    });
-                    throw new IllegalStateException("CEF browser was not created within 20 seconds");
-                }
-                CefBrowser browser = Objects.requireNonNull(view.getBrowser(), "view browser");
-                return new InProcessBrowserRuntime() {
-                    @Override
-                    public CefBrowser browser() {
-                        return browser;
-                    }
-
-                    @Override
-                    public void close() {
-                        try {
-                            CompletableFuture<Void> released = onFxThread(() -> {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        Object[] created = Objects.requireNonNull(
+                                onFxThread(() -> {
+                                    CefWebView view = new CefWebView();
+                                    Stage stage = new Stage();
+                                    stage.setScene(new Scene(new StackPane(view), 800, 600));
+                                    stage.show();
+                                    return new Object[] {view, stage};
+                                }),
+                                "created browser");
+                        CefWebView view = (CefWebView) created[0];
+                        Stage stage = (Stage) created[1];
+                        if (!waitUntil(() -> view.getBrowser() != null, 20_000)) {
+                            onFxThread(() -> {
                                 stage.close();
-                                return view.releaseAsync();
+                                view.release();
                             });
-                            Objects.requireNonNull(released, "browser release").get(10, TimeUnit.SECONDS);
-                        } catch (Exception failure) {
-                            throw new RuntimeException("failed to close in-process browser", failure);
+                            throw new IllegalStateException("CEF browser was not created within 20 seconds");
                         }
+                        CefBrowser browser = Objects.requireNonNull(view.getBrowser(), "view browser");
+                        return new InProcessBrowserRuntime() {
+                            @Override
+                            public CefBrowser browser() {
+                                return browser;
+                            }
+
+                            @Override
+                            public void close() {
+                                try {
+                                    CompletableFuture<Void> released = onFxThread(() -> {
+                                        stage.close();
+                                        return view.releaseAsync();
+                                    });
+                                    Objects.requireNonNull(released, "browser release")
+                                            .get(10, TimeUnit.SECONDS);
+                                } catch (Exception failure) {
+                                    throw new RuntimeException("failed to close in-process browser", failure);
+                                }
+                            }
+                        };
+                    } catch (Exception failure) {
+                        throw new CompletionException(failure);
                     }
-                };
-            } catch (Exception failure) {
-                throw new CompletionException(failure);
-            }
-        });
+                },
+                BROWSER_CREATOR);
     }
 }

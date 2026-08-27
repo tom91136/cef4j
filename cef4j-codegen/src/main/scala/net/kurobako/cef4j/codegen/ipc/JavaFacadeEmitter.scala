@@ -36,18 +36,18 @@ object JavaFacadeEmitter {
        | * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a runtime-server-side
        | * ref-counted CEF object.
        | */
-       |public final class $cls {
+       |public final class $cls implements AutoCloseable {
        |
        |    private final CefSession session;
        |$frameField    private final RemoteHandle handle;
+       |    @Nullable private CompletableFuture<Void> closeFuture;
        |
        |$ctor
        |
        |    @Nonnull
        |    public RemoteHandle handle() {
        |        return handle;
-       |    }
-       |$frameAccessor
+       |    }$frameAccessor
        |
        |$close
        |
@@ -56,31 +56,41 @@ object JavaFacadeEmitter {
        |""".stripMargin
   }
 
-  private def renderClose(spec: FacadeSpec): String =
-    if (spec.affinity == ProcessAffinity.Renderer)
-      // Renderer-owned handles must be released through their frame.
-      s"""    /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
-         |      * ${spec.cefStructName} only exists in the renderer subprocess's table state. */
-         |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-         |        return CefFutures.map(
-         |            session.request(
-         |                new RendererReleaseHandleRequest(frame, handle, "${spec.cefStructName}"),
-         |                RendererReleaseHandleResponse.DECODER),
-         |            r -> null);
-         |    }""".stripMargin
-    else
-      s"""    /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
-         |      * will fail with an empty / null-receiver response. */
-         |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
-         |        return CefFutures.map(
-         |            session.request(
-         |                new ReleaseHandleRequest(handle, "${spec.cefStructName}"), ReleaseHandleResponse.DECODER),
-         |            r -> null);
-         |    }""".stripMargin
+  private def renderClose(spec: FacadeSpec): String = {
+    val request =
+      if (spec.affinity == ProcessAffinity.Renderer)
+        s"""            closeFuture = CefFutures.map(
+           |                session.request(
+           |                    new RendererReleaseHandleRequest(frame, handle, "${spec.cefStructName}"),
+           |                    RendererReleaseHandleResponse.DECODER),
+           |                r -> null);""".stripMargin
+      else
+        s"""            closeFuture = CefFutures.map(
+           |                session.request(
+           |                    new ReleaseHandleRequest(handle, "${spec.cefStructName}"), ReleaseHandleResponse.DECODER),
+           |                r -> null);""".stripMargin
+    s"""    public synchronized CompletableFuture<Void> closeAsync() {
+       |        if (closeFuture == null) {
+       |$request
+       |        }
+       |        return closeFuture;
+       |    }
+       |
+       |    public CompletableFuture<Void> releaseHandle() {
+       |        return closeAsync();
+       |    }
+       |
+       |    @Override
+       |    @SuppressWarnings("FutureReturnValueIgnored")
+       |    public void close() {
+       |        closeAsync();
+       |    }""".stripMargin
+  }
 
   private def renderImports: String = List(
     "import java.util.concurrent.CompletableFuture;",
     "import javax.annotation.Nonnull;",
+    "import javax.annotation.Nullable;",
     "import net.kurobako.cef4j.ipc.session.CefFutures;",
     "import net.kurobako.cef4j.ipc.session.CefSession;",
     "import net.kurobako.cef4j.ipc.session.RemoteHandle;"

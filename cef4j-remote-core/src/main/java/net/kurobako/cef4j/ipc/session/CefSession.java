@@ -1,7 +1,9 @@
 package net.kurobako.cef4j.ipc.session;
 
 import java.io.Closeable;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,6 +65,25 @@ public interface CefSession extends Closeable {
 
     /** Returned from {@link #on}/{@link #intercept}; call {@link #unregister} to stop delivery. */
     interface HandlerRegistration extends AutoCloseable {
+        static HandlerRegistration combine(@Nonnull HandlerRegistration... registrations) {
+            HandlerRegistration[] owned = registrations.clone();
+            for (HandlerRegistration registration : owned) Objects.requireNonNull(registration, "registration");
+            AtomicBoolean closed = new AtomicBoolean();
+            return () -> {
+                if (!closed.compareAndSet(false, true)) return;
+                RuntimeException failure = null;
+                for (int index = owned.length - 1; index >= 0; index--) {
+                    try {
+                        owned[index].close();
+                    } catch (RuntimeException closeFailure) {
+                        if (failure == null) failure = closeFailure;
+                        else failure.addSuppressed(closeFailure);
+                    }
+                }
+                if (failure != null) throw failure;
+            };
+        }
+
         void unregister();
 
         @Override

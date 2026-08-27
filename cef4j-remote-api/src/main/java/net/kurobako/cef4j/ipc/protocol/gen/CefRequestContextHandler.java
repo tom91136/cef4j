@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefRequestContextHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefRequestContextHandler {
@@ -23,8 +23,9 @@ public interface CefRequestContextHandler {
     default void onRequestContextInitialized(net.kurobako.cef4j.ipc.session.RemoteHandle requestContext) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefRequestContextHandler handler) {
-        session.on(RequestContextHandlerOnRequestContextInitializedEvent.MESSAGE_ID, RequestContextHandlerOnRequestContextInitializedEvent.DECODER,
-                ev -> handler.onRequestContextInitialized(ev.requestContext()));
+    static CefSession.HandlerRegistration register(CefSession session, CefRequestContextHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(RequestContextHandlerOnRequestContextInitializedEvent.MESSAGE_ID, RequestContextHandlerOnRequestContextInitializedEvent.DECODER,
+                        ev -> handler.onRequestContextInitialized(ev.requestContext())));
     }
 }

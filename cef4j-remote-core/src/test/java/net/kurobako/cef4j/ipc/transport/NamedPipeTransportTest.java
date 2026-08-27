@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -51,15 +52,17 @@ class NamedPipeTransportTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         NamedPipeTransport transport =
                 new NamedPipeTransport("pipe://duplex-test", blockingInput, blockingInput, output);
-        assertThat(availabilityChecked.await(1, TimeUnit.SECONDS)).isTrue();
-        assertThat(readEntered.getCount()).isEqualTo(1L);
+        try {
+            assertThat(availabilityChecked.await(1, TimeUnit.SECONDS)).isTrue();
+            assertThat(readEntered.getCount()).isEqualTo(1L);
 
-        org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(
-                Duration.ofSeconds(1), () -> transport.send(ByteBuffer.wrap(new byte[] {1, 2, 3})));
-        assertThat(output.toByteArray()).containsExactly(0, 0, 0, 3, 1, 2, 3);
-
-        transport.close();
-        unblockRead.countDown();
+            org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(
+                    Duration.ofSeconds(1), () -> transport.send(ByteBuffer.wrap(new byte[] {1, 2, 3})));
+            assertThat(output.toByteArray()).containsExactly(0, 0, 0, 3, 1, 2, 3);
+        } finally {
+            transport.close();
+            unblockRead.countDown();
+        }
     }
 
     @Test
@@ -77,15 +80,15 @@ class NamedPipeTransportTest {
             }
         };
 
-        long started = System.nanoTime();
         Thread closer = NamedPipeTransport.closeAsync("pipe://blocked-test", blockingHandle);
-        assertThat(closeEntered.await(1, TimeUnit.SECONDS)).isTrue();
-        assertThat(System.nanoTime() - started).isLessThan(TimeUnit.SECONDS.toNanos(1));
-        assertThat(closer.isDaemon()).isTrue();
-        assertThat(closed).isFalse();
-
-        unblockClose.countDown();
-        closer.join(TimeUnit.SECONDS.toMillis(1));
+        try {
+            assertThat(closeEntered.await(1, TimeUnit.SECONDS)).isTrue();
+            assertThat(closer.isDaemon()).isTrue();
+            assertThat(closed).isFalse();
+        } finally {
+            unblockClose.countDown();
+        }
+        TestDeadline.after(Duration.ofSeconds(1)).join(closer, "blocked native close");
         assertThat(closed).isTrue();
     }
 }

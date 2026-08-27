@@ -44,7 +44,7 @@ class RemoteBrowserPanelTest {
 
         assertThat(panel.browserReady()).isCompletedWithValue(new RemoteHandle(17));
         assertThat(frames.consumer).isNotNull();
-        panel.release();
+        panel.close();
         assertThat(frames.closed).isTrue();
     }
 

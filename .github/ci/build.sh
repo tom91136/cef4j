@@ -153,9 +153,9 @@ fi
 
 if [ "${is_linux:-}" = 1 ]; then
     xvfb-run -a --server-args='-screen 0 1920x1080x24 -noreset' \
-        ./mvnw -B -T1 clean install "${properties[@]}"
+        ./mvnw -B -T1 --fail-at-end clean install "${properties[@]}"
 else
-    ./mvnw -B -T1 clean install "${properties[@]}"
+    ./mvnw -B -T1 --fail-at-end clean install "${properties[@]}"
 fi
 verify_thin_platform_jar
 [ "${is_linux:-}" = 1 ] && verify_linux_abi

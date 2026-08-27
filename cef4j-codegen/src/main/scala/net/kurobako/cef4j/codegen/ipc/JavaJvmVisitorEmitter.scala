@@ -34,8 +34,8 @@ object JavaJvmVisitorEmitter {
        |     * Wires inbound {@link $event} frames into the supplied {@code table} so each visitor invocation
        |     * dispatches to the {@code $cls} registered under that callbackId. Call once per session.
        |     */
-       |    static void route(CefSession session, JvmCallbackTable<$cls> table) {
-       |        session.on($event.MESSAGE_ID, $event.DECODER, ev -> {
+       |    static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<$cls> table) {
+       |        return session.on($event.MESSAGE_ID, $event.DECODER, ev -> {
        |            $cls v = table.lookup(ev.callbackId());
        |            if (v != null) v.$methodName($callArgs);
        |        });

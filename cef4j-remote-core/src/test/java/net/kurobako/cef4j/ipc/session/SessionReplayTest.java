@@ -14,11 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Drives a {@link CefSessionImpl} via a {@link ReplayTransport} fed from a hand-built {@link MessageLog} fixture.
- * Demonstrates the time-travel determinism story: same log + same handler registrations always produce the same
- * dispatched events, no live peer involved.
- */
 @Timeout(15)
 class SessionReplayTest {
 
@@ -28,14 +23,13 @@ class SessionReplayTest {
     private static byte[] envelope(Envelope.Kind kind, int corrId, int messageId, byte[] payload) {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + payload.length).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, kind, /*flags*/ 0, corrId, messageId, payload.length);
+        Envelope.writeHeader(buf, kind, 0, corrId, messageId, payload.length);
         buf.put(payload);
         return buf.array();
     }
 
     @Test
     void replayedEventsDispatchToSubscribedHandlers(@TempDir Path tmp) throws Exception {
-        // Pre-build a MessageLog with two recorded INBOUND events.
         Path log = tmp.resolve("session.log");
         try (MessageLog.Writer w = MessageLog.writer(log)) {
             w.append(
@@ -64,9 +58,6 @@ class SessionReplayTest {
                     TestMessages.bytesDecoder(MSG_TITLE_CHANGED),
                     v -> titles.add(new String(v.bytes, StandardCharsets.UTF_8)));
 
-            // Dispatch only fires once start() is called, after handlers are wired - this avoids the race that
-            // would happen if the transport drained on onReceive() (the session installs onReceive in its ctor,
-            // before user code can call session.on()).
             replay.start();
 
             assertThat(titles).containsExactly("first title", "second title");
@@ -75,18 +66,12 @@ class SessionReplayTest {
 
     @Test
     void replayedResponseResolvesPendingRequest(@TempDir Path tmp) throws Exception {
-        // corrId=0 is reserved for the runtime readiness exchange. Application request allocation is monotonic
-        // from 1, so a recorded response for the first application request deterministically uses corrId=1.
         Path log = tmp.resolve("session.log");
         try (MessageLog.Writer w = MessageLog.writer(log)) {
             w.append(
                     MessageLog.Direction.INBOUND,
                     100L,
-                    envelope(
-                            Envelope.Kind.RESPONSE,
-                            /*corrId*/ 1,
-                            MSG_NAVIGATE,
-                            "navigated".getBytes(StandardCharsets.UTF_8)));
+                    envelope(Envelope.Kind.RESPONSE, 1, MSG_NAVIGATE, "navigated".getBytes(StandardCharsets.UTF_8)));
         }
 
         try (ReplayTransport replay = ReplayTransport.fromFile(log);
@@ -95,14 +80,11 @@ class SessionReplayTest {
                     new TestMessages.BytesEncoder(MSG_NAVIGATE, "https://example.com".getBytes(StandardCharsets.UTF_8)),
                     TestMessages.bytesDecoder(MSG_NAVIGATE));
 
-            // The request was just queued onto the transport; replay.send captured it but no peer responds.
-            // Drain inbound: this delivers the canned RESPONSE which resolves the pending future.
             replay.start();
 
             TestMessages.BytesView v = fut.get(2, java.util.concurrent.TimeUnit.SECONDS);
             assertThat(new String(v.bytes, StandardCharsets.UTF_8)).isEqualTo("navigated");
 
-            // The session's own outbound (the request) is captured by replay for inspection.
             assertThat(replay.actualOutbound()).hasSize(1);
         }
     }

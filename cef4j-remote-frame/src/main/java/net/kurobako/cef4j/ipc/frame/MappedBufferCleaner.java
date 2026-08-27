@@ -20,7 +20,7 @@ final class MappedBufferCleaner {
         return new Mapping(buffer, false, () -> UnsafeCleaner.clean(buffer));
     }
 
-    static final class Mapping {
+    static final class Mapping implements AutoCloseable {
         private final ByteBuffer buffer;
         private final boolean scoped;
         private final Releaser releaser;
@@ -40,10 +40,15 @@ final class MappedBufferCleaner {
             return scoped;
         }
 
-        synchronized boolean close() {
+        synchronized boolean release() {
             if (closed) return true;
             closed = true;
             return releaser.release();
+        }
+
+        @Override
+        public void close() {
+            release();
         }
     }
 

@@ -39,8 +39,7 @@ import org.junit.jupiter.api.io.TempDir;
 class CefWebViewSchemeTest {
 
     // XXX: CEF 150 keeps macOS cache files mapped until process exit; restore eager TempDir cleanup when the minimum
-    // CEF
-    // major is above 150 and the macOS scheme-test fork deletes its cache after normal cef_shutdown.
+    // CEF major is above 150 and the macOS scheme-test fork deletes its cache after normal cef_shutdown.
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path cacheRoot;
@@ -125,7 +124,7 @@ class CefWebViewSchemeTest {
     }
 
     @Test
-    void classpathUrl_loadsInCefWebView() throws Exception {
+    void classpathUrlLoadsInCefWebView() throws Exception {
         CompletableFuture<CefScriptEngine> engineFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
             try {

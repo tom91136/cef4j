@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefKeyboardHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefKeyboardHandler {
@@ -24,10 +24,11 @@ public interface CefKeyboardHandler {
     default Boolean onKeyEvent(net.kurobako.cef4j.ipc.session.RemoteHandle browser, KeyEvent event, long osEvent) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefKeyboardHandler handler) {
-        session.intercept(KeyboardHandlerOnKeyEventEvent.MESSAGE_ID, KeyboardHandlerOnKeyEventEvent.DECODER, ev -> {
-            Boolean answer = handler.onKeyEvent(ev.browser(), ev.event(), ev.osEvent());
-            return new KeyboardHandlerOnKeyEventResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefKeyboardHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(KeyboardHandlerOnKeyEventEvent.MESSAGE_ID, KeyboardHandlerOnKeyEventEvent.DECODER, ev -> {
+                    Boolean answer = handler.onKeyEvent(ev.browser(), ev.event(), ev.osEvent());
+                    return new KeyboardHandlerOnKeyEventResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

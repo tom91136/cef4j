@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import org.junit.jupiter.api.Test;
 
-/** Round-trip codec tests for the AST-derived wire types. */
 class CodecTest {
 
     private static <T extends net.kurobako.cef4j.ipc.session.CefMessageEncoder> ByteBuffer encode(T msg) {
@@ -51,14 +50,11 @@ class CodecTest {
 
     @Test
     void handWrittenMessageIdsAreStable() {
-        // Hand-written specs claim ids in [1, AstIdBase). AST-derived ids are stable Murmur3 hashes well above.
         assertThat(ReleaseHandleRequest.MESSAGE_ID).isEqualTo(6);
     }
 
     @Test
     void dataStructRoundTripRect() {
-        // Validates the JavaDataStructEmitter wire codec for a primitive-only struct. The same wire bytes are
-        // what CppEmitter produces for the C++ overlay, so passing this means the two languages agree.
         Rect original = new Rect(10, 20, 800, 600);
         ByteBuffer buf = ByteBuffer.allocate(original.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
         original.encodeInto(buf);
@@ -72,8 +68,6 @@ class CodecTest {
 
     @Test
     void dataStructRoundTripBrowserSettings() {
-        // Validates a struct with mixed primitives + strings via the generated builder (28-arg ctor would
-        // be unreadable; the builder defaults the rest to 0/false/"").
         BrowserSettings settings = BrowserSettings.builder()
                 .windowlessFrameRate(30)
                 .fantasyFontFamily("Times New Roman")
@@ -93,7 +87,6 @@ class CodecTest {
         assertThat(decoded.fantasyFontFamily()).isEqualTo("Times New Roman");
         assertThat(decoded.defaultEncoding()).isEqualTo("UTF-8");
         assertThat(decoded.backgroundColor()).isEqualTo(0xFFFFFF);
-        // Fields not set on the builder default to 0/"".
         assertThat(decoded.standardFontFamily()).isEmpty();
         assertThat(decoded.remoteFonts()).isZero();
     }

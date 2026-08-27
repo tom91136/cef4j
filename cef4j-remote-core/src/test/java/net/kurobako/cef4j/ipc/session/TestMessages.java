@@ -4,12 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
 
-/** Hand-rolled message types used by session tests; codegen will replace these in Slice D. */
 final class TestMessages {
 
     private TestMessages() {}
 
-    /** A view that just exposes the raw payload bytes; convenient for assertions. */
     static final class BytesView implements CefMessageView {
         final int messageId;
         final byte[] bytes;

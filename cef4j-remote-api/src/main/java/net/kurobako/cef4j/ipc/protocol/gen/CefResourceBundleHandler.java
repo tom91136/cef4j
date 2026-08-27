@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefResourceBundleHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefResourceBundleHandler {
@@ -24,10 +24,11 @@ public interface CefResourceBundleHandler {
     default Boolean getLocalizedString(int stringId, String string) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefResourceBundleHandler handler) {
-        session.intercept(ResourceBundleHandlerGetLocalizedStringEvent.MESSAGE_ID, ResourceBundleHandlerGetLocalizedStringEvent.DECODER, ev -> {
-            Boolean answer = handler.getLocalizedString(ev.stringId(), ev.string());
-            return new ResourceBundleHandlerGetLocalizedStringResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefResourceBundleHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(ResourceBundleHandlerGetLocalizedStringEvent.MESSAGE_ID, ResourceBundleHandlerGetLocalizedStringEvent.DECODER, ev -> {
+                    Boolean answer = handler.getLocalizedString(ev.stringId(), ev.string());
+                    return new ResourceBundleHandlerGetLocalizedStringResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

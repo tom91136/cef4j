@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDownloadHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDownloadHandler {
@@ -41,16 +41,17 @@ public interface CefDownloadHandler {
     default void onDownloadUpdated(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle downloadItem, net.kurobako.cef4j.ipc.session.RemoteHandle callback) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDownloadHandler handler) {
-        session.intercept(DownloadHandlerCanDownloadEvent.MESSAGE_ID, DownloadHandlerCanDownloadEvent.DECODER, ev -> {
-            Boolean answer = handler.canDownload(ev.browser(), ev.url(), ev.requestMethod());
-            return new DownloadHandlerCanDownloadResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(DownloadHandlerOnBeforeDownloadEvent.MESSAGE_ID, DownloadHandlerOnBeforeDownloadEvent.DECODER, ev -> {
-            Boolean answer = handler.onBeforeDownload(ev.browser(), ev.downloadItem(), ev.suggestedName(), ev.callback());
-            return new DownloadHandlerOnBeforeDownloadResponse(answer != null && answer.booleanValue());
-        });
-        session.on(DownloadHandlerOnDownloadUpdatedEvent.MESSAGE_ID, DownloadHandlerOnDownloadUpdatedEvent.DECODER,
-                ev -> handler.onDownloadUpdated(ev.browser(), ev.downloadItem(), ev.callback()));
+    static CefSession.HandlerRegistration register(CefSession session, CefDownloadHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(DownloadHandlerCanDownloadEvent.MESSAGE_ID, DownloadHandlerCanDownloadEvent.DECODER, ev -> {
+                    Boolean answer = handler.canDownload(ev.browser(), ev.url(), ev.requestMethod());
+                    return new DownloadHandlerCanDownloadResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(DownloadHandlerOnBeforeDownloadEvent.MESSAGE_ID, DownloadHandlerOnBeforeDownloadEvent.DECODER, ev -> {
+                    Boolean answer = handler.onBeforeDownload(ev.browser(), ev.downloadItem(), ev.suggestedName(), ev.callback());
+                    return new DownloadHandlerOnBeforeDownloadResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(DownloadHandlerOnDownloadUpdatedEvent.MESSAGE_ID, DownloadHandlerOnDownloadUpdatedEvent.DECODER,
+                        ev -> handler.onDownloadUpdated(ev.browser(), ev.downloadItem(), ev.callback())));
     }
 }

@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefMenuModelDelegate)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefMenuModelDelegate {
@@ -72,22 +72,23 @@ public interface CefMenuModelDelegate {
     default Boolean formatLabel(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, String label) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefMenuModelDelegate handler) {
-        session.on(MenuModelDelegateExecuteCommandEvent.MESSAGE_ID, MenuModelDelegateExecuteCommandEvent.DECODER,
-                ev -> handler.executeCommand(ev.menuModel(), ev.commandId(), ev.eventFlags()));
-        session.on(MenuModelDelegateMouseOutsideMenuEvent.MESSAGE_ID, MenuModelDelegateMouseOutsideMenuEvent.DECODER,
-                ev -> handler.mouseOutsideMenu(ev.menuModel(), ev.screenPoint()));
-        session.on(MenuModelDelegateUnhandledOpenSubmenuEvent.MESSAGE_ID, MenuModelDelegateUnhandledOpenSubmenuEvent.DECODER,
-                ev -> handler.unhandledOpenSubmenu(ev.menuModel(), ev.isRtl()));
-        session.on(MenuModelDelegateUnhandledCloseSubmenuEvent.MESSAGE_ID, MenuModelDelegateUnhandledCloseSubmenuEvent.DECODER,
-                ev -> handler.unhandledCloseSubmenu(ev.menuModel(), ev.isRtl()));
-        session.on(MenuModelDelegateMenuWillShowEvent.MESSAGE_ID, MenuModelDelegateMenuWillShowEvent.DECODER,
-                ev -> handler.menuWillShow(ev.menuModel()));
-        session.on(MenuModelDelegateMenuClosedEvent.MESSAGE_ID, MenuModelDelegateMenuClosedEvent.DECODER,
-                ev -> handler.menuClosed(ev.menuModel()));
-        session.intercept(MenuModelDelegateFormatLabelEvent.MESSAGE_ID, MenuModelDelegateFormatLabelEvent.DECODER, ev -> {
-            Boolean answer = handler.formatLabel(ev.menuModel(), ev.label());
-            return new MenuModelDelegateFormatLabelResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefMenuModelDelegate handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(MenuModelDelegateExecuteCommandEvent.MESSAGE_ID, MenuModelDelegateExecuteCommandEvent.DECODER,
+                        ev -> handler.executeCommand(ev.menuModel(), ev.commandId(), ev.eventFlags())),
+                session.on(MenuModelDelegateMouseOutsideMenuEvent.MESSAGE_ID, MenuModelDelegateMouseOutsideMenuEvent.DECODER,
+                        ev -> handler.mouseOutsideMenu(ev.menuModel(), ev.screenPoint())),
+                session.on(MenuModelDelegateUnhandledOpenSubmenuEvent.MESSAGE_ID, MenuModelDelegateUnhandledOpenSubmenuEvent.DECODER,
+                        ev -> handler.unhandledOpenSubmenu(ev.menuModel(), ev.isRtl())),
+                session.on(MenuModelDelegateUnhandledCloseSubmenuEvent.MESSAGE_ID, MenuModelDelegateUnhandledCloseSubmenuEvent.DECODER,
+                        ev -> handler.unhandledCloseSubmenu(ev.menuModel(), ev.isRtl())),
+                session.on(MenuModelDelegateMenuWillShowEvent.MESSAGE_ID, MenuModelDelegateMenuWillShowEvent.DECODER,
+                        ev -> handler.menuWillShow(ev.menuModel())),
+                session.on(MenuModelDelegateMenuClosedEvent.MESSAGE_ID, MenuModelDelegateMenuClosedEvent.DECODER,
+                        ev -> handler.menuClosed(ev.menuModel())),
+                session.intercept(MenuModelDelegateFormatLabelEvent.MESSAGE_ID, MenuModelDelegateFormatLabelEvent.DECODER, ev -> {
+                    Boolean answer = handler.formatLabel(ev.menuModel(), ev.label());
+                    return new MenuModelDelegateFormatLabelResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

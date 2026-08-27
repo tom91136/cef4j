@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * registered via {@link java.net.URL#setURLStreamHandlerFactory} (e.g. {@code classpath:}) is transparently handled.
  */
 @SuppressWarnings("unused")
-public final class UrlResourceHandler implements CefResourceHandler {
+public final class UrlResourceHandler implements CefResourceHandler, AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(UrlResourceHandler.class);
 
@@ -121,6 +121,11 @@ public final class UrlResourceHandler implements CefResourceHandler {
     @Override
     public void cancel() {
         closeStream();
+    }
+
+    @Override
+    public void close() {
+        cancel();
     }
 
     private void closeStream() {

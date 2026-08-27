@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefAudioHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefAudioHandler {
@@ -39,12 +39,13 @@ public interface CefAudioHandler {
     default void onAudioStreamError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String message) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefAudioHandler handler) {
-        session.on(AudioHandlerOnAudioStreamStartedEvent.MESSAGE_ID, AudioHandlerOnAudioStreamStartedEvent.DECODER,
-                ev -> handler.onAudioStreamStarted(ev.browser(), ev.params(), ev.channels()));
-        session.on(AudioHandlerOnAudioStreamStoppedEvent.MESSAGE_ID, AudioHandlerOnAudioStreamStoppedEvent.DECODER,
-                ev -> handler.onAudioStreamStopped(ev.browser()));
-        session.on(AudioHandlerOnAudioStreamErrorEvent.MESSAGE_ID, AudioHandlerOnAudioStreamErrorEvent.DECODER,
-                ev -> handler.onAudioStreamError(ev.browser(), ev.message()));
+    static CefSession.HandlerRegistration register(CefSession session, CefAudioHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(AudioHandlerOnAudioStreamStartedEvent.MESSAGE_ID, AudioHandlerOnAudioStreamStartedEvent.DECODER,
+                        ev -> handler.onAudioStreamStarted(ev.browser(), ev.params(), ev.channels())),
+                session.on(AudioHandlerOnAudioStreamStoppedEvent.MESSAGE_ID, AudioHandlerOnAudioStreamStoppedEvent.DECODER,
+                        ev -> handler.onAudioStreamStopped(ev.browser())),
+                session.on(AudioHandlerOnAudioStreamErrorEvent.MESSAGE_ID, AudioHandlerOnAudioStreamErrorEvent.DECODER,
+                        ev -> handler.onAudioStreamError(ev.browser(), ev.message())));
     }
 }

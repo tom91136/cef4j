@@ -19,11 +19,11 @@ import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-/** Proves a trace captured from packaged CEF drives the same generated facade after the native server is gone. */
 @Timeout(600)
 class ApiRecordingReplayIntegrationTest {
     @Test
@@ -42,26 +42,30 @@ class ApiRecordingReplayIntegrationTest {
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     event -> browserHandle.set(event.browser()));
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
-            while (browserHandle.get() == null && System.nanoTime() < deadline) Thread.sleep(10);
-            RemoteHandle handle = Objects.requireNonNull(browserHandle.get());
-            liveCanGoBack = new Browser(recording, handle).canGoBack().get(20, TimeUnit.SECONDS);
-            lifecycle.unregister();
+            TestDeadline.after(Duration.ofSeconds(20))
+                    .until(() -> browserHandle.get() != null, Duration.ofMillis(10), "live browser handle");
+            try (lifecycle;
+                    Browser browser = new Browser(recording, Objects.requireNonNull(browserHandle.get()))) {
+                liveCanGoBack = browser.canGoBack().get(20, TimeUnit.SECONDS);
+            }
         }
 
-        // The server and transport are closed before replay begins.
         ReplayCefSession replay = ReplayCefSession.fromFile(trace, ReplayMode.IMMEDIATE);
         AtomicReference<RemoteHandle> replayedHandle = new AtomicReference<>();
         CefSession.HandlerRegistration lifecycle = replay.onLatest(
                 LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                 LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                 event -> replayedHandle.set(event.browser()));
-        replay.start();
-        RemoteHandle handle = Objects.requireNonNull(replayedHandle.get());
-        assertThat(new Browser(replay, handle).canGoBack().get(5, TimeUnit.SECONDS))
-                .isEqualTo(liveCanGoBack);
-        lifecycle.unregister();
-        replay.close();
+        try {
+            replay.start();
+            RemoteHandle handle = Objects.requireNonNull(replayedHandle.get());
+            try (Browser browser = new Browser(replay, handle)) {
+                assertThat(browser.canGoBack().get(5, TimeUnit.SECONDS)).isEqualTo(liveCanGoBack);
+            }
+        } finally {
+            lifecycle.close();
+            replay.close();
+        }
         replay.verifyComplete();
     }
 }

@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefServerHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefServerHandler {
@@ -82,22 +82,23 @@ public interface CefServerHandler {
     default void onWebSocketMessage(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId, byte[] data) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefServerHandler handler) {
-        session.on(ServerHandlerOnServerCreatedEvent.MESSAGE_ID, ServerHandlerOnServerCreatedEvent.DECODER,
-                ev -> handler.onServerCreated(ev.server()));
-        session.on(ServerHandlerOnServerDestroyedEvent.MESSAGE_ID, ServerHandlerOnServerDestroyedEvent.DECODER,
-                ev -> handler.onServerDestroyed(ev.server()));
-        session.on(ServerHandlerOnClientConnectedEvent.MESSAGE_ID, ServerHandlerOnClientConnectedEvent.DECODER,
-                ev -> handler.onClientConnected(ev.server(), ev.connectionId()));
-        session.on(ServerHandlerOnClientDisconnectedEvent.MESSAGE_ID, ServerHandlerOnClientDisconnectedEvent.DECODER,
-                ev -> handler.onClientDisconnected(ev.server(), ev.connectionId()));
-        session.on(ServerHandlerOnHttpRequestEvent.MESSAGE_ID, ServerHandlerOnHttpRequestEvent.DECODER,
-                ev -> handler.onHttpRequest(ev.server(), ev.connectionId(), ev.clientAddress(), ev.request()));
-        session.on(ServerHandlerOnWebSocketRequestEvent.MESSAGE_ID, ServerHandlerOnWebSocketRequestEvent.DECODER,
-                ev -> handler.onWebSocketRequest(ev.server(), ev.connectionId(), ev.clientAddress(), ev.request(), ev.callback()));
-        session.on(ServerHandlerOnWebSocketConnectedEvent.MESSAGE_ID, ServerHandlerOnWebSocketConnectedEvent.DECODER,
-                ev -> handler.onWebSocketConnected(ev.server(), ev.connectionId()));
-        session.on(ServerHandlerOnWebSocketMessageEvent.MESSAGE_ID, ServerHandlerOnWebSocketMessageEvent.DECODER,
-                ev -> handler.onWebSocketMessage(ev.server(), ev.connectionId(), ev.data()));
+    static CefSession.HandlerRegistration register(CefSession session, CefServerHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(ServerHandlerOnServerCreatedEvent.MESSAGE_ID, ServerHandlerOnServerCreatedEvent.DECODER,
+                        ev -> handler.onServerCreated(ev.server())),
+                session.on(ServerHandlerOnServerDestroyedEvent.MESSAGE_ID, ServerHandlerOnServerDestroyedEvent.DECODER,
+                        ev -> handler.onServerDestroyed(ev.server())),
+                session.on(ServerHandlerOnClientConnectedEvent.MESSAGE_ID, ServerHandlerOnClientConnectedEvent.DECODER,
+                        ev -> handler.onClientConnected(ev.server(), ev.connectionId())),
+                session.on(ServerHandlerOnClientDisconnectedEvent.MESSAGE_ID, ServerHandlerOnClientDisconnectedEvent.DECODER,
+                        ev -> handler.onClientDisconnected(ev.server(), ev.connectionId())),
+                session.on(ServerHandlerOnHttpRequestEvent.MESSAGE_ID, ServerHandlerOnHttpRequestEvent.DECODER,
+                        ev -> handler.onHttpRequest(ev.server(), ev.connectionId(), ev.clientAddress(), ev.request())),
+                session.on(ServerHandlerOnWebSocketRequestEvent.MESSAGE_ID, ServerHandlerOnWebSocketRequestEvent.DECODER,
+                        ev -> handler.onWebSocketRequest(ev.server(), ev.connectionId(), ev.clientAddress(), ev.request(), ev.callback())),
+                session.on(ServerHandlerOnWebSocketConnectedEvent.MESSAGE_ID, ServerHandlerOnWebSocketConnectedEvent.DECODER,
+                        ev -> handler.onWebSocketConnected(ev.server(), ev.connectionId())),
+                session.on(ServerHandlerOnWebSocketMessageEvent.MESSAGE_ID, ServerHandlerOnWebSocketMessageEvent.DECODER,
+                        ev -> handler.onWebSocketMessage(ev.server(), ev.connectionId(), ev.data())));
     }
 }

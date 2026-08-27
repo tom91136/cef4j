@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefWriteHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefWriteHandler {
@@ -42,18 +42,19 @@ public interface CefWriteHandler {
     default Boolean mayBlock() { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefWriteHandler handler) {
-        session.intercept(WriteHandlerSeekEvent.MESSAGE_ID, WriteHandlerSeekEvent.DECODER, ev -> {
-            Boolean answer = handler.seek(ev.offset(), ev.whence());
-            return new WriteHandlerSeekResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(WriteHandlerFlushEvent.MESSAGE_ID, WriteHandlerFlushEvent.DECODER, ev -> {
-            Boolean answer = handler.flush();
-            return new WriteHandlerFlushResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(WriteHandlerMayBlockEvent.MESSAGE_ID, WriteHandlerMayBlockEvent.DECODER, ev -> {
-            Boolean answer = handler.mayBlock();
-            return new WriteHandlerMayBlockResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefWriteHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(WriteHandlerSeekEvent.MESSAGE_ID, WriteHandlerSeekEvent.DECODER, ev -> {
+                    Boolean answer = handler.seek(ev.offset(), ev.whence());
+                    return new WriteHandlerSeekResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(WriteHandlerFlushEvent.MESSAGE_ID, WriteHandlerFlushEvent.DECODER, ev -> {
+                    Boolean answer = handler.flush();
+                    return new WriteHandlerFlushResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(WriteHandlerMayBlockEvent.MESSAGE_ID, WriteHandlerMayBlockEvent.DECODER, ev -> {
+                    Boolean answer = handler.mayBlock();
+                    return new WriteHandlerMayBlockResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

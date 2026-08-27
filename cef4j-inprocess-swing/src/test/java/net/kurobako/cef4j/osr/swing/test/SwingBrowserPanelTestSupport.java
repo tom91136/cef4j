@@ -297,6 +297,7 @@ final class SwingBrowserPanelTestSupport {
                 throw new TimeoutException("Timed out waiting for CEF browser closure");
             }
         }
+        drainCefUi();
         onSwingThread(() -> {
             for (JFrame frame : FRAMES) {
                 frame.dispose();
@@ -311,27 +312,23 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static void loadUrl(CefBrowserPanel panel, String url) {
-        CefBrowser b = panel.browser();
-        if (b != null) {
-            b.getMainFrame().ifPresent(frame -> frame.loadUrl(url));
-        }
+        requireMainFrame(panel).loadUrl(url);
     }
 
     static void loadContent(CefBrowserPanel panel, String html) {
-        CefBrowser b = panel.browser();
-        if (b != null) {
-            b.getMainFrame()
-                    .ifPresent(frame -> frame.loadUrl("data:text/html;charset=utf-8,"
-                            + java.net.URLEncoder.encode(html, StandardCharsets.UTF_8)
-                                    .replace("+", "%20")));
-        }
+        requireMainFrame(panel)
+                .loadUrl("data:text/html;charset=utf-8,"
+                        + java.net.URLEncoder.encode(html, StandardCharsets.UTF_8)
+                                .replace("+", "%20"));
     }
 
     static void executeJavaScript(CefBrowserPanel panel, String script) {
-        CefBrowser b = panel.browser();
-        if (b != null) {
-            b.getMainFrame().ifPresent(frame -> frame.executeJavaScript(script, "", 0));
-        }
+        requireMainFrame(panel).executeJavaScript(script, "", 0);
+    }
+
+    private static net.kurobako.cef4j.gen.CefFrame requireMainFrame(CefBrowserPanel panel) {
+        CefBrowser browser = Objects.requireNonNull(panel.browser(), "browser not ready");
+        return browser.getMainFrame().orElseThrow(() -> new IllegalStateException("main frame not ready"));
     }
 
     static String getTitle(CefBrowserPanel panel) {

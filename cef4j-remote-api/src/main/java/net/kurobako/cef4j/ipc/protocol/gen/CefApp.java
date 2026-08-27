@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefApp)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefApp {
@@ -33,10 +33,11 @@ public interface CefApp {
     default void onRegisterCustomSchemes(net.kurobako.cef4j.ipc.session.RemoteHandle registrar) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefApp handler) {
-        session.on(AppOnBeforeCommandLineProcessingEvent.MESSAGE_ID, AppOnBeforeCommandLineProcessingEvent.DECODER,
-                ev -> handler.onBeforeCommandLineProcessing(ev.processType(), ev.commandLine()));
-        session.on(AppOnRegisterCustomSchemesEvent.MESSAGE_ID, AppOnRegisterCustomSchemesEvent.DECODER,
-                ev -> handler.onRegisterCustomSchemes(ev.registrar()));
+    static CefSession.HandlerRegistration register(CefSession session, CefApp handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(AppOnBeforeCommandLineProcessingEvent.MESSAGE_ID, AppOnBeforeCommandLineProcessingEvent.DECODER,
+                        ev -> handler.onBeforeCommandLineProcessing(ev.processType(), ev.commandLine())),
+                session.on(AppOnRegisterCustomSchemesEvent.MESSAGE_ID, AppOnRegisterCustomSchemesEvent.DECODER,
+                        ev -> handler.onRegisterCustomSchemes(ev.registrar())));
     }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -51,7 +53,9 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         assertThat(pumpUntil(createdA, 10_000)).as("browser A created").isTrue();
 
         String dataUrlA = dataUrl("<html><body>A</body></html>");
-        browserA.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlA));
+        try (CefFrame frame = browserA.getMainFrame().orElseThrow()) {
+            frame.loadUrl(dataUrlA);
+        }
         assertThat(pumpUntil(loadedA, 10_000)).as("browser A data loaded").isTrue();
 
         engineB = new CefScriptEngine(
@@ -64,7 +68,9 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         assertThat(pumpUntil(createdB, 10_000)).as("browser B created").isTrue();
 
         String dataUrlB = dataUrl("<html><body>B</body></html>");
-        browserB.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlB));
+        try (CefFrame frame = browserB.getMainFrame().orElseThrow()) {
+            frame.loadUrl(dataUrlB);
+        }
         assertThat(pumpUntil(loadedB, 10_000)).as("browser B data loaded").isTrue();
     }
 
@@ -74,14 +80,14 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         if (engineB != null) engineB.dispose();
         closeBrowser(browserA);
         assertThat(pumpUntil(closedA, 10_000)).as("browser A closed").isTrue();
-        if (browserB != null && browserB.isValid()) closeBrowser(browserB);
+        if (browserB != null && closedB.getCount() != 0) closeBrowser(browserB);
         assertThat(closedB.await(10, TimeUnit.SECONDS)).as("browser B closed").isTrue();
         if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test
     @Order(1)
-    void evalOnBrowserA_afterBrowserBCreated() throws Exception {
+    void evalOnBrowserAAfterBrowserBCreated() throws Exception {
         String result = pumpAndGet(engineA.evaluate("1 + 2"), 5_000);
         assertThat(result).isEqualTo("3");
     }
@@ -95,7 +101,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
     @Test
     @Order(3)
-    void handleOnBrowserA_isolatedFromB() throws Exception {
+    void handleOnBrowserAIsolatedFromB() throws Exception {
         pumpAndGet(engineA.evaluate("window.__testA = 'fromA'"), 5_000);
         String resultB = pumpAndGet(engineB.evaluate("typeof window.__testA"), 5_000);
         assertThat(resultB).isEqualTo("\"undefined\"");
@@ -103,7 +109,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
     @Test
     @Order(4)
-    void handleOnBrowserB_isolatedFromA() throws Exception {
+    void handleOnBrowserBIsolatedFromA() throws Exception {
         pumpAndGet(engineB.evaluate("window.__testB = 'fromB'"), 5_000);
         String resultA = pumpAndGet(engineA.evaluate("typeof window.__testB"), 5_000);
         assertThat(resultA).isEqualTo("\"undefined\"");
@@ -157,15 +163,10 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
     @Test
     @Order(8)
-    void closeBrowserB_doesNotBreakA() throws Exception {
-        browserB.getHost().ifPresent(host -> host.closeBrowser(true));
-        engineB.dispose();
-
-        long deadline = System.currentTimeMillis() + 2_000;
-        while (System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
+    void closeBrowserBDoesNotBreakA() throws Exception {
+        engineB.close();
+        closeBrowser(browserB);
+        assertThat(pumpUntil(closedB, 10_000)).as("browser B closed").isTrue();
 
         String result = pumpAndGet(engineA.evaluate("42"), 5_000);
         assertThat(result).isEqualTo("42");
@@ -229,33 +230,19 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     }
 
     private static <T> T pumpAndGet(CompletableFuture<T> future, long timeoutMs) throws Exception {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (!future.isDone() && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
-        assertThat(future)
-                .as("future should complete within " + timeoutMs + "ms")
-                .isDone();
-        return future.get(0, TimeUnit.MILLISECONDS);
+        TestDeadline deadline = TestDeadline.after(Duration.ofMillis(timeoutMs));
+        deadline.until(
+                future::isDone, () -> Cef.INSTANCE.doMessageLoopWork(), Duration.ofMillis(16), "script completion");
+        return deadline.await(future, "script result");
     }
 
-    private static void pumpUntilAllDone(long timeoutMs, CompletableFuture<?>... futures) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            boolean allDone = true;
-            for (CompletableFuture<?> f : futures) {
-                if (!f.isDone()) {
-                    allDone = false;
-                    break;
-                }
-            }
-            if (allDone) return;
-            Thread.sleep(16);
-        }
-        for (CompletableFuture<?> f : futures) {
-            assertThat(f).as("all futures should complete").isDone();
-        }
+    private static void pumpUntilAllDone(long timeoutMs, CompletableFuture<?>... futures) throws Exception {
+        CompletableFuture<Void> all = CompletableFuture.allOf(futures);
+        TestDeadline.after(Duration.ofMillis(timeoutMs))
+                .until(
+                        all::isDone,
+                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Duration.ofMillis(16),
+                        "script completions");
     }
 }

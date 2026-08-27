@@ -1057,7 +1057,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     val cppTypeInfo = Map(
       "CefMenuModel::SetVisible" -> CppMethodTypeInfo("bool", Map("command_id" -> "int", "visible" -> "bool")),
       "CefView::SetVisible"      -> CppMethodTypeInfo("void", Map("visible" -> "bool")),
-      "SetVisible"               -> CppMethodTypeInfo("void", Map("visible" -> "bool")) // last-writer-wins = void
+      "SetVisible"               -> CppMethodTypeInfo("void", Map("visible" -> "bool"))
     )
     val parsed = ParsedTree(
       decls = List(menuModelDecl, viewDecl),

@@ -19,7 +19,9 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -36,29 +38,40 @@ class MjpegHttpServerTest {
                         () -> testCodec(codecs.getAndIncrement() == 0, oldEncodeEntered, releaseOldEncode));
                 TestFrameSource oldSource = new TestFrameSource();
                 TestFrameSource newSource = new TestFrameSource()) {
-            server.attach(oldSource);
-            oldSource.emit(1, new byte[] {0, 0, 0, (byte) 255});
-            assertThat(oldEncodeEntered.await(2, TimeUnit.SECONDS)).isTrue();
+            try {
+                server.attach(oldSource);
+                oldSource.emit(1, new byte[] {0, 0, 0, (byte) 255});
+                assertThat(oldEncodeEntered.await(2, TimeUnit.SECONDS)).isTrue();
 
-            Thread swap = new Thread(() -> server.attach(newSource), "mjpeg-source-swap-test");
-            swap.start();
-            Thread.sleep(100);
-            assertThat(swap.isAlive()).isTrue();
-            releaseOldEncode.countDown();
-            swap.join(5_000);
-            assertThat(swap.isAlive()).isFalse();
+                AtomicReference<Throwable> swapFailure = new AtomicReference<>();
+                Thread swap = new Thread(
+                        () -> {
+                            try {
+                                server.attach(newSource);
+                            } catch (Throwable failure) {
+                                swapFailure.set(failure);
+                            }
+                        },
+                        "mjpeg-source-swap-test");
+                swap.start();
+                releaseOldEncode.countDown();
+                TestDeadline.after(Duration.ofSeconds(5)).join(swap, "MJPEG source swap");
+                assertThat(swapFailure.get()).isNull();
 
-            newSource.emit(2, new byte[] {0, 0, 0, (byte) 255});
-            try (Socket socket =
-                    new Socket(server.endpoint().getHost(), server.endpoint().getPort())) {
-                socket.setSoTimeout(5_000);
-                OutputStream output = socket.getOutputStream();
-                output.write(("GET " + server.endpoint().getPath() + " HTTP/1.1\r\nHost: "
-                                + server.endpoint().getHost() + "\r\nConnection: close\r\n\r\n")
-                        .getBytes(StandardCharsets.US_ASCII));
-                output.flush();
-                String response = new String(socket.getInputStream().readNBytes(512), StandardCharsets.ISO_8859_1);
-                assertThat(response).contains("X-Cef4j-Sequence: 2").doesNotContain("X-Cef4j-Sequence: 1");
+                newSource.emit(2, new byte[] {0, 0, 0, (byte) 255});
+                try (Socket socket = new Socket(
+                        server.endpoint().getHost(), server.endpoint().getPort())) {
+                    socket.setSoTimeout(5_000);
+                    OutputStream output = socket.getOutputStream();
+                    output.write(("GET " + server.endpoint().getPath() + " HTTP/1.1\r\nHost: "
+                                    + server.endpoint().getHost() + "\r\nConnection: close\r\n\r\n")
+                            .getBytes(StandardCharsets.US_ASCII));
+                    output.flush();
+                    String response = new String(socket.getInputStream().readNBytes(512), StandardCharsets.ISO_8859_1);
+                    assertThat(response).contains("X-Cef4j-Sequence: 2").doesNotContain("X-Cef4j-Sequence: 1");
+                }
+            } finally {
+                releaseOldEncode.countDown();
             }
         }
     }

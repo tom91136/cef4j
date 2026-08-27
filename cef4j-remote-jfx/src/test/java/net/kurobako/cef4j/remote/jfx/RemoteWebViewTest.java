@@ -153,7 +153,7 @@ class RemoteWebViewTest {
         view.attach(session);
         session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(19)));
         assertThat(frames.consumer).isNotNull();
-        view.release();
+        view.close();
         assertThat(frames.closed).isTrue();
     }
 

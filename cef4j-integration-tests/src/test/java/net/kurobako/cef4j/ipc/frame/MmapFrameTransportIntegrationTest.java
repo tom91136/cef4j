@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.frame;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
@@ -22,12 +23,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * Validates the {@link SharedFileFrameTransport} end-to-end against a real server. Spawns a server, drives a
- * navigation, binds a frame transport to the browser, and checks that the consumer is invoked with a properly-sized
- * BGRA pixel buffer + populated dirty rect — i.e. the same wire validation as {@code OsrPaintIntegrationTest} but
- * routed through the public {@link FrameTransport} API instead of decoding {@code OsrPaintEvent} by hand.
- */
 @Timeout(600)
 class MmapFrameTransportIntegrationTest {
 
@@ -39,9 +34,6 @@ class MmapFrameTransportIntegrationTest {
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
-            // Bind the frame transport eagerly — the server's first paint can fire before
-            // LifeSpanHandlerOnAfterCreatedEvent reaches us, and a `bind(session, handle)` issued after
-            // the handle resolves would miss it. `bindAll` registers immediately with no browser filter.
             CompletableFuture<int[]> firstFrame = new CompletableFuture<>();
             AtomicInteger frameCount = new AtomicInteger();
 
@@ -51,10 +43,6 @@ class MmapFrameTransportIntegrationTest {
                         if (!handleFuture.isDone()) handleFuture.complete(e.browser());
                     });
 
-            // Threading-contract guard (issue #7): FrameConsumer fires on the IPC IO thread, never the caller's
-            // thread. Catches future regressions where someone helpfully adds a Platform.runLater inside
-            // SharedFileFrameTransport — UI marshalling is the consumer's job, not the transport's, otherwise non-FX
-            // consumers (Swing/headless tests/server-side renderers) silently pay an FX-pump dep.
             Thread mainThread = Thread.currentThread();
             java.util.concurrent.atomic.AtomicReference<String> consumerThreadName =
                     new java.util.concurrent.atomic.AtomicReference<>();
@@ -69,8 +57,6 @@ class MmapFrameTransportIntegrationTest {
                     }
                     frameCount.incrementAndGet();
                     if (firstFrame.isDone()) return;
-                    // Capture the dimensions, byte count, and dirty rect of the very first paint we observe so the
-                    // assertions outside this callback can run on a stable snapshot.
                     Rect dirty = meta.dirtyRects().get(0);
                     firstFrame.complete(new int[] {
                         width,
@@ -91,21 +77,19 @@ class MmapFrameTransportIntegrationTest {
                         .get(5, TimeUnit.SECONDS);
 
                 int[] f = firstFrame.get(15, TimeUnit.SECONDS);
-                assertThat(f[0]).isEqualTo(800); // width
-                assertThat(f[1]).isEqualTo(600); // height
-                assertThat(f[2]).isEqualTo(800 * 600 * 4); // BGRA bytes
-                assertThat(f[3]).isGreaterThanOrEqualTo(0); // dirty.x
-                assertThat(f[4]).isGreaterThanOrEqualTo(0); // dirty.y
-                assertThat(f[3] + f[5]).isLessThanOrEqualTo(f[0]); // dirty fits horizontally
-                assertThat(f[4] + f[6]).isLessThanOrEqualTo(f[1]); // dirty fits vertically
-                assertThat(f[7]).isEqualTo(1); // first frame -> sequenceId starts at 1
+                assertThat(f[0]).as("width").isEqualTo(800);
+                assertThat(f[1]).as("height").isEqualTo(600);
+                assertThat(f[2]).as("BGRA bytes").isEqualTo(800 * 600 * 4);
+                assertThat(f[3]).as("dirty x").isGreaterThanOrEqualTo(0);
+                assertThat(f[4]).as("dirty y").isGreaterThanOrEqualTo(0);
+                assertThat(f[3] + f[5]).as("dirty rect right edge").isLessThanOrEqualTo(f[0]);
+                assertThat(f[4] + f[6]).as("dirty rect bottom edge").isLessThanOrEqualTo(f[1]);
+                assertThat(f[7]).as("first frame sequence").isEqualTo(1);
                 assertThat(consumerThreadName.get())
                         .as("consumer must run on a transport-owned thread, not the test main")
                         .isNotNull()
                         .isNotEqualTo(mainThread.getName());
             }
-            // After close the consumer is detached. Subsequent paints must not trigger the (already-cleared)
-            // consumer; we just confirm the count we captured is from inside the try-with-resources scope.
             assertThat(frameCount.get()).isGreaterThanOrEqualTo(1);
         }
     }
@@ -123,27 +107,18 @@ class MmapFrameTransportIntegrationTest {
                     });
             RemoteHandle realBrowser = handleFuture.get(30, TimeUnit.SECONDS);
 
-            // Bind to a NON-existent browser handle. The transport subscribes globally to OsrPaintEvent but filters
-            // by browser id internally; events for the real browser must not slip through.
             RemoteHandle wrongHandle = new RemoteHandle(realBrowser.id() + 999);
             CompletableFuture<ByteBuffer> spuriousFrame = new CompletableFuture<>();
             try (FrameTransport ft = SharedFileFrameTransport.bind(session, wrongHandle)) {
                 ft.onFrame((w, h, pixels, meta) -> spuriousFrame.complete(pixels));
 
-                // Drive a paint on the real browser to ensure events are flowing.
                 Browser browser = new Browser(session, realBrowser);
                 Frame frame = browser.getMainFrame().get(5, TimeUnit.SECONDS);
                 frame.loadUrl("data:text/html,<html><body style='background:blue'>y</body></html>")
                         .get(5, TimeUnit.SECONDS);
 
-                // Wait long enough to see at least one paint on the real browser; the wrong-handle transport must
-                // stay silent.
-                try {
-                    spuriousFrame.get(8, TimeUnit.SECONDS);
-                    throw new AssertionError("frame leaked across browser handles");
-                } catch (java.util.concurrent.TimeoutException expected) {
-                    // expected: no callback for the wrong handle
-                }
+                assertThatThrownBy(() -> spuriousFrame.get(8, TimeUnit.SECONDS))
+                        .isInstanceOf(java.util.concurrent.TimeoutException.class);
             }
         }
     }

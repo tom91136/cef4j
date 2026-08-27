@@ -59,7 +59,7 @@ import net.kurobako.cef4j.gen.CefSettings;
 
 /** Swing off-screen rendering panel for a CEF browser. */
 @SuppressWarnings({"this-escape", "resource"})
-public class CefBrowserPanel extends JPanel {
+public class CefBrowserPanel extends JPanel implements AutoCloseable {
     private static final long serialVersionUID = 1L;
 
     private static final int SCROLL_UNITS_MULTIPLIER = 20;
@@ -553,6 +553,11 @@ public class CefBrowserPanel extends JPanel {
         if (b != null) {
             b.getHost().ifPresent(host -> host.closeBrowser(true));
         }
+    }
+
+    @Override
+    public void close() {
+        release();
     }
 
     @Override

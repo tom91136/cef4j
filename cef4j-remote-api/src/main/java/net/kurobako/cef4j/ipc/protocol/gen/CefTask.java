@@ -25,8 +25,8 @@ public interface CefTask {
      * Wires inbound {@link TaskExecuteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefTask} registered under that callbackId. Call once per session.
      */
-    static void route(CefSession session, JvmCallbackTable<CefTask> table) {
-        session.on(TaskExecuteCallbackEvent.MESSAGE_ID, TaskExecuteCallbackEvent.DECODER, ev -> {
+    static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefTask> table) {
+        return session.on(TaskExecuteCallbackEvent.MESSAGE_ID, TaskExecuteCallbackEvent.DECODER, ev -> {
             CefTask v = table.lookup(ev.callbackId());
             if (v != null) v.execute();
         });

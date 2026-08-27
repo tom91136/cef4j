@@ -81,7 +81,9 @@ class CefScriptEngineMultiThreadedTest {
         browserA = browserAFuture.get(10, TimeUnit.SECONDS);
 
         String dataUrlA = dataUrl("<html><body>A</body></html>");
-        browserA.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlA));
+        try (CefFrame frame = browserA.getMainFrame().orElseThrow()) {
+            frame.loadUrl(dataUrlA);
+        }
         loadedA.get(10, TimeUnit.SECONDS);
 
         engineB = new CefScriptEngine(
@@ -94,7 +96,9 @@ class CefScriptEngineMultiThreadedTest {
         browserB = browserBFuture.get(10, TimeUnit.SECONDS);
 
         String dataUrlB = dataUrl("<html><body>B</body></html>");
-        browserB.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlB));
+        try (CefFrame frame = browserB.getMainFrame().orElseThrow()) {
+            frame.loadUrl(dataUrlB);
+        }
         loadedB.get(10, TimeUnit.SECONDS);
     }
 
@@ -102,7 +106,6 @@ class CefScriptEngineMultiThreadedTest {
     static void cleanup() throws Exception {
         if (engineA != null) engineA.dispose();
         if (engineB != null) engineB.dispose();
-        // Serialize browser destruction on legacy multi-threaded CEF.
         closeBrowser(browserA, closedA);
         closeBrowser(browserB, closedB);
         // XXX: CEF 116.0.27 on Windows crashes in cef_shutdown after both onBeforeClose callbacks; remove when the
@@ -114,8 +117,11 @@ class CefScriptEngineMultiThreadedTest {
 
     private static void closeBrowser(CefBrowser browser, CompletableFuture<Void> closed) throws Exception {
         if (browser == null) return;
-        browser.getHost().ifPresent(host -> host.closeBrowser(true));
+        try (CefBrowserHost host = browser.getHost().orElseThrow()) {
+            host.closeBrowser(true);
+        }
         closed.get(10, TimeUnit.SECONDS);
+        browser.close();
     }
 
     @Test
@@ -134,7 +140,7 @@ class CefScriptEngineMultiThreadedTest {
 
     @Test
     @Order(3)
-    void handleOnBrowserA_isolatedFromB() throws Exception {
+    void handleOnBrowserAIsolatedFromB() throws Exception {
         engineA.evaluate("window.__testA = 'fromA'").get(5, TimeUnit.SECONDS);
         String resultB = engineB.evaluate("typeof window.__testA").get(5, TimeUnit.SECONDS);
         assertThat(resultB).isEqualTo("\"undefined\"");

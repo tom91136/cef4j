@@ -27,8 +27,8 @@ public interface CefStringVisitor {
      * Wires inbound {@link StringVisitorVisitCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefStringVisitor} registered under that callbackId. Call once per session.
      */
-    static void route(CefSession session, JvmCallbackTable<CefStringVisitor> table) {
-        session.on(StringVisitorVisitCallbackEvent.MESSAGE_ID, StringVisitorVisitCallbackEvent.DECODER, ev -> {
+    static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefStringVisitor> table) {
+        return session.on(StringVisitorVisitCallbackEvent.MESSAGE_ID, StringVisitorVisitCallbackEvent.DECODER, ev -> {
             CefStringVisitor v = table.lookup(ev.callbackId());
             if (v != null) v.visit(ev.string());
         });

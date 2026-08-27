@@ -18,26 +18,9 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * Validates the synchronous server→JVM intercept wire end-to-end. Path:
- *
- * <ol>
- *   <li>JVM sends {@link TriggerInterceptRequest}{echoMessageId, echoPayload}.
- *   <li>Runtime server allocates a corrId, fires Kind::Intercept(echoMessageId, corrId, echoPayload), blocks.
- *   <li>JVM's intercept handler for echoMessageId runs, returns a payload (bytes wrapped as {@link #encoderFor}).
- *   <li>Session sends Kind::InterceptResponse(corrId, ..., responsePayload).
- *   <li>Runtime server's InterceptRegistry wakes the waiter, server acks original request with
- *       {@link TriggerInterceptResponse}{returnedPayload = handler's payload}.
- * </ol>
- *
- * This is the foundation for every non-void handler callback: OnBeforePopup, DoClose, OnJsDialog, OnBeforeBrowse.
- * Codegen integration (replacing the hand-written TriggerIntercept fixture with one server→JVM callback per non-void
- * CEF handler method) builds on top of this same wire.
- */
 @Timeout(600)
 class InterceptWireIntegrationTest {
 
-    /** Picked arbitrarily, well above the AST messageId range. */
     private static final int ECHO_MESSAGE_ID = 99001;
 
     private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
@@ -51,7 +34,6 @@ class InterceptWireIntegrationTest {
             byte[] requestPayload = "ping".getBytes(java.nio.charset.StandardCharsets.UTF_8);
             byte[] expectedReply = "pong".getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
-            // Register an intercept handler that observes the server's request and returns a fixed reply.
             session.intercept(ECHO_MESSAGE_ID, RawPayloadView.DECODER, observed -> {
                 assertThat(observed.bytes()).isEqualTo(requestPayload);
                 return encoderFor(ECHO_MESSAGE_ID, expectedReply);
@@ -62,12 +44,10 @@ class InterceptWireIntegrationTest {
                             TriggerInterceptResponse.DECODER)
                     .get(10, TimeUnit.SECONDS);
 
-            // The bytes the server got back from awaitResponse are exactly what our handler returned.
             assertThat(resp.returnedPayload()).isEqualTo(expectedReply);
         }
     }
 
-    /** Minimal {@link CefMessageView} that exposes the raw payload bytes — handlers don't care about decoding here. */
     private static final class RawPayloadView implements CefMessageView {
         static final net.kurobako.cef4j.ipc.session.CefMessageDecoder<RawPayloadView> DECODER = src -> {
             byte[] copy = new byte[src.remaining()];
@@ -91,7 +71,6 @@ class InterceptWireIntegrationTest {
         }
     }
 
-    /** Wraps a raw byte[] as a {@link CefMessageEncoder} so the intercept handler can return arbitrary bytes. */
     private static CefMessageEncoder encoderFor(int messageId, byte[] payload) {
         return new CefMessageEncoder() {
             @Override

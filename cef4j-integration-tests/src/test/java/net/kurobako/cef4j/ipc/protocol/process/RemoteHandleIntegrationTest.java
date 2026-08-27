@@ -16,15 +16,6 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * End-to-end through the real C++ server, exercising remote method invocation via {@link RemoteHandle}: the server
- * allocates a handle for the browser created at startup, the generated LifeSpanHandlerForwarder emits a
- * {@link LifeSpanHandlerOnAfterCreatedEvent}, and the JVM side wraps it in a {@link Browser} facade and dispatches
- * `canGoBack`/`goBack` (AST-derived methods, generated dispatcher case in `Dispatcher.h`).
- *
- * <p>Smallest test validating the whole {@code RemoteHandle} round-trip through the AST pipeline: handle allocation,
- * wire encoding, server-side dispatch with handle resolution, typed response decoding.
- */
 @Timeout(600)
 class RemoteHandleIntegrationTest {
 
@@ -46,10 +37,8 @@ class RemoteHandleIntegrationTest {
             assertThat(handle.id()).isPositive();
             Browser browser = new Browser(session, handle);
 
-            // CEF's can_go_back returns int (non-zero == true). A freshly created browser cannot go back.
             assertThat(browser.canGoBack().get(5, TimeUnit.SECONDS)).isZero();
 
-            // goBack returns void; the future just acks completion of the dispatch + UI-thread call.
             browser.goBack().get(5, TimeUnit.SECONDS);
 
             assertThat(browser.canGoBack().get(5, TimeUnit.SECONDS)).isZero();
@@ -62,8 +51,6 @@ class RemoteHandleIntegrationTest {
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
-            // Bogus handle: dispatcher's null-receiver path now sends Kind::Error(ReceiverGone), which the
-            // session translates into CefRemoteException. Runtime server stays alive (no UI-thread post, no crash).
             Browser browser = new Browser(session, new RemoteHandle(0xDEADBEEF));
             try {
                 browser.goBack().get(5, TimeUnit.SECONDS);

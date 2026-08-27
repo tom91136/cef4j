@@ -10,8 +10,6 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,19 +25,14 @@ import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/** In-process JavaFX implementation of the shared browser test SPI. */
 public final class NativeBrowserBackend implements BrowserBackend {
 
     private static volatile boolean cefInitialised;
-    private static final ExecutorService NAVIGATION_WAITER = Executors.newCachedThreadPool(r -> {
-        Thread thread = new Thread(r, "cef4j-native-jfx-navigation");
-        thread.setDaemon(true);
-        return thread;
-    });
 
     @Override
     @Nonnull
@@ -87,6 +80,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
         private final CefWebView webView;
         private final Stage stage;
         private final Duration navigationTimeout;
+        private final TestExecutor navigationWaiter = TestExecutor.single("cef4j-native-jfx-navigation");
         private final AtomicReference<PendingNavigation> pendingNavigation = new AtomicReference<>();
 
         NativeSession(SessionConfig config) throws Exception {
@@ -187,7 +181,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
                             navigation.result.completeExceptionally(failure);
                         }
                     },
-                    NAVIGATION_WAITER);
+                    navigationWaiter);
         }
 
         private boolean isNavigationReady(long paintBaseline) {
@@ -223,6 +217,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
                 });
             } catch (Exception ignored) {
                 // XXX: Preserve the construction failure; these resources belong to the terminating test process.
+            } finally {
+                navigationWaiter.close();
             }
         }
 
@@ -271,6 +267,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
                 if (released.get() != null) released.get().get(10, TimeUnit.SECONDS);
             } catch (Exception e) {
                 throw new IllegalStateException("native JavaFX browser did not close cleanly", e);
+            } finally {
+                navigationWaiter.close();
             }
         }
 

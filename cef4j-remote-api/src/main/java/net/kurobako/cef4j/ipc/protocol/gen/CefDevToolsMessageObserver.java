@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefDevToolsMessageObserver)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefDevToolsMessageObserver {
@@ -67,18 +67,19 @@ public interface CefDevToolsMessageObserver {
     default void onDevToolsAgentDetached(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefDevToolsMessageObserver handler) {
-        session.intercept(DevToolsMessageObserverOnDevToolsMessageEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsMessageEvent.DECODER, ev -> {
-            Boolean answer = handler.onDevToolsMessage(ev.browser(), ev.message());
-            return new DevToolsMessageObserverOnDevToolsMessageResponse(answer != null && answer.booleanValue());
-        });
-        session.on(DevToolsMessageObserverOnDevToolsMethodResultEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsMethodResultEvent.DECODER,
-                ev -> handler.onDevToolsMethodResult(ev.browser(), ev.messageId_(), ev.success(), ev.result()));
-        session.on(DevToolsMessageObserverOnDevToolsEventEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsEventEvent.DECODER,
-                ev -> handler.onDevToolsEvent(ev.browser(), ev.method(), ev.params()));
-        session.on(DevToolsMessageObserverOnDevToolsAgentAttachedEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsAgentAttachedEvent.DECODER,
-                ev -> handler.onDevToolsAgentAttached(ev.browser()));
-        session.on(DevToolsMessageObserverOnDevToolsAgentDetachedEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsAgentDetachedEvent.DECODER,
-                ev -> handler.onDevToolsAgentDetached(ev.browser()));
+    static CefSession.HandlerRegistration register(CefSession session, CefDevToolsMessageObserver handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(DevToolsMessageObserverOnDevToolsMessageEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsMessageEvent.DECODER, ev -> {
+                    Boolean answer = handler.onDevToolsMessage(ev.browser(), ev.message());
+                    return new DevToolsMessageObserverOnDevToolsMessageResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(DevToolsMessageObserverOnDevToolsMethodResultEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsMethodResultEvent.DECODER,
+                        ev -> handler.onDevToolsMethodResult(ev.browser(), ev.messageId_(), ev.success(), ev.result())),
+                session.on(DevToolsMessageObserverOnDevToolsEventEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsEventEvent.DECODER,
+                        ev -> handler.onDevToolsEvent(ev.browser(), ev.method(), ev.params())),
+                session.on(DevToolsMessageObserverOnDevToolsAgentAttachedEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsAgentAttachedEvent.DECODER,
+                        ev -> handler.onDevToolsAgentAttached(ev.browser())),
+                session.on(DevToolsMessageObserverOnDevToolsAgentDetachedEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsAgentDetachedEvent.DECODER,
+                        ev -> handler.onDevToolsAgentDetached(ev.browser())));
     }
 }

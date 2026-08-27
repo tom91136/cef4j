@@ -19,7 +19,6 @@ import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/** Shared-contract adapter that drives the real RemoteBrowserPanel Swing component. */
 final class RemoteSwingBrowserBackend implements BrowserBackend {
     @Override
     @Nonnull

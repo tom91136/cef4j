@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,6 @@ class RecordingReplayTest {
                 threeArrived.countDown();
             });
 
-            // A sends two frames out, B sends three frames in.
             recA.send(buf("a-out-1"));
             recA.send(buf("a-out-2"));
             pair.b.send(buf("b-in-1"));
@@ -52,7 +52,6 @@ class RecordingReplayTest {
         }
         pair.b.close();
 
-        // Now replay on A's side and assert the received sequence is byte-identical.
         try (ReplayTransport replay = ReplayTransport.fromFile(logFile)) {
             List<String> replayed = new ArrayList<>();
             replay.onReceive(f -> {
@@ -63,7 +62,6 @@ class RecordingReplayTest {
             replay.start();
             assertThat(replayed).containsExactly("b-in-1", "b-in-2", "b-in-3");
 
-            // Recorded outbound is what the original recA sent.
             assertThat(replay.recordedOutbound())
                     .extracting(b -> new String(b, StandardCharsets.UTF_8))
                     .containsExactly("a-out-1", "a-out-2");
@@ -152,15 +150,14 @@ class RecordingReplayTest {
             }
         }));
         try (RecordingTransport recording = new RecordingTransport(pair.a, broken)) {
-            CountDownLatch arrived = new CountDownLatch(1);
+            CompletableFuture<String> arrived = new CompletableFuture<>();
             recording.onReceive(frame -> {
                 byte[] bytes = new byte[frame.remaining()];
                 frame.get(bytes);
-                assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo("live");
-                arrived.countDown();
+                arrived.complete(new String(bytes, StandardCharsets.UTF_8));
             });
             pair.b.send(buf("live"));
-            assertThat(arrived.await(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(arrived.get(5, TimeUnit.SECONDS)).isEqualTo("live");
         }
         pair.b.close();
     }

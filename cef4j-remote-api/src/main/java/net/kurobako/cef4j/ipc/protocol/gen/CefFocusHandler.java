@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefFocusHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefFocusHandler {
@@ -40,14 +40,15 @@ public interface CefFocusHandler {
     default void onGotFocus(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefFocusHandler handler) {
-        session.on(FocusHandlerOnTakeFocusEvent.MESSAGE_ID, FocusHandlerOnTakeFocusEvent.DECODER,
-                ev -> handler.onTakeFocus(ev.browser(), ev.next()));
-        session.intercept(FocusHandlerOnSetFocusEvent.MESSAGE_ID, FocusHandlerOnSetFocusEvent.DECODER, ev -> {
-            Boolean answer = handler.onSetFocus(ev.browser(), ev.source());
-            return new FocusHandlerOnSetFocusResponse(answer != null && answer.booleanValue());
-        });
-        session.on(FocusHandlerOnGotFocusEvent.MESSAGE_ID, FocusHandlerOnGotFocusEvent.DECODER,
-                ev -> handler.onGotFocus(ev.browser()));
+    static CefSession.HandlerRegistration register(CefSession session, CefFocusHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.on(FocusHandlerOnTakeFocusEvent.MESSAGE_ID, FocusHandlerOnTakeFocusEvent.DECODER,
+                        ev -> handler.onTakeFocus(ev.browser(), ev.next())),
+                session.intercept(FocusHandlerOnSetFocusEvent.MESSAGE_ID, FocusHandlerOnSetFocusEvent.DECODER, ev -> {
+                    Boolean answer = handler.onSetFocus(ev.browser(), ev.source());
+                    return new FocusHandlerOnSetFocusResponse(answer != null && answer.booleanValue());
+                }),
+                session.on(FocusHandlerOnGotFocusEvent.MESSAGE_ID, FocusHandlerOnGotFocusEvent.DECODER,
+                        ev -> handler.onGotFocus(ev.browser())));
     }
 }

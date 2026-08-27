@@ -10,12 +10,14 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -80,17 +82,14 @@ class CefHttpURLConnectionTest {
         FakeCefHttpEngine engine = new FakeCefHttpEngine();
         CefHttpURLConnection c = conn("http://example.com/", engine);
         c.connect();
-        CompletableFuture<Void> response = CompletableFuture.runAsync(() -> {
-            engine.capturedSink().onResponse(200, "OK", Map.of());
-            engine.capturedSink().onData("one ".getBytes(StandardCharsets.UTF_8));
-            engine.capturedSink().onData("two ".getBytes(StandardCharsets.UTF_8));
-            engine.capturedSink().onData("three".getBytes(StandardCharsets.UTF_8));
-            engine.capturedSink().onComplete();
-        });
+        engine.capturedSink().onResponse(200, "OK", Map.of());
+        engine.capturedSink().onData("one ".getBytes(StandardCharsets.UTF_8));
+        engine.capturedSink().onData("two ".getBytes(StandardCharsets.UTF_8));
+        engine.capturedSink().onData("three".getBytes(StandardCharsets.UTF_8));
+        engine.capturedSink().onComplete();
         try (InputStream in = c.getInputStream()) {
             assertThat(new String(in.readAllBytes(), StandardCharsets.UTF_8)).isEqualTo("one two three");
         }
-        response.get(5, TimeUnit.SECONDS);
     }
 
     @Test
@@ -121,6 +120,17 @@ class CefHttpURLConnectionTest {
         CefHttpURLConnection c = conn("http://example.com/", engine);
         c.connect();
         c.disconnect();
+        assertThat(engine.cancelled).isTrue();
+    }
+
+    @Test
+    void closeDisconnectsConnection() throws Exception {
+        FakeCefHttpEngine engine = new FakeCefHttpEngine().stage(200, Map.of(), new byte[0]);
+        CefHttpURLConnection c = conn("http://example.com/", engine);
+        c.connect();
+
+        c.close();
+
         assertThat(engine.cancelled).isTrue();
     }
 
@@ -168,14 +178,7 @@ class CefHttpURLConnectionTest {
         c.connect();
         engine.capturedSink().onResponse(200, "OK", Map.of());
         InputStream in = c.getInputStream();
-        CompletableFuture<Integer> result = CompletableFuture.supplyAsync(() -> {
-            try {
-                return in.read(new byte[0], 0, 0);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        assertThat(result.get(2, TimeUnit.SECONDS)).isZero();
+        assertThat(in.read(new byte[0], 0, 0)).isZero();
         c.disconnect();
     }
 
@@ -309,18 +312,23 @@ class CefHttpURLConnectionTest {
     void disconnectReleasesHeaderWaiter() throws Exception {
         FakeCefHttpEngine engine = FakeCefHttpEngine.empty();
         CefHttpURLConnection c = conn("http://example.com/", engine);
-        CompletableFuture<Integer> response = CompletableFuture.supplyAsync(() -> {
-            try {
-                return c.getResponseCode();
-            } catch (IOException failure) {
-                throw new java.util.concurrent.CompletionException(failure);
-            }
-        });
-        while (engine.sendCount() == 0) Thread.onSpinWait();
-        c.disconnect();
-        assertThatExceptionOfType(java.util.concurrent.ExecutionException.class)
-                .isThrownBy(() -> response.get(2, TimeUnit.SECONDS))
-                .withRootCauseInstanceOf(IOException.class);
+        try (TestExecutor executor = TestExecutor.single("http-header-waiter")) {
+            CompletableFuture<Integer> response = CompletableFuture.supplyAsync(
+                    () -> {
+                        try {
+                            return c.getResponseCode();
+                        } catch (IOException failure) {
+                            throw new java.util.concurrent.CompletionException(failure);
+                        }
+                    },
+                    executor);
+            TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(2));
+            deadline.until(() -> engine.sendCount() > 0, Duration.ofMillis(1), "HTTP request dispatch");
+            c.disconnect();
+            assertThatExceptionOfType(java.util.concurrent.ExecutionException.class)
+                    .isThrownBy(() -> deadline.await(response, "header waiter release"))
+                    .withRootCauseInstanceOf(IOException.class);
+        }
     }
 
     @Test

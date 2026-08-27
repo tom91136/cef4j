@@ -25,8 +25,8 @@ public interface CefSetCookieCallback {
      * Wires inbound {@link SetCookieCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefSetCookieCallback} registered under that callbackId. Call once per session.
      */
-    static void route(CefSession session, JvmCallbackTable<CefSetCookieCallback> table) {
-        session.on(SetCookieCallbackOnCompleteCallbackEvent.MESSAGE_ID, SetCookieCallbackOnCompleteCallbackEvent.DECODER, ev -> {
+    static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefSetCookieCallback> table) {
+        return session.on(SetCookieCallbackOnCompleteCallbackEvent.MESSAGE_ID, SetCookieCallbackOnCompleteCallbackEvent.DECODER, ev -> {
             CefSetCookieCallback v = table.lookup(ev.callbackId());
             if (v != null) v.onComplete(ev.success());
         });

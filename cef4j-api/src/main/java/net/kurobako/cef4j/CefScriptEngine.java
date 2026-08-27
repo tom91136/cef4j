@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * renderer context cannot leak into the next page.
  */
 @SuppressWarnings({"resource", "unused"})
-public final class CefScriptEngine {
+public final class CefScriptEngine implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(CefScriptEngine.class);
 
@@ -316,14 +316,18 @@ public final class CefScriptEngine {
             log.warn("Failed to create CefProcessMessage for release");
             return;
         }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            log.warn("Failed to get argument list for release message");
-            return;
+        try (msg) {
+            CefListValue args = msg.getArgumentList().orElse(null);
+            if (args == null) {
+                log.warn("Failed to get argument list for release message");
+                return;
+            }
+            try (args) {
+                args.setSize(1);
+                args.setInt(0, handleId);
+                f.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
+            }
         }
-        args.setSize(1);
-        args.setInt(0, handleId);
-        f.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
     }
 
     /**
@@ -387,17 +391,19 @@ public final class CefScriptEngine {
                 log.warn("cef4j:cb message with no argument list");
                 return true;
             }
-            int callbackId = args.getInt(0);
-            int numArgs = args.getInt(1);
-            int[] argHandles = new int[numArgs];
-            for (int i = 0; i < numArgs; i++) {
-                argHandles[i] = args.getInt(2 + i);
-            }
-            CallbackHandler handler = callbacks.get(callbackId);
-            if (handler != null) {
-                handler.onCallback(argHandles);
-            } else {
-                log.warn("Received cef4j:cb for unknown callbackId {}", callbackId);
+            try (args) {
+                int callbackId = args.getInt(0);
+                int numArgs = args.getInt(1);
+                int[] argHandles = new int[numArgs];
+                for (int i = 0; i < numArgs; i++) {
+                    argHandles[i] = args.getInt(2 + i);
+                }
+                CallbackHandler handler = callbacks.get(callbackId);
+                if (handler != null) {
+                    handler.onCallback(argHandles);
+                } else {
+                    log.warn("Received cef4j:cb for unknown callbackId {}", callbackId);
+                }
             }
             return true;
         }
@@ -410,17 +416,25 @@ public final class CefScriptEngine {
             return true;
         }
 
-        int reqId = args.getInt(0);
-        boolean ok = args.getBool(1);
-        int type = args.getInt(2);
-
+        int reqId;
+        boolean ok;
+        int type;
         String stringPayload = null;
         int intPayload = 0;
-        if (type == TYPE_JSON || type == TYPE_ERROR) {
-            CefValue val = args.getValue(3).orElse(null);
-            stringPayload = val != null ? val.getString().orElse(null) : null;
-        } else if (type == TYPE_HANDLE) {
-            intPayload = args.getInt(3);
+        try (args) {
+            reqId = args.getInt(0);
+            ok = args.getBool(1);
+            type = args.getInt(2);
+            if (type == TYPE_JSON || type == TYPE_ERROR) {
+                CefValue val = args.getValue(3).orElse(null);
+                if (val != null) {
+                    try (val) {
+                        stringPayload = val.getString().orElse(null);
+                    }
+                }
+            } else if (type == TYPE_HANDLE) {
+                intPayload = args.getInt(3);
+            }
         }
 
         Result result;
@@ -465,6 +479,11 @@ public final class CefScriptEngine {
             disposed = true;
             cancelPendingLocked("CefScriptEngine disposed");
         }
+    }
+
+    @Override
+    public void close() {
+        dispose();
     }
 
     /** Fails requests and forgets callback handles owned by the renderer context that is being replaced. */
@@ -517,13 +536,17 @@ public final class CefScriptEngine {
             if (message == null) {
                 return failRequest(reqId, future, onFailure, "Failed to create CefProcessMessage");
             }
-            CefListValue args = message.getArgumentList().orElse(null);
-            if (args == null) {
-                return failRequest(reqId, future, onFailure, "Failed to get argument list");
+            try (message) {
+                CefListValue args = message.getArgumentList().orElse(null);
+                if (args == null) {
+                    return failRequest(reqId, future, onFailure, "Failed to get argument list");
+                }
+                try (args) {
+                    args.setSize(argCount);
+                    requestWriter.accept(args, reqId);
+                    frame.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), message);
+                }
             }
-            args.setSize(argCount);
-            requestWriter.accept(args, reqId);
-            frame.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), message);
             return future;
         }
     }

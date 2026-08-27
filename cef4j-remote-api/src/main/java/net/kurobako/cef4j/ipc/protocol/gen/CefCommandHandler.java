@@ -9,7 +9,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * fire on this struct; default empty bodies let implementers override only the events they want.
  *
  * <p>Use {@link #register(CefSession, CefCommandHandler)} to bind every method to its corresponding wire event in
- * one step. Subscriptions stay live until the session closes.
+ * one step. Close the returned registration to unsubscribe every method.
  */
 @SuppressWarnings("NullableForbidden")
 public interface CefCommandHandler {
@@ -60,26 +60,27 @@ public interface CefCommandHandler {
     default Boolean isChromeToolbarButtonVisible(int buttonType) { return null; }
 
     /** Registers {@code handler} for every event this interface declares. */
-    static void register(CefSession session, CefCommandHandler handler) {
-        session.intercept(CommandHandlerOnChromeCommandEvent.MESSAGE_ID, CommandHandlerOnChromeCommandEvent.DECODER, ev -> {
-            Boolean answer = handler.onChromeCommand(ev.browser(), ev.commandId(), ev.disposition());
-            return new CommandHandlerOnChromeCommandResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(CommandHandlerIsChromeAppMenuItemVisibleEvent.MESSAGE_ID, CommandHandlerIsChromeAppMenuItemVisibleEvent.DECODER, ev -> {
-            Boolean answer = handler.isChromeAppMenuItemVisible(ev.browser(), ev.commandId());
-            return new CommandHandlerIsChromeAppMenuItemVisibleResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(CommandHandlerIsChromeAppMenuItemEnabledEvent.MESSAGE_ID, CommandHandlerIsChromeAppMenuItemEnabledEvent.DECODER, ev -> {
-            Boolean answer = handler.isChromeAppMenuItemEnabled(ev.browser(), ev.commandId());
-            return new CommandHandlerIsChromeAppMenuItemEnabledResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(CommandHandlerIsChromePageActionIconVisibleEvent.MESSAGE_ID, CommandHandlerIsChromePageActionIconVisibleEvent.DECODER, ev -> {
-            Boolean answer = handler.isChromePageActionIconVisible(ev.iconType());
-            return new CommandHandlerIsChromePageActionIconVisibleResponse(answer != null && answer.booleanValue());
-        });
-        session.intercept(CommandHandlerIsChromeToolbarButtonVisibleEvent.MESSAGE_ID, CommandHandlerIsChromeToolbarButtonVisibleEvent.DECODER, ev -> {
-            Boolean answer = handler.isChromeToolbarButtonVisible(ev.buttonType());
-            return new CommandHandlerIsChromeToolbarButtonVisibleResponse(answer != null && answer.booleanValue());
-        });
+    static CefSession.HandlerRegistration register(CefSession session, CefCommandHandler handler) {
+        return CefSession.HandlerRegistration.combine(
+                session.intercept(CommandHandlerOnChromeCommandEvent.MESSAGE_ID, CommandHandlerOnChromeCommandEvent.DECODER, ev -> {
+                    Boolean answer = handler.onChromeCommand(ev.browser(), ev.commandId(), ev.disposition());
+                    return new CommandHandlerOnChromeCommandResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(CommandHandlerIsChromeAppMenuItemVisibleEvent.MESSAGE_ID, CommandHandlerIsChromeAppMenuItemVisibleEvent.DECODER, ev -> {
+                    Boolean answer = handler.isChromeAppMenuItemVisible(ev.browser(), ev.commandId());
+                    return new CommandHandlerIsChromeAppMenuItemVisibleResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(CommandHandlerIsChromeAppMenuItemEnabledEvent.MESSAGE_ID, CommandHandlerIsChromeAppMenuItemEnabledEvent.DECODER, ev -> {
+                    Boolean answer = handler.isChromeAppMenuItemEnabled(ev.browser(), ev.commandId());
+                    return new CommandHandlerIsChromeAppMenuItemEnabledResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(CommandHandlerIsChromePageActionIconVisibleEvent.MESSAGE_ID, CommandHandlerIsChromePageActionIconVisibleEvent.DECODER, ev -> {
+                    Boolean answer = handler.isChromePageActionIconVisible(ev.iconType());
+                    return new CommandHandlerIsChromePageActionIconVisibleResponse(answer != null && answer.booleanValue());
+                }),
+                session.intercept(CommandHandlerIsChromeToolbarButtonVisibleEvent.MESSAGE_ID, CommandHandlerIsChromeToolbarButtonVisibleEvent.DECODER, ev -> {
+                    Boolean answer = handler.isChromeToolbarButtonVisible(ev.buttonType());
+                    return new CommandHandlerIsChromeToolbarButtonVisibleResponse(answer != null && answer.booleanValue());
+                }));
     }
 }

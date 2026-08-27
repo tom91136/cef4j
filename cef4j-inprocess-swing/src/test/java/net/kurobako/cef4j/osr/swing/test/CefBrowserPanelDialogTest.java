@@ -3,10 +3,10 @@ package net.kurobako.cef4j.osr.swing.test;
 import static net.kurobako.cef4j.osr.swing.test.SwingBrowserPanelTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
@@ -22,6 +22,7 @@ import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -144,17 +145,15 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
             CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
         });
 
+        TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(10));
         if (net.kurobako.cef4j.OS.isMacOS()) {
-            long deadline = System.currentTimeMillis() + 10_000;
-            while (ready.getCount() > 0 && System.currentTimeMillis() < deadline) {
-                net.kurobako.cef4j.Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(5);
-            }
-            if (ready.getCount() > 0) {
-                throw new java.util.concurrent.TimeoutException("Timed out waiting for browser creation");
-            }
-        } else if (!ready.await(10, TimeUnit.SECONDS)) {
-            throw new java.util.concurrent.TimeoutException("Timed out waiting for browser creation");
+            deadline.until(
+                    () -> ready.getCount() == 0,
+                    net.kurobako.cef4j.Cef.INSTANCE::doMessageLoopWork,
+                    Duration.ofMillis(5),
+                    "browser creation");
+        } else {
+            deadline.await(ready, "browser creation");
         }
         return Objects.requireNonNull(panelRef.get(), "panel not created");
     }

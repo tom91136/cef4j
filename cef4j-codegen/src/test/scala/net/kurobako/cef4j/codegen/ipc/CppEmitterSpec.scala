@@ -7,7 +7,7 @@ import net.kurobako.cef4j.codegen.TempDirectorySuite
 
 class CppEmitterSpec extends TempDirectorySuite {
 
-  // Hosted Windows compiler startup can consume most of two minutes before compiling this smoke program.
+  // XXX: Reduce this timeout when hosted Windows compiler startup is consistently below two minutes.
   override val munitTimeout = 5.minutes
 
   private val sampleSpec = MessageSpec(

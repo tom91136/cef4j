@@ -26,6 +26,8 @@ import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
+import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -239,6 +241,7 @@ class CefSessionImplTest {
 
         private int sendCount;
         private final AtomicInteger closeCount = new AtomicInteger();
+        private final TestExecutor delayedAcknowledgements = TestExecutor.single("delayed-runtime-ready");
 
         private AcknowledgingRuntimeTransport() {
             this(0);
@@ -282,7 +285,7 @@ class CefSessionImplTest {
             if (acknowledgementDelayMillis == 0) {
                 Objects.requireNonNull(receiver).accept(response);
             } else {
-                Thread delayed = new Thread(
+                CompletableFuture<Void> unused = CompletableFuture.runAsync(
                         () -> {
                             try {
                                 Thread.sleep(acknowledgementDelayMillis);
@@ -291,9 +294,7 @@ class CefSessionImplTest {
                                 Thread.currentThread().interrupt();
                             }
                         },
-                        "delayed-runtime-ready");
-                delayed.setDaemon(true);
-                delayed.start();
+                        delayedAcknowledgements);
             }
         }
 
@@ -318,6 +319,7 @@ class CefSessionImplTest {
         @Override
         public void close() {
             closeCount.incrementAndGet();
+            delayedAcknowledgements.close();
         }
     }
 
@@ -327,21 +329,39 @@ class CefSessionImplTest {
         CefSessionImpl concurrent = new CefSessionImpl(transport, Duration.ofSeconds(2));
         CountDownLatch start = new CountDownLatch(1);
         List<CompletableFuture<Void>> closers = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            closers.add(CompletableFuture.runAsync(() -> {
-                try {
-                    if (!start.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("close start not released");
-                    concurrent.close();
-                } catch (InterruptedException interrupted) {
-                    Thread.currentThread().interrupt();
-                    throw new java.util.concurrent.CompletionException(interrupted);
-                }
-            }));
+        try (TestExecutor executor = TestExecutor.fixed(8, "concurrent-session-close")) {
+            for (int i = 0; i < 8; i++) {
+                closers.add(CompletableFuture.runAsync(
+                        () -> {
+                            try {
+                                if (!start.await(5, TimeUnit.SECONDS))
+                                    throw new IllegalStateException("close start not released");
+                                concurrent.close();
+                            } catch (InterruptedException interrupted) {
+                                Thread.currentThread().interrupt();
+                                throw new java.util.concurrent.CompletionException(interrupted);
+                            }
+                        },
+                        executor));
+            }
+            start.countDown();
+            CompletableFuture.allOf(closers.toArray(new CompletableFuture<?>[0]))
+                    .get(5, TimeUnit.SECONDS);
         }
-        start.countDown();
-        CompletableFuture.allOf(closers.toArray(new CompletableFuture<?>[0])).get(5, TimeUnit.SECONDS);
 
         assertThat(transport.closeCount).hasValue(1);
+    }
+
+    @Test
+    void combinedRegistrationsCloseOnceInReverseOrder() {
+        List<Integer> closed = new ArrayList<>();
+        CefSession.HandlerRegistration registrations =
+                CefSession.HandlerRegistration.combine(() -> closed.add(1), () -> closed.add(2), () -> closed.add(3));
+
+        registrations.close();
+        registrations.close();
+
+        assertThat(closed).containsExactly(3, 2, 1);
     }
 
     @Test
@@ -483,7 +503,7 @@ class CefSessionImplTest {
             return new TestMessages.BytesEncoder(MSG_INTERCEPT, reversed);
         });
 
-        peer.sendIntercept(/*corrId*/ 99, MSG_INTERCEPT, "abc".getBytes(StandardCharsets.UTF_8));
+        peer.sendIntercept(99, MSG_INTERCEPT, "abc".getBytes(StandardCharsets.UTF_8));
         TestPeer.DecodedFrame resp = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "intercept response");
         assertThat(resp.header.kind).isEqualTo(Envelope.Kind.INTERCEPT_RESPONSE);
         assertThat(resp.header.corrId).isEqualTo(99);
@@ -493,7 +513,7 @@ class CefSessionImplTest {
 
     @Test
     void interceptWithoutHandlerSendsEmptyResponse() throws Exception {
-        peer.sendIntercept(/*corrId*/ 7, MSG_INTERCEPT, "ignored".getBytes(StandardCharsets.UTF_8));
+        peer.sendIntercept(7, MSG_INTERCEPT, "ignored".getBytes(StandardCharsets.UTF_8));
         TestPeer.DecodedFrame resp = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "default response");
         assertThat(resp.header.kind).isEqualTo(Envelope.Kind.INTERCEPT_RESPONSE);
         assertThat(resp.header.corrId).isEqualTo(7);
@@ -504,7 +524,7 @@ class CefSessionImplTest {
     @Test
     void interceptHandlerReturningNullSendsEmptyResponse() throws Exception {
         session.intercept(MSG_INTERCEPT, TestMessages.bytesDecoder(MSG_INTERCEPT), event -> null);
-        peer.sendIntercept(/*corrId*/ 11, MSG_INTERCEPT, "x".getBytes(StandardCharsets.UTF_8));
+        peer.sendIntercept(11, MSG_INTERCEPT, "x".getBytes(StandardCharsets.UTF_8));
         TestPeer.DecodedFrame resp = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "null-handler response");
         assertThat(resp.header.kind).isEqualTo(Envelope.Kind.INTERCEPT_RESPONSE);
         assertThat(resp.payload).isEmpty();
@@ -530,9 +550,8 @@ class CefSessionImplTest {
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> fut.get(2, TimeUnit.SECONDS))
                 .isInstanceOf(ExecutionException.class);
 
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
-        while (hasLiveSessionTimer() && System.nanoTime() < deadline) Thread.sleep(10);
-        assertThat(hasLiveSessionTimer()).isFalse();
+        TestDeadline.after(Duration.ofSeconds(2))
+                .until(() -> !hasLiveSessionTimer(), Duration.ofMillis(10), "session timer shutdown");
     }
 
     @Test
@@ -556,7 +575,7 @@ class CefSessionImplTest {
 
     @Test
     void orphanResponseDoesNotCrashSession() throws Exception {
-        peer.sendResponse(/*corrId*/ 12345, MSG_PING, new byte[] {1, 2, 3});
+        peer.sendResponse(12345, MSG_PING, new byte[] {1, 2, 3});
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
         TestPeer.DecodedFrame f = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "follow-up request");
