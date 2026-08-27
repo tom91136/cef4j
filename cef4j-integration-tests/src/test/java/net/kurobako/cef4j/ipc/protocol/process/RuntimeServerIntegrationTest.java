@@ -33,7 +33,6 @@ import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
-import net.kurobako.cef4j.ipc.transport.CefTransports;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -132,10 +131,10 @@ class RuntimeServerIntegrationTest {
 
     @Test
     @EnabledOnOs(OS.WINDOWS)
-    void namedPipeReportsRemoteProcessExit() throws Exception {
+    void namedPipeRuntimeConnectionReportsProcessExit() throws Exception {
         String endpoint = "pipe://cef4j-disconnect-" + Long.toUnsignedString(System.nanoTime());
         try (RuntimeServerProcess server = startServerWithEnv("local", endpoint);
-                CefTransport transport = CefTransports.connect("local", server.endpoint());
+                CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             CountDownLatch closed = new CountDownLatch(1);
             session.onClose(closed::countDown);

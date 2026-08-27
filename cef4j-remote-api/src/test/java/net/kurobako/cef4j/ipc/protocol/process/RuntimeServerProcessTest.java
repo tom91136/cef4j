@@ -91,6 +91,21 @@ class RuntimeServerProcessTest {
     }
 
     @Test
+    void connectedTransportReportsRuntimeProcessExit(@TempDir Path tmp) throws Exception {
+        Path script = writeLauncherScript(tmp);
+        try (RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
+                CefTransport transport = server.connect()) {
+            CountDownLatch disconnected = new CountDownLatch(1);
+            transport.onDisconnect(disconnected::countDown);
+
+            server.kill();
+
+            assertThat(disconnected.await(5, TimeUnit.SECONDS)).isTrue();
+            assertThat(transport.isConnected()).isFalse();
+        }
+    }
+
+    @Test
     void closeTerminatesLauncherDescendants(@TempDir Path tmp) throws Exception {
         Path script = writeLauncherScript(tmp, false);
         RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
