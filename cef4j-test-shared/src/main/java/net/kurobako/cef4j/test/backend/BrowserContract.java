@@ -34,11 +34,7 @@ public final class BrowserContract {
 
         try (BrowserSession session = backend.openSession(config)) {
             TestDeadline deadline = TestDeadline.after(CONTRACT_TIMEOUT);
-            BrowserSession.PaintInfo initialPaint =
-                    backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)
-                            ? resizeUntilPaint(session, 640, 480, deadline.remainingUpTo(timeout))
-                            : session.awaitPaint(640, 480, deadline.remainingUpTo(timeout));
-            assertPaint(initialPaint, 640, 480);
+            assertPaint(session.awaitPaint(640, 480, deadline.remainingUpTo(timeout)), 640, 480);
 
             assertThat(deadline.await(session.evaluateJavascript("1 + 2 + 3"), "evaluate arithmetic", timeout))
                     .isEqualTo("6");
