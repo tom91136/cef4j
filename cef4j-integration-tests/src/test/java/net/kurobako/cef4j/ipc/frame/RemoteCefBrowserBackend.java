@@ -165,7 +165,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+        public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
             PaintInfo p = paintQueue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (p == null) throw new TimeoutException("no paint within " + timeout);
             return p;

@@ -80,8 +80,11 @@ public final class NativeBrowserBackend implements BrowserBackend {
         private final CefWebView webView;
         private final Stage stage;
         private final Duration navigationTimeout;
+        private final NativePaintProbe paints = new NativePaintProbe();
         private final TestExecutor navigationWaiter = TestExecutor.single("cef4j-native-jfx-navigation");
         private final AtomicReference<PendingNavigation> pendingNavigation = new AtomicReference<>();
+        private volatile int width;
+        private volatile int height;
 
         NativeSession(SessionConfig config) throws Exception {
             int w = config.width();
@@ -91,7 +94,12 @@ public final class NativeBrowserBackend implements BrowserBackend {
                 CefWebView v = null;
                 Stage s = null;
                 try {
-                    v = new CefWebView();
+                    v = new CefWebView() {
+                        @Override
+                        protected void onViewPainted(int width, int height) {
+                            paints.accept(width, height);
+                        }
+                    };
                     s = new Stage();
                     s.initStyle(StageStyle.UNDECORATED);
                     s.setScene(new Scene(new StackPane(v), w, h));
@@ -107,6 +115,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
             this.webView = (CefWebView) holder[0];
             this.stage = (Stage) holder[1];
             this.navigationTimeout = config.startupTimeout();
+            this.width = w;
+            this.height = h;
             try {
                 if (!config.initialUrl().isEmpty()) {
                     loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
@@ -230,12 +240,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
-            TestDeadline.after(timeout)
-                    .until(() -> webView.framesPainted.sum() > 0, Duration.ofMillis(50), "await native paint");
-            int w = (int) stage.getScene().getWidth();
-            int h = (int) stage.getScene().getHeight();
-            return new PaintInfo(w, h, (long) w * h * 4);
+        public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+            return paints.await(width, height, timeout);
         }
 
         @Override
@@ -246,6 +252,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
                 onFxThread(() -> {
                     stage.setWidth(width);
                     stage.setHeight(height);
+                    this.width = width;
+                    this.height = height;
                     resized.complete(null);
                 });
             } catch (Exception e) {

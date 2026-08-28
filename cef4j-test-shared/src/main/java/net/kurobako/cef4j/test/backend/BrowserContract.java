@@ -9,7 +9,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.test.TestDeadline;
@@ -35,7 +34,11 @@ public final class BrowserContract {
 
         try (BrowserSession session = backend.openSession(config)) {
             TestDeadline deadline = TestDeadline.after(CONTRACT_TIMEOUT);
-            assertPaint(session.awaitPaint(640, 480, deadline.remainingUpTo(timeout)), 640, 480);
+            BrowserSession.PaintInfo initialPaint =
+                    backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)
+                            ? resizeUntilPaint(session, 640, 480, deadline.remainingUpTo(timeout))
+                            : session.awaitPaint(640, 480, deadline.remainingUpTo(timeout));
+            assertPaint(initialPaint, 640, 480);
 
             assertThat(deadline.await(session.evaluateJavascript("1 + 2 + 3"), "evaluate arithmetic", timeout))
                     .isEqualTo("6");
@@ -65,8 +68,6 @@ public final class BrowserContract {
 
             if (backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)) {
                 assertPaint(resizeUntilPaint(session, 512, 384, deadline.remainingUpTo(timeout)), 512, 384);
-                assertEventuallyEquals(
-                        session, "window.innerWidth + 'x' + window.innerHeight", "512x384", deadline, timeout);
             }
         }
     }
@@ -120,19 +121,21 @@ public final class BrowserContract {
         assertThat(paint.byteCount).isEqualTo((long) width * height * 4L);
     }
 
-    static void assertEventuallyEquals(BrowserSession session, String expression, String expected, Duration timeout)
-            throws Exception {
-        assertEventuallyEquals(session, expression, expected, TestDeadline.after(timeout), timeout);
-    }
-
     static BrowserSession.PaintInfo resizeUntilPaint(BrowserSession session, int width, int height, Duration timeout)
             throws Exception {
         TestDeadline deadline = TestDeadline.after(timeout);
         TimeoutException lastTimeout = null;
+        String expectedViewport = width + "x" + height;
         while (!deadline.isExpired()) {
             try {
                 deadline.await(session.resizeViewport(width, height), "resize viewport", MAX_PAINT_ATTEMPT);
-                return session.awaitPaint(width, height, deadline.remainingUpTo(MAX_PAINT_ATTEMPT));
+                BrowserSession.PaintInfo paint =
+                        session.awaitPaint(width, height, deadline.remainingUpTo(MAX_PAINT_ATTEMPT));
+                String viewport = unquote(deadline.await(
+                        session.evaluateJavascript("window.innerWidth + 'x' + window.innerHeight"),
+                        "verify resized viewport",
+                        MAX_PAINT_ATTEMPT));
+                if (expectedViewport.equals(viewport)) return paint;
             } catch (TimeoutException timeoutException) {
                 lastTimeout = timeoutException;
             }
@@ -140,36 +143,6 @@ public final class BrowserContract {
         TimeoutException exhausted = new TimeoutException("no " + width + "x" + height + " paint within " + timeout);
         if (lastTimeout != null) exhausted.initCause(lastTimeout);
         throw exhausted;
-    }
-
-    static void assertEventuallyEquals(
-            BrowserSession session,
-            String expression,
-            String expected,
-            TestDeadline deadline,
-            Duration operationTimeout)
-            throws Exception {
-        long attemptTimeout = Math.max(1L, Math.min(Duration.ofSeconds(5).toNanos(), operationTimeout.toNanos() / 4L));
-        String value = null;
-        TimeoutException lastTimeout = null;
-        Duration phaseBudget = deadline.remainingUpTo(operationTimeout);
-        TestDeadline phaseDeadline = TestDeadline.after(phaseBudget);
-        while (!phaseDeadline.isExpired()) {
-            CompletableFuture<String> evaluation = session.evaluateJavascript(expression);
-            try {
-                value = unquote(
-                        phaseDeadline.await(evaluation, "evaluate " + expression, Duration.ofNanos(attemptTimeout)));
-                lastTimeout = null;
-            } catch (TimeoutException timeoutException) {
-                evaluation.cancel(true);
-                lastTimeout = timeoutException;
-                continue;
-            }
-            if (expected.equals(value)) return;
-            Thread.sleep(50);
-        }
-        if (lastTimeout != null) throw lastTimeout;
-        assertThat(value).isEqualTo(expected);
     }
 
     private static String unquote(String value) {

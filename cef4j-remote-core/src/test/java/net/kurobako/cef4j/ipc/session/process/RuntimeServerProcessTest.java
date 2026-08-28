@@ -14,9 +14,12 @@ final class RuntimeServerProcessTest {
         environment.put("TMPDIR", "/private/tmp");
         environment.put("KEEP", "value");
 
-        RuntimeServerProcess.alignTempEnvironment(environment, Path.of("/java/tmp"), "Mac OS X");
+        Path tempDirectory = Path.of("/java/tmp");
+        RuntimeServerProcess.alignTempEnvironment(environment, tempDirectory, "Mac OS X");
 
-        assertThat(environment).containsEntry("TMPDIR", "/java/tmp").containsEntry("KEEP", "value");
+        assertThat(environment)
+                .containsEntry("TMPDIR", tempDirectory.toString())
+                .containsEntry("KEEP", "value");
     }
 
     @Test

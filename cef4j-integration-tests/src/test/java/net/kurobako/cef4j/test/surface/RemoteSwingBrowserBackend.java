@@ -125,7 +125,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout)
+        public PaintInfo awaitNextPaint(@Nonnull Duration timeout)
                 throws InterruptedException, java.util.concurrent.TimeoutException {
             return frames.await(width, height, timeout);
         }

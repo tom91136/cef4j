@@ -28,11 +28,11 @@ public interface BrowserSession extends AutoCloseable {
     CompletableFuture<String> evaluateJavascript(@Nonnull String script);
 
     /**
-     * Wait for at least one paint to land. Returns the (width, height, byteCount) of the most recent paint or times
-     * out. Backends without a paint pipeline (headless variants) should fail this synchronously rather than hanging.
+     * Wait for the next observed paint. Returns dimensions and byte count reported by the paint pipeline, never
+     * dimensions inferred from toolkit state. Backends without a paint pipeline should fail synchronously.
      */
     @Nonnull
-    PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException;
+    PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException;
 
     /** Resize the browser's CSS viewport. Only valid when the backend advertises VIEWPORT_RESIZE. */
     @Nonnull
@@ -51,7 +51,7 @@ public interface BrowserSession extends AutoCloseable {
         TimeoutException lastTimeout = null;
         while (!deadline.isExpired()) {
             try {
-                last = awaitFirstPaint(deadline.remaining());
+                last = awaitNextPaint(deadline.remaining());
             } catch (TimeoutException exhausted) {
                 lastTimeout = exhausted;
                 break;

@@ -532,6 +532,7 @@ public class CefWebView extends Region implements AutoCloseable {
                 } else {
                     if (frameBuffer.onPaint(buffer, width, height, dirtyRects).isPresent()) {
                         framesPainted.increment();
+                        onViewPainted(width, height);
                         Platform.runLater(() -> blitFrame(width, height));
                     }
                 }
@@ -692,6 +693,8 @@ public class CefWebView extends Region implements AutoCloseable {
             host.invalidate(PAINT_VIEW);
         });
     }
+
+    protected void onViewPainted(int width, int height) {}
 
     void updateDetachedBounds(@Nullable CefRect bounds, boolean notify) {
         if (bounds == null) return;

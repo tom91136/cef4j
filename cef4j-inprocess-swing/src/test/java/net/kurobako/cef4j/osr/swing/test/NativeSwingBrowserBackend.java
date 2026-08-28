@@ -303,7 +303,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
         @Override
         @Nonnull
-        public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+        public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
             long deadline = System.nanoTime() + timeout.toNanos();
             PaintInfo last = null;
             while (System.nanoTime() < deadline) {
