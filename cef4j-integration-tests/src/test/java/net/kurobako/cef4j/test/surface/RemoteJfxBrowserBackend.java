@@ -112,6 +112,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             this.stage = Objects.requireNonNull(stageRef.get(), "remote JavaFX stage");
             try {
                 this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
+                frames.runtimeDiagnosticSource(runtime.server::diagnosticSummary);
             } catch (Exception failure) {
                 closeSurface(failure);
                 throw failure;

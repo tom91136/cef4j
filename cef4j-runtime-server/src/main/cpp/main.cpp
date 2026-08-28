@@ -111,6 +111,28 @@ static constexpr std::int32_t kMsgSetViewportSize      = 25;
 static constexpr std::int32_t kMsgDevToolsAttach       = 27;
 static constexpr std::int32_t kMsgDevToolsDetach       = 30;
 
+static std::atomic_flag g_osrHandleFailureLogged = ATOMIC_FLAG_INIT;
+static std::atomic_flag g_osrBufferFailureLogged = ATOMIC_FLAG_INIT;
+static std::atomic_flag g_osrWriteFailureLogged = ATOMIC_FLAG_INIT;
+static std::atomic_flag g_osrIpcFailureLogged = ATOMIC_FLAG_INIT;
+static std::atomic_flag g_osrOnPaintLogged = ATOMIC_FLAG_INIT;
+static std::atomic_flag g_osrBufferReadyLogged = ATOMIC_FLAG_INIT;
+static std::atomic_flag g_osrEventSentLogged = ATOMIC_FLAG_INIT;
+
+static void reportOsrFailureOnce(std::atomic_flag& flag, const char* stage, int browserIdentifier) {
+    if (!flag.test_and_set(std::memory_order_relaxed)) {
+        std::fprintf(stderr, "[cef4j-runtime-server] shared-frame paint failed at %s for browser=%d\n",
+                     stage, browserIdentifier);
+    }
+}
+
+static void reportOsrStageOnce(std::atomic_flag& flag, const char* stage, int browserIdentifier) {
+    if (!flag.test_and_set(std::memory_order_relaxed)) {
+        std::fprintf(stderr, "[cef4j-runtime-server] shared-frame paint reached %s for browser=%d\n",
+                     stage, browserIdentifier);
+    }
+}
+
 // CEF validates {@code base.size == sizeof(cef_*_t)} on every wrap. We must report the parent CEF struct size, not
 // our subclass size. T is our wrapper class (carries refCount); CefStruct is the cef_*_t we're implementing.
 template <typename T, typename CefStruct>
@@ -461,9 +483,13 @@ struct RenderHandler : cef_render_handler_t {
                       const void* buffer, int width, int height) {
             if (!browser || !buffer || width <= 0 || height <= 0) return;
             int browserIdentifier = browser->get_identifier(browser);
+            reportOsrStageOnce(g_osrOnPaintLogged, "on-paint", browserIdentifier);
             std::size_t byteCount = static_cast<std::size_t>(width) * height * 4;
             std::int32_t handleId = gendisp::tables::browser.insert(browser);
-            if (handleId == 0) return;
+            if (handleId == 0) {
+                reportOsrFailureOnce(g_osrHandleFailureLogged, "browser-handle", browserIdentifier);
+                return;
+            }
             if (g_ipc && g_useInlineFrames) {
                 if (byteCount > kMaxOsrBytes) return;
                 net_kurobako_cef4j_ipc_protocol_gen::InlinePaintEvent ev;
@@ -509,7 +535,10 @@ struct RenderHandler : cef_render_handler_t {
                 }
                 if (needRealloc) {
                     auto fresh = std::make_unique<cef4j::ipc::OsrPaintBuffer>(handleId, targetBytes, nextGen);
-                    if (!fresh->ok()) return;
+                    if (!fresh->ok()) {
+                        reportOsrFailureOnce(g_osrBufferFailureLogged, "buffer-create", browserIdentifier);
+                        return;
+                    }
                     if (it == g_osrBuffers.end()) {
                         auto [inserted, _] = g_osrBuffers.emplace(browserIdentifier, std::move(fresh));
                         buf = inserted->second.get();
@@ -521,8 +550,12 @@ struct RenderHandler : cef_render_handler_t {
                     buf = it->second.get();
                 }
             }
+            reportOsrStageOnce(g_osrBufferReadyLogged, "buffer-ready", browserIdentifier);
             auto published = buf->writePixels(buffer, byteCount);
-            if (published.byteCount == 0) return;
+            if (published.byteCount == 0) {
+                reportOsrFailureOnce(g_osrWriteFailureLogged, "buffer-write", browserIdentifier);
+                return;
+            }
             net_kurobako_cef4j_ipc_protocol_gen::OsrPaintEvent ev;
             ev.browser = handleId;
             ev.shmName = published.shmName;
@@ -539,10 +572,12 @@ struct RenderHandler : cef_render_handler_t {
             }
             std::vector<std::uint8_t> wire(ev.encodedSize());
             ev.encodeInto(wire.data());
-            if (g_ipc) {
-                g_ipc->sendLatest(Kind::Event, 0, kNoCorrId,
-                                  net_kurobako_cef4j_ipc_protocol_gen::OsrPaintEvent::kMessageId,
-                                  wire.data(), wire.size(), handleId);
+            if (!g_ipc || !g_ipc->sendLatest(Kind::Event, 0, kNoCorrId,
+                                             net_kurobako_cef4j_ipc_protocol_gen::OsrPaintEvent::kMessageId,
+                                             wire.data(), wire.size(), handleId)) {
+                reportOsrFailureOnce(g_osrIpcFailureLogged, "event-send", browserIdentifier);
+            } else {
+                reportOsrStageOnce(g_osrEventSentLogged, "event-sent", browserIdentifier);
             }
         };
     }

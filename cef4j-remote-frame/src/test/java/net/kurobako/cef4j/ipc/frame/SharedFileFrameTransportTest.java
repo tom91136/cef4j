@@ -33,6 +33,24 @@ class SharedFileFrameTransportTest {
     private final long frameGeneration = NEXT_GENERATION.incrementAndGet();
 
     @Test
+    void reportsPipelineStateWhenNoPaintEventArrives() {
+        try (SharedFileFrameTransport transport = SharedFileFrameTransport.bindAll(new StoringSession())) {
+            transport.onFrame((width, height, pixels, metadata) -> {});
+
+            assertThat(transport.diagnosticSummary())
+                    .contains(
+                            "events=0",
+                            "mappingAttempts=0",
+                            "mappingsOpened=0",
+                            "mappingRejects=0",
+                            "snapshotRejects=0",
+                            "callbacks=0",
+                            "consumer=true",
+                            "lastReject=none");
+        }
+    }
+
+    @Test
     void currentJdksUseScopedMappedMemory() throws Exception {
         Path file = Files.createTempFile("cef4j-mapped-region-", ".frame");
         Files.write(file, new byte[] {1, 2, 3, 4});
@@ -70,6 +88,15 @@ class SharedFileFrameTransportTest {
             });
             assertThat(observed.get(5, TimeUnit.SECONDS)).containsExactly(new byte[] {1, 2, 3, 4, 5, 6, 7, 8});
             assertThat(callbackThread.get()).isNotSameAs(caller);
+            assertThat(((SharedFileFrameTransport) transport).diagnosticSummary())
+                    .contains(
+                            "events=1",
+                            "mappingAttempts=1",
+                            "mappingsOpened=1",
+                            "mappingRejects=0",
+                            "snapshotRejects=0",
+                            "callbacks=1",
+                            "lastEvent=2x1#2");
         } finally {
             Files.deleteIfExists(frame);
         }

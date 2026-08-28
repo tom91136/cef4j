@@ -12,6 +12,40 @@ import org.junit.jupiter.api.Test;
 class BrowserContractTest {
 
     @Test
+    void preservesBackendDiagnosticsWhenPaintTimesOut() {
+        BrowserSession session = new BrowserSession() {
+            @Override
+            @Nonnull
+            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            @Nonnull
+            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            @Nonnull
+            public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws TimeoutException {
+                throw new TimeoutException("pipeline=shared-file{events=0, callbacks=0}");
+            }
+
+            @Override
+            public void close() {}
+        };
+
+        Throwable failure = org.assertj.core.api.Assertions.catchThrowable(
+                () -> session.awaitPaint(640, 480, Duration.ofMillis(1)));
+
+        assertThat(failure)
+                .isInstanceOf(TimeoutException.class)
+                .hasMessageContaining("pipeline=shared-file{events=0, callbacks=0}")
+                .hasCauseInstanceOf(TimeoutException.class);
+    }
+
+    @Test
     void retriesAcknowledgedResizeUntilTheRequestedPaintArrives() throws Exception {
         AtomicInteger resizes = new AtomicInteger();
         BrowserSession session = new BrowserSession() {

@@ -23,6 +23,7 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -65,6 +66,17 @@ class OsrPaintIntegrationTest {
             assertThat(ev.dirtyY()).isGreaterThanOrEqualTo(0);
             assertThat(ev.dirtyX() + ev.dirtyWidth()).isLessThanOrEqualTo(ev.width());
             assertThat(ev.dirtyY() + ev.dirtyHeight()).isLessThanOrEqualTo(ev.height());
+
+            TestDeadline.after(Duration.ofSeconds(2))
+                    .until(
+                            () -> {
+                                String diagnostics = server.diagnosticSummary();
+                                return diagnostics.contains("reached on-paint")
+                                        && diagnostics.contains("reached buffer-ready")
+                                        && diagnostics.contains("reached event-sent");
+                            },
+                            Duration.ofMillis(10),
+                            "runtime-server paint diagnostics");
 
             assertThat(Files.exists(sharedPath))
                     .as("shared frame file %s exists", sharedPath)

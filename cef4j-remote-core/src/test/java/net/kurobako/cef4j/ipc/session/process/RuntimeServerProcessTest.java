@@ -3,9 +3,31 @@ package net.kurobako.cef4j.ipc.session.process;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 final class RuntimeServerProcessTest {
+    @Test
+    void alignsUnixChildTempDirectoryWithJava() {
+        Map<String, String> environment = new HashMap<>();
+        environment.put("TMPDIR", "/private/tmp");
+        environment.put("KEEP", "value");
+
+        RuntimeServerProcess.alignTempEnvironment(environment, Path.of("/java/tmp"), "Mac OS X");
+
+        assertThat(environment).containsEntry("TMPDIR", "/java/tmp").containsEntry("KEEP", "value");
+    }
+
+    @Test
+    void alignsBothWindowsChildTempVariablesWithJava() {
+        Map<String, String> environment = new HashMap<>(Map.of("TEMP", "C:\\old"));
+
+        RuntimeServerProcess.alignTempEnvironment(environment, Path.of("C:\\java-tmp"), "Windows 11");
+
+        assertThat(environment).containsEntry("TEMP", "C:\\java-tmp").containsEntry("TMP", "C:\\java-tmp");
+    }
+
     @Test
     void serverCommandAppendsConfiguredCefArguments() {
         assertThat(RuntimeServerProcess.serverCommand(
@@ -32,6 +54,9 @@ final class RuntimeServerProcessTest {
                 .isEqualTo(RuntimeServerProcess.ChildOutputLevel.TRACE);
         assertThat(RuntimeServerProcess.stderrLevel(
                         "[cef4j-runtime-server] CEF context initialized; publishing endpoint"))
+                .isEqualTo(RuntimeServerProcess.ChildOutputLevel.TRACE);
+        assertThat(RuntimeServerProcess.stderrLevel(
+                        "[cef4j-runtime-server] shared-frame paint reached event-sent for browser=1"))
                 .isEqualTo(RuntimeServerProcess.ChildOutputLevel.TRACE);
         assertThat(RuntimeServerProcess.stderrLevel("[cef4j-runtime-server] zmq_send failed: Host unreachable"))
                 .isEqualTo(RuntimeServerProcess.ChildOutputLevel.DEBUG);

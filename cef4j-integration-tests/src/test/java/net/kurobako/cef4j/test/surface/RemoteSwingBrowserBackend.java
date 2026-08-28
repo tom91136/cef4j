@@ -86,6 +86,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             this.frame = Objects.requireNonNull(frameRef.get(), "remote Swing frame");
             try {
                 this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
+                frames.runtimeDiagnosticSource(runtime.server::diagnosticSummary);
             } catch (Exception failure) {
                 closeSurface(failure);
                 throw failure;

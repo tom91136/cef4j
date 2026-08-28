@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -72,6 +73,7 @@ public final class RuntimeServerProcess implements Closeable {
     private final String frameTransport;
     private final String endpoint;
     private final RuntimeServerHandshake handshake;
+    private final Deque<String> recentOutput;
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public static RuntimeServerProcess spawn(@Nonnull Path binary, @Nonnull String bindEndpoint) throws IOException {
@@ -135,13 +137,17 @@ public final class RuntimeServerProcess implements Closeable {
         ProcessBuilder pb = new ProcessBuilder(serverCommand(
                 binary, transport, bindEndpoint, frameTransport, System.getProperty(EXTRA_ARGUMENTS_PROPERTY)));
         pb.environment().putAll(environment);
+        alignTempEnvironment(
+                pb.environment(),
+                Paths.get(System.getProperty("java.io.tmpdir")).toRealPath(),
+                System.getProperty("os.name", ""));
         pb.redirectErrorStream(false);
         Process p = pb.start();
 
         CompletableFuture<RuntimeServerHandshake> handshakeFuture = new CompletableFuture<>();
-        Deque<String> bootstrapOutput = new ConcurrentLinkedDeque<>();
+        Deque<String> recentOutput = new ConcurrentLinkedDeque<>();
         startReader(p.getInputStream(), "runtime-server-stdout-" + p.pid(), line -> {
-            rememberOutput(bootstrapOutput, "stdout: " + line);
+            rememberOutput(recentOutput, "stdout: " + line);
             if (!handshakeFuture.isDone()) {
                 if (line.startsWith(RuntimeServerHandshake.PREFIX)) {
                     try {
@@ -156,11 +162,11 @@ public final class RuntimeServerProcess implements Closeable {
             STDOUT_LOG.trace("{}", line);
         });
         startReader(p.getErrorStream(), "runtime-server-stderr-" + p.pid(), line -> {
-            rememberOutput(bootstrapOutput, "stderr: " + line);
+            rememberOutput(recentOutput, "stderr: " + line);
             logStderr(line);
         });
 
-        watchForExit(p, bindEndpoint, handshakeFuture, bootstrapOutput);
+        watchForExit(p, bindEndpoint, handshakeFuture, recentOutput);
 
         try {
             RuntimeServerHandshake handshake = handshakeFuture.get(bootstrapTimeout.toMillis(), TimeUnit.MILLISECONDS);
@@ -170,14 +176,14 @@ public final class RuntimeServerProcess implements Closeable {
                 cleanupUdsSocket(bindEndpoint);
                 throw new IOException("runtime server selected unexpected providers: " + handshake);
             }
-            return new RuntimeServerProcess(p, handshake);
+            return new RuntimeServerProcess(p, handshake, recentOutput);
         } catch (TimeoutException e) {
             terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
             cleanupUdsSocket(bindEndpoint);
             throw new IOException(
                     "runtime server did not publish its handshake within " + bootstrapTimeout
-                            + diagnosticSuffix(bootstrapOutput),
+                            + diagnosticSuffix(recentOutput),
                     e);
         } catch (InterruptedException e) {
             terminateProcessTree(p);
@@ -191,6 +197,16 @@ public final class RuntimeServerProcess implements Closeable {
             cleanupUdsSocket(bindEndpoint);
             Throwable cause = e.getCause();
             throw (cause instanceof IOException) ? (IOException) cause : new IOException(cause);
+        }
+    }
+
+    static void alignTempEnvironment(Map<String, String> environment, Path tempDirectory, String osName) {
+        String value = tempDirectory.toString();
+        if (osName.toLowerCase(Locale.ROOT).contains("win")) {
+            environment.put("TEMP", value);
+            environment.put("TMP", value);
+        } else {
+            environment.put("TMPDIR", value);
         }
     }
 
@@ -243,6 +259,7 @@ public final class RuntimeServerProcess implements Closeable {
                 || line.equals("[cef4j-runtime-server] cef_initialize: complete")
                 || line.equals("[cef4j-runtime-server] macOS application bootstrap: begin")
                 || line.equals("[cef4j-runtime-server] macOS application bootstrap: complete")
+                || line.startsWith("[cef4j-runtime-server] shared-frame paint reached ")
                 || line.equals("[cef4j-runtime-server] CEF context initialized; publishing endpoint");
     }
 
@@ -272,13 +289,13 @@ public final class RuntimeServerProcess implements Closeable {
             Process process,
             String bindEndpoint,
             CompletableFuture<RuntimeServerHandshake> handshakeFuture,
-            Deque<String> bootstrapOutput) {
+            Deque<String> recentOutput) {
         process.onExit().thenAccept(exited -> {
             cleanupProcessFiles(exited.pid());
             cleanupUdsSocket(bindEndpoint);
             if (!handshakeFuture.isDone()) {
                 handshakeFuture.completeExceptionally(new IOException("runtime server exited before handshake (exit="
-                        + exited.exitValue() + ")" + diagnosticSuffix(bootstrapOutput)));
+                        + exited.exitValue() + ")" + diagnosticSuffix(recentOutput)));
             }
         });
     }
@@ -297,12 +314,13 @@ public final class RuntimeServerProcess implements Closeable {
                         ""));
     }
 
-    private RuntimeServerProcess(Process process, RuntimeServerHandshake handshake) {
+    private RuntimeServerProcess(Process process, RuntimeServerHandshake handshake, Deque<String> recentOutput) {
         this.process = process;
         this.handshake = handshake;
         this.transport = handshake.transport();
         this.frameTransport = handshake.frameTransport();
         this.endpoint = handshake.endpoint();
+        this.recentOutput = recentOutput;
     }
 
     @Nonnull
@@ -351,6 +369,12 @@ public final class RuntimeServerProcess implements Closeable {
 
     public long pid() {
         return process.pid();
+    }
+
+    @Nonnull
+    public String diagnosticSummary() {
+        String output = recentOutput.isEmpty() ? "none" : recentOutput.stream().collect(Collectors.joining(" | "));
+        return "runtime-server{pid=" + pid() + ", alive=" + isAlive() + ", recent=" + output + "}";
     }
 
     /** Completes with the process exit code, whether exit was expected or a crash. */

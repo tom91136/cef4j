@@ -2,9 +2,12 @@ package net.kurobako.cef4j.test.surface;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
@@ -98,9 +101,21 @@ final class RemoteSurfaceSupport {
 
         private final ArrayBlockingQueue<BrowserSession.PaintInfo> paints =
                 new ArrayBlockingQueue<>(PAINT_HISTORY_CAPACITY);
+        private final AtomicReference<Supplier<String>> pipelineDiagnostics = new AtomicReference<>(() -> "unbound");
+        private final AtomicReference<Supplier<String>> runtimeDiagnostics = new AtomicReference<>(() -> "unbound");
 
         FrameTransport bind(CefSession session) {
-            return new ProbedFrameTransport(SharedFileFrameTransport.bindAll(session), this);
+            SharedFileFrameTransport transport = SharedFileFrameTransport.bindAll(session);
+            pipelineDiagnosticSource(transport::diagnosticSummary);
+            return new ProbedFrameTransport(transport, this);
+        }
+
+        void pipelineDiagnosticSource(Supplier<String> source) {
+            pipelineDiagnostics.set(Objects.requireNonNull(source, "source"));
+        }
+
+        void runtimeDiagnosticSource(Supplier<String> source) {
+            runtimeDiagnostics.set(Objects.requireNonNull(source, "source"));
         }
 
         BrowserSession.PaintInfo await(int width, int height, Duration timeout)
@@ -113,7 +128,16 @@ final class RemoteSurfaceSupport {
                 if (next != null && next.width == width && next.height == height) return next;
             }
             throw new TimeoutException("no " + width + "x" + height + " surface paint within " + timeout
-                    + (last == null ? "" : "; last was " + last.width + "x" + last.height));
+                    + (last == null ? "" : "; last was " + last.width + "x" + last.height) + "; pipeline="
+                    + diagnosticSummary(pipelineDiagnostics) + "; runtime=" + diagnosticSummary(runtimeDiagnostics));
+        }
+
+        private static String diagnosticSummary(AtomicReference<Supplier<String>> source) {
+            try {
+                return Objects.requireNonNull(source.get(), "diagnostics").get();
+            } catch (RuntimeException failure) {
+                return "unavailable(" + failure.getClass().getSimpleName() + ")";
+            }
         }
 
         void accept(int width, int height, ByteBuffer pixels) {

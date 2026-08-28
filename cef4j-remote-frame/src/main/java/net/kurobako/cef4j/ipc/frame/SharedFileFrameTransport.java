@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,6 +50,15 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private final RemoteHandle browser; // null = accept all browsers' paints
 
     private final AtomicInteger sequence = new AtomicInteger();
+    private final AtomicLong paintEvents = new AtomicLong();
+    private final AtomicLong mappingAttempts = new AtomicLong();
+    private final AtomicLong mappingsOpened = new AtomicLong();
+    private final AtomicLong mappingRejects = new AtomicLong();
+    private final AtomicLong snapshotRejects = new AtomicLong();
+    private final AtomicLong callbacks = new AtomicLong();
+    private final AtomicLong lastDimensions = new AtomicLong();
+    private final AtomicLong lastFrameSequence = new AtomicLong(-1L);
+    private final AtomicReference<String> lastReject = new AtomicReference<>("none");
 
     private final AtomicReference<OsrPaintEvent> pendingPaint = new AtomicReference<>();
 
@@ -134,6 +144,9 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private void onPaint(OsrPaintEvent ev) {
         if (closed) return;
         if (browser != null && ev.browser().id() != browser.id()) return;
+        paintEvents.incrementAndGet();
+        lastDimensions.set(((long) ev.width() << 32) | (ev.height() & 0xffffffffL));
+        lastFrameSequence.set(ev.frameSequence());
         pendingPaint.set(ev);
         scheduleDelivery();
     }
@@ -181,8 +194,10 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     PixelFormat.BGRA,
                     Collections.singletonList(new Rect(ev.dirtyX(), ev.dirtyY(), ev.dirtyWidth(), ev.dirtyHeight())));
             try {
+                callbacks.incrementAndGet();
                 c.accept(ev.width(), ev.height(), pixels, meta);
             } catch (RuntimeException re) {
+                lastReject.set("consumer-threw");
                 LOG.warn("frame consumer threw on browser={} seq={}", browserIdForLog(), meta.sequenceId(), re);
             }
         }
@@ -196,7 +211,11 @@ public final class SharedFileFrameTransport implements FrameTransport {
     @Nullable
     private ByteBuffer copyStableFrame(OsrPaintEvent ev, ByteBuffer mapping) {
         long before = (long) SHM_SEQUENCE.getAcquire(mapping, 0);
-        if (before != ev.frameSequence() || (before & 1L) != 0L) return null;
+        if (before != ev.frameSequence() || (before & 1L) != 0L) {
+            snapshotRejects.incrementAndGet();
+            lastReject.set("unstable-before-copy");
+            return null;
+        }
 
         ByteBuffer src = mapping.duplicate();
         src.position(SHM_HEADER_BYTES);
@@ -205,7 +224,11 @@ public final class SharedFileFrameTransport implements FrameTransport {
         snapshot.put(src).flip();
 
         long after = (long) SHM_SEQUENCE.getAcquire(mapping, 0);
-        if (after != before) return null;
+        if (after != before) {
+            snapshotRejects.incrementAndGet();
+            lastReject.set("unstable-after-copy");
+            return null;
+        }
         return snapshot.asReadOnlyBuffer();
     }
 
@@ -217,10 +240,12 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private ByteBuffer ensureMappingLocked(OsrPaintEvent ev) {
         String name = ev.shmName();
         if (!name.equals(mappedShmName)) {
+            mappingAttempts.incrementAndGet();
             disposeMappingLocked();
             Path sharedPath = Paths.get(name).toAbsolutePath().normalize();
             Path leaf = sharedPath.getFileName();
             if (leaf == null || !leaf.toString().matches("cef4j-paint-[0-9]+-[0-9]+-[0-9]+-[01]\\.frame")) {
+                rejectMapping("invalid-name");
                 LOG.warn("rejecting invalid shared-frame path={} for browser={}", name, browserIdForLog());
                 return null;
             }
@@ -228,6 +253,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
                 Path tempRoot = Paths.get(System.getProperty("java.io.tmpdir")).toRealPath();
                 Path realPath = sharedPath.toRealPath();
                 if (!tempRoot.equals(realPath.getParent())) {
+                    rejectMapping("outside-temp-root");
                     LOG.warn("rejecting shared-frame path outside java.io.tmpdir: {}", realPath);
                     return null;
                 }
@@ -237,6 +263,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     FileChannel ch = raf.getChannel();
                     long size = ch.size();
                     if (size <= 0) {
+                        rejectMapping("empty-file");
                         LOG.warn("shared-frame file {} is empty for browser={}", realPath, browserIdForLog());
                         return null;
                     }
@@ -246,6 +273,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     this.mappedMapping = mapping;
                     this.mappedSize = size;
                     this.mappedShmName = name;
+                    mappingsOpened.incrementAndGet();
                     opened = true;
                 } finally {
                     if (!opened) {
@@ -257,6 +285,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     }
                 }
             } catch (IOException | RuntimeException e) {
+                rejectMapping("open-failed");
                 LOG.warn("failed to open shared-frame file {} for browser={}", sharedPath, browserIdForLog(), e);
                 return null;
             }
@@ -267,6 +296,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
                 || ev.byteCount() <= 0
                 || expectedBytes != ev.byteCount()
                 || ev.byteCount() > mappedSize - SHM_HEADER_BYTES) {
+            rejectMapping("invalid-dimensions");
             LOG.warn(
                     "invalid paint dimensions={}x{} byteCount={} mapped size={} for browser={}",
                     ev.width(),
@@ -276,7 +306,32 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     browserIdForLog());
             return null;
         }
-        return mappedMapping == null ? null : mappedMapping.buffer();
+        if (mappedMapping == null) {
+            rejectMapping("mapping-unavailable");
+            return null;
+        }
+        return mappedMapping.buffer();
+    }
+
+    private void rejectMapping(String reason) {
+        mappingRejects.incrementAndGet();
+        lastReject.set(reason);
+    }
+
+    public String diagnosticSummary() {
+        boolean mapped;
+        synchronized (mappingLock) {
+            mapped = mappedShmName != null;
+        }
+        long dimensions = lastDimensions.get();
+        long frameSequence = lastFrameSequence.get();
+        String event =
+                frameSequence < 0 ? "none" : (int) (dimensions >> 32) + "x" + (int) dimensions + "#" + frameSequence;
+        return "shared-file{browser=" + browserIdForLog() + ", events=" + paintEvents.get()
+                + ", mappingAttempts=" + mappingAttempts.get() + ", mappingsOpened=" + mappingsOpened.get()
+                + ", mappingRejects=" + mappingRejects.get() + ", snapshotRejects=" + snapshotRejects.get()
+                + ", callbacks=" + callbacks.get() + ", consumer=" + (consumer != null) + ", mapped=" + mapped
+                + ", closed=" + closed + ", lastEvent=" + event + ", lastReject=" + lastReject.get() + "}";
     }
 
     private void disposeMappingLocked() {

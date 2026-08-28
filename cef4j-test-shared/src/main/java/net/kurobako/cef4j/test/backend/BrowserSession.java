@@ -48,16 +48,21 @@ public interface BrowserSession extends AutoCloseable {
             throws InterruptedException, TimeoutException {
         TestDeadline deadline = TestDeadline.after(timeout);
         PaintInfo last = null;
+        TimeoutException lastTimeout = null;
         while (!deadline.isExpired()) {
             try {
                 last = awaitFirstPaint(deadline.remaining());
             } catch (TimeoutException exhausted) {
+                lastTimeout = exhausted;
                 break;
             }
             if (last.width == width && last.height == height) return last;
         }
-        throw new TimeoutException("no " + width + "x" + height + " paint within " + timeout
-                + (last == null ? "" : "; last was " + last.width + "x" + last.height));
+        TimeoutException failure = new TimeoutException("no " + width + "x" + height + " paint within " + timeout
+                + (last == null ? "" : "; last was " + last.width + "x" + last.height)
+                + (lastTimeout == null ? "" : "; backend=" + lastTimeout.getMessage()));
+        if (lastTimeout != null) failure.initCause(lastTimeout);
+        throw failure;
     }
 
     @Override
