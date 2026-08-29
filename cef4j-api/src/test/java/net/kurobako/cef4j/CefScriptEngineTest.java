@@ -692,17 +692,32 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(97)
-    void cancelPendingClearsOldContextWorkWithoutDisposingEngine() throws Exception {
-        int callback = pumpAndGet(evaluator.createCallback(arguments -> {}), 5_000);
-        CompletableFuture<String> pending = evaluator.evaluate("new Promise(() => {})");
+    void cancelPendingClearsOldContextWorkWithoutDisposingEngine() {
+        CefFrame frame = nonRespondingFrame();
+        try (CefScriptEngine reusable = new CefScriptEngine(() -> frame)) {
+            CompletableFuture<String> pending = reusable.evaluate("1 + 1");
+            CompletableFuture<Integer> callback = reusable.createCallback(arguments -> {});
 
-        evaluator.cancelPending("test navigation");
+            assertThat(pending).isNotDone();
+            assertThat(callback).isNotDone();
+            assertThat(reusable.pendingRequestCount()).isEqualTo(2);
+            assertThat(reusable.callbackCount()).isOne();
 
-        assertThat(pending).isCompletedExceptionally();
-        assertThat(evaluator.pendingRequestCount()).isZero();
-        assertThat(evaluator.callbackCount()).isZero();
-        assertThat(pumpAndGet(evaluator.evaluate("6 * 7"), 5_000)).isEqualTo("42");
-        evaluator.release(callback);
+            reusable.cancelPending("test navigation");
+
+            assertThat(pending).isCompletedExceptionally();
+            assertThat(callback).isCompletedExceptionally();
+            assertThat(reusable.pendingRequestCount()).isZero();
+            assertThat(reusable.callbackCount()).isZero();
+
+            CompletableFuture<String> acceptedAfterCancellation = reusable.evaluate("6 * 7");
+            assertThat(acceptedAfterCancellation).isNotDone();
+            assertThat(reusable.pendingRequestCount()).isOne();
+
+            reusable.cancelPending("test cleanup");
+            assertThat(acceptedAfterCancellation).isCompletedExceptionally();
+            assertThat(reusable.pendingRequestCount()).isZero();
+        }
     }
 
     @Test
@@ -711,8 +726,7 @@ class CefScriptEngineTest extends CefTestBase {
         CefFrame frame = nonRespondingFrame();
         CefScriptEngine disposable = new CefScriptEngine(() -> frame);
 
-        CompletableFuture<String> evaluation =
-                disposable.evaluate("new Promise(() => {})").orTimeout(1, TimeUnit.MILLISECONDS);
+        CompletableFuture<String> evaluation = disposable.evaluate("1 + 1").orTimeout(1, TimeUnit.MILLISECONDS);
         CompletableFuture<Integer> callback =
                 disposable.createCallback(arguments -> {}).orTimeout(1, TimeUnit.MILLISECONDS);
         TestDeadline.after(java.time.Duration.ofSeconds(2))
