@@ -3,6 +3,8 @@ package net.kurobako.cef4j.test.backend;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,7 +85,59 @@ class BrowserContractTest {
 
         assertThat(paint.width).isEqualTo(512);
         assertThat(paint.height).isEqualTo(384);
-        assertThat(resizes).hasValue(2);
+        assertThat(resizes).hasValue(3);
+    }
+
+    @Test
+    void retriggersARealResizeWhenTheFirstTargetPaintIsLost() throws Exception {
+        AtomicInteger width = new AtomicInteger(640);
+        AtomicInteger height = new AtomicInteger(480);
+        AtomicInteger targetTransitions = new AtomicInteger();
+        Queue<BrowserSession.PaintInfo> paints = new ArrayDeque<>();
+        BrowserSession session = new BrowserSession() {
+            @Override
+            @Nonnull
+            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            @Nonnull
+            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+                return CompletableFuture.completedFuture(width.get() + "x" + height.get());
+            }
+
+            @Override
+            @Nonnull
+            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws TimeoutException {
+                PaintInfo paint = paints.poll();
+                if (paint == null) throw new TimeoutException("no paint after an unchanged resize");
+                return paint;
+            }
+
+            @Override
+            @Nonnull
+            public CompletableFuture<Void> resizeViewport(int nextWidth, int nextHeight) {
+                int previousWidth = width.getAndSet(nextWidth);
+                int previousHeight = height.getAndSet(nextHeight);
+                if (previousWidth == nextWidth && previousHeight == nextHeight) {
+                    return CompletableFuture.completedFuture(null);
+                }
+                if (nextWidth != 512 || nextHeight != 384 || targetTransitions.incrementAndGet() > 1) {
+                    paints.add(new PaintInfo(nextWidth, nextHeight, (long) nextWidth * nextHeight * 4L));
+                }
+                return CompletableFuture.completedFuture(null);
+            }
+
+            @Override
+            public void close() {}
+        };
+
+        BrowserSession.PaintInfo paint = BrowserContract.resizeUntilPaint(session, 512, 384, Duration.ofMillis(100));
+
+        assertThat(paint.width).isEqualTo(512);
+        assertThat(paint.height).isEqualTo(384);
+        assertThat(targetTransitions).hasValue(2);
     }
 
     @Test

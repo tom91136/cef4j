@@ -134,6 +134,18 @@ public final class BrowserContract {
                 if (expectedViewport.equals(viewport)) return paint;
             } catch (TimeoutException timeoutException) {
                 lastTimeout = timeoutException;
+                if (!deadline.isExpired()) {
+                    int alternateWidth = width == 1 ? 2 : width - 1;
+                    try {
+                        deadline.await(
+                                session.resizeViewport(alternateWidth, height),
+                                "provoke viewport resize",
+                                MAX_PAINT_ATTEMPT);
+                        session.awaitNextPaint(deadline.remainingUpTo(MAX_PAINT_ATTEMPT));
+                    } catch (TimeoutException provokeTimeout) {
+                        timeoutException.addSuppressed(provokeTimeout);
+                    }
+                }
             }
         }
         TimeoutException exhausted = new TimeoutException("no " + width + "x" + height + " paint within " + timeout);
