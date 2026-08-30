@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -11,6 +13,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpSubscription;
 import org.junit.jupiter.api.Test;
 
 public abstract class WebDriverServerContract {
@@ -25,6 +31,37 @@ public abstract class WebDriverServerContract {
 
     @Nonnull
     protected abstract WebDriverJsonCodec codec();
+
+    @Test
+    final void suppliedHttpExecutorRemainsCallerOwned() throws Exception {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            try (WebDriverServer server = WebDriverServer.start(
+                    new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
+                    capabilities -> CompletableFuture.completedFuture(new Backend()),
+                    java.time.Duration.ofSeconds(5),
+                    codec(),
+                    executor)) {
+                assertThat(statusReady(server)).isTrue();
+            }
+            assertThat(executor.isShutdown()).isFalse();
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    final void suppliedPollingExecutorRunsLoadCompletionPolling() throws Exception {
+        AtomicInteger executions = new AtomicInteger();
+        try (CdpAutomationBackend backend = CdpAutomationBackend.create(new StubCdpBrowser(codec()), command -> {
+                    executions.incrementAndGet();
+                    command.run();
+                })
+                .get(1, TimeUnit.SECONDS)) {
+            backend.navigate("https://example.test").get(1, TimeUnit.SECONDS);
+        }
+        assertThat(executions).hasValue(1);
+    }
 
     @Test
     @SuppressWarnings("NullAway")
@@ -149,6 +186,71 @@ public abstract class WebDriverServerContract {
         assertThatThrownBy(() -> CdpAutomationBackend.validateCookie(cookie))
                 .isInstanceOf(WebDriverException.class)
                 .hasMessageContaining(message);
+    }
+
+    private static final class StubCdpBrowser implements JsonCdpBrowser {
+        private final WebDriverJsonCodec codec;
+
+        private StubCdpBrowser(WebDriverJsonCodec codec) {
+            this.codec = codec;
+        }
+
+        @Override
+        public WebDriverJsonCodec jsonCodec() {
+            return codec;
+        }
+
+        @Override
+        public CompletableFuture<byte[]> execute(String method, @Nullable byte[] params) {
+            if (!method.equals("Browser.getVersion")) {
+                return CompletableFuture.failedFuture(new AssertionError("unexpected CDP command " + method));
+            }
+            JsonObject version = new JsonObject();
+            version.addProperty("protocolVersion", "1.3");
+            version.addProperty("product", "cef4j-test");
+            version.addProperty("revision", "test");
+            version.addProperty("userAgent", "cef4j-test");
+            version.addProperty("jsVersion", "test");
+            return CompletableFuture.completedFuture(codec.encode(version));
+        }
+
+        @Override
+        public CdpSubscription subscribe(String method, Consumer<byte[]> handler) {
+            return () -> {};
+        }
+
+        @Override
+        public CompletableFuture<Void> loadUrl(String url) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> canGoBack() {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        @Override
+        public CompletableFuture<Void> goBack() {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> canGoForward() {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        @Override
+        public CompletableFuture<Void> goForward() {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> loading() {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        @Override
+        public void close() {}
     }
 
     private void assertSessionStatus(String timeout, int expectedStatus) throws Exception {

@@ -1,13 +1,19 @@
 #include <atomic>
+#include <cerrno>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
-#include <functional>
+#include <deque>
 #include <filesystem>
+#include <functional>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -198,57 +204,83 @@ static std::function<void()> g_publishEndpoint;
 static bool g_contextInitialized = false;
 static bool g_endpointPublished = false;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
-struct InterceptWorker {
-    std::thread thread;
-    std::unique_ptr<std::atomic<bool>> finished;
-};
-static std::mutex g_interceptWorkersMutex;
-static std::vector<InterceptWorker> g_interceptWorkers;
 
-static void startInterceptWorker(std::function<void()> work) {
-    std::vector<std::thread> completed;
-    {
-        std::lock_guard<std::mutex> lock(g_interceptWorkersMutex);
-        for (auto it = g_interceptWorkers.begin(); it != g_interceptWorkers.end();) {
-            if (it->finished->load(std::memory_order_acquire)) {
-                completed.push_back(std::move(it->thread));
-                it = g_interceptWorkers.erase(it);
-            } else {
-                ++it;
-            }
-        }
-        g_interceptWorkers.emplace_back();
-        auto& worker = g_interceptWorkers.back();
+class InterceptExecutor {
+public:
+    explicit InterceptExecutor(unsigned int parallelism) {
+        workers_.reserve(parallelism);
         try {
-            worker.finished = std::make_unique<std::atomic<bool>>(false);
-            auto* finishedFlag = worker.finished.get();
-            worker.thread = std::thread([work = std::move(work), finishedFlag]() mutable {
-                try {
-                    work();
-                } catch (const std::exception& failure) {
-                    std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed: %s\n", failure.what());
-                } catch (...) {
-                    std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed\n");
-                }
-                finishedFlag->store(true, std::memory_order_release);
-            });
+            for (unsigned int i = 0; i < parallelism; ++i) workers_.emplace_back([this] { run(); });
         } catch (...) {
-            g_interceptWorkers.pop_back();
+            shutdown();
             throw;
         }
     }
-    for (auto& worker : completed) worker.join();
+
+    ~InterceptExecutor() { shutdown(); }
+
+    void execute(std::function<void()> work) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (stopping_) throw std::logic_error("intercept executor is stopped");
+            pending_.push_back(std::move(work));
+        }
+        ready_.notify_one();
+    }
+
+    void shutdown() {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (stopping_) return;
+            stopping_ = true;
+            pending_.clear();
+        }
+        ready_.notify_all();
+        for (auto& worker : workers_) {
+            if (worker.joinable()) worker.join();
+        }
+        workers_.clear();
+    }
+
+private:
+    void run() {
+        while (true) {
+            std::function<void()> work;
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                ready_.wait(lock, [this] { return stopping_ || !pending_.empty(); });
+                if (stopping_ && pending_.empty()) return;
+                work = std::move(pending_.front());
+                pending_.pop_front();
+            }
+            try {
+                work();
+            } catch (const std::exception& failure) {
+                std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed: %s\n", failure.what());
+            } catch (...) {
+                std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed\n");
+            }
+        }
+    }
+
+    std::mutex mutex_;
+    std::condition_variable ready_;
+    std::deque<std::function<void()>> pending_;
+    std::vector<std::thread> workers_;
+    bool stopping_ = false;
+};
+
+static std::unique_ptr<InterceptExecutor> g_interceptExecutor;
+
+static void startInterceptWorker(std::function<void()> work) {
+    if (!g_interceptExecutor) throw std::logic_error("intercept executor is unavailable");
+    g_interceptExecutor->execute(std::move(work));
 }
 
 static void joinInterceptWorkers() {
-    std::vector<InterceptWorker> workers;
-    {
-        std::lock_guard<std::mutex> lock(g_interceptWorkersMutex);
-        workers.swap(g_interceptWorkers);
-    }
-    for (auto& worker : workers) {
-        if (worker.thread.joinable()) worker.thread.join();
-    }
+    if (!g_interceptExecutor) return;
+    g_interceptExecutor->shutdown();
+    g_interceptExecutor.reset();
 }
 
 static std::unordered_map<int, cef_browser_t*> g_liveBrowsers;
@@ -2459,6 +2491,21 @@ static std::string parseOption(int argc, char* argv[], const char* option, const
     return fallback;
 }
 
+static unsigned int interceptParallelism(int argc, char* argv[]) {
+    unsigned int detected = std::thread::hardware_concurrency();
+    std::string fallback = std::to_string(detected == 0 ? 1 : detected);
+    if (const char* configured = std::getenv("CEF4J_INTERCEPT_WORKERS")) fallback = configured;
+    std::string value = parseOption(argc, argv, "--intercept-workers", fallback);
+    char* end = nullptr;
+    errno = 0;
+    unsigned long parsed = std::strtoul(value.c_str(), &end, 10);
+    if (errno != 0 || end == value.c_str() || *end != '\0' || parsed == 0
+        || parsed > std::numeric_limits<unsigned int>::max()) {
+        throw std::invalid_argument("intercept worker count must be a positive integer");
+    }
+    return static_cast<unsigned int>(parsed);
+}
+
 static int processId() {
 #ifdef _WIN32
     return ::_getpid();
@@ -2558,6 +2605,13 @@ int main(int argc, char* argv[]) {
     auto* subprocessApp = new App();
     int rc = cef_execute_process(&args, subprocessApp, nullptr);
     if (rc >= 0) return rc;
+
+    try {
+        g_interceptExecutor = std::make_unique<InterceptExecutor>(interceptParallelism(argc, argv));
+    } catch (const std::exception& failure) {
+        std::fprintf(stderr, "[cef4j-runtime-server] failed to start intercept workers: %s\n", failure.what());
+        return 1;
+    }
 
     std::string transportName = parseOption(argc, argv, "--transport", "zmq");
     std::string frameTransportName = parseOption(argc, argv, "--frame-transport", "shared-file");

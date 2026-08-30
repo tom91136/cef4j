@@ -80,11 +80,11 @@ AddressSanitizer build pattern on Linux:
 
 ```bash
 cd cef4j-platform/target/cmake-build
-cmake ../.. -DCMAKE_BUILD_TYPE=Debug \
+cmake -G Ninja ../.. -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_C_FLAGS='-fsanitize=address -fno-omit-frame-pointer' \
   -DCMAKE_CXX_FLAGS='-fsanitize=address -fno-omit-frame-pointer' \
   -DCMAKE_SHARED_LINKER_FLAGS='-fsanitize=address'
-cmake --build . -j
+cmake --build .
 ```
 
 Then preload the matching ASAN runtime when launching Java. For GDB:

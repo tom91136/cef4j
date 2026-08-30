@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,6 +29,27 @@ import org.junit.jupiter.api.Timeout;
 
 @Timeout(15)
 class MjpegHttpServerTest {
+
+    @Test
+    void suppliedHttpExecutorRemainsCallerOwned() throws Exception {
+        MjpegHttpServer.Configuration configuration = new MjpegHttpServer.Configuration(
+                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
+                "/cef4j.mjpeg",
+                16,
+                0.80f,
+                false,
+                Optional.empty(),
+                Optional.of("secret-token"));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            try (MjpegHttpServer server = MjpegHttpServer.start(configuration, executor)) {
+                assertThat(statusCode(server.endpoint(), null)).isEqualTo(401);
+            }
+            assertThat(executor.isShutdown()).isFalse();
+        } finally {
+            executor.shutdownNow();
+        }
+    }
 
     @Test
     void sourceSwapFencesFramesAlreadyEncodingForThePreviousSource() throws Exception {

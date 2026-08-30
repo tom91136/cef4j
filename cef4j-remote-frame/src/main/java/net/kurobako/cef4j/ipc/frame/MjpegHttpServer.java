@@ -20,11 +20,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -59,17 +61,22 @@ public final class MjpegHttpServer implements AutoCloseable {
 
     private long sourceGeneration;
 
-    private final ExecutorService httpExecutor;
+    @Nullable
+    private final ExecutorService ownedHttpExecutor;
+
     private final ScheduledExecutorService watchdog;
 
     private MjpegHttpServer(Configuration configuration) throws IOException {
-        this(
-                configuration,
-                () -> new JpegFrameCodecProvider()
-                        .newEncoder(Map.of("quality", Float.toString(configuration.quality))));
+        this(configuration, codecFactory(configuration), null);
     }
 
     MjpegHttpServer(Configuration configuration, Supplier<FrameCodec> codecFactory) throws IOException {
+        this(configuration, codecFactory, null);
+    }
+
+    private MjpegHttpServer(
+            Configuration configuration, Supplier<FrameCodec> codecFactory, @Nullable Executor suppliedExecutor)
+            throws IOException {
         this.path = normalizePath(configuration.path);
         this.bearerToken = configuration.bearerToken;
         this.clientStallTimeoutNanos = configuration.clientStallTimeout.toNanos();
@@ -82,27 +89,45 @@ public final class MjpegHttpServer implements AutoCloseable {
             https.setHttpsConfigurator(new HttpsConfigurator(configuration.sslContext.get()));
             server = https;
         }
-        httpExecutor = Executors.newCachedThreadPool(r -> {
-            Thread thread = new Thread(r, "cef4j-mjpeg-http");
-            thread.setDaemon(true);
-            return thread;
-        });
+        Executor executor;
+        if (suppliedExecutor == null) {
+            ownedHttpExecutor = newHttpExecutor();
+            executor = ownedHttpExecutor;
+        } else {
+            ownedHttpExecutor = null;
+            executor = suppliedExecutor;
+        }
         watchdog = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r, "cef4j-mjpeg-watchdog");
             thread.setDaemon(true);
             return thread;
         });
         long watchdogInterval = Math.min(TimeUnit.SECONDS.toNanos(5), Math.max(1, clientStallTimeoutNanos / 2));
-        watchdog.scheduleWithFixedDelay(
-                this::evictStalledClients, watchdogInterval, watchdogInterval, TimeUnit.NANOSECONDS);
-        server.setExecutor(httpExecutor);
-        server.createContext(path, this::serve);
-        server.start();
+        try {
+            watchdog.scheduleWithFixedDelay(
+                    this::evictStalledClients, watchdogInterval, watchdogInterval, TimeUnit.NANOSECONDS);
+            server.setExecutor(executor);
+            server.createContext(path, this::serve);
+            server.start();
+        } catch (RuntimeException failure) {
+            server.stop(0);
+            watchdog.shutdownNow();
+            if (ownedHttpExecutor != null) ownedHttpExecutor.shutdownNow();
+            throw failure;
+        }
     }
 
     @Nonnull
     public static MjpegHttpServer start(@Nonnull Configuration configuration) throws IOException {
         return new MjpegHttpServer(Objects.requireNonNull(configuration, "configuration"));
+    }
+
+    @Nonnull
+    public static MjpegHttpServer start(@Nonnull Configuration configuration, @Nonnull Executor executor)
+            throws IOException {
+        Objects.requireNonNull(configuration, "configuration");
+        return new MjpegHttpServer(
+                configuration, codecFactory(configuration), Objects.requireNonNull(executor, "executor"));
     }
 
     /** Atomically swaps frame sources, useful when a supervised runtime server starts a new generation. */
@@ -281,7 +306,7 @@ public final class MjpegHttpServer implements AutoCloseable {
             clients.clear();
             server.stop(0);
             watchdog.shutdownNow();
-            httpExecutor.shutdownNow();
+            if (ownedHttpExecutor != null) ownedHttpExecutor.shutdownNow();
             if (closeFailure != null) throw closeFailure;
         }
     }
@@ -292,6 +317,19 @@ public final class MjpegHttpServer implements AutoCloseable {
             throw new IllegalArgumentException("MJPEG path must be an absolute path without traversal or query");
         }
         return value;
+    }
+
+    private static Supplier<FrameCodec> codecFactory(Configuration configuration) {
+        return () -> new JpegFrameCodecProvider().newEncoder(Map.of("quality", Float.toString(configuration.quality)));
+    }
+
+    private static ExecutorService newHttpExecutor() {
+        AtomicInteger sequence = new AtomicInteger();
+        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), task -> {
+            Thread thread = new Thread(task, "cef4j-mjpeg-http-" + sequence.incrementAndGet());
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     private static void validateExposure(Configuration configuration) {

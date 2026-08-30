@@ -24,6 +24,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -42,7 +43,6 @@ public final class WebDriverServer implements AutoCloseable {
     public static final String ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf";
     private static final Logger LOG = LoggerFactory.getLogger(WebDriverServer.class);
     private static final int DEFAULT_BACKLOG = 32;
-    private static final int DEFAULT_WORKERS = 4;
     private static final int MAX_REQUEST_BYTES = 1024 * 1024;
     private static final Duration DEFAULT_COMMAND_TIMEOUT = Duration.ofSeconds(60);
 
@@ -60,7 +60,10 @@ public final class WebDriverServer implements AutoCloseable {
             "webSocketUrl");
 
     private final HttpServer server;
-    private final ExecutorService executor;
+
+    @Nullable
+    private final ExecutorService ownedExecutor;
+
     private final AutomationBackendFactory backendFactory;
     private final WebDriverJsonCodec jsonCodec;
     private final Duration commandTimeout;
@@ -112,23 +115,64 @@ public final class WebDriverServer implements AutoCloseable {
         if (commandTimeout.isZero() || commandTimeout.isNegative()) {
             throw new IllegalArgumentException("commandTimeout must be positive");
         }
+        ExecutorService workers = Executors.newFixedThreadPool(
+                Math.max(2, Runtime.getRuntime().availableProcessors()), daemonThreads("cef4j-webdriver-http"));
+        try {
+            return start(bindAddress, backendFactory, commandTimeout, jsonCodec, workers, workers);
+        } catch (IOException | RuntimeException failure) {
+            workers.shutdownNow();
+            throw failure;
+        }
+    }
+
+    @Nonnull
+    public static WebDriverServer start(
+            @Nonnull InetSocketAddress bindAddress,
+            @Nonnull AutomationBackendFactory backendFactory,
+            @Nonnull Duration commandTimeout,
+            @Nonnull WebDriverJsonCodec jsonCodec,
+            @Nonnull Executor executor)
+            throws IOException {
+        return start(bindAddress, backendFactory, commandTimeout, jsonCodec, executor, null);
+    }
+
+    private static WebDriverServer start(
+            InetSocketAddress bindAddress,
+            AutomationBackendFactory backendFactory,
+            Duration commandTimeout,
+            WebDriverJsonCodec jsonCodec,
+            Executor executor,
+            @Nullable ExecutorService ownedExecutor)
+            throws IOException {
+        Objects.requireNonNull(bindAddress, "bindAddress");
+        Objects.requireNonNull(backendFactory, "backendFactory");
+        Objects.requireNonNull(commandTimeout, "commandTimeout");
+        Objects.requireNonNull(jsonCodec, "jsonCodec");
+        Objects.requireNonNull(executor, "executor");
+        if (commandTimeout.isZero() || commandTimeout.isNegative()) {
+            throw new IllegalArgumentException("commandTimeout must be positive");
+        }
         HttpServer http = HttpServer.create(bindAddress, DEFAULT_BACKLOG);
-        ExecutorService workers = Executors.newFixedThreadPool(DEFAULT_WORKERS, daemonThreads("cef4j-webdriver-http"));
-        WebDriverServer result = new WebDriverServer(http, workers, backendFactory, commandTimeout, jsonCodec);
-        http.createContext("/", result::handle);
-        http.setExecutor(workers);
-        http.start();
+        WebDriverServer result = new WebDriverServer(http, ownedExecutor, backendFactory, commandTimeout, jsonCodec);
+        try {
+            http.createContext("/", result::handle);
+            http.setExecutor(executor);
+            http.start();
+        } catch (RuntimeException failure) {
+            http.stop(0);
+            throw failure;
+        }
         return result;
     }
 
     private WebDriverServer(
             HttpServer server,
-            ExecutorService executor,
+            @Nullable ExecutorService ownedExecutor,
             AutomationBackendFactory backendFactory,
             Duration commandTimeout,
             WebDriverJsonCodec jsonCodec) {
         this.server = server;
-        this.executor = executor;
+        this.ownedExecutor = ownedExecutor;
         this.backendFactory = backendFactory;
         this.commandTimeout = commandTimeout;
         this.jsonCodec = jsonCodec;
@@ -907,7 +951,7 @@ public final class WebDriverServer implements AutoCloseable {
         server.stop(0);
         for (ActiveSession session : sessions.values()) session.close();
         sessions.clear();
-        executor.shutdownNow();
+        if (ownedExecutor != null) ownedExecutor.shutdownNow();
     }
 
     private static final class ActiveSession implements AutoCloseable {

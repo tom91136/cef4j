@@ -13,8 +13,11 @@ import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.cdp.CdpClient;
@@ -28,6 +31,14 @@ import net.kurobako.cef4j.cdp.generated.Runtime;
 
 /** Shared CDP-backed automation implementation, independent of in-process or remote CEF lifecycle. */
 public final class CdpAutomationBackend implements AutomationBackend {
+    private static final AtomicInteger POLL_THREAD_IDS = new AtomicInteger();
+    private static final Executor POLL_EXECUTOR =
+            Executors.newFixedThreadPool(java.lang.Runtime.getRuntime().availableProcessors(), task -> {
+                Thread thread = new Thread(task, "cef4j-webdriver-poll-" + POLL_THREAD_IDS.incrementAndGet());
+                thread.setDaemon(true);
+                return thread;
+            });
+
     private final JsonCdpBrowser cdp;
     private final CdpClient client;
     private final JsonObject capabilities;
@@ -38,8 +49,10 @@ public final class CdpAutomationBackend implements AutomationBackend {
     private final Page.Client page;
     private final Input.Client input;
     private final Network.Client network;
+    private final Executor pollExecutor;
 
-    private CdpAutomationBackend(JsonCdpBrowser cdp, CdpClient client, Browser.GetVersionResult version) {
+    private CdpAutomationBackend(
+            JsonCdpBrowser cdp, CdpClient client, Browser.GetVersionResult version, Executor pollExecutor) {
         this.cdp = cdp;
         this.client = client;
         runtime = client.domains().runtime();
@@ -47,6 +60,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         page = client.domains().page();
         input = client.domains().input();
         network = client.domains().network();
+        this.pollExecutor = pollExecutor;
         capabilities = new JsonObject();
         capabilities.addProperty("browserName", "cef4j");
         capabilities.addProperty("browserVersion", version.product());
@@ -64,12 +78,19 @@ public final class CdpAutomationBackend implements AutomationBackend {
     /** Queries browser metadata and creates the common WebDriver command backend. */
     @Nonnull
     public static CompletableFuture<CdpAutomationBackend> create(@Nonnull JsonCdpBrowser cdp) {
+        return create(cdp, POLL_EXECUTOR);
+    }
+
+    @Nonnull
+    public static CompletableFuture<CdpAutomationBackend> create(
+            @Nonnull JsonCdpBrowser cdp, @Nonnull Executor pollExecutor) {
         Objects.requireNonNull(cdp, "cdp");
+        Objects.requireNonNull(pollExecutor, "pollExecutor");
         CdpClient client = new CdpClient(cdp, new WebDriverCdpCodec(cdp.jsonCodec()));
         return client.domains()
                 .browser()
                 .getVersion()
-                .thenApply(version -> new CdpAutomationBackend(cdp, client, version))
+                .thenApply(version -> new CdpAutomationBackend(cdp, client, version, pollExecutor))
                 .whenComplete((backend, failure) -> {
                     if (failure != null) cdp.close();
                 })
@@ -760,7 +781,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @SuppressWarnings("FutureReturnValueIgnored")
     private void pollLoading(CompletableFuture<Void> result) {
         if (result.isDone()) return;
-        CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(25, TimeUnit.MILLISECONDS))
+        CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(25, TimeUnit.MILLISECONDS, pollExecutor))
                 .thenCompose(ignored -> cdp.loading())
                 .whenComplete((loading, failure) -> {
                     if (result.isDone()) return;

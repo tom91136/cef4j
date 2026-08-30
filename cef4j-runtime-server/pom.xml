@@ -86,7 +86,6 @@
                                 <argument>${project.build.directory}/cmake-build</argument>
                                 <argument>--config</argument>
                                 <argument>Release</argument>
-                                <argument>--parallel</argument>
                             </arguments>
                         </configuration>
                     </execution>

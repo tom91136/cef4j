@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.kurobako.cef4j.test.TestDeadline;
@@ -68,6 +71,7 @@ class NamedPipeTransportTest {
     @Test
     void closeDoesNotWaitForBlockedNativeIo() throws Exception {
         CountDownLatch closeEntered = new CountDownLatch(1);
+        CountDownLatch closeFinished = new CountDownLatch(1);
         CountDownLatch unblockClose = new CountDownLatch(1);
         AtomicBoolean closed = new AtomicBoolean();
         Closeable blockingHandle = () -> {
@@ -77,18 +81,33 @@ class NamedPipeTransportTest {
                 closed.set(true);
             } catch (InterruptedException failure) {
                 Thread.currentThread().interrupt();
+            } finally {
+                closeFinished.countDown();
             }
         };
 
-        Thread closer = NamedPipeTransport.closeAsync("pipe://blocked-test", blockingHandle);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        NamedPipeTransport.closeAsync("pipe://blocked-test", blockingHandle, executor);
         try {
             assertThat(closeEntered.await(1, TimeUnit.SECONDS)).isTrue();
-            assertThat(closer.isDaemon()).isTrue();
             assertThat(closed).isFalse();
         } finally {
             unblockClose.countDown();
         }
-        TestDeadline.after(Duration.ofSeconds(1)).join(closer, "blocked native close");
+        TestDeadline.after(Duration.ofSeconds(1)).await(closeFinished, "blocked native close");
+        assertThat(executor.isShutdown()).isFalse();
+        executor.shutdownNow();
         assertThat(closed).isTrue();
+    }
+
+    @Test
+    void closeFallsBackWhenSuppliedExecutorRejects() throws Exception {
+        CountDownLatch closed = new CountDownLatch(1);
+
+        NamedPipeTransport.closeAsync("pipe://rejected-close-test", closed::countDown, command -> {
+            throw new RejectedExecutionException("stopped");
+        });
+
+        TestDeadline.after(Duration.ofSeconds(1)).await(closed, "rejected native close");
     }
 }

@@ -531,7 +531,7 @@
                 <cef.platform>linux64</cef.platform>
                 <cef.classifier>linux-x86_64</cef.classifier>
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_linux64_minimal.tar.bz2</cef.dist.url>
-                <cmake.generator>Unix Makefiles</cmake.generator>
+                <cmake.generator>Ninja</cmake.generator>
                 <cmake.toolchain.file>${maven.multiModuleProjectDirectory}/cmake/toolchains/linux-x86_64.cmake</cmake.toolchain.file>
                 <native.compiler.id>gcc</native.compiler.id>
             </properties>
@@ -548,7 +548,7 @@
                 <cef.platform>linuxarm64</cef.platform>
                 <cef.classifier>linux-arm64</cef.classifier>
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_linuxarm64_minimal.tar.bz2</cef.dist.url>
-                <cmake.generator>Unix Makefiles</cmake.generator>
+                <cmake.generator>Ninja</cmake.generator>
                 <cmake.toolchain.file>${maven.multiModuleProjectDirectory}/cmake/toolchains/linux-aarch64.cmake</cmake.toolchain.file>
                 <native.compiler.id>gcc</native.compiler.id>
             </properties>

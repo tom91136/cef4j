@@ -16,6 +16,10 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -29,6 +33,12 @@ public final class NamedPipeTransport implements CefTransport {
     private static final Logger LOG = LoggerFactory.getLogger(NamedPipeTransport.class);
     private static final int MAX_FRAME_SIZE = 64 * 1024 * 1024;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
+    private static final Executor CLOSE_EXECUTOR =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), task -> {
+                Thread thread = new Thread(task, "named-pipe-closer-" + INSTANCE.incrementAndGet());
+                thread.setDaemon(true);
+                return thread;
+            });
 
     private final String endpoint;
     private final Closeable pipe;
@@ -36,6 +46,7 @@ public final class NamedPipeTransport implements CefTransport {
     private final DataOutputStream output;
     private final Object ioLock = new Object();
     private final Object receiveLock = new Object();
+    private final Executor closeExecutor;
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
@@ -50,6 +61,13 @@ public final class NamedPipeTransport implements CefTransport {
 
     @Nonnull
     public static NamedPipeTransport connect(@Nonnull String endpoint) throws CefTransportException {
+        return connect(endpoint, CLOSE_EXECUTOR);
+    }
+
+    @Nonnull
+    public static NamedPipeTransport connect(@Nonnull String endpoint, @Nonnull Executor closeExecutor)
+            throws CefTransportException {
+        Objects.requireNonNull(closeExecutor, "closeExecutor");
         if (!System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) {
             throw new CefTransportException("Windows named pipes are unavailable on " + System.getProperty("os.name"));
         }
@@ -59,7 +77,11 @@ public final class NamedPipeTransport implements CefTransport {
             pipe = new RandomAccessFile(path, "rw");
             FileDescriptor descriptor = pipe.getFD();
             return new NamedPipeTransport(
-                    endpointOf(path), pipe, new FileInputStream(descriptor), new FileOutputStream(descriptor));
+                    endpointOf(path),
+                    pipe,
+                    new FileInputStream(descriptor),
+                    new FileOutputStream(descriptor),
+                    closeExecutor);
         } catch (IOException failure) {
             closeResource(endpoint, pipe);
             throw new CefTransportException(endpoint + ": connect failed", failure);
@@ -67,10 +89,16 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     NamedPipeTransport(String endpoint, Closeable pipe, InputStream inputPipe, OutputStream outputPipe) {
+        this(endpoint, pipe, inputPipe, outputPipe, CLOSE_EXECUTOR);
+    }
+
+    NamedPipeTransport(
+            String endpoint, Closeable pipe, InputStream inputPipe, OutputStream outputPipe, Executor closeExecutor) {
         this.endpoint = endpoint;
         this.pipe = pipe;
         this.input = new DataInputStream(new BufferedInputStream(inputPipe));
         this.output = new DataOutputStream(new BufferedOutputStream(outputPipe));
+        this.closeExecutor = Objects.requireNonNull(closeExecutor, "closeExecutor");
         Thread reader = new Thread(this::readLoop, "named-pipe-reader-" + INSTANCE.incrementAndGet());
         reader.setDaemon(true);
         reader.start();
@@ -125,15 +153,17 @@ public final class NamedPipeTransport implements CefTransport {
         closed = true;
         // XXX: A synchronous Windows ReadFile can block close on the same handle; remove when this transport uses
         // overlapped I/O or separate read/write handles.
-        closeAsync(endpoint, pipe);
+        closeAsync(endpoint, pipe, closeExecutor);
     }
 
-    static Thread closeAsync(String endpoint, Closeable resource) {
-        Thread closer =
-                new Thread(() -> closeResource(endpoint, resource), "named-pipe-closer-" + INSTANCE.incrementAndGet());
-        closer.setDaemon(true);
-        closer.start();
-        return closer;
+    static void closeAsync(String endpoint, Closeable resource, Executor executor) {
+        Runnable close = () -> closeResource(endpoint, resource);
+        try {
+            executor.execute(close);
+        } catch (RejectedExecutionException rejection) {
+            LOG.debug("close executor rejected work for {}; using the default executor", endpoint, rejection);
+            CLOSE_EXECUTOR.execute(close);
+        }
     }
 
     private static void closeResource(String endpoint, @Nullable Closeable resource) {

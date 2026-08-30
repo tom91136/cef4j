@@ -193,8 +193,8 @@ Linux native/UI tests must use a private X server:
 xvfb-run -a ./mvnw clean verify -Dspotless.check.skip=true
 ```
 
-Windows uses `mvnw.cmd`. The build downloads minimal CEF archives into `.cef-dist/`. See [DEBUG.md](DEBUG.md) for
-native, platform, IPC, and test troubleshooting.
+Windows uses `mvnw.cmd`. The build requires Ninja and downloads minimal CEF archives into `.cef-dist/`. See
+[DEBUG.md](DEBUG.md) for native, platform, IPC, and test troubleshooting.
 
 ### Compatibility
 
