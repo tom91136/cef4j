@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Transition type for a request. Made up of one source value and 0 or more qualifiers.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   TT_LINK = 0,
  *   TT_EXPLICIT = 1,
@@ -14,62 +18,123 @@ import javax.annotation.processing.Generated;
  *   TT_MANUAL_SUBFRAME = 4,
  *   ...
  * } cef_transition_type_t;</pre>
- * <p>Possible values: {@link Kind#LINK}, {@link Kind#EXPLICIT}, {@link Kind#AUTO_BOOKMARK}, {@link Kind#AUTO_SUBFRAME}, {@link Kind#MANUAL_SUBFRAME}, {@link Kind#GENERATED}, {@link Kind#AUTO_TOPLEVEL}, {@link Kind#FORM_SUBMIT}, {@link Kind#RELOAD}, {@link Kind#KEYWORD}, {@link Kind#KEYWORD_GENERATED}, {@link Kind#NUM_VALUES}, {@link Kind#SOURCE_MASK}, {@link Kind#BLOCKED_FLAG}, {@link Kind#FORWARD_BACK_FLAG}, {@link Kind#DIRECT_LOAD_FLAG}, {@link Kind#HOME_PAGE_FLAG}, {@link Kind#FROM_API_FLAG}, {@link Kind#CHAIN_START_FLAG}, {@link Kind#CHAIN_END_FLAG}, {@link Kind#CLIENT_REDIRECT_FLAG}, {@link Kind#SERVER_REDIRECT_FLAG}, {@link Kind#IS_REDIRECT_MASK}, {@link Kind#QUALIFIER_MASK}
+ *
+ * <p>Possible values: {@link Kind#LINK}, {@link Kind#EXPLICIT}, {@link Kind#AUTO_BOOKMARK}, {@link Kind#AUTO_SUBFRAME},
+ * {@link Kind#MANUAL_SUBFRAME}, {@link Kind#GENERATED}, {@link Kind#AUTO_TOPLEVEL}, {@link Kind#FORM_SUBMIT},
+ * {@link Kind#RELOAD}, {@link Kind#KEYWORD}, {@link Kind#KEYWORD_GENERATED}, {@link Kind#NUM_VALUES},
+ * {@link Kind#SOURCE_MASK}, {@link Kind#BLOCKED_FLAG}, {@link Kind#FORWARD_BACK_FLAG}, {@link Kind#DIRECT_LOAD_FLAG},
+ * {@link Kind#HOME_PAGE_FLAG}, {@link Kind#FROM_API_FLAG}, {@link Kind#CHAIN_START_FLAG}, {@link Kind#CHAIN_END_FLAG},
+ * {@link Kind#CLIENT_REDIRECT_FLAG}, {@link Kind#SERVER_REDIRECT_FLAG}, {@link Kind#IS_REDIRECT_MASK},
+ * {@link Kind#QUALIFIER_MASK}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefTransitionType implements CefEnum<CefTransitionType> {
 
     /** Known constants for {@link CefTransitionType}. */
     public enum Kind {
-        /** Source is a link click or the JavaScript window.open function. This is also the default value for requests like sub-resource loads that are not navigations.  */
+        /**
+         * Source is a link click or the JavaScript window.open function. This is also the default value for requests
+         * like sub-resource loads that are not navigations.
+         */
         LINK(0, "0", "TT_LINK"),
-        /** Source is some other "explicit" navigation. This is the default value for navigations where the actual type is unknown. See also TT_DIRECT_LOAD_FLAG.  */
+        /**
+         * Source is some other "explicit" navigation. This is the default value for navigations where the actual type
+         * is unknown. See also TT_DIRECT_LOAD_FLAG.
+         */
         EXPLICIT(1, "1", "TT_EXPLICIT"),
-        /** User got to this page through a suggestion in the UI (for example, via the destinations page). Chrome style only.  */
+        /**
+         * User got to this page through a suggestion in the UI (for example, via the destinations page). Chrome style
+         * only.
+         */
         AUTO_BOOKMARK(2, "2", "TT_AUTO_BOOKMARK"),
-        /** Source is a subframe navigation. This is any content that is automatically loaded in a non-toplevel frame. For example, if a page consists of several frames containing ads, those ad URLs will have this transition type. The user may not even realize the content in these pages is a separate frame, so may not care about the URL.  */
+        /**
+         * Source is a subframe navigation. This is any content that is automatically loaded in a non-toplevel frame.
+         * For example, if a page consists of several frames containing ads, those ad URLs will have this transition
+         * type. The user may not even realize the content in these pages is a separate frame, so may not care about the
+         * URL.
+         */
         AUTO_SUBFRAME(3, "3", "TT_AUTO_SUBFRAME"),
-        /** Source is a subframe navigation explicitly requested by the user that will generate new navigation entries in the back/forward list. These are probably more important than frames that were automatically loaded in the background because the user probably cares about the fact that this link was loaded.  */
+        /**
+         * Source is a subframe navigation explicitly requested by the user that will generate new navigation entries in
+         * the back/forward list. These are probably more important than frames that were automatically loaded in the
+         * background because the user probably cares about the fact that this link was loaded.
+         */
         MANUAL_SUBFRAME(4, "4", "TT_MANUAL_SUBFRAME"),
-        /** User got to this page by typing in the URL bar and selecting an entry that did not look like a URL.  For example, a match might have the URL of a Google search result page, but appear like "Search Google for ...". These are not quite the same as EXPLICIT navigations because the user didn't type or see the destination URL. Chrome style only. See also TT_KEYWORD.  */
+        /**
+         * User got to this page by typing in the URL bar and selecting an entry that did not look like a URL. For
+         * example, a match might have the URL of a Google search result page, but appear like "Search Google for ...".
+         * These are not quite the same as EXPLICIT navigations because the user didn't type or see the destination URL.
+         * Chrome style only. See also TT_KEYWORD.
+         */
         GENERATED(5, "5", "TT_GENERATED"),
-        /** This is a toplevel navigation. This is any content that is automatically loaded in a toplevel frame.  For example, opening a tab to show the ASH screen saver, opening the devtools window, opening the NTP after the safe browsing warning, opening web-based dialog boxes are examples of AUTO_TOPLEVEL navigations. Chrome style only.  */
+        /**
+         * This is a toplevel navigation. This is any content that is automatically loaded in a toplevel frame. For
+         * example, opening a tab to show the ASH screen saver, opening the devtools window, opening the NTP after the
+         * safe browsing warning, opening web-based dialog boxes are examples of AUTO_TOPLEVEL navigations. Chrome style
+         * only.
+         */
         AUTO_TOPLEVEL(6, "6", "TT_AUTO_TOPLEVEL"),
-        /** Source is a form submission by the user. NOTE: In some situations submitting a form does not result in this transition type. This can happen if the form uses a script to submit the contents.  */
+        /**
+         * Source is a form submission by the user. NOTE: In some situations submitting a form does not result in this
+         * transition type. This can happen if the form uses a script to submit the contents.
+         */
         FORM_SUBMIT(7, "7", "TT_FORM_SUBMIT"),
-        /** Source is a "reload" of the page via the Reload function or by re-visiting the same URL. NOTE: This is distinct from the concept of whether a particular load uses "reload semantics" (i.e. bypasses cached data).  */
+        /**
+         * Source is a "reload" of the page via the Reload function or by re-visiting the same URL. NOTE: This is
+         * distinct from the concept of whether a particular load uses "reload semantics" (i.e. bypasses cached data).
+         */
         RELOAD(8, "8", "TT_RELOAD"),
-        /** The url was generated from a replaceable keyword other than the default search provider. If the user types a keyword (which also applies to tab-to-search) in the omnibox this qualifier is applied to the transition type of the generated url. TemplateURLModel then may generate an additional visit with a transition type of TT_KEYWORD_GENERATED against the url 'http://' + keyword. For example, if you do a tab-to-search against wikipedia the generated url has a transition qualifer of TT_KEYWORD, and TemplateURLModel generates a visit for 'wikipedia.org' with a transition type of TT_KEYWORD_GENERATED. Chrome style only.  */
+        /**
+         * The url was generated from a replaceable keyword other than the default search provider. If the user types a
+         * keyword (which also applies to tab-to-search) in the omnibox this qualifier is applied to the transition type
+         * of the generated url. TemplateURLModel then may generate an additional visit with a transition type of
+         * TT_KEYWORD_GENERATED against the url 'http://' + keyword. For example, if you do a tab-to-search against
+         * wikipedia the generated url has a transition qualifer of TT_KEYWORD, and TemplateURLModel generates a visit
+         * for 'wikipedia.org' with a transition type of TT_KEYWORD_GENERATED. Chrome style only.
+         */
         KEYWORD(9, "9", "TT_KEYWORD"),
-        /** Corresponds to a visit generated for a keyword. See description of TT_KEYWORD for more details. Chrome style only.  */
+        /**
+         * Corresponds to a visit generated for a keyword. See description of TT_KEYWORD for more details. Chrome style
+         * only.
+         */
         KEYWORD_GENERATED(10, "10", "TT_KEYWORD_GENERATED"),
         NUM_VALUES(11, "11", "TT_NUM_VALUES"),
-        /** General mask defining the bits used for the source values.  */
+        /** General mask defining the bits used for the source values. */
         SOURCE_MASK(0xFF, "0xff", "TT_SOURCE_MASK"),
-        /** Qualifiers. Any of the core values above can be augmented by one or more qualifiers. These qualifiers further define the transition.  Attempted to visit a URL but was blocked.  */
+        /**
+         * Qualifiers. Any of the core values above can be augmented by one or more qualifiers. These qualifiers further
+         * define the transition. Attempted to visit a URL but was blocked.
+         */
         BLOCKED_FLAG(0x00800000, "0x800000", "TT_BLOCKED_FLAG"),
-        /** Used the Forward or Back function to navigate among browsing history. Will be ORed to the transition type for the original load.  */
+        /**
+         * Used the Forward or Back function to navigate among browsing history. Will be ORed to the transition type for
+         * the original load.
+         */
         FORWARD_BACK_FLAG(0x01000000, "0x1000000", "TT_FORWARD_BACK_FLAG"),
-        /** Loaded a URL directly via CreateBrowser, LoadURL or LoadRequest.  */
+        /** Loaded a URL directly via CreateBrowser, LoadURL or LoadRequest. */
         DIRECT_LOAD_FLAG(0x02000000, "0x2000000", "TT_DIRECT_LOAD_FLAG"),
-        /** User is navigating to the home page. Chrome style only.  */
+        /** User is navigating to the home page. Chrome style only. */
         HOME_PAGE_FLAG(0x04000000, "0x4000000", "TT_HOME_PAGE_FLAG"),
-        /** The transition originated from an external application; the exact definition of this is embedder dependent. Chrome style only.  */
+        /**
+         * The transition originated from an external application; the exact definition of this is embedder dependent.
+         * Chrome style only.
+         */
         FROM_API_FLAG(0x08000000, "0x8000000", "TT_FROM_API_FLAG"),
-        /** The beginning of a navigation chain.  */
+        /** The beginning of a navigation chain. */
         CHAIN_START_FLAG(0x10000000, "0x10000000", "TT_CHAIN_START_FLAG"),
-        /** The last transition in a redirect chain.  */
+        /** The last transition in a redirect chain. */
         CHAIN_END_FLAG(0x20000000, "0x20000000", "TT_CHAIN_END_FLAG"),
-        /** Redirects caused by JavaScript or a meta refresh tag on the page.  */
+        /** Redirects caused by JavaScript or a meta refresh tag on the page. */
         CLIENT_REDIRECT_FLAG(0x40000000, "0x40000000", "TT_CLIENT_REDIRECT_FLAG"),
-        /** Redirects sent from the server by HTTP headers.  */
+        /** Redirects sent from the server by HTTP headers. */
         SERVER_REDIRECT_FLAG(0x80000000L, "0x80000000", "TT_SERVER_REDIRECT_FLAG"),
-        /** Used to test whether a transition involves a redirect.  */
+        /** Used to test whether a transition involves a redirect. */
         IS_REDIRECT_MASK(0xC0000000L, "0xc0000000", "TT_IS_REDIRECT_MASK"),
-        /** General mask defining the bits used for the qualifiers.  */
+        /** General mask defining the bits used for the qualifiers. */
         QUALIFIER_MASK(0xFFFFFF00L, "0xffffff00", "TT_QUALIFIER_MASK");
 
         private static final Kind[] VALUES = Kind.values();
@@ -121,8 +186,8 @@ public final class CefTransitionType implements CefEnum<CefTransitionType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

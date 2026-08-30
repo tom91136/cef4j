@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.generated.CdpDomains;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Typed CDP facade over any in-process or remote transport. */
 public final class CdpClient implements AutoCloseable {
@@ -30,7 +31,8 @@ public final class CdpClient implements AutoCloseable {
         return transport;
     }
 
-    @SuppressWarnings({"FutureReturnValueIgnored", "NullableForbidden"})
+    @SuppressWarnings("FutureReturnValueIgnored")
+    @NullableBoundary("CDP commands omit the JSON params member with null")
     public <T> CompletionStage<T> call(
             String method, @Nullable Map<String, Object> params, Function<Map<String, Object>, T> decoder) {
         byte[] bytes = params == null ? null : codec.encode(params);

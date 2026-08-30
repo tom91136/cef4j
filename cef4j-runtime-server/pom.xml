@@ -70,6 +70,7 @@
                                 <argument>-DCMAKE_TOOLCHAIN_FILE=${cmake.toolchain.file}</argument>
                                 <argument>-DCEF_ROOT=${cef.dist.dir}</argument>
                                 <argument>-DCEF4J_API_VERSION_RAW=${cef.version}</argument>
+                                <argument>-DCEF4J_ENABLE_TEST_SANITIZERS=${native.test.sanitizers}</argument>
                                 <argument>-DCMAKE_BUILD_TYPE=Release</argument>
                                 <argument>-Wno-deprecated</argument>
                             </arguments>
@@ -86,6 +87,19 @@
                                 <argument>${project.build.directory}/cmake-build</argument>
                                 <argument>--config</argument>
                                 <argument>Release</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>native-tests</id>
+                        <phase>test</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>ctest</executable>
+                            <arguments>
+                                <argument>--test-dir</argument>
+                                <argument>${project.build.directory}/cmake-build</argument>
+                                <argument>--output-on-failure</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -139,6 +153,7 @@
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-cef-dist</artifactId>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include <jni.h>
 #include "include/capi/cef_cookie_capi.h"
 #include "include/capi/cef_callback_capi.h"
@@ -48,18 +48,18 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCookieManager), setCookie0)(JNIEnv* env
     CefStringSetFromJString(env, _rd_path, &_cookie_val.path);
     _cookie_val.secure = static_cast<decltype(_cookie_val.secure)>(env->GetIntField(cookie, env->GetFieldID(_cookie_c, "secure", "I")));
     _cookie_val.httponly = static_cast<decltype(_cookie_val.httponly)>(env->GetIntField(cookie, env->GetFieldID(_cookie_c, "httponly", "I")));
-    auto _rd_creation = env->GetObjectField(cookie, env->GetFieldID(_cookie_c, "creation", "Lnet/kurobako/cef4j/gen/CefBasetime;"));
+    auto _rd_creation = env->GetObjectField(cookie, env->GetFieldID(_cookie_c, "creation", "Lnet/kurobako/cef4j/gen/CefBaseTime;"));
     if (_rd_creation) {
         auto _rd_creationc = env->GetObjectClass(_rd_creation);
         _cookie_val.creation.val = from_jlong<decltype(_cookie_val.creation.val)>(env->GetLongField(_rd_creation, env->GetFieldID(_rd_creationc, "val", "J")));
     }
-    auto _rd_last_access = env->GetObjectField(cookie, env->GetFieldID(_cookie_c, "lastAccess", "Lnet/kurobako/cef4j/gen/CefBasetime;"));
+    auto _rd_last_access = env->GetObjectField(cookie, env->GetFieldID(_cookie_c, "lastAccess", "Lnet/kurobako/cef4j/gen/CefBaseTime;"));
     if (_rd_last_access) {
         auto _rd_last_accessc = env->GetObjectClass(_rd_last_access);
         _cookie_val.last_access.val = from_jlong<decltype(_cookie_val.last_access.val)>(env->GetLongField(_rd_last_access, env->GetFieldID(_rd_last_accessc, "val", "J")));
     }
     _cookie_val.has_expires = static_cast<decltype(_cookie_val.has_expires)>(env->GetIntField(cookie, env->GetFieldID(_cookie_c, "hasExpires", "I")));
-    auto _rd_expires = env->GetObjectField(cookie, env->GetFieldID(_cookie_c, "expires", "Lnet/kurobako/cef4j/gen/CefBasetime;"));
+    auto _rd_expires = env->GetObjectField(cookie, env->GetFieldID(_cookie_c, "expires", "Lnet/kurobako/cef4j/gen/CefBaseTime;"));
     if (_rd_expires) {
         auto _rd_expiresc = env->GetObjectClass(_rd_expires);
         _cookie_val.expires.val = from_jlong<decltype(_cookie_val.expires.val)>(env->GetLongField(_rd_expires, env->GetFieldID(_rd_expiresc, "val", "J")));

@@ -348,12 +348,15 @@ final class SwingBrowserPanelTestSupport {
 
     static boolean waitForRenderedColor(CefBrowserPanel panel, int x, int y, int expectedArgb, long timeoutMillis)
             throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            if (expectedArgb == renderedColor(panel, x, y)) return true;
-            Thread.sleep(20);
-        }
-        return expectedArgb == renderedColor(panel, x, y);
+        return waitUntil(
+                () -> {
+                    try {
+                        return expectedArgb == renderedColor(panel, x, y);
+                    } catch (Exception failure) {
+                        throw new java.util.concurrent.CompletionException(failure);
+                    }
+                },
+                timeoutMillis);
     }
 
     private static int renderedColor(CefBrowserPanel panel, int x, int y) throws Exception {
@@ -381,12 +384,13 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static boolean waitUntil(BooleanSupplier condition, long timeoutMillis) throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            if (condition.getAsBoolean()) return true;
-            Thread.sleep(20);
+        try {
+            TestDeadline.after(java.time.Duration.ofMillis(timeoutMillis))
+                    .until(condition, java.time.Duration.ofMillis(20), "test condition");
+            return true;
+        } catch (TimeoutException timedOut) {
+            return condition.getAsBoolean();
         }
-        return condition.getAsBoolean();
     }
 
     static void drainCefUi() throws Exception {
@@ -421,7 +425,7 @@ final class SwingBrowserPanelTestSupport {
     private static void respond(HttpExchange exchange, ResponseSpec response) throws IOException {
         if (response.delayMillis > 0) {
             try {
-                Thread.sleep(response.delayMillis);
+                new CountDownLatch(1).await(response.delayMillis, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IOException("Interrupted while delaying response", e);

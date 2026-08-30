@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
+import net.kurobako.cef4j.policy.NullableBoundary;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -1115,7 +1116,7 @@ class CefInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("compatibility overloads mirror nullable generated CEF callbacks")
     static final class CompatibleKeyboardHandler implements CefKeyboardHandler {
         private final AtomicReference<CefKeyEvent> capturedEvent;
         private final CountDownLatch keyLatch;
@@ -1143,7 +1144,7 @@ class CefInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("compatibility overloads mirror nullable generated CEF callbacks")
     static final class CompatiblePopupLifeSpanHandler implements CefLifeSpanHandler {
         private final AtomicBoolean popupFired;
         private final CountDownLatch popupLatch;

@@ -12,7 +12,10 @@ cd "${repo_root}"
 [ -n "${SUREFIRE_PLATFORM_ARG+x}" ] \
     || { echo "SUREFIRE_PLATFORM_ARG must be set, including to an empty value" >&2; exit 1; }
 : "${SPOTBUGS_SKIP:?SPOTBUGS_SKIP is required}"
+: "${MAVEN_GOALS:?MAVEN_GOALS is required}"
+: "${SKIP_BUILD_EXEC:?SKIP_BUILD_EXEC is required}"
 case "${SPOTBUGS_SKIP}" in true|false) ;; *) echo "SPOTBUGS_SKIP must be true or false" >&2; exit 1 ;; esac
+read -r -a maven_goals <<< "${MAVEN_GOALS}"
 expected_jdk=${JDK_VERSION}
 if [ -n "${JAVA_HOME:-}" ]; then
     case "$(uname -s)" in
@@ -133,6 +136,8 @@ properties+=(
 )
 [ -z "${SUREFIRE_EXTRA_ARG}" ] || properties+=("-Dsurefire.argLine=${SUREFIRE_EXTRA_ARG}")
 [ "${SPOTBUGS_SKIP}" != true ] || properties+=("-Dspotbugs.skip=true")
+[ "${SKIP_BUILD_EXEC}" != true ] || properties+=("-Dexec.skip=true")
+[ "${NATIVE_TEST_SANITIZERS:-false}" != true ] || properties+=("-Dnative.test.sanitizers=true")
 [ "${JAVAFX_TESTS}" = true ] || properties+=("-DskipJavafx=true")
 [ "${JAVA11_SMOKE:-false}" != true ] || properties+=("-Djava11.runtime.smoke=true")
 
@@ -153,9 +158,9 @@ fi
 
 if [ "${is_linux:-}" = 1 ]; then
     xvfb-run -a --server-args='-screen 0 1920x1080x24 -noreset' \
-        ./mvnw -B -T1 --fail-at-end clean install "${properties[@]}"
+        ./mvnw -B -T1 --fail-at-end "${maven_goals[@]}" "${properties[@]}"
 else
-    ./mvnw -B -T1 --fail-at-end clean install "${properties[@]}"
+    ./mvnw -B -T1 --fail-at-end "${maven_goals[@]}" "${properties[@]}"
 fi
 verify_thin_platform_jar
 [ "${is_linux:-}" = 1 ] && verify_linux_abi

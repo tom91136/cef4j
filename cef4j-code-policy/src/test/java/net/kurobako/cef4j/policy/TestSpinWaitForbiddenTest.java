@@ -19,6 +19,20 @@ class TestSpinWaitForbiddenTest {
     }
 
     @Test
+    void rejectsSleepInTests() {
+        helper().addSourceLines(
+                        "test/ExampleTest.java",
+                        "package test;",
+                        "class ExampleTest {",
+                        "  void waitForWork() throws Exception {",
+                        "    // BUG: Diagnostic contains: use TestDeadline",
+                        "    Thread.sleep(1);",
+                        "  }",
+                        "}")
+                .doTest();
+    }
+
+    @Test
     void permitsSpinWaitInProductionCode() {
         helper().addSourceLines(
                         "test/Worker.java",

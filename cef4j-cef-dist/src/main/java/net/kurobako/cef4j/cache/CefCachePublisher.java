@@ -28,17 +28,21 @@ public final class CefCachePublisher {
         Path normalizedTarget = target.toAbsolutePath().normalize();
         Path cacheRoot = normalizedTarget.getParent();
         Path stagingRoot = normalizedStaged.getParent();
+        Path stagingParent = stagingRoot == null ? null : stagingRoot.getParent();
+        Path stagingName = stagingRoot == null ? null : stagingRoot.getFileName();
         if (cacheRoot == null
                 || stagingRoot == null
-                || !cacheRoot.equals(stagingRoot.getParent())
-                || !stagingRoot.getFileName().toString().startsWith(".cef-extract-")) {
+                || stagingName == null
+                || !cacheRoot.equals(stagingParent)
+                || !stagingName.toString().startsWith(".cef-extract-")) {
             throw new IOException("CEF staging directory is outside the target cache: " + normalizedStaged);
         }
         requireComplete(normalizedStaged, markerName);
 
         Path lockPath = normalizedTarget.resolveSibling(normalizedTarget.getFileName() + ".cef4j.lock");
         try (FileChannel channel = FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-                FileLock ignored = channel.lock()) {
+                FileLock publicationLock = channel.lock()) {
+            if (!publicationLock.isValid()) throw new IOException("Failed to acquire CEF cache publication lock");
             if (isComplete(normalizedTarget, markerName)) {
                 deleteTree(normalizedStaged);
                 return;

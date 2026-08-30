@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.util.ArrayDeque;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -47,7 +46,7 @@ public final class NamedPipeTransport implements CefTransport {
     private final Object ioLock = new Object();
     private final Object receiveLock = new Object();
     private final Executor closeExecutor;
-    private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
+    private final PendingFrames pending = new PendingFrames();
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
     @Nullable
@@ -196,8 +195,11 @@ public final class NamedPipeTransport implements CefTransport {
                 }
                 synchronized (receiveLock) {
                     Consumer<ByteBuffer> handler = receiveHandler;
-                    if (handler == null) pending.add(frame);
-                    else dispatch(handler, frame);
+                    if (handler == null) {
+                        if (!pending.offer(frame)) throw new IOException("pending receive queue full");
+                    } else {
+                        dispatch(handler, frame);
+                    }
                 }
             }
         } catch (InterruptedException failure) {

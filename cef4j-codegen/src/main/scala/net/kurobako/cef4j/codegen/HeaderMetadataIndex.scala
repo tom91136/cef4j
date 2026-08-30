@@ -54,8 +54,8 @@ object HeaderMetadataIndex {
   }
 
   def deriveCompoundSegments(cppClassNames: Map[String, String], cefIncludeDir: Path): Map[String, List[String]] = {
-    val fromClasses = cppClassNames.values.flatMap { cppName =>
-      val capiWords = cppNameToCapiName(cppName).stripPrefix("_").stripSuffix("_t").split("_").toList
+    val fromClasses = cppClassNames.flatMap { case (capiName, cppName) =>
+      val capiWords = capiName.stripPrefix("_").stripSuffix("_t").split("_").toList
       val cppWords  = Naming.splitPascalWords(cppName)
       alignCompoundSegments(capiWords, cppWords)
     }

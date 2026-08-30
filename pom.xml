@@ -61,11 +61,13 @@
         <commons.compress.version>1.28.0</commons.compress.version>
         <selenium.version>4.47.0</selenium.version>
         <spotbugs.version>4.10.3.0</spotbugs.version>
+        <jacoco.version>0.8.14</jacoco.version>
         <maven.source.version>3.4.0</maven.source.version>
         <maven.release.version>3.3.1</maven.release.version>
         <maven.gpg.version>3.2.8</maven.gpg.version>
         <central.publishing.version>0.11.0</central.publishing.version>
         <platform.assembly.skip>false</platform.assembly.skip>
+        <native.test.sanitizers>false</native.test.sanitizers>
         <!-- Per-module opt-out; SpotBugs is disabled in modules where it is noisy (e.g. Scala codegen). -->
         <spotbugs.skip>false</spotbugs.skip>
         <!-- Java 17-only build tooling (currently cef4j-codegen) overrides this. -->
@@ -88,6 +90,7 @@
 
         <!-- Extra JVM args for Surefire; empty by default. Override via -Dsurefire.argLine=... if needed. -->
         <surefire.argLine/>
+        <jacoco.argLine/>
     </properties>
 
     <modules>
@@ -814,6 +817,31 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jacoco-prepare-agent</id>
+                        <goals><goal>prepare-agent</goal></goals>
+                        <configuration>
+                            <propertyName>jacoco.argLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <phase>verify</phase>
+                        <goals><goal>report</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>net/kurobako/cef4j/gen/**</exclude>
+                        <exclude>net/kurobako/cef4j/cdp/generated/**</exclude>
+                        <exclude>net/kurobako/cef4j/ipc/protocol/gen/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
@@ -843,13 +871,8 @@
                             <arg>-Xlint:all</arg>
                             <arg>-Xlint:-options</arg>
                             <arg>-Xlint:-processing</arg>
-                            <!-- Error Prone (+ NullAway) wiring.
-                                 NullAway checks every package under net.kurobako.cef4j, including the
-                                 generated cef4j-api .gen bindings; generated code is expected to pass
-                                 the same nullness discipline as hand-rolled code.
-                                 NullableForbidden (cef4j-code-policy) bans @Nullable on public/protected
-                                 API; AllowedPackages lists the packages still under migration and shrinks
-                                 as each is cleaned up. -->
+                            <!-- NullAway also checks generated bindings. NullableBoundary documents the
+                                 external contracts where null is required. -->
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>-XDshould-stop.ifError=FLOW</arg>
                             <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false -Xep:NullableForbidden:ERROR -XepOpt:NullableForbidden:AllowedPackages= -Xep:TestSpinWaitForbidden:ERROR</arg>
@@ -889,11 +912,16 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.6</version>
                     <configuration>
-                        <argLine>${surefire.argLine}</argLine>
+                        <argLine>${jacoco.argLine} ${surefire.argLine}</argLine>
                         <!-- Must exceed the longest class-level timeout. A constrained runner can spend
                              several minutes establishing CEF before the test itself makes progress. -->
                         <forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>
@@ -953,6 +981,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.5.6</version>
+                    <configuration>
+                        <argLine>${jacoco.argLine} ${surefire.argLine}</argLine>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

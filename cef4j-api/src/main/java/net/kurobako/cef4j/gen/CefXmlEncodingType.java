@@ -1,11 +1,17 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Supported XML encoding types. The parser supports ASCII, ISO-8859-1, and UTF16 (LE and BE) by default. All other types must be translated to UTF8 before being passed to the parser. If a BOM is detected and the correct decoder is available then that decoder will be used automatically.
+ * Supported XML encoding types. The parser supports ASCII, ISO-8859-1, and UTF16 (LE and BE) by default. All other
+ * types must be translated to UTF8 before being passed to the parser. If a BOM is detected and the correct decoder is
+ * available then that decoder will be used automatically.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   XML_ENCODING_NONE = 0,
  *   XML_ENCODING_UTF8 = 1,
@@ -14,12 +20,15 @@ import javax.annotation.processing.Generated;
  *   XML_ENCODING_ASCII = 4,
  *   ...
  * } cef_xml_encoding_type_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#UTF8}, {@link Kind#UTF16LE}, {@link Kind#UTF16BE}, {@link Kind#ASCII}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#UTF8}, {@link Kind#UTF16LE}, {@link Kind#UTF16BE},
+ * {@link Kind#ASCII}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefXmlEncodingType implements CefEnum<CefXmlEncodingType> {
 
     /** Known constants for {@link CefXmlEncodingType}. */
@@ -80,8 +89,8 @@ public final class CefXmlEncodingType implements CefEnum<CefXmlEncodingType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -1,31 +1,37 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Represents the state of a setting.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   STATE_DEFAULT = 0,
  *   STATE_ENABLED = 1,
  *   STATE_DISABLED = 2
  * } cef_state_t;</pre>
+ *
  * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#ENABLED}, {@link Kind#DISABLED}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefState implements CefEnum<CefState> {
 
     /** Known constants for {@link CefState}. */
     public enum Kind {
-        /** Use the default state for the setting.  */
+        /** Use the default state for the setting. */
         DEFAULT(0, "0", "STATE_DEFAULT"),
-        /** Enable or allow the setting.  */
+        /** Enable or allow the setting. */
         ENABLED(1, "1", "STATE_ENABLED"),
-        /** Disable or disallow the setting.  */
+        /** Disable or disallow the setting. */
         DISABLED(2, "2", "STATE_DISABLED");
 
         private static final Kind[] VALUES = Kind.values();
@@ -77,8 +83,8 @@ public final class CefState implements CefEnum<CefState> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -27,6 +27,16 @@ public final class RemoteWebDriverServer {
             @Nonnull RemoteBrowserRuntimeFactory runtimeFactory, @Nonnull Duration commandTimeout) throws IOException {
         RemoteDevToolsSessionFactory devTools = RemoteDevToolsSessionFactory.installed();
         WebDriverJsonCodec codec = WebDriverJsonCodec.installed();
+        return start(runtimeFactory, commandTimeout, devTools, codec);
+    }
+
+    @Nonnull
+    public static WebDriverServer start(
+            @Nonnull RemoteBrowserRuntimeFactory runtimeFactory,
+            @Nonnull Duration commandTimeout,
+            @Nonnull RemoteDevToolsSessionFactory devTools,
+            @Nonnull WebDriverJsonCodec codec)
+            throws IOException {
         return WebDriverServer.start(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
                 new RemoteCefAutomationBackendFactory(runtimeFactory, devTools, codec),

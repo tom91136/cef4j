@@ -182,7 +182,7 @@
 #include "DisplayHandlerOnTitleChangeEvent.h"
 #include "DisplayHandlerOnTooltipEvent.h"
 #include "DisplayHandlerOnTooltipResponse.h"
-#include "DomvisitorVisitEvent.h"
+#include "DomVisitorVisitEvent.h"
 #include "DownloadHandlerCanDownloadEvent.h"
 #include "DownloadHandlerCanDownloadResponse.h"
 #include "DownloadHandlerOnBeforeDownloadEvent.h"
@@ -202,10 +202,10 @@
 #include "FrameHandlerOnFrameDestroyedEvent.h"
 #include "FrameHandlerOnFrameDetachedEvent.h"
 #include "FrameHandlerOnMainFrameChangedEvent.h"
-#include "JsdialogHandlerOnBeforeUnloadDialogEvent.h"
-#include "JsdialogHandlerOnBeforeUnloadDialogResponse.h"
-#include "JsdialogHandlerOnDialogClosedEvent.h"
-#include "JsdialogHandlerOnResetDialogStateEvent.h"
+#include "JsDialogHandlerOnBeforeUnloadDialogEvent.h"
+#include "JsDialogHandlerOnBeforeUnloadDialogResponse.h"
+#include "JsDialogHandlerOnDialogClosedEvent.h"
+#include "JsDialogHandlerOnResetDialogStateEvent.h"
 #include "KeyboardHandlerOnKeyEventEvent.h"
 #include "KeyboardHandlerOnKeyEventResponse.h"
 #include "LifeSpanHandlerDoCloseEvent.h"
@@ -302,12 +302,12 @@
 #include "ServerHandlerOnWebSocketConnectedEvent.h"
 #include "ServerHandlerOnWebSocketMessageEvent.h"
 #include "ServerHandlerOnWebSocketRequestEvent.h"
-#include "UrlrequestClientGetAuthCredentialsEvent.h"
-#include "UrlrequestClientGetAuthCredentialsResponse.h"
-#include "UrlrequestClientOnDownloadDataEvent.h"
-#include "UrlrequestClientOnDownloadProgressEvent.h"
-#include "UrlrequestClientOnRequestCompleteEvent.h"
-#include "UrlrequestClientOnUploadProgressEvent.h"
+#include "UrlRequestClientGetAuthCredentialsEvent.h"
+#include "UrlRequestClientGetAuthCredentialsResponse.h"
+#include "UrlRequestClientOnDownloadDataEvent.h"
+#include "UrlRequestClientOnDownloadProgressEvent.h"
+#include "UrlRequestClientOnRequestCompleteEvent.h"
+#include "UrlRequestClientOnUploadProgressEvent.h"
 #include "V8AccessorSetEvent.h"
 #include "V8AccessorSetResponse.h"
 #include "V8InterceptorSetByindexEvent.h"
@@ -571,25 +571,25 @@ struct WriteHandlerForwarder : cef_write_handler_t {
 /** Single global instance — runtime server hands this out from `CefClient::get_X_handler` (or wherever). */
 inline WriteHandlerForwarder g_writeHandlerForwarder;
 
-struct DomvisitorForwarder : cef_domvisitor_t {
+struct DomVisitorForwarder : cef_domvisitor_t {
     std::atomic<int> refCount{1};
 
-    DomvisitorForwarder() : cef_domvisitor_t{} {
-        initForwarderBase<DomvisitorForwarder, cef_domvisitor_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
+    DomVisitorForwarder() : cef_domvisitor_t{} {
+        initForwarderBase<DomVisitorForwarder, cef_domvisitor_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         visit = [](gendisp::fn_args<decltype(static_cast<::cef_domvisitor_t*>(nullptr)->visit)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_domvisitor_t*>(nullptr)->visit)>::template arg<1> document) {
             if (!g_ipc) return;
-            gen::DomvisitorVisitEvent ev;
+            gen::DomVisitorVisitEvent ev;
             ev.document = gendisp::tables::domdocument.insert(document);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
-                        gen::DomvisitorVisitEvent::kMessageId, payload.data(), payload.size());
+                        gen::DomVisitorVisitEvent::kMessageId, payload.data(), payload.size());
         };
     }
 };
 
 /** Single global instance — runtime server hands this out from `CefClient::get_X_handler` (or wherever). */
-inline DomvisitorForwarder g_domvisitorForwarder;
+inline DomVisitorForwarder g_domVisitorForwarder;
 
 struct MediaObserverForwarder : cef_media_observer_t {
     std::atomic<int> refCount{1};
@@ -1515,55 +1515,55 @@ struct FrameHandlerForwarder : cef_frame_handler_t {
 /** Single global instance — runtime server hands this out from `CefClient::get_X_handler` (or wherever). */
 inline FrameHandlerForwarder g_frameHandlerForwarder;
 
-struct JsdialogHandlerForwarder : cef_jsdialog_handler_t {
+struct JsDialogHandlerForwarder : cef_jsdialog_handler_t {
     std::atomic<int> refCount{1};
 
-    JsdialogHandlerForwarder() : cef_jsdialog_handler_t{} {
-        initForwarderBase<JsdialogHandlerForwarder, cef_jsdialog_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
+    JsDialogHandlerForwarder() : cef_jsdialog_handler_t{} {
+        initForwarderBase<JsDialogHandlerForwarder, cef_jsdialog_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         on_before_unload_dialog = [](gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>::template arg<1> browser, gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>::template arg<2> messageText, gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>::template arg<3> isReload, gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>::template arg<4> callback) -> typename gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>::result {
             if (!g_ipc) return gendisp::cefRet<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>(0);
-            gen::JsdialogHandlerOnBeforeUnloadDialogEvent ev;
+            gen::JsDialogHandlerOnBeforeUnloadDialogEvent ev;
             ev.browser = gendisp::tables::browser.insert(browser);
             ev.messageText = utf16ToUtf8(messageText);
             ev.isReload = static_cast<std::int32_t>(isReload);
-            ev.callback = gendisp::tables::jsdialogCallback.insert(callback);
+            ev.callback = gendisp::tables::jsDialogCallback.insert(callback);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             std::int32_t corrId = g_intercepts.allocateCorrId();
             g_ipc->send(cef4j::ipc::Kind::Intercept, 0, corrId,
-                        gen::JsdialogHandlerOnBeforeUnloadDialogEvent::kMessageId, payload.data(), payload.size());
+                        gen::JsDialogHandlerOnBeforeUnloadDialogEvent::kMessageId, payload.data(), payload.size());
             std::vector<std::uint8_t> respBytes;
             bool got = g_intercepts.awaitResponse(corrId, std::chrono::milliseconds(2000), respBytes);
             int answer = 0;
             if (got && !respBytes.empty()) {
-                auto resp = gen::JsdialogHandlerOnBeforeUnloadDialogResponse::decode(respBytes.data(), respBytes.size());
+                auto resp = gen::JsDialogHandlerOnBeforeUnloadDialogResponse::decode(respBytes.data(), respBytes.size());
                 answer = resp.result ? 1 : 0;
             }
             return gendisp::cefRet<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_before_unload_dialog)>(answer);
         };
         on_reset_dialog_state = [](gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_reset_dialog_state)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_reset_dialog_state)>::template arg<1> browser) {
             if (!g_ipc) return;
-            gen::JsdialogHandlerOnResetDialogStateEvent ev;
+            gen::JsDialogHandlerOnResetDialogStateEvent ev;
             ev.browser = gendisp::tables::browser.insert(browser);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
-                        gen::JsdialogHandlerOnResetDialogStateEvent::kMessageId, payload.data(), payload.size());
+                        gen::JsDialogHandlerOnResetDialogStateEvent::kMessageId, payload.data(), payload.size());
         };
         on_dialog_closed = [](gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_dialog_closed)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_jsdialog_handler_t*>(nullptr)->on_dialog_closed)>::template arg<1> browser) {
             if (!g_ipc) return;
-            gen::JsdialogHandlerOnDialogClosedEvent ev;
+            gen::JsDialogHandlerOnDialogClosedEvent ev;
             ev.browser = gendisp::tables::browser.insert(browser);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
-                        gen::JsdialogHandlerOnDialogClosedEvent::kMessageId, payload.data(), payload.size());
+                        gen::JsDialogHandlerOnDialogClosedEvent::kMessageId, payload.data(), payload.size());
         };
     }
 };
 
 /** Single global instance — runtime server hands this out from `CefClient::get_X_handler` (or wherever). */
-inline JsdialogHandlerForwarder g_jsdialogHandlerForwarder;
+inline JsDialogHandlerForwarder g_jsDialogHandlerForwarder;
 
 struct KeyboardHandlerForwarder : cef_keyboard_handler_t {
     std::atomic<int> refCount{1};
@@ -2725,46 +2725,46 @@ struct EndTracingCallbackForwarder : cef_end_tracing_callback_t {
 /** Single global instance — runtime server hands this out from `CefClient::get_X_handler` (or wherever). */
 inline EndTracingCallbackForwarder g_endTracingCallbackForwarder;
 
-struct UrlrequestClientForwarder : cef_urlrequest_client_t {
+struct UrlRequestClientForwarder : cef_urlrequest_client_t {
     std::atomic<int> refCount{1};
 
-    UrlrequestClientForwarder() : cef_urlrequest_client_t{} {
-        initForwarderBase<UrlrequestClientForwarder, cef_urlrequest_client_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
+    UrlRequestClientForwarder() : cef_urlrequest_client_t{} {
+        initForwarderBase<UrlRequestClientForwarder, cef_urlrequest_client_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         on_request_complete = [](gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_request_complete)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_request_complete)>::template arg<1> request) {
             if (!g_ipc) return;
-            gen::UrlrequestClientOnRequestCompleteEvent ev;
+            gen::UrlRequestClientOnRequestCompleteEvent ev;
             ev.request = gendisp::tables::urlrequest.insert(request);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
-                        gen::UrlrequestClientOnRequestCompleteEvent::kMessageId, payload.data(), payload.size());
+                        gen::UrlRequestClientOnRequestCompleteEvent::kMessageId, payload.data(), payload.size());
         };
         on_upload_progress = [](gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_upload_progress)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_upload_progress)>::template arg<1> request, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_upload_progress)>::template arg<2> current, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_upload_progress)>::template arg<3> total) {
             if (!g_ipc) return;
-            gen::UrlrequestClientOnUploadProgressEvent ev;
+            gen::UrlRequestClientOnUploadProgressEvent ev;
             ev.request = gendisp::tables::urlrequest.insert(request);
             ev.current = toI64(current);
             ev.total = toI64(total);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
-                        gen::UrlrequestClientOnUploadProgressEvent::kMessageId, payload.data(), payload.size());
+                        gen::UrlRequestClientOnUploadProgressEvent::kMessageId, payload.data(), payload.size());
         };
         on_download_progress = [](gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_download_progress)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_download_progress)>::template arg<1> request, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_download_progress)>::template arg<2> current, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->on_download_progress)>::template arg<3> total) {
             if (!g_ipc) return;
-            gen::UrlrequestClientOnDownloadProgressEvent ev;
+            gen::UrlRequestClientOnDownloadProgressEvent ev;
             ev.request = gendisp::tables::urlrequest.insert(request);
             ev.current = toI64(current);
             ev.total = toI64(total);
             std::vector<std::uint8_t> payload(ev.encodedSize());
             ev.encodeInto(payload.data());
             g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
-                        gen::UrlrequestClientOnDownloadProgressEvent::kMessageId, payload.data(), payload.size());
+                        gen::UrlRequestClientOnDownloadProgressEvent::kMessageId, payload.data(), payload.size());
         };
         // on_download_data: skipped (unsupported param shape)
         get_auth_credentials = [](gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<1> isProxy, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<2> host, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<3> port, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<4> realm, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<5> scheme, gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::template arg<6> callback) -> typename gendisp::fn_args<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>::result {
             if (!g_ipc) return gendisp::cefRet<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>(0);
-            gen::UrlrequestClientGetAuthCredentialsEvent ev;
+            gen::UrlRequestClientGetAuthCredentialsEvent ev;
             ev.isProxy = static_cast<std::int32_t>(isProxy);
             ev.host = utf16ToUtf8(host);
             ev.port = static_cast<std::int32_t>(port);
@@ -2775,12 +2775,12 @@ struct UrlrequestClientForwarder : cef_urlrequest_client_t {
             ev.encodeInto(payload.data());
             std::int32_t corrId = g_intercepts.allocateCorrId();
             g_ipc->send(cef4j::ipc::Kind::Intercept, 0, corrId,
-                        gen::UrlrequestClientGetAuthCredentialsEvent::kMessageId, payload.data(), payload.size());
+                        gen::UrlRequestClientGetAuthCredentialsEvent::kMessageId, payload.data(), payload.size());
             std::vector<std::uint8_t> respBytes;
             bool got = g_intercepts.awaitResponse(corrId, std::chrono::milliseconds(2000), respBytes);
             int answer = 0;
             if (got && !respBytes.empty()) {
-                auto resp = gen::UrlrequestClientGetAuthCredentialsResponse::decode(respBytes.data(), respBytes.size());
+                auto resp = gen::UrlRequestClientGetAuthCredentialsResponse::decode(respBytes.data(), respBytes.size());
                 answer = resp.result ? 1 : 0;
             }
             return gendisp::cefRet<decltype(static_cast<::cef_urlrequest_client_t*>(nullptr)->get_auth_credentials)>(answer);
@@ -2789,7 +2789,7 @@ struct UrlrequestClientForwarder : cef_urlrequest_client_t {
 };
 
 /** Single global instance — runtime server hands this out from `CefClient::get_X_handler` (or wherever). */
-inline UrlrequestClientForwarder g_urlrequestClientForwarder;
+inline UrlRequestClientForwarder g_urlRequestClientForwarder;
 
 /** Sets every `cef_client_t::get_X_handler` for which a forwarder exists to a lambda that returns
   * the corresponding global. The runtime server calls this once during its CefClient construction; specific
@@ -2797,7 +2797,7 @@ inline UrlrequestClientForwarder g_urlrequestClientForwarder;
   * paint logic). */
 inline void wireClient(cef_client_t* client) {
     client->get_jsdialog_handler = [](cef_client_t* /*self*/) -> cef_jsdialog_handler_t* {
-        auto* h    = &g_jsdialogHandlerForwarder;
+        auto* h    = &g_jsDialogHandlerForwarder;
         auto* base = reinterpret_cast<cef_base_ref_counted_t*>(h);
         base->add_ref(base);
         return h;

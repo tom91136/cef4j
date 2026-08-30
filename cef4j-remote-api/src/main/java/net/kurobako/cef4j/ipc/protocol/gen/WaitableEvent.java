@@ -89,6 +89,18 @@ public final class WaitableEvent implements AutoCloseable {
     }
 
     /**
+     * Wait indefinitely for the event to be signaled. This method will not return until after the call to Signal() has completed. This method cannot be called on the browser process UI or IO threads.
+     * <p>Definition generated from cef_waitable_event.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:90</a>
+     */
+    public CompletableFuture<Void> cefWait() {
+        return CefFutures.map(
+            session.request(new WaitableEventWaitRequest(handle), WaitableEventWaitResponse.DECODER),
+            r -> null);
+    }
+
+    /**
      * Wait up to {@code max_ms} milliseconds for the event to be signaled. Returns {@code true} if the event was signaled. A return value of {@code false} does not necessarily mean that {@code max_ms} was exceeded. This method will not return until after the call to Signal() has completed. This method cannot be called on the browser process UI or IO threads.
      * <p>Definition generated from cef_waitable_event.h
      *

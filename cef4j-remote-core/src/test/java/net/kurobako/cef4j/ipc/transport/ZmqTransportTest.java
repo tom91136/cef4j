@@ -9,12 +9,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
 import org.zeromq.SocketType;
@@ -295,20 +297,30 @@ final class ZmqTransportTest extends CefTransportContractTest {
         }
 
         private static Socket connect(int port) throws Exception {
-            IOException lastFailure = null;
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-            while (System.nanoTime() < deadline) {
-                Socket socket = new Socket();
-                try {
-                    socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 100);
-                    return socket;
-                } catch (IOException failure) {
-                    close(socket);
-                    lastFailure = failure;
-                    Thread.sleep(10);
-                }
-            }
-            throw lastFailure == null ? new IOException("connection timed out") : lastFailure;
+            java.util.concurrent.atomic.AtomicReference<Socket> connected =
+                    new java.util.concurrent.atomic.AtomicReference<>();
+            java.util.concurrent.atomic.AtomicReference<IOException> lastFailure =
+                    new java.util.concurrent.atomic.AtomicReference<>();
+            TestDeadline.after(Duration.ofSeconds(5))
+                    .until(
+                            () -> {
+                                Socket socket = new Socket();
+                                try {
+                                    socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 100);
+                                    connected.set(socket);
+                                    return true;
+                                } catch (IOException failure) {
+                                    close(socket);
+                                    lastFailure.set(failure);
+                                    return false;
+                                }
+                            },
+                            Duration.ofMillis(10),
+                            "TCP relay connection");
+            Socket socket = connected.get();
+            if (socket != null) return socket;
+            IOException failure = lastFailure.get();
+            throw failure == null ? new IOException("connection timed out") : failure;
         }
 
         private void disconnect() {

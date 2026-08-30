@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Log items prepended to each log line.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   LOG_ITEMS_DEFAULT = 0,
  *   LOG_ITEMS_NONE = 1,
@@ -14,27 +18,30 @@ import javax.annotation.processing.Generated;
  *   LOG_ITEMS_FLAG_TIME_STAMP = 1 &lt;&lt; 3,
  *   ...
  * } cef_log_items_t;</pre>
- * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#NONE}, {@link Kind#FLAG_PROCESS_ID}, {@link Kind#FLAG_THREAD_ID}, {@link Kind#FLAG_TIME_STAMP}, {@link Kind#FLAG_TICK_COUNT}
+ *
+ * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#NONE}, {@link Kind#FLAG_PROCESS_ID},
+ * {@link Kind#FLAG_THREAD_ID}, {@link Kind#FLAG_TIME_STAMP}, {@link Kind#FLAG_TICK_COUNT}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefLogItems implements CefEnum<CefLogItems> {
 
     /** Known constants for {@link CefLogItems}. */
     public enum Kind {
-        /** Prepend the default list of items.  */
+        /** Prepend the default list of items. */
         DEFAULT(0, "0", "LOG_ITEMS_DEFAULT"),
-        /** Prepend no items.  */
+        /** Prepend no items. */
         NONE(1, "1", "LOG_ITEMS_NONE"),
-        /** Prepend the process ID.  */
+        /** Prepend the process ID. */
         FLAG_PROCESS_ID(1 << 1, "1 << 1", "LOG_ITEMS_FLAG_PROCESS_ID"),
-        /** Prepend the thread ID.  */
+        /** Prepend the thread ID. */
         FLAG_THREAD_ID(1 << 2, "1 << 2", "LOG_ITEMS_FLAG_THREAD_ID"),
-        /** Prepend the timestamp.  */
+        /** Prepend the timestamp. */
         FLAG_TIME_STAMP(1 << 3, "1 << 3", "LOG_ITEMS_FLAG_TIME_STAMP"),
-        /** Prepend the tickcount.  */
+        /** Prepend the tickcount. */
         FLAG_TICK_COUNT(1 << 4, "1 << 4", "LOG_ITEMS_FLAG_TICK_COUNT");
 
         private static final Kind[] VALUES = Kind.values();
@@ -86,8 +93,8 @@ public final class CefLogItems implements CefEnum<CefLogItems> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

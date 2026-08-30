@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Generic callback interface used for managing the lifespan of a registration.
+ *
  * <p>Definition generated from cef_registration_capi.h
+ *
  * <pre>typedef struct _cef_registration_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -13,10 +17,10 @@ import javax.annotation.processing.Generated;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__registration_8h.html">cef_registration.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public interface CefRegistration extends CefLibraryObject {
-
 
     final class NativePeer implements CefRegistration, AutoCloseable {
         private final long nativePtr;
@@ -61,12 +65,6 @@ public interface CefRegistration extends CefLibraryObject {
 
         private static native void release0(long ptr);
 
-
-
-
-
-
-
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -84,5 +82,4 @@ public interface CefRegistration extends CefLibraryObject {
             return "CefRegistration{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
-
 }

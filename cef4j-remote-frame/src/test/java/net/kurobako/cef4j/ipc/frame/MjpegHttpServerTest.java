@@ -166,7 +166,8 @@ class MjpegHttpServerTest {
                             + server.endpoint().getHost() + "\r\nConnection: close\r\n\r\n")
                     .getBytes(StandardCharsets.UTF_8));
             out.flush();
-            Thread.sleep(300);
+            assertThat(new java.util.concurrent.CountDownLatch(1).await(300, TimeUnit.MILLISECONDS))
+                    .isFalse();
             frames.emit(new byte[] {0, 0, 0, (byte) 255});
             BufferedReader reader =
                     new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));

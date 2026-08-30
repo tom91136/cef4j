@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object CppDispatcherEmitter {
 
   case class DispatchInputs(
@@ -12,7 +14,7 @@ object CppDispatcherEmitter {
       manualRendererRelayIds: List[Int] = Nil
   )
 
-  def emit(in: DispatchInputs): String = {
+  def emit(in: DispatchInputs)(using Naming.Context): String = {
     val ns = in.packageName.replace('.', '_').toLowerCase
     // Renderer-affinity requests are relayed rather than dispatched here.
     val browserFacades     = in.facades.filter(_.affinity == ProcessAffinity.Browser)
@@ -362,17 +364,13 @@ object CppDispatcherEmitter {
     paramsOk && resultOk
   }
 
-  private def tableFieldName(cefStruct: String): String = {
-    val core = stripCefPrefix(cefStruct)
-    core.split('_').iterator.zipWithIndex.map { case (p, i) =>
-      if (i == 0) p else p.headOption.fold("")(_.toUpper.toString) + p.drop(1)
-    }.mkString
-  }
+  private def tableFieldName(cefStruct: String)(using Naming.Context): String =
+    Naming.toCamelCase(stripCefPrefix(cefStruct))
 
-  private def tableField(f: FacadeSpec): String =
+  private def tableField(f: FacadeSpec)(using Naming.Context): String =
     s"    inline cef4j::ipc::HandleTable<${f.cefStructName}> ${tableFieldName(f.cefStructName)};"
 
-  private def releaseCase(f: FacadeSpec): String =
+  private def releaseCase(f: FacadeSpec)(using Naming.Context): String =
     s"""    if (kind == "${f.cefStructName}") { tables::${tableFieldName(
         f.cefStructName
       )}.release(id); return true; }"""
@@ -386,7 +384,7 @@ object CppDispatcherEmitter {
       messageSpecs: List[MessageSpec],
       dataStructByCef: Map[String, DataStructSpec],
       jvmVisitorByCef: Map[String, JvmVisitorSpec]
-  ): String = {
+  )(using Naming.Context): String = {
     val req           = m.requestClassName
     val resp          = m.responseClassName
     val table         = tableFieldName(f.cefStructName)

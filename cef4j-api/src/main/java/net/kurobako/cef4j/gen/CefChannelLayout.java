@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Enumerates the various representations of the ordering of audio channels. Must be kept synchronized with media::ChannelLayout from Chromium. See media\base\channel_layout.h
+ * Enumerates the various representations of the ordering of audio channels. Must be kept synchronized with
+ * media::ChannelLayout from Chromium. See media\base\channel_layout.h
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_CHANNEL_LAYOUT_NONE = 0,
  *   CEF_CHANNEL_LAYOUT_UNSUPPORTED = 1,
@@ -14,12 +19,24 @@ import javax.annotation.processing.Generated;
  *   CEF_CHANNEL_LAYOUT_2_1 = 4,
  *   ...
  * } cef_channel_layout_t;</pre>
- * <p>Possible values: {@link Kind#LAYOUT_NONE}, {@link Kind#LAYOUT_UNSUPPORTED}, {@link Kind#LAYOUT_MONO}, {@link Kind#LAYOUT_STEREO}, {@link Kind#LAYOUT_2_1}, {@link Kind#LAYOUT_SURROUND}, {@link Kind#LAYOUT_4_0}, {@link Kind#LAYOUT_2_2}, {@link Kind#LAYOUT_QUAD}, {@link Kind#LAYOUT_5_0}, {@link Kind#LAYOUT_5_1}, {@link Kind#LAYOUT_5_0_BACK}, {@link Kind#LAYOUT_5_1_BACK}, {@link Kind#LAYOUT_7_0}, {@link Kind#LAYOUT_7_1}, {@link Kind#LAYOUT_7_1_WIDE}, {@link Kind#LAYOUT_STEREO_DOWNMIX}, {@link Kind#LAYOUT_2POINT1}, {@link Kind#LAYOUT_3_1}, {@link Kind#LAYOUT_4_1}, {@link Kind#LAYOUT_6_0}, {@link Kind#LAYOUT_6_0_FRONT}, {@link Kind#LAYOUT_HEXAGONAL}, {@link Kind#LAYOUT_6_1}, {@link Kind#LAYOUT_6_1_BACK}, {@link Kind#LAYOUT_6_1_FRONT}, {@link Kind#LAYOUT_7_0_FRONT}, {@link Kind#LAYOUT_7_1_WIDE_BACK}, {@link Kind#LAYOUT_OCTAGONAL}, {@link Kind#LAYOUT_DISCRETE}, {@link Kind#LAYOUT_STEREO_AND_KEYBOARD_MIC}, {@link Kind#LAYOUT_4_1_QUAD_SIDE}, {@link Kind#LAYOUT_BITSTREAM}, {@link Kind#LAYOUT_5_1_4_DOWNMIX}, {@link Kind#LAYOUT_1_1}, {@link Kind#LAYOUT_3_1_BACK}, {@link Kind#LAYOUT_5_1_4}, {@link Kind#LAYOUT_7_1_4}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#LAYOUT_NONE}, {@link Kind#LAYOUT_UNSUPPORTED}, {@link Kind#LAYOUT_MONO},
+ * {@link Kind#LAYOUT_STEREO}, {@link Kind#LAYOUT_2_1}, {@link Kind#LAYOUT_SURROUND}, {@link Kind#LAYOUT_4_0},
+ * {@link Kind#LAYOUT_2_2}, {@link Kind#LAYOUT_QUAD}, {@link Kind#LAYOUT_5_0}, {@link Kind#LAYOUT_5_1},
+ * {@link Kind#LAYOUT_5_0_BACK}, {@link Kind#LAYOUT_5_1_BACK}, {@link Kind#LAYOUT_7_0}, {@link Kind#LAYOUT_7_1},
+ * {@link Kind#LAYOUT_7_1_WIDE}, {@link Kind#LAYOUT_STEREO_DOWNMIX}, {@link Kind#LAYOUT_2POINT1},
+ * {@link Kind#LAYOUT_3_1}, {@link Kind#LAYOUT_4_1}, {@link Kind#LAYOUT_6_0}, {@link Kind#LAYOUT_6_0_FRONT},
+ * {@link Kind#LAYOUT_HEXAGONAL}, {@link Kind#LAYOUT_6_1}, {@link Kind#LAYOUT_6_1_BACK}, {@link Kind#LAYOUT_6_1_FRONT},
+ * {@link Kind#LAYOUT_7_0_FRONT}, {@link Kind#LAYOUT_7_1_WIDE_BACK}, {@link Kind#LAYOUT_OCTAGONAL},
+ * {@link Kind#LAYOUT_DISCRETE}, {@link Kind#LAYOUT_STEREO_AND_KEYBOARD_MIC}, {@link Kind#LAYOUT_4_1_QUAD_SIDE},
+ * {@link Kind#LAYOUT_BITSTREAM}, {@link Kind#LAYOUT_5_1_4_DOWNMIX}, {@link Kind#LAYOUT_1_1},
+ * {@link Kind#LAYOUT_3_1_BACK}, {@link Kind#LAYOUT_5_1_4}, {@link Kind#LAYOUT_7_1_4}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
 
     /** Known constants for {@link CefChannelLayout}. */
@@ -82,13 +99,23 @@ public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
         LAYOUT_OCTAGONAL(28, "28", "CEF_CHANNEL_LAYOUT_OCTAGONAL"),
         /** Channels are not explicitly mapped to speakers. */
         LAYOUT_DISCRETE(29, "29", "CEF_CHANNEL_LAYOUT_DISCRETE"),
-        /** Deprecated, but keeping the enum value for UMA consistency. Front L, Front R, Front C. Front C contains the keyboard mic audio. This layout is only intended for input for WebRTC. The Front C channel is stripped away in the WebRTC audio input pipeline and never seen outside of that. */
+        /**
+         * Deprecated, but keeping the enum value for UMA consistency. Front L, Front R, Front C. Front C contains the
+         * keyboard mic audio. This layout is only intended for input for WebRTC. The Front C channel is stripped away
+         * in the WebRTC audio input pipeline and never seen outside of that.
+         */
         LAYOUT_STEREO_AND_KEYBOARD_MIC(30, "30", "CEF_CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC"),
         /** Front L, Front R, LFE, Side L, Side R */
         LAYOUT_4_1_QUAD_SIDE(31, "31", "CEF_CHANNEL_LAYOUT_4_1_QUAD_SIDE"),
-        /** Actual channel layout is specified in the bitstream and the actual channel count is unknown at Chromium media pipeline level (useful for audio pass-through mode). */
+        /**
+         * Actual channel layout is specified in the bitstream and the actual channel count is unknown at Chromium media
+         * pipeline level (useful for audio pass-through mode).
+         */
         LAYOUT_BITSTREAM(32, "32", "CEF_CHANNEL_LAYOUT_BITSTREAM"),
-        /** Front L, Front R, Front C, LFE, Side L, Side R, Front Height L, Front Height R, Rear Height L, Rear Height R Will be represented as six channels (5.1) due to eight channel limit kMaxConcurrentChannels */
+        /**
+         * Front L, Front R, Front C, LFE, Side L, Side R, Front Height L, Front Height R, Rear Height L, Rear Height R
+         * Will be represented as six channels (5.1) due to eight channel limit kMaxConcurrentChannels
+         */
         LAYOUT_5_1_4_DOWNMIX(33, "33", "CEF_CHANNEL_LAYOUT_5_1_4_DOWNMIX"),
         /** Front C, LFE */
         LAYOUT_1_1(34, "34", "CEF_CHANNEL_LAYOUT_1_1"),
@@ -96,7 +123,10 @@ public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
         LAYOUT_3_1_BACK(35, "35", "CEF_CHANNEL_LAYOUT_3_1_BACK"),
         /** Front L, Front R, Front C, LFE, Side L, Side R, Top Front L, Top Front R, Top Back L, Top Back R */
         LAYOUT_5_1_4(36, "36", "CEF_CHANNEL_LAYOUT_5_1_4"),
-        /** Front L, Front R, Front C, LFE, Back L, Back R, Side L, Side R, Top Front L, Top Front R, Top Back L, Top Back R */
+        /**
+         * Front L, Front R, Front C, LFE, Back L, Back R, Side L, Side R, Top Front L, Top Front R, Top Back L, Top
+         * Back R
+         */
         LAYOUT_7_1_4(37, "37", "CEF_CHANNEL_LAYOUT_7_1_4"),
         NUM_VALUES(38, "38", "CEF_CHANNEL_NUM_VALUES");
 
@@ -149,8 +179,8 @@ public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

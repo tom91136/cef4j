@@ -30,7 +30,7 @@ object LoadParseState {
         compoundSegments,
         cfg.javaPackage,
         allSubPackages,
-        platformCppMode = !cfg.emitCommonCpp && cfg.javaPlatformSubPackage.nonEmpty
+        platformCppMode = cfg.javaPlatformSubPackage.nonEmpty
       ),
       docContext = InitialiseDocContext(cfg.cefInclude),
       handlerNames = metadata.handlerNames,

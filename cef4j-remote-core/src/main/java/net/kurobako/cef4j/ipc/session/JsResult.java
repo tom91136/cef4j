@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.session;
 
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Polymorphic JavaScript evaluation result. Mirrors the {@code valueKind} discriminator from the V8 eval wire response:
@@ -11,6 +12,7 @@ import javax.annotation.Nullable;
  * <p>Use the type predicates ({@link #isInt}, {@link #isString}, etc.) before calling the typed accessors; the typed
  * accessors throw {@link IllegalStateException} on a wrong-kind read so callers can't silently miss a type mismatch.
  */
+@NullableBoundary("JavaScript null and inactive wire slots are represented by null")
 public final class JsResult {
 
     public enum Kind {
@@ -53,8 +55,6 @@ public final class JsResult {
      * packs a single {@code int64} for the double bits via {@link Double#longBitsToDouble} so the value survives intact
      * across both encodings.
      */
-    // null slots carry the value for the matching kind only
-    @SuppressWarnings("NullableForbidden")
     public static JsResult fromWire(
             int valueKind,
             boolean boolValue,
@@ -151,8 +151,6 @@ public final class JsResult {
      * Untyped accessor — returns Boolean/Integer/Double/String/null based on {@link #kind}, or throws if the result is
      * an error. Useful for one-off callers that don't care about strict typing.
      */
-    // null is a valid JS value (null/undefined)
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public Object value() {
         switch (kind) {

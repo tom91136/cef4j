@@ -61,6 +61,7 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefScreenInfo;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** JavaFX off-screen rendering view backed by a CEF browser. */
 @SuppressWarnings({"this-escape", "resource"})
@@ -293,7 +294,7 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     /** Returns the underlying browser instance, or {@code null} if it does not exist yet. */
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
     @Nullable
     public CefBrowser getBrowser() {
         BrowserHandle current = browser;
@@ -301,7 +302,7 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     /** Returns the underlying browser host, or {@code null} if it does not exist yet. */
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
     @Nullable
     public CefBrowserHost getBrowserHost() {
         BrowserHandle current = browser;
@@ -330,13 +331,13 @@ public class CefWebView extends Region implements AutoCloseable {
         return getScriptEngine();
     }
 
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
     @Nullable
     public CefBrowser browser() {
         return getBrowser();
     }
 
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
     @Nullable
     public CefBrowserHost browserHost() {
         return getBrowserHost();
@@ -423,7 +424,7 @@ public class CefWebView extends Region implements AutoCloseable {
      * calling {@link #terminate()}.
      */
     public CompletableFuture<Void> releaseAsync() {
-        if (!releaseStarted.compareAndSet(false, true)) return browserClosed;
+        if (!releaseStarted.compareAndSet(false, true)) return browserClosed.thenApply(ignored -> null);
         boolean creationPending = browserCreationPosted;
         releaseRequested = true;
         popupSurface.hide();
@@ -449,7 +450,7 @@ public class CefWebView extends Region implements AutoCloseable {
         }
         Platform.runLater(() -> engine.fireVisibilityChanged(false));
         cleanable.clean();
-        return browserClosed;
+        return browserClosed.thenApply(ignored -> null);
     }
 
     @Override

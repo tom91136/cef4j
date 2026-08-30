@@ -1,50 +1,90 @@
 package net.kurobako.cef4j.cache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.TempDir;
 
-public final class CefCachePublisherTest {
+final class CefCachePublisherTest {
 
     private static final String MARKER = ".cef4j-complete-test";
 
-    private CefCachePublisherTest() {}
+    @TempDir
+    Path root;
 
-    public static void main(String[] args) throws Exception {
-        Path root = Files.createTempDirectory("cef-cache-publisher-test-");
-        try {
-            Path target = root.resolve("cef_binary_test_linux64_minimal");
-            Path first = stagedDistribution(root, "first", "first");
-            CefCachePublisher.publish(first, target, MARKER);
-            require("first".equals(Files.readString(target.resolve("payload"))), "first publish failed");
+    @Test
+    void publishesCompleteStagingDirectory() throws Exception {
+        Path target = root.resolve("cef_binary_test_linux64_minimal");
+        Path staged = stagedDistribution("first", "first");
 
-            Path redundant = stagedDistribution(root, "redundant", "redundant");
-            CefCachePublisher.publish(redundant, target, MARKER);
-            require(!Files.exists(redundant), "redundant staging directory was not removed");
-            require("first".equals(Files.readString(target.resolve("payload"))), "complete target was replaced");
+        CefCachePublisher.publish(staged, target, MARKER);
 
-            Files.delete(target.resolve(MARKER));
-            Path replacement = stagedDistribution(root, "replacement", "replacement");
-            CefCachePublisher.publish(replacement, target, MARKER);
-            require(
-                    "replacement".equals(Files.readString(target.resolve("payload"))),
-                    "invalid target was not replaced");
+        assertEquals("first", Files.readString(target.resolve("payload")));
+        assertFalse(Files.exists(staged));
+    }
 
-            Path concurrentTarget = root.resolve("cef_binary_concurrent_linux64_minimal");
-            Path concurrentFirst = stagedDistribution(root, "concurrent-first", "concurrent-first");
-            Path concurrentSecond = stagedDistribution(root, "concurrent-second", "concurrent-second");
-            Process firstPublisher =
-                    publisherProcess(concurrentFirst, concurrentTarget).start();
-            Process secondPublisher =
-                    publisherProcess(concurrentSecond, concurrentTarget).start();
-            require(firstPublisher.waitFor() == 0, "first concurrent publisher failed");
-            require(secondPublisher.waitFor() == 0, "second concurrent publisher failed");
-            String concurrentPayload = Files.readString(concurrentTarget.resolve("payload"));
-            require(
-                    concurrentPayload.equals("concurrent-first") || concurrentPayload.equals("concurrent-second"),
-                    "concurrent publication produced an invalid target");
-        } finally {
-            deleteTree(root);
-        }
+    @Test
+    void keepsExistingCompleteTargetAndRemovesRedundantStaging() throws Exception {
+        Path target = root.resolve("cef_binary_test_linux64_minimal");
+        CefCachePublisher.publish(stagedDistribution("first", "first"), target, MARKER);
+        Path redundant = stagedDistribution("redundant", "redundant");
+
+        CefCachePublisher.publish(redundant, target, MARKER);
+
+        assertFalse(Files.exists(redundant));
+        assertEquals("first", Files.readString(target.resolve("payload")));
+    }
+
+    @Test
+    void replacesIncompleteTarget() throws Exception {
+        Path target = root.resolve("cef_binary_test_linux64_minimal");
+        CefCachePublisher.publish(stagedDistribution("first", "first"), target, MARKER);
+        Files.delete(target.resolve(MARKER));
+
+        CefCachePublisher.publish(stagedDistribution("replacement", "replacement"), target, MARKER);
+
+        assertEquals("replacement", Files.readString(target.resolve("payload")));
+    }
+
+    @Test
+    void rejectsIncompleteOrOutOfCacheStaging() throws Exception {
+        Path target = root.resolve("cef_binary_test_linux64_minimal");
+        Path incomplete = root.resolve(".cef-extract-incomplete/cef_binary_test_linux64_minimal");
+        Files.createDirectories(incomplete);
+
+        assertThrows(IOException.class, () -> CefCachePublisher.publish(incomplete, target, MARKER));
+
+        Path outside = root.resolve("outside");
+        Files.createDirectories(outside.resolve("include"));
+        Files.createDirectories(outside.resolve("Release"));
+        Files.writeString(outside.resolve("include/cef_version.h"), "test");
+        Files.writeString(outside.resolve(MARKER), "");
+        assertThrows(IOException.class, () -> CefCachePublisher.publish(outside, target, MARKER));
+    }
+
+    @Test
+    @Timeout(30)
+    void concurrentPublishersLeaveOneCompleteDistribution() throws Exception {
+        Path target = root.resolve("cef_binary_concurrent_linux64_minimal");
+        Path first = stagedDistribution("concurrent-first", "concurrent-first");
+        Path second = stagedDistribution("concurrent-second", "concurrent-second");
+        Process firstPublisher = publisherProcess(first, target).start();
+        Process secondPublisher = publisherProcess(second, target).start();
+
+        assertProcessSucceeded(firstPublisher);
+        assertProcessSucceeded(secondPublisher);
+        assertTrue(java.util.Set.of("concurrent-first", "concurrent-second")
+                .contains(Files.readString(target.resolve("payload"))));
+        assertTrue(Files.isRegularFile(target.resolve(MARKER)));
     }
 
     private static ProcessBuilder publisherProcess(Path staged, Path target) {
@@ -59,7 +99,7 @@ public final class CefCachePublisherTest {
                 .inheritIO();
     }
 
-    private static Path stagedDistribution(Path root, String id, String payload) throws Exception {
+    private Path stagedDistribution(String id, String payload) throws Exception {
         Path staged = root.resolve(".cef-extract-" + id).resolve("cef_binary_test_linux64_minimal");
         Files.createDirectories(staged.resolve("include"));
         Files.createDirectories(staged.resolve("Release"));
@@ -69,16 +109,11 @@ public final class CefCachePublisherTest {
         return staged;
     }
 
-    private static void deleteTree(Path root) throws Exception {
-        if (!Files.exists(root)) return;
-        try (java.util.stream.Stream<Path> paths = Files.walk(root)) {
-            Path[] descending =
-                    paths.sorted(java.util.Comparator.reverseOrder()).toArray(Path[]::new);
-            for (Path path : descending) Files.delete(path);
+    private static void assertProcessSucceeded(Process process) throws Exception {
+        if (!process.waitFor(Duration.ofSeconds(20).toMillis(), TimeUnit.MILLISECONDS)) {
+            process.destroyForcibly();
+            throw new AssertionError("publisher process did not exit");
         }
-    }
-
-    private static void require(boolean condition, String message) {
-        if (!condition) throw new AssertionError(message);
+        assertEquals(0, process.exitValue());
     }
 }

@@ -6,25 +6,35 @@ import java.util.Locale;
 /** A CEF binary-distribution target and its cef4j runtime resource identifier. */
 public enum CefPlatform {
     /** Linux on x86-64. */
-    LINUX_X86_64("linux-x86_64", "linux64", "libcef.so"),
+    LINUX_X86_64("linux-x86_64", "linux64", "linux-x86_64", "libcef.so"),
     /** Linux on ARM64. */
-    LINUX_ARM64("linux-arm64", "linuxarm64", "libcef.so"),
+    LINUX_ARM64("linux-arm64", "linuxarm64", "linux-arm64", "libcef.so"),
     /** Windows on x86-64. */
-    WINDOWS_X86_64("windows-x86_64", "windows64", "libcef.dll"),
+    WINDOWS_X86_64("windows-x86_64", "windows64", "windows-x86_64", "libcef.dll"),
     /** Windows on ARM64. */
-    WINDOWS_ARM64("windows-arm64", "windowsarm64", "libcef.dll"),
+    WINDOWS_ARM64("windows-arm64", "windowsarm64", "windows-arm64", "libcef.dll"),
     /** macOS on Intel x86-64. */
-    MACOS_X86_64("macos-x86_64", "macosx64", "Chromium Embedded Framework.framework/Chromium Embedded Framework"),
+    MACOS_X86_64(
+            "macos-x86_64",
+            "macosx64",
+            "macosx-x86_64",
+            "Chromium Embedded Framework.framework/Chromium Embedded Framework"),
     /** macOS on Apple Silicon ARM64. */
-    MACOS_ARM64("macos-arm64", "macosarm64", "Chromium Embedded Framework.framework/Chromium Embedded Framework");
+    MACOS_ARM64(
+            "macos-arm64",
+            "macosarm64",
+            "macosx-arm64",
+            "Chromium Embedded Framework.framework/Chromium Embedded Framework");
 
     private final String externalName;
     private final String cefName;
+    private final String classifier;
     private final String runtimeBinary;
 
-    CefPlatform(String externalName, String cefName, String runtimeBinary) {
+    CefPlatform(String externalName, String cefName, String classifier, String runtimeBinary) {
         this.externalName = externalName;
         this.cefName = cefName;
+        this.classifier = classifier;
         this.runtimeBinary = runtimeBinary;
     }
 
@@ -36,6 +46,11 @@ public enum CefPlatform {
     /** Returns the upstream CEF distribution identifier. */
     public String cefName() {
         return cefName;
+    }
+
+    /** Returns the cef4j native artifact classifier. */
+    public String classifier() {
+        return classifier;
     }
 
     /** Returns the relative path of the platform's primary CEF binary. */

@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Permission types used with OnShowPermissionPrompt. Some types are platform-specific or only supported with Chrome style. Should be kept in sync with Chromium's permissions::RequestType type.
+ * Permission types used with OnShowPermissionPrompt. Some types are platform-specific or only supported with Chrome
+ * style. Should be kept in sync with Chromium's permissions::RequestType type.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_PERMISSION_TYPE_NONE = 0,
  *   CEF_PERMISSION_TYPE_AR_SESSION = 1 &lt;&lt; 0,
@@ -14,12 +19,22 @@ import javax.annotation.processing.Generated;
  *   CEF_PERMISSION_TYPE_CAPTURED_SURFACE_CONTROL = 1 &lt;&lt; 3,
  *   ...
  * } cef_permission_request_types_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#AR_SESSION}, {@link Kind#CAMERA_PAN_TILT_ZOOM}, {@link Kind#CAMERA_STREAM}, {@link Kind#CAPTURED_SURFACE_CONTROL}, {@link Kind#CLIPBOARD}, {@link Kind#TOP_LEVEL_STORAGE_ACCESS}, {@link Kind#DISK_QUOTA}, {@link Kind#LOCAL_FONTS}, {@link Kind#GEOLOCATION}, {@link Kind#HAND_TRACKING}, {@link Kind#IDENTITY_PROVIDER}, {@link Kind#IDLE_DETECTION}, {@link Kind#MIC_STREAM}, {@link Kind#MIDI_SYSEX}, {@link Kind#MULTIPLE_DOWNLOADS}, {@link Kind#NOTIFICATIONS}, {@link Kind#KEYBOARD_LOCK}, {@link Kind#POINTER_LOCK}, {@link Kind#PROTECTED_MEDIA_IDENTIFIER}, {@link Kind#REGISTER_PROTOCOL_HANDLER}, {@link Kind#STORAGE_ACCESS}, {@link Kind#VR_SESSION}, {@link Kind#WEB_APP_INSTALLATION}, {@link Kind#WINDOW_MANAGEMENT}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#LOCAL_NETWORK_ACCESS_DEPRECATED}, {@link Kind#LOCAL_NETWORK}, {@link Kind#LOOPBACK_NETWORK}, {@link Kind#SENSORS}
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#AR_SESSION}, {@link Kind#CAMERA_PAN_TILT_ZOOM},
+ * {@link Kind#CAMERA_STREAM}, {@link Kind#CAPTURED_SURFACE_CONTROL}, {@link Kind#CLIPBOARD},
+ * {@link Kind#TOP_LEVEL_STORAGE_ACCESS}, {@link Kind#DISK_QUOTA}, {@link Kind#LOCAL_FONTS}, {@link Kind#GEOLOCATION},
+ * {@link Kind#HAND_TRACKING}, {@link Kind#IDENTITY_PROVIDER}, {@link Kind#IDLE_DETECTION}, {@link Kind#MIC_STREAM},
+ * {@link Kind#MIDI_SYSEX}, {@link Kind#MULTIPLE_DOWNLOADS}, {@link Kind#NOTIFICATIONS}, {@link Kind#KEYBOARD_LOCK},
+ * {@link Kind#POINTER_LOCK}, {@link Kind#PROTECTED_MEDIA_IDENTIFIER}, {@link Kind#REGISTER_PROTOCOL_HANDLER},
+ * {@link Kind#STORAGE_ACCESS}, {@link Kind#VR_SESSION}, {@link Kind#WEB_APP_INSTALLATION},
+ * {@link Kind#WINDOW_MANAGEMENT}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#LOCAL_NETWORK_ACCESS_DEPRECATED},
+ * {@link Kind#LOCAL_NETWORK}, {@link Kind#LOOPBACK_NETWORK}, {@link Kind#SENSORS}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefPermissionRequestTypes implements CefEnum<CefPermissionRequestTypes> {
 
     /** Known constants for {@link CefPermissionRequestTypes}. */
@@ -104,8 +119,8 @@ public final class CefPermissionRequestTypes implements CefEnum<CefPermissionReq
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

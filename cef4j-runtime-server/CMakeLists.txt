@@ -53,6 +53,9 @@ endif()
 set(CEF4J_RUNTIME_SERVER_SOURCES
     src/main/cpp/main.cpp
     src/main/cpp/Envelope.cpp
+    src/main/cpp/InterceptExecutor.cpp
+    src/main/cpp/RuntimeOptions.cpp
+    src/main/cpp/ShutdownCommandMonitor.cpp
     src/main/cpp/IpcServer.cpp
     src/main/cpp/LocalIpcServer.cpp
     src/main/cpp/ZmqIpcServer.cpp
@@ -107,6 +110,44 @@ endif()
 target_compile_options(cef4j-runtime-server PRIVATE
     $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Wno-unused-parameter>
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4100 /bigobj>)
+
+include(CTest)
+option(CEF4J_ENABLE_TEST_SANITIZERS "Build native unit tests with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+if(BUILD_TESTING)
+    find_package(Threads REQUIRED)
+    add_executable(cef4j-intercept-executor-test
+        src/test/cpp/InterceptExecutorTest.cpp
+        src/main/cpp/InterceptExecutor.cpp)
+    target_include_directories(cef4j-intercept-executor-test PRIVATE src/main/cpp)
+    target_link_libraries(cef4j-intercept-executor-test PRIVATE Threads::Threads)
+    target_compile_options(cef4j-intercept-executor-test PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Werror>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>)
+    add_test(NAME cef4j-intercept-executor COMMAND cef4j-intercept-executor-test)
+    add_executable(cef4j-runtime-options-test
+        src/test/cpp/RuntimeOptionsTest.cpp
+        src/main/cpp/RuntimeOptions.cpp)
+    target_include_directories(cef4j-runtime-options-test PRIVATE src/main/cpp)
+    target_compile_options(cef4j-runtime-options-test PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Werror>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>)
+    add_test(NAME cef4j-runtime-options COMMAND cef4j-runtime-options-test)
+    add_executable(cef4j-shutdown-command-monitor-test
+        src/test/cpp/ShutdownCommandMonitorTest.cpp
+        src/main/cpp/ShutdownCommandMonitor.cpp)
+    target_include_directories(cef4j-shutdown-command-monitor-test PRIVATE src/main/cpp)
+    target_link_libraries(cef4j-shutdown-command-monitor-test PRIVATE Threads::Threads)
+    target_compile_options(cef4j-shutdown-command-monitor-test PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Werror>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>)
+    add_test(NAME cef4j-shutdown-command-monitor COMMAND cef4j-shutdown-command-monitor-test)
+    if(CEF4J_ENABLE_TEST_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        foreach(test_target cef4j-intercept-executor-test cef4j-runtime-options-test cef4j-shutdown-command-monitor-test)
+            target_compile_options(${test_target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+            target_link_options(${test_target} PRIVATE -fsanitize=address,undefined)
+        endforeach()
+    endif()
+endif()
 if(UNIX AND NOT APPLE)
     target_link_options(cef4j-runtime-server PRIVATE -static-libstdc++ -static-libgcc)
 elseif(APPLE)

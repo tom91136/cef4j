@@ -9,9 +9,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /** One monotonic timeout budget shared by every asynchronous phase of a test operation. */
 public final class TestDeadline {
+    @FunctionalInterface
+    public interface CheckedSupplier<T> {
+        T get() throws Exception;
+    }
+
     private final long startedNanos;
     private final long timeoutNanos;
     private final Duration budget;
@@ -113,6 +119,22 @@ public final class TestDeadline {
         while (!condition.getAsBoolean()) {
             progress.run();
             if (condition.getAsBoolean()) return;
+            long remaining = remainingNanos();
+            if (remaining == 0L) throw timeout(phase);
+            TimeUnit.NANOSECONDS.sleep(Math.min(remaining, pollNanos));
+        }
+    }
+
+    public <T> T poll(CheckedSupplier<T> probe, Predicate<T> complete, Duration pollInterval, String phase)
+            throws Exception {
+        Objects.requireNonNull(probe, "probe");
+        Objects.requireNonNull(complete, "complete");
+        Objects.requireNonNull(pollInterval, "pollInterval");
+        long pollNanos = pollInterval.toNanos();
+        if (pollNanos <= 0L) throw new IllegalArgumentException("poll interval must be positive");
+        while (true) {
+            T value = probe.get();
+            if (complete.test(value)) return value;
             long remaining = remainingNanos();
             if (remaining == 0L) throw timeout(phase);
             TimeUnit.NANOSECONDS.sleep(Math.min(remaining, pollNanos));

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -16,11 +17,45 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.test.ServiceLoaderFixture;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 final class FrameCodecTest {
+    @Test
+    void rejectsDuplicateProviderIds(@TempDir Path temporaryDirectory) throws Exception {
+        try (ServiceLoaderFixture fixture = new ServiceLoaderFixture(
+                temporaryDirectory, FrameCodecProvider.class, FirstProvider.class, SecondProvider.class)) {
+            assertThat(fixture.isActive()).isTrue();
+            assertThatThrownBy(FrameCodecs::providers)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("Duplicate frame codec id 'duplicate'");
+        }
+    }
+
+    public static final class FirstProvider extends DuplicateProvider {}
+
+    public static final class SecondProvider extends DuplicateProvider {}
+
+    public abstract static class DuplicateProvider implements FrameCodecProvider {
+        @Override
+        public CodecDescriptor descriptor() {
+            return new CodecDescriptor("duplicate", "application/octet-stream", false);
+        }
+
+        @Override
+        public FrameCodec newEncoder(Map<String, String> configuration) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public FrameDecoder newDecoder(Map<String, String> configuration) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     @Test
     void pipelineCloseIsBoundedWhenCodecDoesNotReturn() throws Exception {
         CountDownLatch encodeEntered = new CountDownLatch(1);

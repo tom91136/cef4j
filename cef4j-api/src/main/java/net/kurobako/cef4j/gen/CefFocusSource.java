@@ -1,29 +1,35 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Focus sources.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   FOCUS_SOURCE_NAVIGATION = 0,
  *   FOCUS_SOURCE_SYSTEM = 1,
  *   FOCUS_SOURCE_NUM_VALUES = 2
  * } cef_focus_source_t;</pre>
+ *
  * <p>Possible values: {@link Kind#NAVIGATION}, {@link Kind#SYSTEM}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefFocusSource implements CefEnum<CefFocusSource> {
 
     /** Known constants for {@link CefFocusSource}. */
     public enum Kind {
-        /** The source is explicit navigation via the API (LoadURL(), etc).  */
+        /** The source is explicit navigation via the API (LoadURL(), etc). */
         NAVIGATION(0, "0", "FOCUS_SOURCE_NAVIGATION"),
-        /** The source is a system-generated focus event.  */
+        /** The source is a system-generated focus event. */
         SYSTEM(1, "1", "FOCUS_SOURCE_SYSTEM"),
         NUM_VALUES(2, "2", "FOCUS_SOURCE_NUM_VALUES");
 
@@ -76,8 +82,8 @@ public final class CefFocusSource implements CefEnum<CefFocusSource> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

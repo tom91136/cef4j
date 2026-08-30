@@ -81,10 +81,10 @@ public final class View implements AutoCloseable {
     }
 
     /** Dispatches {@code as_textfield} to the runtime server. */
-    public CompletableFuture<Textfield> asTextfield() {
+    public CompletableFuture<TextField> asTextField() {
         return CefFutures.map(
-            session.request(new ViewAsTextfieldRequest(handle), ViewAsTextfieldResponse.DECODER),
-            __r -> new Textfield(session, __r.result()));
+            session.request(new ViewAsTextFieldRequest(handle), ViewAsTextFieldResponse.DECODER),
+            __r -> new TextField(session, __r.result()));
     }
 
     /** Dispatches {@code get_type_string} to the runtime server. */
@@ -92,6 +92,13 @@ public final class View implements AutoCloseable {
         return CefFutures.map(
             session.request(new ViewGetTypeStringRequest(handle), ViewGetTypeStringResponse.DECODER),
             ViewGetTypeStringResponse::result);
+    }
+
+    /** Dispatches {@code to_string} to the runtime server. */
+    public CompletableFuture<String> cefToString(int includeChildren) {
+        return CefFutures.map(
+            session.request(new ViewToStringRequest(handle, includeChildren), ViewToStringResponse.DECODER),
+            ViewToStringResponse::result);
     }
 
     /**

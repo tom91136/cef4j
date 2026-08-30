@@ -1,7 +1,6 @@
 package net.kurobako.cef4j.ipc.transport;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -115,7 +114,7 @@ public final class ZmqTransport implements CefTransport {
     private final long handshakeTimeoutNanos;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>(MAX_QUEUED_FRAMES);
-    private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
+    private final PendingFrames pending = new PendingFrames();
     private final Thread worker;
 
     @Nullable
@@ -418,7 +417,11 @@ public final class ZmqTransport implements CefTransport {
             reconnectDeadlineNanos = 0;
             handshakeDeadlineNanos = 0;
             if (receivedFrames == 1) LOG.debug("first frame received on {}", endpoint);
-            pending.add(frame);
+            if (!pending.offer(frame)) {
+                LOG.warn("pending receive queue on {} is full", endpoint);
+                markTerminalDisconnected();
+                return true;
+            }
         }
         return false;
     }

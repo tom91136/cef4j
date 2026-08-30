@@ -13,6 +13,7 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.middleware.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.RecordingCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
@@ -24,12 +25,14 @@ class GeneratedApiRecordingReplayTest {
     void generatedFacadeRunsUnchangedAgainstReplay(@TempDir Path directory) throws Exception {
         Path trace = directory.resolve("browser-api.cef4japi.jsonl");
         Browser liveBrowser;
-        try (RecordingCefSession recording = RecordingCefSession.toFile(new CanGoBackSession(), trace)) {
+        try (RecordingCefSession recording =
+                RecordingCefSession.toFile(new CanGoBackSession(), trace, JacksonNdjsonSessionTraceCodec.INSTANCE)) {
             liveBrowser = new Browser(recording, new RemoteHandle(42));
             assertThat(liveBrowser.canGoBack().get()).isEqualTo(1);
         }
 
-        ReplayCefSession replay = ReplayCefSession.fromFile(trace, ReplayMode.IMMEDIATE);
+        ReplayCefSession replay =
+                ReplayCefSession.fromFile(trace, JacksonNdjsonSessionTraceCodec.INSTANCE, ReplayMode.IMMEDIATE);
         Browser replayBrowser = new Browser(replay, new RemoteHandle(42));
         replay.start();
         assertThat(replayBrowser.canGoBack().get()).isEqualTo(1);

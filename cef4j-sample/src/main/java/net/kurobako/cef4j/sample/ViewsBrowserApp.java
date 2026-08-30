@@ -29,8 +29,8 @@ import net.kurobako.cef4j.gen.views.CefButton;
 import net.kurobako.cef4j.gen.views.CefButtonDelegate;
 import net.kurobako.cef4j.gen.views.CefLabelButton;
 import net.kurobako.cef4j.gen.views.CefPanel;
-import net.kurobako.cef4j.gen.views.CefTextfield;
-import net.kurobako.cef4j.gen.views.CefTextfieldDelegate;
+import net.kurobako.cef4j.gen.views.CefTextField;
+import net.kurobako.cef4j.gen.views.CefTextFieldDelegate;
 import net.kurobako.cef4j.gen.views.CefWindow;
 import net.kurobako.cef4j.gen.views.CefWindowDelegate;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  *       CefLabelButton - backBtn
  *       CefLabelButton - fwdBtn
  *       CefLabelButton - reloadBtn
- *       CefTextfield - urlBar (flex=1)
+ *       CefTextField - urlBar (flex=1)
  *       CefLabelButton - devtoolsBtn
  *     CefPanel - contentPanel (FillLayout, flex=1)
  *       CefBrowserView (active tab)
@@ -99,7 +99,7 @@ public final class ViewsBrowserApp {
     private CefLabelButton backButton;
     private CefLabelButton forwardButton;
     private CefLabelButton reloadButton;
-    private CefTextfield urlBar;
+    private CefTextField urlBar;
     private CefLabelButton devtoolsButton;
     private CefPanel contentPanel;
 
@@ -362,13 +362,13 @@ public final class ViewsBrowserApp {
                         "R")
                 .orElseThrow(() -> new RuntimeException("Failed to create reloadButton"));
 
-        urlBar = CefTextfield.create(new CefTextfieldDelegate() {
+        urlBar = CefTextField.create(new CefTextFieldDelegate() {
                     @Override
-                    public boolean onKeyEvent(@Nullable CefTextfield textfield, CefKeyEvent event) {
-                        if (textfield != null
+                    public boolean onKeyEvent(@Nullable CefTextField textField, CefKeyEvent event) {
+                        if (textField != null
                                 && event.windowsKeyCode == VK_RETURN
                                 && Objects.equals(event.type, CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN))) {
-                            textfield.getText().ifPresent(ViewsBrowserApp.this::navigateActiveTab);
+                            textField.getText().ifPresent(ViewsBrowserApp.this::navigateActiveTab);
                             return true;
                         }
                         return false;

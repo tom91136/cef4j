@@ -1,12 +1,17 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.processing.Generated;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Structure representing cursor information. {@code buffer} will be {@code size.width}*{@code size.height}*4 bytes in size and represents a BGRA image with an upper-left origin.
+ * Structure representing cursor information. {@code buffer} will be {@code size.width}*{@code size.height}*4 bytes in
+ * size and represents a BGRA image with an upper-left origin.
+ *
  * <p>Definition generated from internal/cef_types.h
+ *
  * <pre>typedef struct _cef_cursor_info_t {
  *   cef_point_t* hotspot;
  *   float image_scale_factor;
@@ -16,8 +21,9 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2739</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefCursorInfo {
 
     public final @Nullable CefPoint hotspot;
@@ -25,7 +31,11 @@ public final class CefCursorInfo {
     public final @Nullable NativePointer buffer;
     public final @Nullable CefSize size;
 
-    public CefCursorInfo(@Nullable CefPoint hotspot, float imageScaleFactor, @Nullable NativePointer buffer, @Nullable CefSize size) {
+    public CefCursorInfo(
+            @Nullable CefPoint hotspot,
+            float imageScaleFactor,
+            @Nullable NativePointer buffer,
+            @Nullable CefSize size) {
         this.hotspot = hotspot;
         this.imageScaleFactor = imageScaleFactor;
         this.buffer = buffer;
@@ -38,9 +48,9 @@ public final class CefCursorInfo {
         if (!(obj instanceof CefCursorInfo)) return false;
         CefCursorInfo other = (CefCursorInfo) obj;
         return java.util.Objects.equals(this.hotspot, other.hotspot)
-                    && this.imageScaleFactor == other.imageScaleFactor
-                    && java.util.Objects.equals(this.buffer, other.buffer)
-                    && java.util.Objects.equals(this.size, other.size);
+                && this.imageScaleFactor == other.imageScaleFactor
+                && java.util.Objects.equals(this.buffer, other.buffer)
+                && java.util.Objects.equals(this.size, other.size);
     }
 
     @Override
@@ -50,6 +60,7 @@ public final class CefCursorInfo {
 
     @Override
     public String toString() {
-        return "CefCursorInfo{" + "hotspot=" + hotspot + ", " + "imageScaleFactor=" + imageScaleFactor + ", " + "buffer=" + buffer + ", " + "size=" + size + "}";
+        return "CefCursorInfo{" + "hotspot=" + hotspot + ", " + "imageScaleFactor=" + imageScaleFactor + ", "
+                + "buffer=" + buffer + ", " + "size=" + size + "}";
     }
 }

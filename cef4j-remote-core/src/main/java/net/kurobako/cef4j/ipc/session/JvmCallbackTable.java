@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.session;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Client-side handle table for callback objects (e.g. visitors) that the client owns and the server invokes.
@@ -35,8 +36,7 @@ public final class JvmCallbackTable<T> {
     }
 
     /** Looks up a callback by id, or {@code null} if it's unknown / already released. */
-    // null means no callback registered under the id (consumed by generated routing code)
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("generated routing treats null as an unknown callback id")
     @Nullable
     public T lookup(int id) {
         if (id == 0) return null;

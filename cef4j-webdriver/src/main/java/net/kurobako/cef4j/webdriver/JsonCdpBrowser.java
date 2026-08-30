@@ -5,14 +5,15 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** JSON-tree view over the raw, codec-neutral {@link CdpBrowser} channel. */
+@NullableBoundary("CDP commands use null to omit parameters")
 public interface JsonCdpBrowser extends CdpBrowser {
     @Nonnull
     WebDriverJsonCodec jsonCodec();
 
     @Nonnull
-    @SuppressWarnings("NullableForbidden")
     default CompletableFuture<JsonObject> send(@Nonnull String method, @Nullable JsonObject params) {
         byte[] encoded = params == null ? null : jsonCodec().encode(params);
         return execute(method, encoded)

@@ -1,16 +1,12 @@
 #include <atomic>
-#include <cerrno>
 #include <chrono>
-#include <condition_variable>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <deque>
 #include <filesystem>
 #include <functional>
 #include <iostream>
-#include <limits>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
@@ -53,7 +49,10 @@ extern "C" void cef4jQuitMacMessageLoop();
 #include "HandleTable.h"
 #include "InterceptRegistry.h"
 #include "IpcServer.h"
+#include "InterceptExecutor.h"
 #include "OsrPaintBuffer.h"
+#include "RuntimeOptions.h"
+#include "ShutdownCommandMonitor.h"
 #include "gen/InlinePaintEvent.h"
 #include "gen/CreateBrowserRequest.h"
 #include "gen/DevToolsAgentDetachedEvent.h"
@@ -205,76 +204,11 @@ static bool g_contextInitialized = false;
 static bool g_endpointPublished = false;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
 
-class InterceptExecutor {
-public:
-    explicit InterceptExecutor(unsigned int parallelism) {
-        workers_.reserve(parallelism);
-        try {
-            for (unsigned int i = 0; i < parallelism; ++i) workers_.emplace_back([this] { run(); });
-        } catch (...) {
-            shutdown();
-            throw;
-        }
-    }
+static std::unique_ptr<cef4j::runtime::InterceptExecutor> g_interceptExecutor;
 
-    ~InterceptExecutor() { shutdown(); }
-
-    void execute(std::function<void()> work) {
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            if (stopping_) throw std::logic_error("intercept executor is stopped");
-            pending_.push_back(std::move(work));
-        }
-        ready_.notify_one();
-    }
-
-    void shutdown() {
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            if (stopping_) return;
-            stopping_ = true;
-            pending_.clear();
-        }
-        ready_.notify_all();
-        for (auto& worker : workers_) {
-            if (worker.joinable()) worker.join();
-        }
-        workers_.clear();
-    }
-
-private:
-    void run() {
-        while (true) {
-            std::function<void()> work;
-            {
-                std::unique_lock<std::mutex> lock(mutex_);
-                ready_.wait(lock, [this] { return stopping_ || !pending_.empty(); });
-                if (stopping_ && pending_.empty()) return;
-                work = std::move(pending_.front());
-                pending_.pop_front();
-            }
-            try {
-                work();
-            } catch (const std::exception& failure) {
-                std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed: %s\n", failure.what());
-            } catch (...) {
-                std::fprintf(stderr, "[cef4j-runtime-server] intercept worker failed\n");
-            }
-        }
-    }
-
-    std::mutex mutex_;
-    std::condition_variable ready_;
-    std::deque<std::function<void()>> pending_;
-    std::vector<std::thread> workers_;
-    bool stopping_ = false;
-};
-
-static std::unique_ptr<InterceptExecutor> g_interceptExecutor;
-
-static void startInterceptWorker(std::function<void()> work) {
+static bool startInterceptWorker(std::function<void()> work) {
     if (!g_interceptExecutor) throw std::logic_error("intercept executor is unavailable");
-    g_interceptExecutor->execute(std::move(work));
+    return g_interceptExecutor->execute(std::move(work));
 }
 
 static void joinInterceptWorkers() {
@@ -2109,7 +2043,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             std::int32_t origMsgId = h.messageId;
             std::int32_t echoMsgId = req.echoMessageId;
             std::vector<std::uint8_t> echoBytes = std::move(req.echoPayload);
-            startInterceptWorker([origCorrId, origMsgId, echoMsgId, echoBytes = std::move(echoBytes)]() mutable {
+            bool accepted = startInterceptWorker([origCorrId, origMsgId, echoMsgId, echoBytes = std::move(echoBytes)]() mutable {
                 std::int32_t corrId = g_intercepts.allocateCorrId();
                 if (g_ipc) {
                     g_ipc->send(Kind::Intercept, 0, corrId, echoMsgId, echoBytes.data(), echoBytes.size());
@@ -2125,6 +2059,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     g_ipc->send(Kind::Response, 0, origCorrId, origMsgId, wire.data(), wire.size());
                 }
             });
+            if (!accepted) gendisp::sendTaskRejected(g_ipc, h.corrId, h.messageId);
             return;
         }
         case kMsgSetViewportSize: {
@@ -2484,28 +2419,6 @@ static void onIpcFrame(const Header& h, std::vector<std::uint8_t>&& payload) {
 }
 
 
-static std::string parseOption(int argc, char* argv[], const char* option, const std::string& fallback) {
-    for (int i = 1; i + 1 < argc; ++i) {
-        if (std::strcmp(argv[i], option) == 0) return argv[i + 1];
-    }
-    return fallback;
-}
-
-static unsigned int interceptParallelism(int argc, char* argv[]) {
-    unsigned int detected = std::thread::hardware_concurrency();
-    std::string fallback = std::to_string(detected == 0 ? 1 : detected);
-    if (const char* configured = std::getenv("CEF4J_INTERCEPT_WORKERS")) fallback = configured;
-    std::string value = parseOption(argc, argv, "--intercept-workers", fallback);
-    char* end = nullptr;
-    errno = 0;
-    unsigned long parsed = std::strtoul(value.c_str(), &end, 10);
-    if (errno != 0 || end == value.c_str() || *end != '\0' || parsed == 0
-        || parsed > std::numeric_limits<unsigned int>::max()) {
-        throw std::invalid_argument("intercept worker count must be a positive integer");
-    }
-    return static_cast<unsigned int>(parsed);
-}
-
 static int processId() {
 #ifdef _WIN32
     return ::_getpid();
@@ -2606,32 +2519,20 @@ int main(int argc, char* argv[]) {
     int rc = cef_execute_process(&args, subprocessApp, nullptr);
     if (rc >= 0) return rc;
 
+    cef4j::runtime::RuntimeOptions runtimeOptions;
     try {
-        g_interceptExecutor = std::make_unique<InterceptExecutor>(interceptParallelism(argc, argv));
+        runtimeOptions = cef4j::runtime::RuntimeOptions::parse(argc, argv, processId());
+        g_interceptExecutor = std::make_unique<cef4j::runtime::InterceptExecutor>(
+                runtimeOptions.interceptWorkers, runtimeOptions.interceptQueueCapacity);
     } catch (const std::exception& failure) {
-        std::fprintf(stderr, "[cef4j-runtime-server] failed to start intercept workers: %s\n", failure.what());
+        std::fprintf(stderr, "[cef4j-runtime-server] invalid runtime options: %s\n", failure.what());
         return 1;
     }
 
-    std::string transportName = parseOption(argc, argv, "--transport", "zmq");
-    std::string frameTransportName = parseOption(argc, argv, "--frame-transport", "shared-file");
-    if (frameTransportName != "shared-file" && frameTransportName != "mmap" && frameTransportName != "inline") {
-        std::fprintf(stderr, "[cef4j-runtime-server] unknown frame transport: %s\n", frameTransportName.c_str());
-        return 1;
-    }
+    const std::string& transportName = runtimeOptions.transport;
+    const std::string& frameTransportName = runtimeOptions.frameTransport;
     g_useInlineFrames = frameTransportName == "inline";
-#ifdef _WIN32
-    std::string defaultLocal = "pipe://cef4j-runtime-server-" + std::to_string(processId());
-#else
-    // XXX: Java 11 has no standard UDS API; keep loopback ZMQ as the portable local default until Java 11 support ends.
-    std::string defaultLocal = "tcp://127.0.0.1:0";
-#endif
-    std::string defaultBind = transportName == "uds"
-                                  ? "unix:///tmp/cef4j-runtime-server-" + std::to_string(processId()) + ".sock"
-                              : transportName == "local" ? defaultLocal
-                              : transportName == "websocket" ? "ws://127.0.0.1:0/cef4j"
-                                                             : "tcp://127.0.0.1:0";
-    std::string bindAddr = parseOption(argc, argv, "--bind", defaultBind);
+    const std::string& bindAddr = runtimeOptions.bindAddress;
 
     cef_settings_t settings{};
     settings.size = sizeof(settings);
@@ -2748,13 +2649,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    std::thread([] {
-        std::string command;
-        if (std::getline(std::cin, command) && command == "CEF4J_SHUTDOWN") {
-            std::fprintf(stderr, "[cef4j-runtime-server] shutdown: parent command received\n");
-            (void)gendisp::postUiTask(new gendisp::LambdaTask(beginRuntimeShutdown));
-        }
-    }).detach();
+    cef4j::runtime::ShutdownCommandMonitor shutdownMonitor([] {
+        std::fprintf(stderr, "[cef4j-runtime-server] shutdown: parent command received\n");
+        (void)gendisp::postUiTask(new gendisp::LambdaTask(beginRuntimeShutdown));
+    });
 
 #ifdef __APPLE__
     cef4jRunMacMessageLoop();

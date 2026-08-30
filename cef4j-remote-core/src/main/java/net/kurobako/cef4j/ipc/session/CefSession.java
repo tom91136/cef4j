@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Correlation, routing, and intercept layer above {@link net.kurobako.cef4j.ipc.transport.CefTransport}. Hides the
@@ -95,8 +96,7 @@ public interface CefSession extends Closeable {
     /** Synchronous-return intercept handler; return {@code null} to signal "default action" (empty response). */
     @FunctionalInterface
     interface InterceptHandler<E extends CefMessageView> {
-        // null result means "no intercept" (default action)
-        @SuppressWarnings("NullableForbidden")
+        @NullableBoundary("null selects the CEF default action")
         @Nullable
         CefMessageEncoder onIntercept(@Nonnull E event);
     }

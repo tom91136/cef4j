@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Supported file dialog modes.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   FILE_DIALOG_OPEN = 0,
  *   FILE_DIALOG_OPEN_MULTIPLE = 1,
@@ -13,23 +17,26 @@ import javax.annotation.processing.Generated;
  *   FILE_DIALOG_SAVE = 3,
  *   FILE_DIALOG_NUM_VALUES = 4
  * } cef_file_dialog_mode_t;</pre>
- * <p>Possible values: {@link Kind#OPEN}, {@link Kind#OPEN_MULTIPLE}, {@link Kind#OPEN_FOLDER}, {@link Kind#SAVE}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#OPEN}, {@link Kind#OPEN_MULTIPLE}, {@link Kind#OPEN_FOLDER}, {@link Kind#SAVE},
+ * {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefFileDialogMode implements CefEnum<CefFileDialogMode> {
 
     /** Known constants for {@link CefFileDialogMode}. */
     public enum Kind {
-        /** Requires that the file exists before allowing the user to pick it.  */
+        /** Requires that the file exists before allowing the user to pick it. */
         OPEN(0, "0", "FILE_DIALOG_OPEN"),
-        /** Like Open, but allows picking multiple files to open.  */
+        /** Like Open, but allows picking multiple files to open. */
         OPEN_MULTIPLE(1, "1", "FILE_DIALOG_OPEN_MULTIPLE"),
-        /** Like Open, but selects a folder to open.  */
+        /** Like Open, but selects a folder to open. */
         OPEN_FOLDER(2, "2", "FILE_DIALOG_OPEN_FOLDER"),
-        /** Allows picking a nonexistent file, and prompts to overwrite if the file already exists.  */
+        /** Allows picking a nonexistent file, and prompts to overwrite if the file already exists. */
         SAVE(3, "3", "FILE_DIALOG_SAVE"),
         NUM_VALUES(4, "4", "FILE_DIALOG_NUM_VALUES");
 
@@ -82,8 +89,8 @@ public final class CefFileDialogMode implements CefEnum<CefFileDialogMode> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -1,11 +1,17 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Input mode of a virtual keyboard. These constants match their equivalents in Chromium's text_input_mode.h and should not be renumbered. See <a href="https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute">https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute</a>
+ * Input mode of a virtual keyboard. These constants match their equivalents in Chromium's text_input_mode.h and should
+ * not be renumbered. See <a
+ * href="https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute">https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute</a>
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_TEXT_INPUT_MODE_DEFAULT = 0,
  *   CEF_TEXT_INPUT_MODE_NONE = 1,
@@ -14,12 +20,15 @@ import javax.annotation.processing.Generated;
  *   CEF_TEXT_INPUT_MODE_URL = 4,
  *   ...
  * } cef_text_input_mode_t;</pre>
- * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#NONE}, {@link Kind#TEXT}, {@link Kind#TEL}, {@link Kind#URL}, {@link Kind#EMAIL}, {@link Kind#NUMERIC}, {@link Kind#DECIMAL}, {@link Kind#SEARCH}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#NONE}, {@link Kind#TEXT}, {@link Kind#TEL}, {@link Kind#URL},
+ * {@link Kind#EMAIL}, {@link Kind#NUMERIC}, {@link Kind#DECIMAL}, {@link Kind#SEARCH}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefTextInputMode implements CefEnum<CefTextInputMode> {
 
     /** Known constants for {@link CefTextInputMode}. */
@@ -84,8 +93,8 @@ public final class CefTextInputMode implements CefEnum<CefTextInputMode> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -26,6 +26,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.policy.NullableBoundary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,8 @@ public final class DevToolsSession implements CdpTransport {
 
     /** Sends a CDP method and completes with its result object. */
     @Nonnull
-    @SuppressWarnings({"FutureReturnValueIgnored", "NullableForbidden"}) // null params omit the CDP request body
+    @SuppressWarnings("FutureReturnValueIgnored")
+    @NullableBoundary("null parameters omit the CDP request body")
     public CompletableFuture<Map<String, Object>> send(@Nonnull String method, @Nullable Map<String, Object> params) {
         Objects.requireNonNull(method, "method");
         if (!open.get()) return failedFuture(new IllegalStateException("DevTools session is closed"));

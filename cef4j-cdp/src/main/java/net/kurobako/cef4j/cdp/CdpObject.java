@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Mutable, codec-independent CDP value object. Setters store wire-form values. */
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public abstract class CdpObject {
     protected final Map<String, Object> values = new LinkedHashMap<>();
 
@@ -24,13 +26,11 @@ public abstract class CdpObject {
         return values;
     }
 
-    @SuppressWarnings("NullableForbidden")
     protected final void set(String name, @Nullable Object value) {
         if (value == null) values.remove(name);
         else values.put(name, json(value));
     }
 
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     protected final Object raw(String name) {
         return values.get(name);
@@ -43,13 +43,12 @@ public abstract class CdpObject {
         return value;
     }
 
-    @SuppressWarnings({"unchecked", "NullableForbidden"})
+    @SuppressWarnings("unchecked")
     @Nullable
     public static Map<String, Object> objectMap(@Nullable Object value) {
         return value == null ? null : (Map<String, Object>) value;
     }
 
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public static <T> List<T> list(@Nullable Object value, Function<Object, T> mapper) {
         if (value == null) return null;
@@ -79,13 +78,11 @@ public abstract class CdpObject {
         return value;
     }
 
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public static Long numberAsLong(@Nullable Object value) {
         return value == null ? null : ((Number) value).longValue();
     }
 
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public static Double numberAsDouble(@Nullable Object value) {
         return value == null ? null : ((Number) value).doubleValue();

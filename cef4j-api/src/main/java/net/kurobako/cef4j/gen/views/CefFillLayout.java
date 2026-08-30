@@ -1,13 +1,17 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.processing.Generated;
 import java.util.Optional;
-import net.kurobako.cef4j.gen.CefLibraryObject;
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * A simple Layout that causes the associated Panel's one child to be sized to match the bounds of its parent. Methods must be called on the browser process UI thread unless otherwise indicated.
+ * A simple Layout that causes the associated Panel's one child to be sized to match the bounds of its parent. Methods
+ * must be called on the browser process UI thread unless otherwise indicated.
+ *
  * <p>Definition generated from views/cef_fill_layout_capi.h
+ *
  * <pre>typedef struct _cef_fill_layout_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -15,10 +19,10 @@ import net.kurobako.cef4j.gen.CefLibraryObject;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__fill__layout_8h.html">views/cef_fill_layout.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public interface CefFillLayout extends CefLayout {
-
 
     final class NativePeer implements CefFillLayout, AutoCloseable {
         private final long nativePtr;
@@ -63,28 +67,23 @@ public interface CefFillLayout extends CefLayout {
 
         private static native void release0(long ptr);
 
-
+        @Override
+        public Optional<CefBoxLayout> asBoxLayout() {
+            checkNotClosed();
+            return Optional.ofNullable(CefLayout.NativePeer.asBoxLayout0(nativePtr));
+        }
 
         @Override
-      public Optional<CefBoxLayout> asBoxLayout() {
-          checkNotClosed();
-          return Optional.ofNullable(CefLayout.NativePeer.asBoxLayout0(nativePtr));
-      }
+        public Optional<CefFillLayout> asFillLayout() {
+            checkNotClosed();
+            return Optional.ofNullable(CefLayout.NativePeer.asFillLayout0(nativePtr));
+        }
 
         @Override
-      public Optional<CefFillLayout> asFillLayout() {
-          checkNotClosed();
-          return Optional.ofNullable(CefLayout.NativePeer.asFillLayout0(nativePtr));
-      }
-
-        @Override
-      public boolean isValid() {
-          checkNotClosed();
-          return CefLayout.NativePeer.isValid0(nativePtr);
-      }
-
-
-
+        public boolean isValid() {
+            checkNotClosed();
+            return CefLayout.NativePeer.isValid0(nativePtr);
+        }
 
         @Override
         public boolean equals(Object obj) {
@@ -103,5 +102,4 @@ public interface CefFillLayout extends CefLayout {
             return "CefFillLayout{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
-
 }

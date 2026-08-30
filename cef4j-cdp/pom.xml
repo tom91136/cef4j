@@ -13,6 +13,7 @@
     <description>Version-aligned, transport-neutral Chrome DevTools Protocol API</description>
 
     <properties>
+        <exec.skip>false</exec.skip>
         <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
     </properties>
 
@@ -32,6 +33,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-cef-dist</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
@@ -39,6 +46,36 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-cdp-api</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.cdp.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-version=${cef.version}</argument>
+                                <argument>--schema-cache=${cef.dist.cache}</argument>
+                                <argument>--out-java=${project.basedir}/src/main/java</argument>
+                                <argument>--out-resources=${project.basedir}/src/main/resources</argument>
+                                <argument>--java-package=net.kurobako.cef4j.cdp.generated</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-cdp -Dcef.version=${cef.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.kurobako.cef4j</groupId>
+                        <artifactId>cef4j-codegen</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>

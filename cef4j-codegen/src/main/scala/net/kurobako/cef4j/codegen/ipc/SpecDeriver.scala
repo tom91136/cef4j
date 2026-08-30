@@ -4,6 +4,7 @@ import cats.syntax.all.*
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
 import net.kurobako.cef4j.codegen.FnPtr
+import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Param
 
 object SpecDeriver {
@@ -23,7 +24,7 @@ object SpecDeriver {
       packageName: String,
       knownDataStructs: Set[String] = Set.empty,
       methodDocs: Map[(String, String), String] = Map.empty
-  ): List[HandlerSpec] =
+  )(using Naming.Context): List[HandlerSpec] =
     decls.collect {
       case h: CefDecl.HandlerStruct =>
         val structPrefix = toCamelCase(stripCefPrefix(h.name))
@@ -38,7 +39,7 @@ object SpecDeriver {
         ))
     }.flatten.distinctBy(_.cefStructName)
 
-  def deriveDataStructs(decls: List[CefDecl], packageName: String): List[DataStructSpec] =
+  def deriveDataStructs(decls: List[CefDecl], packageName: String)(using Naming.Context): List[DataStructSpec] =
     // Version-gated headers can redeclare the same struct.
     decls.collect { case d: CefDecl.DataStruct => d }.flatMap { d =>
       d.fields.traverse(f => toDataFieldType(f.typ).map(t => FieldSpec(safeFieldName(snakeToCamel(f.name)), t)))
@@ -67,7 +68,7 @@ object SpecDeriver {
       decls: List[CefDecl],
       packageName: String,
       methodDocs: Map[(String, String), String] = Map.empty
-  ): List[JvmVisitorSpec] = {
+  )(using Naming.Context): List[JvmVisitorSpec] = {
     val paramStructs: Set[String] = decls.collect {
       case o: CefDecl.ObjectStruct =>
         o.fns.flatMap(_.params.collect {
@@ -145,7 +146,7 @@ object SpecDeriver {
       fn: FnPtr,
       knownDataStructs: Set[String],
       javadoc: String
-  ): Option[HandlerMethod] = {
+  )(using Naming.Context): Option[HandlerMethod] = {
     val returnType: Option[Option[FieldType]] = fn.ret match {
       case CType.Void                             => Some(None)
       case CType.Int | CType.UInt | CType.Enum(_) => Some(Some(FieldType.Bool))
@@ -191,7 +192,7 @@ object SpecDeriver {
       packageName: String,
       knownDataStructs: Set[String] = Set.empty,
       methodDocs: Map[(String, String), String] = Map.empty
-  ): List[FacadeSpec] =
+  )(using Naming.Context): List[FacadeSpec] =
     decls.collect {
       case o: CefDecl.ObjectStruct =>
         val structPrefix = toCamelCase(stripCefPrefix(o.name))
@@ -214,7 +215,7 @@ object SpecDeriver {
   private def safeFacadeClassName(name: String): String =
     if (ClashingFacadeNames.contains(name)) "Cef" + name else name
 
-  def cefStructToClassName(cefStructName: String): String =
+  def cefStructToClassName(cefStructName: String)(using Naming.Context): String =
     safeFacadeClassName(toCamelCase(stripCefPrefix(cefStructName)))
 
   def camelToSnake(s: String): String =
@@ -231,7 +232,7 @@ object SpecDeriver {
       fn: FnPtr,
       knownDataStructs: Set[String],
       javadoc: String
-  ): Option[FacadeMethod] = {
+  )(using Naming.Context): Option[FacadeMethod] = {
     val derivedName = snakeToCamel(fn.name)
     val methodName  = if (derivedName == "close") "cefClose" else derivedName
     val visible     = fn.params.filterNot {
@@ -294,7 +295,10 @@ object SpecDeriver {
     }
   }
 
-  private def toFieldSpecWithStruct(p: Param, knownDataStructs: Set[String]): Option[(FieldSpec, Option[String])] =
+  private def toFieldSpecWithStruct(
+      p: Param,
+      knownDataStructs: Set[String]
+  )(using Naming.Context): Option[(FieldSpec, Option[String])] =
     toFieldTypeWithStruct(p.typ, knownDataStructs).map { case (t, structOpt) =>
       FieldSpec(safeFieldName(snakeToCamel(p.name)), t) -> structOpt
     }
@@ -319,7 +323,7 @@ object SpecDeriver {
       decls: List[CefDecl],
       packageName: String,
       knownDataStructs: Set[String] = Set.empty
-  ): List[MessageSpec] = {
+  )(using Naming.Context): List[MessageSpec] = {
     val all = decls.flatMap {
       case h: CefDecl.HandlerStruct =>
         h.fns.flatMap(deriveOne(h.name, _, packageName, isMethod = false, knownDataStructs))
@@ -337,7 +341,7 @@ object SpecDeriver {
       packageName: String,
       isMethod: Boolean,
       knownDataStructs: Set[String]
-  ): List[MessageSpec] = {
+  )(using Naming.Context): List[MessageSpec] = {
     val visible = fn.params.filterNot {
       case Param(_, CType.BufferSize(_), _, _) => true
       case _                                   => false
@@ -399,7 +403,7 @@ object SpecDeriver {
   private def safeFieldName(name: String): String =
     if (ReservedFieldGetterNames.contains(name)) name + "_" else name
 
-  private def toFieldSpec(p: Param, knownDataStructs: Set[String]): Option[FieldSpec] =
+  private def toFieldSpec(p: Param, knownDataStructs: Set[String])(using Naming.Context): Option[FieldSpec] =
     toFieldType(p.typ, knownDataStructs).map(t => FieldSpec(safeFieldName(snakeToCamel(p.name)), t))
 
   private def toFieldType(t: CType, knownDataStructs: Set[String]): Option[FieldType] = t match {
@@ -427,16 +431,9 @@ object SpecDeriver {
   private def stripCefPrefix(s: String): String =
     s.stripPrefix("cef_").stripSuffix("_t")
 
-  private def toCamelCase(s: String): String =
-    s.split('_').iterator.filter(_.nonEmpty).map(p => p.head.toUpper +: p.tail).mkString
+  private def toCamelCase(s: String)(using Naming.Context): String = Naming.toPascalCase(s)
 
-  private def snakeToCamel(s: String): String = {
-    val parts = s.split('_').iterator.filter(_.nonEmpty).toList
-    parts match {
-      case Nil          => s
-      case head :: rest => head + rest.map(p => p.head.toUpper +: p.tail).mkString
-    }
-  }
+  private def snakeToCamel(s: String)(using Naming.Context): String = Naming.toCamelCase(s)
 
   def stableId(name: String): Int = {
     val raw    = scala.util.hashing.MurmurHash3.stringHash(name)

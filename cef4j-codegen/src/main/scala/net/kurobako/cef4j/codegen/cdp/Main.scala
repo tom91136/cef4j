@@ -83,7 +83,8 @@ object Main {
       schemaCache: Option[Path] = None,
       outJava: Path = Paths.get("."),
       outResources: Path = Paths.get("."),
-      javaPackage: String = "net.kurobako.cef4j.cdp.generated"
+      javaPackage: String = "net.kurobako.cef4j.cdp.generated",
+      regenerateCommand: Option[String] = None
   )
 
   private case class Resolved(javaType: String, kind: String)
@@ -142,9 +143,10 @@ object Main {
     val types          = domains.flatMap(domain =>
       domain.types.map(decl => (domain.name, decl.name) -> decl)
     ).toMap
-    val banners = cfg.cefVersion
-      .map(Banners.forCefVersion)
-      .getOrElse(Banners.forCommand("mvn generate-sources -pl cef4j-platform"))
+    val banners = cfg.regenerateCommand
+      .map(Banners.forCommand)
+      .orElse(cfg.cefVersion.map(Banners.forCefVersion))
+      .getOrElse(Banners.forCommand("./mvnw generate-sources -pl cef4j-cdp"))
     val emitter = Emitter(cfg.javaPackage, chromiumVersion, v8Revision, browserDomains, types, banners)
     domains.foreach(domain =>
       AtomicFiles.writeString(output.resolve(s"${domain.name}.java"), emitter.emitDomain(domain))
@@ -1136,15 +1138,16 @@ object Main {
 
   private def parseArgs(args: List[String]): Config = args.foldLeft(Config()) { (cfg, arg) =>
     arg match {
-      case s"--browser-schema=$value"    => cfg.copy(browserSchema = Paths.get(value))
-      case s"--javascript-schema=$value" => cfg.copy(javascriptSchema = Paths.get(value))
-      case s"--schema-metadata=$value"   => cfg.copy(schemaMetadata = Paths.get(value))
-      case s"--cef-version=$value"       => cfg.copy(cefVersion = Some(value))
-      case s"--schema-cache=$value"      => cfg.copy(schemaCache = Some(Paths.get(value)))
-      case s"--out-java=$value"          => cfg.copy(outJava = Paths.get(value))
-      case s"--out-resources=$value"     => cfg.copy(outResources = Paths.get(value))
-      case s"--java-package=$value"      => cfg.copy(javaPackage = value)
-      case other                         => throw IllegalArgumentException(s"Unknown argument: $other")
+      case s"--browser-schema=$value"     => cfg.copy(browserSchema = Paths.get(value))
+      case s"--javascript-schema=$value"  => cfg.copy(javascriptSchema = Paths.get(value))
+      case s"--schema-metadata=$value"    => cfg.copy(schemaMetadata = Paths.get(value))
+      case s"--cef-version=$value"        => cfg.copy(cefVersion = Some(value))
+      case s"--schema-cache=$value"       => cfg.copy(schemaCache = Some(Paths.get(value)))
+      case s"--out-java=$value"           => cfg.copy(outJava = Paths.get(value))
+      case s"--out-resources=$value"      => cfg.copy(outResources = Paths.get(value))
+      case s"--java-package=$value"       => cfg.copy(javaPackage = value)
+      case s"--regenerate-command=$value" => cfg.copy(regenerateCommand = Some(value))
+      case other                          => throw IllegalArgumentException(s"Unknown argument: $other")
     }
   }
 }

@@ -10,7 +10,6 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -33,7 +32,7 @@ public final class UdsTransport implements CefTransport {
     private final DataOutputStream output;
     private final Object sendLock = new Object();
     private final Object receiveLock = new Object();
-    private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
+    private final PendingFrames pending = new PendingFrames();
     private final Thread reader;
 
     @Nullable
@@ -149,8 +148,11 @@ public final class UdsTransport implements CefTransport {
                 input.readFully(frame);
                 synchronized (receiveLock) {
                     Consumer<ByteBuffer> handler = receiveHandler;
-                    if (handler == null) pending.add(frame);
-                    else dispatch(handler, frame);
+                    if (handler == null) {
+                        if (!pending.offer(frame)) throw new IOException("pending receive queue full");
+                    } else {
+                        dispatch(handler, frame);
+                    }
                 }
             }
         } catch (EOFException e) {

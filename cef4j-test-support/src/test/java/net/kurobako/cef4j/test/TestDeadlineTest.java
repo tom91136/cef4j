@@ -15,6 +15,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 class TestDeadlineTest {
+    @Test
+    void pollsValuesWithinOneSharedBudget() throws Exception {
+        java.util.concurrent.atomic.AtomicInteger attempts = new java.util.concurrent.atomic.AtomicInteger();
+
+        int result = TestDeadline.after(Duration.ofSeconds(1))
+                .poll(attempts::incrementAndGet, value -> value == 3, Duration.ofMillis(1), "value");
+
+        assertThat(result).isEqualTo(3);
+    }
 
     @Test
     void oneDeadlineBoundsAndCancelsAnUnfinishedAttempt() {

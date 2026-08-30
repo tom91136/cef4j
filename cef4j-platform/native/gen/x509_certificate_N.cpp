@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include <jni.h>
 #include "include/capi/cef_x509_certificate_capi.h"
 #include "include/capi/cef_values_capi.h"
@@ -43,7 +43,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getValidStart0)(JNIEnv
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_valid_start(s);
-    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
@@ -53,7 +53,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getValidExpiry0)(JNIEn
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_valid_expiry(s);
-    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;

@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpCodec;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Bridges the codec-neutral {@link net.kurobako.cef4j.cdp.CdpClient} onto the installed {@link WebDriverJsonCodec}. */
 public final class WebDriverCdpCodec implements CdpCodec {
@@ -28,7 +29,7 @@ public final class WebDriverCdpCodec implements CdpCodec {
         return fromJsonElement(delegate.decode(json));
     }
 
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("JSON null maps to the JDK null wire value")
     @Nonnull
     static JsonElement toJsonElement(@Nullable Object value) {
         if (value == null) return JsonNull.INSTANCE;

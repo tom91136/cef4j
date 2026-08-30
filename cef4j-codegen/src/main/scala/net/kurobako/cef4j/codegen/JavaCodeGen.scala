@@ -39,7 +39,7 @@ ${allLines.mkString("\n")}
       classDocSuffix: String = "",
       subPackage: String = ""
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    val allImports  = (Banners.javaAnnotationImport :: imports).distinct
+    val allImports  = (Banners.javaAnnotationImport :: Banners.javaBoundaryImport :: imports).distinct
     val importBlock = s"\n${allImports.mkString("\n")}\n"
     val pkg         = if (subPackage.nonEmpty) s"${Naming.javaPackage}.$subPackage" else Naming.javaPackage
     s"""${Banners.java}

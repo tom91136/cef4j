@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Supported certificate status code values. See net\cert\cert_status_flags.h for more information. CERT_STATUS_NONE is new in CEF because we use an enum while cert_status_flags.h uses a typedef and static const variables.
+ * Supported certificate status code values. See net\cert\cert_status_flags.h for more information. CERT_STATUS_NONE is
+ * new in CEF because we use an enum while cert_status_flags.h uses a typedef and static const variables.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CERT_STATUS_NONE = 0,
  *   CERT_STATUS_COMMON_NAME_INVALID = 1 &lt;&lt; 0,
@@ -14,12 +19,19 @@ import javax.annotation.processing.Generated;
  *   CERT_STATUS_NO_REVOCATION_MECHANISM = 1 &lt;&lt; 4,
  *   ...
  * } cef_cert_status_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#COMMON_NAME_INVALID}, {@link Kind#DATE_INVALID}, {@link Kind#AUTHORITY_INVALID}, {@link Kind#NO_REVOCATION_MECHANISM}, {@link Kind#UNABLE_TO_CHECK_REVOCATION}, {@link Kind#REVOKED}, {@link Kind#INVALID}, {@link Kind#WEAK_SIGNATURE_ALGORITHM}, {@link Kind#NON_UNIQUE_NAME}, {@link Kind#WEAK_KEY}, {@link Kind#PINNED_KEY_MISSING}, {@link Kind#NAME_CONSTRAINT_VIOLATION}, {@link Kind#VALIDITY_TOO_LONG}, {@link Kind#IS_EV}, {@link Kind#REV_CHECKING_ENABLED}, {@link Kind#SHA1_SIGNATURE_PRESENT}, {@link Kind#CT_COMPLIANCE_FAILED}
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#COMMON_NAME_INVALID}, {@link Kind#DATE_INVALID},
+ * {@link Kind#AUTHORITY_INVALID}, {@link Kind#NO_REVOCATION_MECHANISM}, {@link Kind#UNABLE_TO_CHECK_REVOCATION},
+ * {@link Kind#REVOKED}, {@link Kind#INVALID}, {@link Kind#WEAK_SIGNATURE_ALGORITHM}, {@link Kind#NON_UNIQUE_NAME},
+ * {@link Kind#WEAK_KEY}, {@link Kind#PINNED_KEY_MISSING}, {@link Kind#NAME_CONSTRAINT_VIOLATION},
+ * {@link Kind#VALIDITY_TOO_LONG}, {@link Kind#IS_EV}, {@link Kind#REV_CHECKING_ENABLED},
+ * {@link Kind#SHA1_SIGNATURE_PRESENT}, {@link Kind#CT_COMPLIANCE_FAILED}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefCertStatus implements CefEnum<CefCertStatus> {
 
     /** Known constants for {@link CefCertStatus}. */
@@ -92,8 +104,8 @@ public final class CefCertStatus implements CefEnum<CefCertStatus> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

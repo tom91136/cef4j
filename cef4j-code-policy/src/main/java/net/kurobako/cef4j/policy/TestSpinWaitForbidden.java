@@ -18,18 +18,20 @@ import com.sun.source.tree.MethodInvocationTree;
 
 @AutoService(BugChecker.class)
 @BugPattern(
-        summary = "Tests must use bounded synchronization instead of Thread.onSpinWait()",
+        summary = "Tests must use bounded synchronization instead of spin-waiting or sleeping",
         severity = SeverityLevel.ERROR)
 public final class TestSpinWaitForbidden extends BugChecker implements MethodInvocationTreeMatcher {
     private static final long serialVersionUID = 1L;
     private static final Matcher<ExpressionTree> SPIN_WAIT =
             staticMethod().onClass("java.lang.Thread").named("onSpinWait");
+    private static final Matcher<ExpressionTree> SLEEP =
+            staticMethod().onClass("java.lang.Thread").named("sleep");
 
     @Override
     public Description matchMethodInvocation(MethodInvocationTree tree, VisitorState state) {
         ClassTree enclosingClass = ASTHelpers.findEnclosingNode(state.getPath(), ClassTree.class);
         if (enclosingClass == null || !enclosingClass.getSimpleName().toString().endsWith("Test")) return NO_MATCH;
-        if (!SPIN_WAIT.matches(tree, state)) return NO_MATCH;
+        if (!SPIN_WAIT.matches(tree, state) && !SLEEP.matches(tree, state)) return NO_MATCH;
         return buildDescription(tree)
                 .setMessage("use TestDeadline, a bounded future, or a latch with an explicit timeout")
                 .build();

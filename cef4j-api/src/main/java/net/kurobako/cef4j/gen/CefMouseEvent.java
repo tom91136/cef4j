@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Structure representing mouse event information.
+ *
  * <p>Definition generated from internal/cef_types.h
+ *
  * <pre>typedef struct _cef_mouse_event_t {
  *   int x;
  *   int y;
@@ -14,19 +18,17 @@ import javax.annotation.processing.Generated;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2069</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefMouseEvent {
 
-        /**
-         * X coordinate relative to the left side of the view. 
-         */    public final int x;
-        /**
-         * Y coordinate relative to the top side of the view. 
-         */    public final int y;
-        /**
-         * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
-         */    public final int modifiers;
+    /** X coordinate relative to the left side of the view. */
+    public final int x;
+    /** Y coordinate relative to the top side of the view. */
+    public final int y;
+    /** Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. */
+    public final int modifiers;
 
     public CefMouseEvent(int x, int y, int modifiers) {
         this.x = x;
@@ -44,9 +46,7 @@ public final class CefMouseEvent {
         if (this == obj) return true;
         if (!(obj instanceof CefMouseEvent)) return false;
         CefMouseEvent other = (CefMouseEvent) obj;
-        return this.x == other.x
-                    && this.y == other.y
-                    && this.modifiers == other.modifiers;
+        return this.x == other.x && this.y == other.y && this.modifiers == other.modifiers;
     }
 
     @Override
@@ -61,21 +61,19 @@ public final class CefMouseEvent {
 
     /**
      * Mutable variant of {@link CefMouseEvent}. Structure representing mouse event information.
+     *
      * <p>Definition generated from internal/cef_types.h
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2069</a>
      */
     public static final class Mutable {
 
-            /**
-             * X coordinate relative to the left side of the view. 
-             */        public int x;
-            /**
-             * Y coordinate relative to the top side of the view. 
-             */        public int y;
-            /**
-             * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
-             */        public int modifiers;
+        /** X coordinate relative to the left side of the view. */
+        public int x;
+        /** Y coordinate relative to the top side of the view. */
+        public int y;
+        /** Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. */
+        public int modifiers;
 
         public Mutable() {}
 
@@ -95,9 +93,7 @@ public final class CefMouseEvent {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
-            return this.x == other.x
-                        && this.y == other.y
-                        && this.modifiers == other.modifiers;
+            return this.x == other.x && this.y == other.y && this.modifiers == other.modifiers;
         }
 
         @Override

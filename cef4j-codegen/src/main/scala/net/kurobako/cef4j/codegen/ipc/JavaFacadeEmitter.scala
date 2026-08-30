@@ -1,12 +1,14 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object JavaFacadeEmitter {
 
   def emit(
       spec: FacadeSpec,
       facadeByCefStruct: Map[String, String] = Map.empty,
       affinityByCefStruct: Map[String, ProcessAffinity] = Map.empty
-  ): String = {
+  )(using Naming.Context): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
     val importsBlock = renderImports
@@ -117,7 +119,7 @@ object JavaFacadeEmitter {
       m: FacadeMethod,
       facadeByCefStruct: Map[String, String],
       affinityByCefStruct: Map[String, ProcessAffinity]
-  ): String = {
+  )(using Naming.Context): String = {
     val frameLead            = if (facade.affinity == ProcessAffinity.Renderer) List("frame") else Nil
     val ctorArgs             = (frameLead ++ ("handle" :: m.explicitParams.map(_.name))).mkString(", ")
     val (returnType, mapper) = m.resultField match {
@@ -170,7 +172,7 @@ object JavaFacadeEmitter {
        |    }""".stripMargin
   }
 
-  private def javaParamType(ty: FieldType): String = ty match {
+  private def javaParamType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "int"
     case FieldType.I64                 => "long"
     case FieldType.Bool                => "boolean"
@@ -181,7 +183,7 @@ object JavaFacadeEmitter {
     case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
   }
 
-  private def boxedType(ty: FieldType): String = ty match {
+  private def boxedType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "Integer"
     case FieldType.I64                 => "Long"
     case FieldType.Bool                => "Boolean"

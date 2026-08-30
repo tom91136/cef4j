@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.frame;
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Per-browser pixel-frame channel, independent of the storage or network mechanism used to deliver pixels.
@@ -16,19 +17,16 @@ import javax.annotation.Nullable;
  * <p>{@link #onFrame} replaces any prior consumer rather than fanning out. Closing unsubscribes from the underlying
  * channel and releases transport resources; closing is idempotent.
  */
+@NullableBoundary("null consumers disable frame callbacks")
 public interface FrameTransport extends AutoCloseable {
 
     /** Replace the current frame consumer. Pass {@code null} to disable callbacks without closing the transport. */
-    // null disables callbacks
-    @SuppressWarnings("NullableForbidden")
     void onFrame(@Nullable FrameConsumer consumer);
 
     /**
      * Replaces the current consumer with the richer raw-frame view used by codecs. The pixel view has the same
      * callback-only lifetime as {@link FrameConsumer}.
      */
-    // null disables callbacks
-    @SuppressWarnings("NullableForbidden")
     default void onRawFrame(@Nullable RawFrameConsumer consumer) {
         onFrame(
                 consumer == null

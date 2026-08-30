@@ -1,8 +1,10 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object JavaHandlerEmitter {
 
-  def emit(spec: HandlerSpec): String = {
+  def emit(spec: HandlerSpec)(using Naming.Context): String = {
     val pkg     = spec.packageName
     val cls     = spec.className
     val methods = spec.methods.map(renderInterfaceMethod).mkString("\n\n")
@@ -13,6 +15,7 @@ object JavaHandlerEmitter {
        |
        |import javax.annotation.Nullable;
        |import net.kurobako.cef4j.ipc.session.CefSession;
+       |import net.kurobako.cef4j.policy.NullableBoundary;
        |
        |/**
        | * Typed handler interface for {@code ${spec.cefStructName}}. Each method maps to a callback CEF would
@@ -21,7 +24,7 @@ object JavaHandlerEmitter {
        | * <p>Use {@link #register(CefSession, $cls)} to bind every method to its corresponding wire event in
        | * one step. Close the returned registration to unsubscribe every method.
        | */
-       |@SuppressWarnings("NullableForbidden")
+       |@NullableBoundary("generated CEF callback contract")
        |public interface $cls {
        |
        |$methods
@@ -35,7 +38,7 @@ object JavaHandlerEmitter {
        |""".stripMargin
   }
 
-  private def renderInterfaceMethod(m: HandlerMethod): String = {
+  private def renderInterfaceMethod(m: HandlerMethod)(using Naming.Context): String = {
     val params = m.params.map(p => s"${javaParamType(p.ty)} ${p.name}").mkString(", ")
     m.returnType match {
       case None =>
@@ -78,7 +81,7 @@ object JavaHandlerEmitter {
     }
   }
 
-  private def javaParamType(ty: FieldType): String = ty match {
+  private def javaParamType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "int"
     case FieldType.I64                 => "long"
     case FieldType.Bool                => "boolean"

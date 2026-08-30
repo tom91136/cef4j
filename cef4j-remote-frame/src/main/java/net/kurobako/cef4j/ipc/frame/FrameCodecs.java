@@ -2,7 +2,10 @@ package net.kurobako.cef4j.ipc.frame;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
 
@@ -30,8 +33,16 @@ public final class FrameCodecs {
 
     @Nonnull
     public static List<FrameCodecProvider> providers() {
-        List<FrameCodecProvider> providers = new ArrayList<>();
-        for (FrameCodecProvider provider : ServiceLoader.load(FrameCodecProvider.class)) providers.add(provider);
-        return Collections.unmodifiableList(providers);
+        Map<String, FrameCodecProvider> providers = new LinkedHashMap<>();
+        for (FrameCodecProvider provider : ServiceLoader.load(FrameCodecProvider.class)) {
+            String id = provider.descriptor().id().toLowerCase(Locale.ROOT);
+            FrameCodecProvider previous = providers.putIfAbsent(id, provider);
+            if (previous != null) {
+                throw new IllegalStateException("Duplicate frame codec id '" + id + "': "
+                        + previous.getClass().getName() + ", "
+                        + provider.getClass().getName());
+            }
+        }
+        return Collections.unmodifiableList(new ArrayList<>(providers.values()));
     }
 }

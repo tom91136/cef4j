@@ -76,7 +76,9 @@ case class Config(
     emitJava: Boolean = true,
     emitCommonCpp: Boolean = true,
     emitJavaPlatformOnly: Boolean = false,
-    javaPlatformSubPackage: String = ""
+    javaPlatformSubPackage: String = "",
+    runtimeJavaSourceRoot: Option[Path] = None,
+    regenerateCommand: Option[String] = None
 ) {
   val outJavaPackageDir: Path         = outJava.resolve(javaPackage.replace('.', '/'))
   val outJavaPlatformPackageDir: Path =

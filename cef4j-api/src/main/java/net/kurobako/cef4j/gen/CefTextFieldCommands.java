@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Represents commands available to TextField. Should be kept in sync with Chromium's views::TextField::MenuCommands type.
+ * Represents commands available to TextField. Should be kept in sync with Chromium's views::TextField::MenuCommands
+ * type.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_TFC_UNKNOWN = 0,
  *   CEF_TFC_CUT = 1,
@@ -14,12 +19,15 @@ import javax.annotation.processing.Generated;
  *   CEF_TFC_SELECT_ALL = 4,
  *   ...
  * } cef_text_field_commands_t;</pre>
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CUT}, {@link Kind#COPY}, {@link Kind#PASTE}, {@link Kind#SELECT_ALL}, {@link Kind#SELECT_WORD}, {@link Kind#UNDO}, {@link Kind#DELETE}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CUT}, {@link Kind#COPY}, {@link Kind#PASTE},
+ * {@link Kind#SELECT_ALL}, {@link Kind#SELECT_WORD}, {@link Kind#UNDO}, {@link Kind#DELETE}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefTextFieldCommands implements CefEnum<CefTextFieldCommands> {
 
     /** Known constants for {@link CefTextFieldCommands}. */
@@ -83,8 +91,8 @@ public final class CefTextFieldCommands implements CefEnum<CefTextFieldCommands>
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

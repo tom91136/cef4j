@@ -21,7 +21,9 @@ object Main {
     val startNanos = System.nanoTime()
     val cfg        = parseArgs(args.toList)
 
-    given Banners = Banners.fromInclude(cfg.cefInclude)
+    given Banners = cfg.regenerateCommand
+      .map(Banners.forCommand)
+      .getOrElse(Banners.fromInclude(cfg.cefInclude))
 
     val headerInputs      = DiscoverHeaders(cfg)
     val preprocessed      = PreprocessHeaders(headerInputs, cfg)
@@ -46,7 +48,8 @@ object Main {
     }
     EmitTree(cfg, parseState, refinedTree)
     if (cfg.emitCommonCpp) {
-      EmitRuntimeStubs(cfg.outJava, cfg.outJavaPackageDir, cfg.outCpp)
+      val javaSourceRoot = cfg.runtimeJavaSourceRoot.getOrElse(cfg.outJava)
+      EmitRuntimeStubs(javaSourceRoot, generatedPackageDir(javaSourceRoot, cfg.javaPackage), cfg.outCpp)
     }
 
     val elapsedSeconds = (System.nanoTime() - startNanos) / 1_000_000_000.0
@@ -103,6 +106,10 @@ object Main {
           cfg.copy(emitJavaPlatformOnly = parseBoolean(enabled))
         case s"--java-platform-subpackage=$value" =>
           cfg.copy(javaPlatformSubPackage = value.trim)
+        case s"--runtime-java-source-root=$path" =>
+          cfg.copy(runtimeJavaSourceRoot = Some(Paths.get(path)))
+        case s"--regenerate-command=$command" =>
+          cfg.copy(regenerateCommand = Some(command))
         case s"--extra-cpp-dirs=$dirs" =>
           cfg.copy(extraCppDirs = parseDirList(dirs))
         case s"--extra-capi-dirs=$dirs" =>
@@ -138,4 +145,10 @@ object Main {
       case "0" | "false" | "no" | "off" => false
       case other                        => throw new IllegalArgumentException(s"Invalid boolean value: $other")
     }
+
+  private[codegen] def generatedPackageDir(
+      javaSourceRoot: java.nio.file.Path,
+      javaPackage: String
+  ): java.nio.file.Path =
+    javaPackage.split('.').foldLeft(javaSourceRoot)((path, segment) => path.resolve(segment))
 }

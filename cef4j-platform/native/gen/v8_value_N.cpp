@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include <jni.h>
 #include "include/capi/cef_v8_capi.h"
 #include "jni_util.h"
@@ -148,7 +148,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getDateValue0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_date_value(s);
-    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
@@ -495,7 +495,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDouble0)(JNIEnv* env, jc
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDate0)(JNIEnv* env, jclass clz, jobject date) {
     cef_basetime_t _date_val = {};
-    auto _date_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+    auto _date_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
     _date_val.val = from_jlong<decltype(_date_val.val)>(env->GetLongField(date, env->GetFieldID(_date_c, "val", "J")));
     auto _r = cef_v8_value_create_date(_date_val);
     if (!_r) return nullptr;

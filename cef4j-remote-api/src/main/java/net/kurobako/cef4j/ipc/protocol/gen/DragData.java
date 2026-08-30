@@ -53,6 +53,18 @@ public final class DragData implements AutoCloseable {
     }
 
     /**
+     * Returns a copy of the current object.
+     * <p>Definition generated from cef_drag_data.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:60</a>
+     */
+    public CompletableFuture<DragData> cefClone() {
+        return CefFutures.map(
+            session.request(new DragDataCloneRequest(handle), DragDataCloneResponse.DECODER),
+            __r -> new DragData(session, __r.result()));
+    }
+
+    /**
      * Returns {@code true} if this object is read-only.
      * <p>Definition generated from cef_drag_data.h
      *

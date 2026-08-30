@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.webdriver;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
 
@@ -17,12 +18,22 @@ public interface WebDriverJsonCodec {
         return decode(json.getBytes(StandardCharsets.UTF_8));
     }
 
-    /** Returns the first installed provider. Prefer explicit injection when multiple codecs are present. */
+    /** Returns the installed provider. Prefer explicit injection when multiple codecs are present. */
     @Nonnull
     static WebDriverJsonCodec installed() {
-        return ServiceLoader.load(WebDriverJsonCodec.class)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "No WebDriver JSON codec installed; add cef4j-codecs-gson or cef4j-codecs-jackson"));
+        Iterator<WebDriverJsonCodec> providers =
+                ServiceLoader.load(WebDriverJsonCodec.class).iterator();
+        if (!providers.hasNext()) {
+            throw new IllegalStateException(
+                    "No WebDriver JSON codec installed; add cef4j-codecs-gson or cef4j-codecs-jackson");
+        }
+        WebDriverJsonCodec provider = providers.next();
+        if (providers.hasNext()) {
+            throw new IllegalStateException("Multiple WebDriver JSON codecs installed ("
+                    + provider.getClass().getName() + ", "
+                    + providers.next().getClass().getName()
+                    + "); supply one explicitly");
+        }
+        return provider;
     }
 }

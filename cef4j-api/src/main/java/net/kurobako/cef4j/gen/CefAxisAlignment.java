@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Specifies where along the axis the CefBoxLayout child views should be laid out. Should be kept in sync with Chromium's views::LayoutAlignment type.
+ * Specifies where along the axis the CefBoxLayout child views should be laid out. Should be kept in sync with
+ * Chromium's views::LayoutAlignment type.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_AXIS_ALIGNMENT_START = 0,
  *   CEF_AXIS_ALIGNMENT_CENTER = 1,
@@ -13,12 +18,15 @@ import javax.annotation.processing.Generated;
  *   CEF_AXIS_ALIGNMENT_STRETCH = 3,
  *   CEF_AXIS_ALIGNMENT_NUM_VALUES = 4
  * } cef_axis_alignment_t;</pre>
- * <p>Possible values: {@link Kind#START}, {@link Kind#CENTER}, {@link Kind#END}, {@link Kind#STRETCH}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#START}, {@link Kind#CENTER}, {@link Kind#END}, {@link Kind#STRETCH},
+ * {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefAxisAlignment implements CefEnum<CefAxisAlignment> {
 
     /** Known constants for {@link CefAxisAlignment}. */
@@ -82,8 +90,8 @@ public final class CefAxisAlignment implements CefEnum<CefAxisAlignment> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

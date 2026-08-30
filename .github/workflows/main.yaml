@@ -220,6 +220,9 @@ jobs:
           SUREFIRE_PLATFORM_ARG: ''
           SPOTBUGS_SKIP: ${{ matrix.os.skip_spotbugs_jdk17 }}
           JAVA11_SMOKE: true
+          MAVEN_GOALS: clean install
+          SKIP_BUILD_EXEC: false
+          NATIVE_TEST_SANITIZERS: ${{ matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}
         run: .github/ci/build.sh
 
       - name: JDK 21
@@ -231,6 +234,8 @@ jobs:
           JAVAFX_VERSION: ${{ matrix.os.javafx21 }}
           SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
           SPOTBUGS_SKIP: true
+          MAVEN_GOALS: test
+          SKIP_BUILD_EXEC: true
         run: .github/ci/build.sh
 
       - name: JDK 25
@@ -242,7 +247,33 @@ jobs:
           JAVAFX_VERSION: ${{ matrix.os.javafx25 }}
           SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
           SPOTBUGS_SKIP: true
+          MAVEN_GOALS: test
+          SKIP_BUILD_EXEC: true
         run: .github/ci/build.sh
+
+      - name: Verify checked-in generated sources
+        if: ${{ success() && matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}
+        shell: bash
+        run: |
+          generated_status=$(git status --porcelain -- \
+            cef4j-api/src/main/java/net/kurobako/cef4j/gen \
+            cef4j-cdp/src/main/java/net/kurobako/cef4j/cdp/generated \
+            cef4j-cdp/src/main/resources/META-INF/cef4j/cdp \
+            cef4j-platform/native/gen \
+            cef4j-remote-api/src/main/java/net/kurobako/cef4j/ipc/protocol/gen \
+            cef4j-runtime-server/src/main/cpp/gen)
+          if [ -n "${generated_status}" ]; then
+            echo "Generated sources differ from the checked-in tree:" >&2
+            printf '%s\n' "${generated_status}" >&2
+            git diff -- \
+              cef4j-api/src/main/java/net/kurobako/cef4j/gen \
+              cef4j-cdp/src/main/java/net/kurobako/cef4j/cdp/generated \
+              cef4j-cdp/src/main/resources/META-INF/cef4j/cdp \
+              cef4j-platform/native/gen \
+              cef4j-remote-api/src/main/java/net/kurobako/cef4j/ipc/protocol/gen \
+              cef4j-runtime-server/src/main/cpp/gen
+            exit 1
+          fi
 
       - name: Upload test reports on failure
         if: failure()
@@ -254,6 +285,15 @@ jobs:
             **/hs_err_pid*.log
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Upload handwritten-code coverage
+        if: ${{ success() && matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: java-coverage
+          path: '**/target/site/jacoco/**'
+          if-no-files-found: error
+          retention-days: 14
 
   consumer:
     name: Consumer examples

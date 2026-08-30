@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Process termination status values.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   TS_ABNORMAL_TERMINATION = 0,
  *   TS_PROCESS_WAS_KILLED = 1,
@@ -14,27 +18,30 @@ import javax.annotation.processing.Generated;
  *   TS_LAUNCH_FAILED = 4,
  *   ...
  * } cef_termination_status_t;</pre>
- * <p>Possible values: {@link Kind#ABNORMAL_TERMINATION}, {@link Kind#PROCESS_WAS_KILLED}, {@link Kind#PROCESS_CRASHED}, {@link Kind#PROCESS_OOM}, {@link Kind#LAUNCH_FAILED}, {@link Kind#INTEGRITY_FAILURE}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#ABNORMAL_TERMINATION}, {@link Kind#PROCESS_WAS_KILLED}, {@link Kind#PROCESS_CRASHED},
+ * {@link Kind#PROCESS_OOM}, {@link Kind#LAUNCH_FAILED}, {@link Kind#INTEGRITY_FAILURE}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefTerminationStatus implements CefEnum<CefTerminationStatus> {
 
     /** Known constants for {@link CefTerminationStatus}. */
     public enum Kind {
-        /** Non-zero exit status.  */
+        /** Non-zero exit status. */
         ABNORMAL_TERMINATION(0, "0", "TS_ABNORMAL_TERMINATION"),
-        /** SIGKILL or task manager kill.  */
+        /** SIGKILL or task manager kill. */
         PROCESS_WAS_KILLED(1, "1", "TS_PROCESS_WAS_KILLED"),
-        /** Segmentation fault.  */
+        /** Segmentation fault. */
         PROCESS_CRASHED(2, "2", "TS_PROCESS_CRASHED"),
-        /** Out of memory. Some platforms may use TS_PROCESS_CRASHED instead.  */
+        /** Out of memory. Some platforms may use TS_PROCESS_CRASHED instead. */
         PROCESS_OOM(3, "3", "TS_PROCESS_OOM"),
-        /** Child process never launched.  */
+        /** Child process never launched. */
         LAUNCH_FAILED(4, "4", "TS_LAUNCH_FAILED"),
-        /** On Windows, the OS terminated the process due to code integrity failure.  */
+        /** On Windows, the OS terminated the process due to code integrity failure. */
         INTEGRITY_FAILURE(5, "5", "TS_INTEGRITY_FAILURE"),
         NUM_VALUES(6, "6", "TS_NUM_VALUES");
 
@@ -87,8 +94,8 @@ public final class CefTerminationStatus implements CefEnum<CefTerminationStatus>
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

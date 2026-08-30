@@ -6,6 +6,20 @@ import org.junit.jupiter.api.Test;
 class NullableForbiddenTest {
 
     @Test
+    void documentedInteropBoundaryAllowsNullableApi() {
+        helper().addSourceLines(
+                        "test/Boundary.java",
+                        "package test;",
+                        "import javax.annotation.Nullable;",
+                        "import net.kurobako.cef4j.policy.NullableBoundary;",
+                        "@NullableBoundary(\"external callback contract\")",
+                        "public interface Boundary {",
+                        "  @Nullable Object result(@Nullable Object input);",
+                        "}")
+                .doTest();
+    }
+
+    @Test
     void unrelatedOverloadsDoNotInheritNullableExemption() {
         helper().addSourceLines(
                         "test/Overload.java",

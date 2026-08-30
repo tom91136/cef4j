@@ -14,6 +14,10 @@
     <name>cef4j-api</name>
     <description>Java 11+ API for CEF OSR bindings</description>
 
+    <properties>
+        <exec.skip>false</exec.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -22,6 +26,12 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-code-policy</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-cef-dist</artifactId>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -74,6 +84,113 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-cef-api</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.linux.dir}/include</argument>
+                                <argument>--out-cpp=${project.build.directory}/discarded-codegen-cpp</argument>
+                                <argument>--out-java=${project.basedir}/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.version}</argument>
+                                <argument>--target-platform=${cef.codegen.linux.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-api -Dcef.version=${cef.version}</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-cef-api-macos-platform</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.macos.dir}/include</argument>
+                                <argument>--out-cpp=${project.build.directory}/discarded-codegen-cpp</argument>
+                                <argument>--out-java=${project.basedir}/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.version}</argument>
+                                <argument>--target-platform=${cef.codegen.macos.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--emit-java-platform-only=true</argument>
+                                <argument>--java-platform-subpackage=mac</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-api -Dcef.version=${cef.version}</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-cef-api-windows-platform</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.windows.dir}/include</argument>
+                                <argument>--out-cpp=${project.build.directory}/discarded-codegen-cpp</argument>
+                                <argument>--out-java=${project.basedir}/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.version}</argument>
+                                <argument>--target-platform=${cef.codegen.windows.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--emit-java-platform-only=true</argument>
+                                <argument>--java-platform-subpackage=win</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-api -Dcef.version=${cef.version}</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-cef-api-linux-platform</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.linux.dir}/include</argument>
+                                <argument>--out-cpp=${project.build.directory}/discarded-codegen-cpp</argument>
+                                <argument>--out-java=${project.basedir}/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.version}</argument>
+                                <argument>--target-platform=${cef.codegen.linux.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--emit-java-platform-only=true</argument>
+                                <argument>--java-platform-subpackage=linux</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-api -Dcef.version=${cef.version}</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.kurobako.cef4j</groupId>
+                        <artifactId>cef4j-codegen</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -144,12 +261,27 @@
                         </excludes>
                     </java>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>format-generated-cef-api</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>apply</goal></goals>
+                        <configuration>
+                            <java>
+                                <includes>
+                                    <include>src/main/java/net/kurobako/cef4j/gen/**/*.java</include>
+                                </includes>
+                                <excludes combine.self="override"/>
+                            </java>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${surefire.argLine} -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</argLine>
+                    <argLine>${jacoco.argLine} ${surefire.argLine} -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</argLine>
                     <!-- Fresh JVM per class: native CEF state does not survive across test classes. -->
                     <reuseForks>false</reuseForks>
                     <forkCount>1</forkCount>

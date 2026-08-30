@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>cef4j-cef-dist</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>cef4j-cef-dist</name>
     <description>Single owner of CEF archive download, SHA-1 verification, and extraction</description>
 
@@ -23,7 +23,7 @@
                 <executions>
                     <execution>
                         <id>provision-cef</id>
-                        <phase>initialize</phase>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -87,7 +87,9 @@
                                             </fail>
                                             <touch file="${cef.extract.tmp}/${cef.dist.name}/.cef4j-complete-${cef.expected.sha1}"/>
                                             <exec executable="${java.home}/bin/java" failonerror="true">
-                                                <arg value="${maven.multiModuleProjectDirectory}/cef4j-cef-dist/src/main/java/net/kurobako/cef4j/cache/CefCachePublisher.java"/>
+                                                <arg value="-cp"/>
+                                                <arg value="${project.build.outputDirectory}"/>
+                                                <arg value="net.kurobako.cef4j.cache.CefCachePublisher"/>
                                                 <arg value="${cef.extract.tmp}/${cef.dist.name}"/>
                                                 <arg value="@{distdir}"/>
                                                 <arg value=".cef4j-complete-${cef.expected.sha1}"/>
@@ -115,4 +117,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

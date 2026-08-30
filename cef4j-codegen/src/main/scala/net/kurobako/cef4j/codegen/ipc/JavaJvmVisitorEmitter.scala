@@ -1,8 +1,10 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object JavaJvmVisitorEmitter {
 
-  def emit(spec: JvmVisitorSpec): String = {
+  def emit(spec: JvmVisitorSpec)(using Naming.Context): String = {
     val pkg        = spec.packageName
     val cls        = spec.className
     val event      = spec.eventClassName
@@ -44,7 +46,7 @@ object JavaJvmVisitorEmitter {
        |""".stripMargin
   }
 
-  private def javaParamType(ty: FieldType): String = ty match {
+  private def javaParamType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "int"
     case FieldType.I64                 => "long"
     case FieldType.Bool                => "boolean"

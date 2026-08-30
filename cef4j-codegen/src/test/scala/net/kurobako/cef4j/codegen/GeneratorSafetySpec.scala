@@ -24,6 +24,19 @@ class GeneratorSafetySpec extends TempDirectorySuite {
     assert(error.getMessage.contains("repository/current-directory output"))
   }
 
+  test("runtime stub input is independent from generated Java output") {
+    val config = Main.parseArgs(List(
+      "--cef-include=/tmp/cef/include",
+      "--out-cpp=/tmp/cef4j-cpp",
+      "--out-java=/tmp/cef4j-java",
+      "--runtime-java-source-root=/tmp/cef4j-api",
+      "--regenerate-command=./mvnw generate-sources -pl cef4j-api"
+    ))
+
+    assertEquals(config.runtimeJavaSourceRoot, Some(Path.of("/tmp/cef4j-api")))
+    assertEquals(config.regenerateCommand, Some("./mvnw generate-sources -pl cef4j-api"))
+  }
+
   test("cleanup preserves handwritten files") {
     val output    = tempDirectory("cef4j-generator-safety")
     val generated = output.resolve("generated.cpp")

@@ -18,7 +18,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
+@NullableBoundary("HttpURLConnection uses null for absent response metadata and error streams")
 final class CefHttpURLConnection extends HttpURLConnection implements AutoCloseable {
 
     private static final byte[] EOF = new byte[0];
@@ -190,7 +192,6 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     @Override
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public String getResponseMessage() throws IOException {
         awaitResponse();
@@ -208,7 +209,6 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     @Override
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public String getHeaderField(@Nullable String name) {
         if (name == null) return null;
@@ -246,7 +246,6 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     @Override
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public InputStream getErrorStream() {
         try {

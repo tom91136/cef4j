@@ -13,14 +13,14 @@ public final class X509CertificateGetValidStartResponse implements CefMessageVie
 
     public static final int MESSAGE_ID = 1463118402;
 
-    private final Basetime result;
+    private final BaseTime result;
 
-    public X509CertificateGetValidStartResponse(@Nonnull Basetime result) {
+    public X509CertificateGetValidStartResponse(@Nonnull BaseTime result) {
         this.result = result;
     }
 
     @Nonnull
-    public Basetime result() {
+    public BaseTime result() {
         return result;
     }
 
@@ -48,7 +48,7 @@ public final class X509CertificateGetValidStartResponse implements CefMessageVie
     public static final CefMessageDecoder<X509CertificateGetValidStartResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        Basetime result = Basetime.decode(__buf);
+        BaseTime result = BaseTime.decode(__buf);
         WireDecoder.requireFullyConsumed(__buf, "X509CertificateGetValidStartResponse");
         return new X509CertificateGetValidStartResponse(result);
     };

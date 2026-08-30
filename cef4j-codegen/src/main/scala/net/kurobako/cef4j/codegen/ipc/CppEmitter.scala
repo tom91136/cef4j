@@ -1,8 +1,10 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object CppEmitter {
 
-  def emit(spec: MessageSpec, exactPayload: Boolean = true): String = {
+  def emit(spec: MessageSpec, exactPayload: Boolean = true)(using Naming.Context): String = {
     val guardName = (spec.packageName.replace('.', '_').toUpperCase + "_" + camelToSnake(spec.className).toUpperCase
       + "_H_")
     val ns         = spec.packageName.replace('.', '_').toLowerCase
@@ -75,7 +77,7 @@ object CppEmitter {
       if (c.isUpper && index > 0) s"_${c.toLower}" else c.toLower.toString
     }.mkString
 
-  private def cppType(ty: FieldType): String = ty match {
+  private def cppType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "std::int32_t"
     case FieldType.I64                 => "std::int64_t"
     case FieldType.Bool                => "bool"
@@ -86,7 +88,7 @@ object CppEmitter {
     case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
   }
 
-  private def renderFields(spec: MessageSpec): String =
+  private def renderFields(spec: MessageSpec)(using Naming.Context): String =
     spec.fields.map { f =>
       val init = f.ty match {
         case FieldType.I32 | FieldType.I64 | FieldType.RemoteHandle => " = 0"
@@ -183,7 +185,7 @@ object CppEmitter {
     (pre ++ parts).mkString("\n")
   }
 
-  private def renderDecodeBody(spec: MessageSpec): String =
+  private def renderDecodeBody(spec: MessageSpec)(using Naming.Context): String =
     spec.fields.flatMap { f =>
       f.ty match {
         case FieldType.I32 | FieldType.RemoteHandle =>

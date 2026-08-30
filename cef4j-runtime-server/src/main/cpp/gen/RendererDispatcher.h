@@ -121,82 +121,82 @@
 #include "CefCompat.h"
 #include "Dispatcher.h"
 
-#include "DomdocumentGetBaseUrlRequest.h"
-#include "DomdocumentGetBaseUrlResponse.h"
-#include "DomdocumentGetBodyRequest.h"
-#include "DomdocumentGetBodyResponse.h"
-#include "DomdocumentGetCompleteUrlRequest.h"
-#include "DomdocumentGetCompleteUrlResponse.h"
-#include "DomdocumentGetDocumentRequest.h"
-#include "DomdocumentGetDocumentResponse.h"
-#include "DomdocumentGetElementByIdRequest.h"
-#include "DomdocumentGetElementByIdResponse.h"
-#include "DomdocumentGetFocusedNodeRequest.h"
-#include "DomdocumentGetFocusedNodeResponse.h"
-#include "DomdocumentGetHeadRequest.h"
-#include "DomdocumentGetHeadResponse.h"
-#include "DomdocumentGetSelectionAsMarkupRequest.h"
-#include "DomdocumentGetSelectionAsMarkupResponse.h"
-#include "DomdocumentGetSelectionAsTextRequest.h"
-#include "DomdocumentGetSelectionAsTextResponse.h"
-#include "DomdocumentGetSelectionEndOffsetRequest.h"
-#include "DomdocumentGetSelectionEndOffsetResponse.h"
-#include "DomdocumentGetSelectionStartOffsetRequest.h"
-#include "DomdocumentGetSelectionStartOffsetResponse.h"
-#include "DomdocumentGetTitleRequest.h"
-#include "DomdocumentGetTitleResponse.h"
-#include "DomdocumentGetTypeRequest.h"
-#include "DomdocumentGetTypeResponse.h"
-#include "DomdocumentHasSelectionRequest.h"
-#include "DomdocumentHasSelectionResponse.h"
-#include "DomnodeGetAsMarkupRequest.h"
-#include "DomnodeGetAsMarkupResponse.h"
-#include "DomnodeGetDocumentRequest.h"
-#include "DomnodeGetDocumentResponse.h"
-#include "DomnodeGetElementAttributeRequest.h"
-#include "DomnodeGetElementAttributeResponse.h"
-#include "DomnodeGetElementInnerTextRequest.h"
-#include "DomnodeGetElementInnerTextResponse.h"
-#include "DomnodeGetElementTagNameRequest.h"
-#include "DomnodeGetElementTagNameResponse.h"
-#include "DomnodeGetFirstChildRequest.h"
-#include "DomnodeGetFirstChildResponse.h"
-#include "DomnodeGetFormControlElementTypeRequest.h"
-#include "DomnodeGetFormControlElementTypeResponse.h"
-#include "DomnodeGetLastChildRequest.h"
-#include "DomnodeGetLastChildResponse.h"
-#include "DomnodeGetNameRequest.h"
-#include "DomnodeGetNameResponse.h"
-#include "DomnodeGetNextSiblingRequest.h"
-#include "DomnodeGetNextSiblingResponse.h"
-#include "DomnodeGetParentRequest.h"
-#include "DomnodeGetParentResponse.h"
-#include "DomnodeGetPreviousSiblingRequest.h"
-#include "DomnodeGetPreviousSiblingResponse.h"
-#include "DomnodeGetTypeRequest.h"
-#include "DomnodeGetTypeResponse.h"
-#include "DomnodeGetValueRequest.h"
-#include "DomnodeGetValueResponse.h"
-#include "DomnodeHasChildrenRequest.h"
-#include "DomnodeHasChildrenResponse.h"
-#include "DomnodeHasElementAttributeRequest.h"
-#include "DomnodeHasElementAttributeResponse.h"
-#include "DomnodeHasElementAttributesRequest.h"
-#include "DomnodeHasElementAttributesResponse.h"
-#include "DomnodeIsEditableRequest.h"
-#include "DomnodeIsEditableResponse.h"
-#include "DomnodeIsElementRequest.h"
-#include "DomnodeIsElementResponse.h"
-#include "DomnodeIsFormControlElementRequest.h"
-#include "DomnodeIsFormControlElementResponse.h"
-#include "DomnodeIsSameRequest.h"
-#include "DomnodeIsSameResponse.h"
-#include "DomnodeIsTextRequest.h"
-#include "DomnodeIsTextResponse.h"
-#include "DomnodeSetElementAttributeRequest.h"
-#include "DomnodeSetElementAttributeResponse.h"
-#include "DomnodeSetValueRequest.h"
-#include "DomnodeSetValueResponse.h"
+#include "DomDocumentGetBaseUrlRequest.h"
+#include "DomDocumentGetBaseUrlResponse.h"
+#include "DomDocumentGetBodyRequest.h"
+#include "DomDocumentGetBodyResponse.h"
+#include "DomDocumentGetCompleteUrlRequest.h"
+#include "DomDocumentGetCompleteUrlResponse.h"
+#include "DomDocumentGetDocumentRequest.h"
+#include "DomDocumentGetDocumentResponse.h"
+#include "DomDocumentGetElementByIdRequest.h"
+#include "DomDocumentGetElementByIdResponse.h"
+#include "DomDocumentGetFocusedNodeRequest.h"
+#include "DomDocumentGetFocusedNodeResponse.h"
+#include "DomDocumentGetHeadRequest.h"
+#include "DomDocumentGetHeadResponse.h"
+#include "DomDocumentGetSelectionAsMarkupRequest.h"
+#include "DomDocumentGetSelectionAsMarkupResponse.h"
+#include "DomDocumentGetSelectionAsTextRequest.h"
+#include "DomDocumentGetSelectionAsTextResponse.h"
+#include "DomDocumentGetSelectionEndOffsetRequest.h"
+#include "DomDocumentGetSelectionEndOffsetResponse.h"
+#include "DomDocumentGetSelectionStartOffsetRequest.h"
+#include "DomDocumentGetSelectionStartOffsetResponse.h"
+#include "DomDocumentGetTitleRequest.h"
+#include "DomDocumentGetTitleResponse.h"
+#include "DomDocumentGetTypeRequest.h"
+#include "DomDocumentGetTypeResponse.h"
+#include "DomDocumentHasSelectionRequest.h"
+#include "DomDocumentHasSelectionResponse.h"
+#include "DomNodeGetAsMarkupRequest.h"
+#include "DomNodeGetAsMarkupResponse.h"
+#include "DomNodeGetDocumentRequest.h"
+#include "DomNodeGetDocumentResponse.h"
+#include "DomNodeGetElementAttributeRequest.h"
+#include "DomNodeGetElementAttributeResponse.h"
+#include "DomNodeGetElementInnerTextRequest.h"
+#include "DomNodeGetElementInnerTextResponse.h"
+#include "DomNodeGetElementTagNameRequest.h"
+#include "DomNodeGetElementTagNameResponse.h"
+#include "DomNodeGetFirstChildRequest.h"
+#include "DomNodeGetFirstChildResponse.h"
+#include "DomNodeGetFormControlElementTypeRequest.h"
+#include "DomNodeGetFormControlElementTypeResponse.h"
+#include "DomNodeGetLastChildRequest.h"
+#include "DomNodeGetLastChildResponse.h"
+#include "DomNodeGetNameRequest.h"
+#include "DomNodeGetNameResponse.h"
+#include "DomNodeGetNextSiblingRequest.h"
+#include "DomNodeGetNextSiblingResponse.h"
+#include "DomNodeGetParentRequest.h"
+#include "DomNodeGetParentResponse.h"
+#include "DomNodeGetPreviousSiblingRequest.h"
+#include "DomNodeGetPreviousSiblingResponse.h"
+#include "DomNodeGetTypeRequest.h"
+#include "DomNodeGetTypeResponse.h"
+#include "DomNodeGetValueRequest.h"
+#include "DomNodeGetValueResponse.h"
+#include "DomNodeHasChildrenRequest.h"
+#include "DomNodeHasChildrenResponse.h"
+#include "DomNodeHasElementAttributeRequest.h"
+#include "DomNodeHasElementAttributeResponse.h"
+#include "DomNodeHasElementAttributesRequest.h"
+#include "DomNodeHasElementAttributesResponse.h"
+#include "DomNodeIsEditableRequest.h"
+#include "DomNodeIsEditableResponse.h"
+#include "DomNodeIsElementRequest.h"
+#include "DomNodeIsElementResponse.h"
+#include "DomNodeIsFormControlElementRequest.h"
+#include "DomNodeIsFormControlElementResponse.h"
+#include "DomNodeIsSameRequest.h"
+#include "DomNodeIsSameResponse.h"
+#include "DomNodeIsTextRequest.h"
+#include "DomNodeIsTextResponse.h"
+#include "DomNodeSetElementAttributeRequest.h"
+#include "DomNodeSetElementAttributeResponse.h"
+#include "DomNodeSetValueRequest.h"
+#include "DomNodeSetValueResponse.h"
 #include "V8BackingStoreByteLengthRequest.h"
 #include "V8BackingStoreByteLengthResponse.h"
 #include "V8BackingStoreIsValidRequest.h"
@@ -401,8 +401,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
                      const std::vector<std::uint8_t>& payload) {
     namespace gen = net_kurobako_cef4j_ipc_protocol_gen;
     switch (messageId) {
-        case gen::DomdocumentGetTypeRequest::kMessageId: {
-            auto req = gen::DomdocumentGetTypeRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetTypeRequest::kMessageId: {
+            auto req = gen::DomDocumentGetTypeRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -418,7 +418,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->get_type(receiver);
 
-            gen::DomdocumentGetTypeResponse resp;
+            gen::DomDocumentGetTypeResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -428,8 +428,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetDocumentRequest::kMessageId: {
-            auto req = gen::DomdocumentGetDocumentRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetDocumentRequest::kMessageId: {
+            auto req = gen::DomDocumentGetDocumentRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -445,7 +445,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_document(receiver);
 
-            gen::DomdocumentGetDocumentResponse resp;
+            gen::DomDocumentGetDocumentResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -455,8 +455,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetBodyRequest::kMessageId: {
-            auto req = gen::DomdocumentGetBodyRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetBodyRequest::kMessageId: {
+            auto req = gen::DomDocumentGetBodyRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -472,7 +472,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_body(receiver);
 
-            gen::DomdocumentGetBodyResponse resp;
+            gen::DomDocumentGetBodyResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -482,8 +482,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetHeadRequest::kMessageId: {
-            auto req = gen::DomdocumentGetHeadRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetHeadRequest::kMessageId: {
+            auto req = gen::DomDocumentGetHeadRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -499,7 +499,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_head(receiver);
 
-            gen::DomdocumentGetHeadResponse resp;
+            gen::DomDocumentGetHeadResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -509,8 +509,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetTitleRequest::kMessageId: {
-            auto req = gen::DomdocumentGetTitleRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetTitleRequest::kMessageId: {
+            auto req = gen::DomDocumentGetTitleRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -526,7 +526,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_title(receiver);
 
-            gen::DomdocumentGetTitleResponse resp;
+            gen::DomDocumentGetTitleResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -536,8 +536,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetElementByIdRequest::kMessageId: {
-            auto req = gen::DomdocumentGetElementByIdRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetElementByIdRequest::kMessageId: {
+            auto req = gen::DomDocumentGetElementByIdRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -554,7 +554,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             ScopedCefString id_cef(req.id);
                         cef_domnode_t* rawResult = receiver->get_element_by_id(receiver, id_cef.get());
 
-            gen::DomdocumentGetElementByIdResponse resp;
+            gen::DomDocumentGetElementByIdResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -564,8 +564,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetFocusedNodeRequest::kMessageId: {
-            auto req = gen::DomdocumentGetFocusedNodeRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetFocusedNodeRequest::kMessageId: {
+            auto req = gen::DomDocumentGetFocusedNodeRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -581,7 +581,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_focused_node(receiver);
 
-            gen::DomdocumentGetFocusedNodeResponse resp;
+            gen::DomDocumentGetFocusedNodeResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -591,8 +591,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentHasSelectionRequest::kMessageId: {
-            auto req = gen::DomdocumentHasSelectionRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentHasSelectionRequest::kMessageId: {
+            auto req = gen::DomDocumentHasSelectionRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -608,7 +608,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->has_selection(receiver);
 
-            gen::DomdocumentHasSelectionResponse resp;
+            gen::DomDocumentHasSelectionResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -618,8 +618,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetSelectionStartOffsetRequest::kMessageId: {
-            auto req = gen::DomdocumentGetSelectionStartOffsetRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetSelectionStartOffsetRequest::kMessageId: {
+            auto req = gen::DomDocumentGetSelectionStartOffsetRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -635,7 +635,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->get_selection_start_offset(receiver);
 
-            gen::DomdocumentGetSelectionStartOffsetResponse resp;
+            gen::DomDocumentGetSelectionStartOffsetResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -645,8 +645,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetSelectionEndOffsetRequest::kMessageId: {
-            auto req = gen::DomdocumentGetSelectionEndOffsetRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetSelectionEndOffsetRequest::kMessageId: {
+            auto req = gen::DomDocumentGetSelectionEndOffsetRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -662,7 +662,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->get_selection_end_offset(receiver);
 
-            gen::DomdocumentGetSelectionEndOffsetResponse resp;
+            gen::DomDocumentGetSelectionEndOffsetResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -672,8 +672,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetSelectionAsMarkupRequest::kMessageId: {
-            auto req = gen::DomdocumentGetSelectionAsMarkupRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetSelectionAsMarkupRequest::kMessageId: {
+            auto req = gen::DomDocumentGetSelectionAsMarkupRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -689,7 +689,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_selection_as_markup(receiver);
 
-            gen::DomdocumentGetSelectionAsMarkupResponse resp;
+            gen::DomDocumentGetSelectionAsMarkupResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -699,8 +699,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetSelectionAsTextRequest::kMessageId: {
-            auto req = gen::DomdocumentGetSelectionAsTextRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetSelectionAsTextRequest::kMessageId: {
+            auto req = gen::DomDocumentGetSelectionAsTextRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -716,7 +716,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_selection_as_text(receiver);
 
-            gen::DomdocumentGetSelectionAsTextResponse resp;
+            gen::DomDocumentGetSelectionAsTextResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -726,8 +726,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetBaseUrlRequest::kMessageId: {
-            auto req = gen::DomdocumentGetBaseUrlRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetBaseUrlRequest::kMessageId: {
+            auto req = gen::DomDocumentGetBaseUrlRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -743,7 +743,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_base_url(receiver);
 
-            gen::DomdocumentGetBaseUrlResponse resp;
+            gen::DomDocumentGetBaseUrlResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -753,8 +753,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomdocumentGetCompleteUrlRequest::kMessageId: {
-            auto req = gen::DomdocumentGetCompleteUrlRequest::decode(payload.data(), payload.size());
+        case gen::DomDocumentGetCompleteUrlRequest::kMessageId: {
+            auto req = gen::DomDocumentGetCompleteUrlRequest::decode(payload.data(), payload.size());
             cef_domdocument_t* receiver = tables::domdocument.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -771,7 +771,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             ScopedCefString partialURL_cef(req.partialURL);
                         cef_string_userfree_t rawResult = receiver->get_complete_url(receiver, partialURL_cef.get());
 
-            gen::DomdocumentGetCompleteUrlResponse resp;
+            gen::DomDocumentGetCompleteUrlResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -781,8 +781,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetTypeRequest::kMessageId: {
-            auto req = gen::DomnodeGetTypeRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetTypeRequest::kMessageId: {
+            auto req = gen::DomNodeGetTypeRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -798,7 +798,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->get_type(receiver);
 
-            gen::DomnodeGetTypeResponse resp;
+            gen::DomNodeGetTypeResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -808,8 +808,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeIsTextRequest::kMessageId: {
-            auto req = gen::DomnodeIsTextRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeIsTextRequest::kMessageId: {
+            auto req = gen::DomNodeIsTextRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -825,7 +825,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->is_text(receiver);
 
-            gen::DomnodeIsTextResponse resp;
+            gen::DomNodeIsTextResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -835,8 +835,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeIsElementRequest::kMessageId: {
-            auto req = gen::DomnodeIsElementRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeIsElementRequest::kMessageId: {
+            auto req = gen::DomNodeIsElementRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -852,7 +852,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->is_element(receiver);
 
-            gen::DomnodeIsElementResponse resp;
+            gen::DomNodeIsElementResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -862,8 +862,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeIsEditableRequest::kMessageId: {
-            auto req = gen::DomnodeIsEditableRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeIsEditableRequest::kMessageId: {
+            auto req = gen::DomNodeIsEditableRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -879,7 +879,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->is_editable(receiver);
 
-            gen::DomnodeIsEditableResponse resp;
+            gen::DomNodeIsEditableResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -889,8 +889,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeIsFormControlElementRequest::kMessageId: {
-            auto req = gen::DomnodeIsFormControlElementRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeIsFormControlElementRequest::kMessageId: {
+            auto req = gen::DomNodeIsFormControlElementRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -906,7 +906,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->is_form_control_element(receiver);
 
-            gen::DomnodeIsFormControlElementResponse resp;
+            gen::DomNodeIsFormControlElementResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -916,8 +916,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetFormControlElementTypeRequest::kMessageId: {
-            auto req = gen::DomnodeGetFormControlElementTypeRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetFormControlElementTypeRequest::kMessageId: {
+            auto req = gen::DomNodeGetFormControlElementTypeRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -933,7 +933,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->get_form_control_element_type(receiver);
 
-            gen::DomnodeGetFormControlElementTypeResponse resp;
+            gen::DomNodeGetFormControlElementTypeResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -943,8 +943,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeIsSameRequest::kMessageId: {
-            auto req = gen::DomnodeIsSameRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeIsSameRequest::kMessageId: {
+            auto req = gen::DomNodeIsSameRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -964,7 +964,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
                 auto* that_base = reinterpret_cast<cef_base_ref_counted_t*>(that_ptr);
                 that_base->release(that_base);
             }
-            gen::DomnodeIsSameResponse resp;
+            gen::DomNodeIsSameResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -974,8 +974,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetNameRequest::kMessageId: {
-            auto req = gen::DomnodeGetNameRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetNameRequest::kMessageId: {
+            auto req = gen::DomNodeGetNameRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -991,7 +991,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_name(receiver);
 
-            gen::DomnodeGetNameResponse resp;
+            gen::DomNodeGetNameResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1001,8 +1001,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetValueRequest::kMessageId: {
-            auto req = gen::DomnodeGetValueRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetValueRequest::kMessageId: {
+            auto req = gen::DomNodeGetValueRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1018,7 +1018,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_value(receiver);
 
-            gen::DomnodeGetValueResponse resp;
+            gen::DomNodeGetValueResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1028,8 +1028,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeSetValueRequest::kMessageId: {
-            auto req = gen::DomnodeSetValueRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeSetValueRequest::kMessageId: {
+            auto req = gen::DomNodeSetValueRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1046,7 +1046,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             ScopedCefString value_cef(req.value);
                         int rawResult = receiver->set_value(receiver, value_cef.get());
 
-            gen::DomnodeSetValueResponse resp;
+            gen::DomNodeSetValueResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1056,8 +1056,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetAsMarkupRequest::kMessageId: {
-            auto req = gen::DomnodeGetAsMarkupRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetAsMarkupRequest::kMessageId: {
+            auto req = gen::DomNodeGetAsMarkupRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1073,7 +1073,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_as_markup(receiver);
 
-            gen::DomnodeGetAsMarkupResponse resp;
+            gen::DomNodeGetAsMarkupResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1083,8 +1083,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetDocumentRequest::kMessageId: {
-            auto req = gen::DomnodeGetDocumentRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetDocumentRequest::kMessageId: {
+            auto req = gen::DomNodeGetDocumentRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1100,7 +1100,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domdocument_t* rawResult = receiver->get_document(receiver);
 
-            gen::DomnodeGetDocumentResponse resp;
+            gen::DomNodeGetDocumentResponse resp;
             resp.result = insertOrRelease(&tables::domdocument, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1110,8 +1110,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetParentRequest::kMessageId: {
-            auto req = gen::DomnodeGetParentRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetParentRequest::kMessageId: {
+            auto req = gen::DomNodeGetParentRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1127,7 +1127,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_parent(receiver);
 
-            gen::DomnodeGetParentResponse resp;
+            gen::DomNodeGetParentResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1137,8 +1137,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetPreviousSiblingRequest::kMessageId: {
-            auto req = gen::DomnodeGetPreviousSiblingRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetPreviousSiblingRequest::kMessageId: {
+            auto req = gen::DomNodeGetPreviousSiblingRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1154,7 +1154,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_previous_sibling(receiver);
 
-            gen::DomnodeGetPreviousSiblingResponse resp;
+            gen::DomNodeGetPreviousSiblingResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1164,8 +1164,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetNextSiblingRequest::kMessageId: {
-            auto req = gen::DomnodeGetNextSiblingRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetNextSiblingRequest::kMessageId: {
+            auto req = gen::DomNodeGetNextSiblingRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1181,7 +1181,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_next_sibling(receiver);
 
-            gen::DomnodeGetNextSiblingResponse resp;
+            gen::DomNodeGetNextSiblingResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1191,8 +1191,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeHasChildrenRequest::kMessageId: {
-            auto req = gen::DomnodeHasChildrenRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeHasChildrenRequest::kMessageId: {
+            auto req = gen::DomNodeHasChildrenRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1208,7 +1208,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->has_children(receiver);
 
-            gen::DomnodeHasChildrenResponse resp;
+            gen::DomNodeHasChildrenResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1218,8 +1218,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetFirstChildRequest::kMessageId: {
-            auto req = gen::DomnodeGetFirstChildRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetFirstChildRequest::kMessageId: {
+            auto req = gen::DomNodeGetFirstChildRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1235,7 +1235,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_first_child(receiver);
 
-            gen::DomnodeGetFirstChildResponse resp;
+            gen::DomNodeGetFirstChildResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1245,8 +1245,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetLastChildRequest::kMessageId: {
-            auto req = gen::DomnodeGetLastChildRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetLastChildRequest::kMessageId: {
+            auto req = gen::DomNodeGetLastChildRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1262,7 +1262,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_domnode_t* rawResult = receiver->get_last_child(receiver);
 
-            gen::DomnodeGetLastChildResponse resp;
+            gen::DomNodeGetLastChildResponse resp;
             resp.result = insertOrRelease(&tables::domnode, rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1272,8 +1272,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetElementTagNameRequest::kMessageId: {
-            auto req = gen::DomnodeGetElementTagNameRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetElementTagNameRequest::kMessageId: {
+            auto req = gen::DomNodeGetElementTagNameRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1289,7 +1289,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_element_tag_name(receiver);
 
-            gen::DomnodeGetElementTagNameResponse resp;
+            gen::DomNodeGetElementTagNameResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1299,8 +1299,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeHasElementAttributesRequest::kMessageId: {
-            auto req = gen::DomnodeHasElementAttributesRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeHasElementAttributesRequest::kMessageId: {
+            auto req = gen::DomNodeHasElementAttributesRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1316,7 +1316,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         int rawResult = receiver->has_element_attributes(receiver);
 
-            gen::DomnodeHasElementAttributesResponse resp;
+            gen::DomNodeHasElementAttributesResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1326,8 +1326,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeHasElementAttributeRequest::kMessageId: {
-            auto req = gen::DomnodeHasElementAttributeRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeHasElementAttributeRequest::kMessageId: {
+            auto req = gen::DomNodeHasElementAttributeRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1344,7 +1344,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             ScopedCefString attrName_cef(req.attrName);
                         int rawResult = receiver->has_element_attribute(receiver, attrName_cef.get());
 
-            gen::DomnodeHasElementAttributeResponse resp;
+            gen::DomNodeHasElementAttributeResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1354,8 +1354,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetElementAttributeRequest::kMessageId: {
-            auto req = gen::DomnodeGetElementAttributeRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetElementAttributeRequest::kMessageId: {
+            auto req = gen::DomNodeGetElementAttributeRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1372,7 +1372,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             ScopedCefString attrName_cef(req.attrName);
                         cef_string_userfree_t rawResult = receiver->get_element_attribute(receiver, attrName_cef.get());
 
-            gen::DomnodeGetElementAttributeResponse resp;
+            gen::DomNodeGetElementAttributeResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1382,8 +1382,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeSetElementAttributeRequest::kMessageId: {
-            auto req = gen::DomnodeSetElementAttributeRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeSetElementAttributeRequest::kMessageId: {
+            auto req = gen::DomNodeSetElementAttributeRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1401,7 +1401,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             ScopedCefString value_cef(req.value);
                         int rawResult = receiver->set_element_attribute(receiver, attrName_cef.get(), value_cef.get());
 
-            gen::DomnodeSetElementAttributeResponse resp;
+            gen::DomNodeSetElementAttributeResponse resp;
             resp.result = static_cast<std::int32_t>(rawResult);
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());
@@ -1411,8 +1411,8 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             recvBase->release(recvBase);
             return true;
         }
-        case gen::DomnodeGetElementInnerTextRequest::kMessageId: {
-            auto req = gen::DomnodeGetElementInnerTextRequest::decode(payload.data(), payload.size());
+        case gen::DomNodeGetElementInnerTextRequest::kMessageId: {
+            auto req = gen::DomNodeGetElementInnerTextRequest::decode(payload.data(), payload.size());
             cef_domnode_t* receiver = tables::domnode.retain(req.self);
             if (!receiver) {
                 sendReceiverGone(frame, corrId, messageId);
@@ -1428,7 +1428,7 @@ inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messa
             }
                         cef_string_userfree_t rawResult = receiver->get_element_inner_text(receiver);
 
-            gen::DomnodeGetElementInnerTextResponse resp;
+            gen::DomNodeGetElementInnerTextResponse resp;
             resp.result = ScopedCefString::take(rawResult).toUtf8();
             std::vector<std::uint8_t> respPayload(resp.encodedSize());
             resp.encodeInto(respPayload.data());

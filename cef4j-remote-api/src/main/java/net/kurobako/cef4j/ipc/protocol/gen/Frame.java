@@ -360,10 +360,10 @@ public final class Frame implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:228</a>
      */
-    public CompletableFuture<Urlrequest> createUrlrequest(@Nonnull RemoteHandle request, @Nonnull RemoteHandle client) {
+    public CompletableFuture<UrlRequest> createUrlRequest(@Nonnull RemoteHandle request, @Nonnull RemoteHandle client) {
         return CefFutures.map(
-            session.request(new FrameCreateUrlrequestRequest(handle, request, client), FrameCreateUrlrequestResponse.DECODER),
-            __r -> new Urlrequest(session, __r.result()));
+            session.request(new FrameCreateUrlRequestRequest(handle, request, client), FrameCreateUrlRequestResponse.DECODER),
+            __r -> new UrlRequest(session, __r.result()));
     }
 
     /**

@@ -606,6 +606,35 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     assertEquals(Naming.cppMethodName("external_begin_frame_enabled"), "externalBeginFrameEnabled")
   }
 
+  test("collapsed upstream names use Java word boundaries") {
+    val cppNames                  = Map("cef_basetime_t" -> "CefBaseTime", "cef_textfield_t" -> "CefTextfield")
+    given context: Naming.Context = Naming.Context.fromCppClassNames(cppNames, Map.empty, "example")
+
+    assertEquals(Naming.structToJavaName("cef_basetime_t"), "CefBaseTime")
+    assertEquals(Naming.structToJavaName("cef_postdataelement_type_t"), "CefPostDataElementType")
+    assertEquals(Naming.structToJavaName("cef_resultcode_t"), "CefResultCode")
+    assertEquals(Naming.structToJavaName("cef_textfield_t"), "CefTextField")
+    assertEquals(Naming.cppMethodName("AsTextfield"), "asTextField")
+  }
+
+  test("compound segments are derived from actual C API names") {
+    val compounds = HeaderMetadataIndex.deriveCompoundSegments(
+      Map("cef_basetime_t" -> "CefBaseTime"),
+      tempDirectory("cef4j-empty-headers")
+    )
+
+    assertEquals(compounds.get("basetime"), Some(List("Base", "Time")))
+  }
+
+  test("runtime stub generation excludes the generated API package") {
+    val sourceRoot = tempDirectory("cef4j-java-source")
+
+    assertEquals(
+      Main.generatedPackageDir(sourceRoot, "net.kurobako.cef4j.gen"),
+      sourceRoot.resolve("net/kurobako/cef4j/gen")
+    )
+  }
+
   test("generated Java package is configurable through Naming context") {
     given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
     given emptyDocContext: DocComments.Context    = DocComments.Context.empty

@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Structure representing a rectangle.
+ *
  * <p>Definition generated from internal/cef_types_geometry.h
+ *
  * <pre>typedef struct _cef_rect_t {
  *   int x;
  *   int y;
@@ -13,10 +17,12 @@ import javax.annotation.processing.Generated;
  *   int height;
  * } cef_rect_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:46</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefRect {
 
     public final int x;
@@ -41,10 +47,7 @@ public final class CefRect {
         if (this == obj) return true;
         if (!(obj instanceof CefRect)) return false;
         CefRect other = (CefRect) obj;
-        return this.x == other.x
-                    && this.y == other.y
-                    && this.width == other.width
-                    && this.height == other.height;
+        return this.x == other.x && this.y == other.y && this.width == other.width && this.height == other.height;
     }
 
     @Override
@@ -59,9 +62,11 @@ public final class CefRect {
 
     /**
      * Mutable variant of {@link CefRect}. Structure representing a rectangle.
+     *
      * <p>Definition generated from internal/cef_types_geometry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:46</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:46</a>
      */
     public static final class Mutable {
 
@@ -89,10 +94,7 @@ public final class CefRect {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
-            return this.x == other.x
-                        && this.y == other.y
-                        && this.width == other.width
-                        && this.height == other.height;
+            return this.x == other.x && this.y == other.y && this.width == other.width && this.height == other.height;
         }
 
         @Override
@@ -102,7 +104,8 @@ public final class CefRect {
 
         @Override
         public String toString() {
-            return "CefRect.Mutable{" + "x=" + x + ", " + "y=" + y + ", " + "width=" + width + ", " + "height=" + height + "}";
+            return "CefRect.Mutable{" + "x=" + x + ", " + "y=" + y + ", " + "width=" + width + ", " + "height=" + height
+                    + "}";
         }
     }
 }

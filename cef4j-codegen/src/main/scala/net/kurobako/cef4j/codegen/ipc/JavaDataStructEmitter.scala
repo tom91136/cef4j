@@ -1,8 +1,10 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object JavaDataStructEmitter {
 
-  def emit(spec: DataStructSpec): String = {
+  def emit(spec: DataStructSpec)(using Naming.Context): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
     val importsBlock = renderImports
@@ -64,7 +66,7 @@ object JavaDataStructEmitter {
        |""".stripMargin
   }
 
-  private def renderBuilder(spec: DataStructSpec): String = {
+  private def renderBuilder(spec: DataStructSpec)(using Naming.Context): String = {
     val cls     = spec.className
     val bFields =
       spec.fields.map(f => s"        private ${javaType(f.ty)} ${f.name} = ${defaultValue(f.ty)};").mkString("\n")
@@ -83,7 +85,7 @@ object JavaDataStructEmitter {
        |    }""".stripMargin
   }
 
-  private def renderSetter(f: FieldSpec): String = {
+  private def renderSetter(f: FieldSpec)(using Naming.Context): String = {
     val annot = f.ty match {
       case FieldType.Utf8String | FieldType.Bytes | FieldType.RemoteHandle | FieldType.DataStruct(_) =>
         "@Nonnull "
@@ -113,10 +115,10 @@ object JavaDataStructEmitter {
       |import javax.annotation.Nonnull;
       |import net.kurobako.cef4j.ipc.session.WireDecoder;""".stripMargin
 
-  private def renderField(f: FieldSpec): String =
+  private def renderField(f: FieldSpec)(using Naming.Context): String =
     s"    private final ${javaType(f.ty)} ${f.name};"
 
-  private def renderCtor(spec: DataStructSpec): String = {
+  private def renderCtor(spec: DataStructSpec)(using Naming.Context): String = {
     val params  = spec.fields.map(f => paramAnnotation(f.ty) + javaType(f.ty) + " " + f.name).mkString(", ")
     val assigns = spec.fields.map(f => s"        this.${f.name} = ${f.name};").mkString("\n")
     s"""    public ${spec.className}($params) {
@@ -124,7 +126,7 @@ object JavaDataStructEmitter {
        |    }""".stripMargin
   }
 
-  private def renderGetter(f: FieldSpec): String = {
+  private def renderGetter(f: FieldSpec)(using Naming.Context): String = {
     val annot = nonnullPrefix(f.ty)
     s"""$annot    public ${javaType(f.ty)} ${f.name}() {
        |        return ${f.name};
@@ -156,7 +158,7 @@ object JavaDataStructEmitter {
       }
     }.mkString("\n")
 
-  private def renderDecodeBody(spec: DataStructSpec): String =
+  private def renderDecodeBody(spec: DataStructSpec)(using Naming.Context): String =
     spec.fields.map { f =>
       f.ty match {
         case FieldType.I32 =>
@@ -198,7 +200,7 @@ object JavaDataStructEmitter {
     case FieldType.DataStruct(_)                => 0 // size is fully variable
   }
 
-  private def javaType(ty: FieldType): String = ty match {
+  private def javaType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "int"
     case FieldType.I64                 => "long"
     case FieldType.Bool                => "boolean"

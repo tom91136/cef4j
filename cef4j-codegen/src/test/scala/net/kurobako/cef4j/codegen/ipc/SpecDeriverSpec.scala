@@ -3,6 +3,7 @@ package net.kurobako.cef4j.codegen.ipc
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
 import net.kurobako.cef4j.codegen.FnPtr
+import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Param
 
 class SpecDeriverSpec extends munit.FunSuite {
@@ -22,6 +23,23 @@ class SpecDeriverSpec extends munit.FunSuite {
     assertEquals(spec.className, "LoadHandlerOnLoadEndEvent")
     assertEquals(spec.fields, List(FieldSpec("browserId", FieldType.I32), FieldSpec("url", FieldType.Utf8String)))
     assert(spec.messageId >= SpecDeriver.AstIdBase, s"id ${spec.messageId} below AST base")
+  }
+
+  test("remote names use the shared CEF acronym dictionary") {
+    given Naming.Context = Naming.Context(
+      cppClassNames = Map.empty,
+      compoundSegments = Map("urlrequest" -> List("Url", "Request")),
+      javaPackage = "test.gen"
+    )
+    val method = FnPtr("get_url", CType.JString, Nil)
+    val decl   = CefDecl.ObjectStruct("cef_urlrequest_t", List(method))
+
+    val messages = SpecDeriver.derive(List(decl), "test.gen")
+    val facade   = SpecDeriver.deriveFacades(List(decl), "test.gen").head
+
+    assertEquals(messages.map(_.className), List("UrlRequestGetUrlRequest", "UrlRequestGetUrlResponse"))
+    assertEquals(facade.className, "UrlRequest")
+    assertEquals(facade.methods.head.methodName, "getUrl")
   }
 
   test("ObjectPtr params now map to RemoteHandle, expanding eligibility") {

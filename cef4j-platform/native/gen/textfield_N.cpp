@@ -1,42 +1,42 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include <jni.h>
 #include "include/capi/views/cef_textfield_capi.h"
 #include "include/capi/views/cef_textfield_delegate_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_textfield_delegate_t* Create_JniCefTextfieldDelegate(JNIEnv* env, jobject handler);
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), release0)(JNIEnv* env, jclass clz, jlong ptr) {
+extern "C" cef_textfield_delegate_t* Create_JniCefTextFieldDelegate(JNIEnv* env, jobject handler);
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setPasswordInput0)(JNIEnv* env, jobject obj, jlong self, jboolean password_input) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), setPasswordInput0)(JNIEnv* env, jobject obj, jlong self, jboolean password_input) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     s->set_password_input(s, static_cast<bool>(password_input));
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextfield), isPasswordInput0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextField), isPasswordInput0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_password_input(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setReadOnly0)(JNIEnv* env, jobject obj, jlong self, jboolean read_only) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), setReadOnly0)(JNIEnv* env, jobject obj, jlong self, jboolean read_only) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     s->set_read_only(s, static_cast<bool>(read_only));
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextfield), isReadOnly0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextField), isReadOnly0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_read_only(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextfield), getText0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextField), getText0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_text(s);
@@ -46,7 +46,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextfield), getText0)(JNIEnv* env,
     return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), setText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     auto _text_str = JStringToCefString(env, text);
@@ -54,7 +54,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setText0)(JNIEnv* env, jo
     if (_text_str) cef_string_userfree_free(_text_str);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), appendText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), appendText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     auto _text_str = JStringToCefString(env, text);
@@ -62,7 +62,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), appendText0)(JNIEnv* env,
     if (_text_str) cef_string_userfree_free(_text_str);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), insertOrReplaceText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), insertOrReplaceText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     auto _text_str = JStringToCefString(env, text);
@@ -70,14 +70,14 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), insertOrReplaceText0)(JNI
     if (_text_str) cef_string_userfree_free(_text_str);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextfield), hasSelection0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextField), hasSelection0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_selection(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextfield), getSelectedText0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextField), getSelectedText0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_selected_text(s);
@@ -87,19 +87,19 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextfield), getSelectedText0)(JNIE
     return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), selectAll0)(JNIEnv* env, jobject obj, jlong self, jboolean reversed) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), selectAll0)(JNIEnv* env, jobject obj, jlong self, jboolean reversed) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     s->select_all(s, static_cast<bool>(reversed));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), clearSelection0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), clearSelection0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     s->clear_selection(s);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefTextfield), getSelectedRange0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefTextField), getSelectedRange0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return nullptr;
     cef_range_t result = s->get_selected_range(s);
@@ -109,7 +109,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefTextfield), getSelectedRange0)(JNI
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), selectRange0)(JNIEnv* env, jobject obj, jlong self, jobject range) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), selectRange0)(JNIEnv* env, jobject obj, jlong self, jobject range) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     if (!range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "range must not be null"); return; }
@@ -120,13 +120,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), selectRange0)(JNIEnv* env
     s->select_range(s, &_range_val);
 }
 
-CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(views_CefTextfield), getCursorPosition0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(views_CefTextField), getCursorPosition0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_cursor_position(s));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setFontList0)(JNIEnv* env, jobject obj, jlong self, jstring font_list) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), setFontList0)(JNIEnv* env, jobject obj, jlong self, jstring font_list) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     auto _font_list_str = JStringToCefString(env, font_list);
@@ -134,7 +134,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setFontList0)(JNIEnv* env
     if (_font_list_str) cef_string_userfree_free(_font_list_str);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextColor0)(JNIEnv* env, jobject obj, jlong self, jint color, jobject range) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), applyTextColor0)(JNIEnv* env, jobject obj, jlong self, jint color, jobject range) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     if (!range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "range must not be null"); return; }
@@ -145,7 +145,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextColor0)(JNIEnv* 
     s->apply_text_color(s, static_cast<cef_color_t>(color), &_range_val);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextStyle0)(JNIEnv* env, jobject obj, jlong self, jobject style, jboolean add, jobject range) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), applyTextStyle0)(JNIEnv* env, jobject obj, jlong self, jobject style, jboolean add, jobject range) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     if (!style) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "style must not be null"); return; }
@@ -157,7 +157,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextStyle0)(JNIEnv* 
     s->apply_text_style(s, static_cast<cef_text_style_t>(env->GetLongField(style, env->GetFieldID(env->GetObjectClass(style), "value", "J"))), static_cast<bool>(add), &_range_val);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextfield), isCommandEnabled0)(JNIEnv* env, jobject obj, jlong self, jobject command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextField), isCommandEnabled0)(JNIEnv* env, jobject obj, jlong self, jobject command_id) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return JNI_FALSE;
     if (!command_id) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "commandId must not be null"); return JNI_FALSE; }
@@ -165,20 +165,20 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefTextfield), isCommandEnabled0)(JN
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), executeCommand0)(JNIEnv* env, jobject obj, jlong self, jobject command_id) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), executeCommand0)(JNIEnv* env, jobject obj, jlong self, jobject command_id) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     if (!command_id) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "commandId must not be null"); return; }
     s->execute_command(s, static_cast<cef_text_field_commands_t>(env->GetLongField(command_id, env->GetFieldID(env->GetObjectClass(command_id), "value", "J"))));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), clearEditHistory0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), clearEditHistory0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     s->clear_edit_history(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setPlaceholderText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), setPlaceholderText0)(JNIEnv* env, jobject obj, jlong self, jstring text) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     auto _text_str = JStringToCefString(env, text);
@@ -186,7 +186,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setPlaceholderText0)(JNIE
     if (_text_str) cef_string_userfree_free(_text_str);
 }
 
-CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextfield), getPlaceholderText0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextField), getPlaceholderText0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_placeholder_text(s);
@@ -196,7 +196,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefTextfield), getPlaceholderText0)(J
     return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setAccessibleName0)(JNIEnv* env, jobject obj, jlong self, jstring name) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextField), setAccessibleName0)(JNIEnv* env, jobject obj, jlong self, jstring name) {
     auto* s = reinterpret_cast<cef_textfield_t*>(self);
     if (!s) return;
     auto _name_str = JStringToCefString(env, name);
@@ -204,11 +204,11 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), setAccessibleName0)(JNIEn
     if (_name_str) cef_string_userfree_free(_name_str);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefTextfield), create0)(JNIEnv* env, jclass clz, jobject delegate) {
-    cef_textfield_delegate_t* _delegate_ptr = delegate ? Create_JniCefTextfieldDelegate(env, delegate) : nullptr;
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefTextField), create0)(JNIEnv* env, jclass clz, jobject delegate) {
+    cef_textfield_delegate_t* _delegate_ptr = delegate ? Create_JniCefTextFieldDelegate(env, delegate) : nullptr;
     auto _r = cef_textfield_create(_delegate_ptr);
     if (!_r) return nullptr;
-    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefTextfield$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefTextField$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

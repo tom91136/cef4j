@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Typed handler interface for {@code cef_v8_accessor_t}. Each method maps to a callback CEF would
@@ -11,7 +12,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * <p>Use {@link #register(CefSession, CefV8Accessor)} to bind every method to its corresponding wire event in
  * one step. Close the returned registration to unsubscribe every method.
  */
-@SuppressWarnings("NullableForbidden")
+@NullableBoundary("generated CEF callback contract")
 public interface CefV8Accessor {
 
     /**

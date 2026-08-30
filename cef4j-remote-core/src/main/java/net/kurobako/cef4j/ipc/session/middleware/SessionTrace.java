@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Versioned, transport-independent recording of logical {@code CefSession} operations. */
 public final class SessionTrace {
@@ -38,7 +40,7 @@ public final class SessionTrace {
     }
 
     /** Immutable trace entry. Payload is copied at construction and when exposed. */
-    @SuppressWarnings("NullableForbidden") // absent trace-record detail
+    @NullableBoundary("trace records use null for absent optional detail")
     public static final class Entry {
         public final long sequence;
         public final long elapsedNanos;
@@ -108,10 +110,20 @@ public final class SessionTrace {
      * {@code cef4j-codecs-jackson} to the runtime class path, or call an overload that accepts a codec.
      */
     public static SessionTraceCodec defaultCodec() {
-        return ServiceLoader.load(SessionTraceCodec.class)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No SessionTraceCodec installed; add cef4j-codecs-gson or "
-                        + "cef4j-codecs-jackson, or supply a codec"));
+        Iterator<SessionTraceCodec> codecs =
+                ServiceLoader.load(SessionTraceCodec.class).iterator();
+        if (!codecs.hasNext()) {
+            throw new IllegalStateException("No SessionTraceCodec installed; add cef4j-codecs-gson or "
+                    + "cef4j-codecs-jackson, or supply a codec");
+        }
+        SessionTraceCodec codec = codecs.next();
+        if (codecs.hasNext()) {
+            throw new IllegalStateException("Multiple SessionTraceCodec providers installed ("
+                    + codec.getClass().getName() + ", "
+                    + codecs.next().getClass().getName()
+                    + "); supply one explicitly");
+        }
+        return codec;
     }
 
     public static SessionTraceWriter writer(@Nonnull Path file) throws IOException {

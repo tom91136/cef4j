@@ -2,8 +2,10 @@ package net.kurobako.cef4j.cdp;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Failure returned by the Chrome DevTools Protocol. */
+@NullableBoundary("CDP error responses may omit data")
 public final class CdpException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
@@ -12,7 +14,6 @@ public final class CdpException extends RuntimeException {
     @Nullable
     private final transient Object data;
 
-    @SuppressWarnings("NullableForbidden")
     public CdpException(int code, @Nonnull String message, @Nullable Object data) {
         super(message);
         this.code = code;
@@ -23,7 +24,6 @@ public final class CdpException extends RuntimeException {
         return code;
     }
 
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public Object data() {
         return data;

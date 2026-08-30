@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,11 +30,14 @@ public final class CefSessionImpl implements CefSession {
     private static final int RUNTIME_SESSION_READY_CORR_ID = 0;
     private static final long RUNTIME_SESSION_READY_RETRY_NANOS = TimeUnit.MILLISECONDS.toNanos(250);
     private static final Duration RUNTIME_SESSION_READY_TIMEOUT = Duration.ofMinutes(5);
+    private static final int DEFAULT_MAX_PENDING_REQUESTS = 4096;
 
     private final CefTransport transport;
     private final Duration defaultTimeout;
     private final ScheduledExecutorService timer;
     private final boolean ownTimer;
+    private final int maxPendingRequests;
+    private final Semaphore pendingRequestPermits;
 
     private final IntIdAllocator correlationIds = new IntIdAllocator();
     private final AtomicLong nextEventSequence = new AtomicLong(0);
@@ -59,22 +63,37 @@ public final class CefSessionImpl implements CefSession {
     }
 
     public CefSessionImpl(@Nonnull CefTransport transport, @Nonnull Duration defaultTimeout) {
-        this(transport, defaultTimeout, defaultTimer(), true);
+        this(transport, defaultTimeout, defaultTimer(), true, DEFAULT_MAX_PENDING_REQUESTS);
     }
 
     public CefSessionImpl(
             @Nonnull CefTransport transport,
             @Nonnull Duration defaultTimeout,
             @Nonnull ScheduledExecutorService timer) {
-        this(transport, defaultTimeout, timer, false);
+        this(transport, defaultTimeout, timer, false, DEFAULT_MAX_PENDING_REQUESTS);
+    }
+
+    public CefSessionImpl(
+            @Nonnull CefTransport transport,
+            @Nonnull Duration defaultTimeout,
+            @Nonnull ScheduledExecutorService timer,
+            int maxPendingRequests) {
+        this(transport, defaultTimeout, timer, false, maxPendingRequests);
     }
 
     private CefSessionImpl(
-            CefTransport transport, Duration defaultTimeout, ScheduledExecutorService timer, boolean ownTimer) {
+            CefTransport transport,
+            Duration defaultTimeout,
+            ScheduledExecutorService timer,
+            boolean ownTimer,
+            int maxPendingRequests) {
+        if (maxPendingRequests <= 0) throw new IllegalArgumentException("maxPendingRequests must be positive");
         this.transport = transport;
         this.defaultTimeout = defaultTimeout;
         this.timer = timer;
         this.ownTimer = ownTimer;
+        this.maxPendingRequests = maxPendingRequests;
+        this.pendingRequestPermits = new Semaphore(maxPendingRequests);
         transport.onReceive(this::handleFrame);
         transport.onDisconnect(this::handleDisconnect);
         if (transport.isRuntimeServerClient()) establishRuntimeSession();
@@ -141,10 +160,22 @@ public final class CefSessionImpl implements CefSession {
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
         }
+        if (!pendingRequestPermits.tryAcquire()) {
+            future.completeExceptionally(
+                    new CefTransportException("pending request limit reached (max " + maxPendingRequests + ")"));
+            return future;
+        }
         Pending<R> p = new Pending<>(future, dec, enc.messageId());
-        int corrId = correlationIds.allocate(candidate -> pending.putIfAbsent(candidate, p) == null);
+        int corrId;
+        try {
+            corrId = correlationIds.allocate(candidate -> pending.putIfAbsent(candidate, p) == null);
+        } catch (RuntimeException failure) {
+            pendingRequestPermits.release();
+            future.completeExceptionally(failure);
+            return future;
+        }
         if (closed) {
-            pending.remove(corrId, p);
+            removePending(corrId, p);
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
         }
@@ -152,7 +183,7 @@ public final class CefSessionImpl implements CefSession {
         try {
             timeoutTask = timer.schedule(
                     () -> {
-                        if (pending.remove(corrId, p)) {
+                        if (removePending(corrId, p)) {
                             p.future.completeExceptionally(new TimeoutException("request msgId=" + enc.messageId()
                                     + " corrId=" + corrId + " timed out after " + defaultTimeout));
                         }
@@ -161,16 +192,16 @@ public final class CefSessionImpl implements CefSession {
                     TimeUnit.MILLISECONDS);
             p.timeoutTask = timeoutTask;
         } catch (RuntimeException schedulingFailure) {
-            pending.remove(corrId, p);
+            removePending(corrId, p);
             future.completeExceptionally(schedulingFailure);
             return future;
         }
         future.onCancel = () -> {
-            if (pending.remove(corrId, p)) cancelQuietly(p.timeoutTask);
+            if (removePending(corrId, p)) cancelQuietly(p.timeoutTask);
         };
         if (future.isCancelled()) future.onCancel.run();
         if (closed) {
-            pending.remove(corrId, p);
+            removePending(corrId, p);
             timeoutTask.cancel(false);
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
@@ -184,11 +215,11 @@ public final class CefSessionImpl implements CefSession {
             buf.flip();
             transport.send(buf);
         } catch (CefTransportException e) {
-            pending.remove(corrId, p);
+            removePending(corrId, p);
             timeoutTask.cancel(false);
             future.completeExceptionally(e);
         } catch (RuntimeException encodeFailure) {
-            pending.remove(corrId, p);
+            removePending(corrId, p);
             timeoutTask.cancel(false);
             future.completeExceptionally(encodeFailure);
         }
@@ -279,10 +310,17 @@ public final class CefSessionImpl implements CefSession {
     private void failAllPending(Throwable cause) {
         for (Map.Entry<Integer, Pending<?>> e : pending.entrySet()) {
             Pending<?> p = e.getValue();
-            cancelQuietly(p.timeoutTask);
-            p.future.completeExceptionally(cause);
+            if (removePending(e.getKey(), p)) {
+                cancelQuietly(p.timeoutTask);
+                p.future.completeExceptionally(cause);
+            }
         }
-        pending.clear();
+    }
+
+    private boolean removePending(int correlationId, Pending<?> request) {
+        if (!pending.remove(correlationId, request)) return false;
+        pendingRequestPermits.release();
+        return true;
     }
 
     private static void cancelQuietly(@Nullable ScheduledFuture<?> task) {
@@ -343,7 +381,7 @@ public final class CefSessionImpl implements CefSession {
                     h.messageId);
             return;
         }
-        if (!pending.remove(h.corrId, raw)) return;
+        if (!removePending(h.corrId, raw)) return;
         cancelQuietly(raw.timeoutTask);
         completeStructuredError(raw.future, payload);
     }
@@ -383,7 +421,7 @@ public final class CefSessionImpl implements CefSession {
                     h.messageId);
             return;
         }
-        if (!pending.remove(h.corrId, raw)) return;
+        if (!removePending(h.corrId, raw)) return;
         Pending<R> p = (Pending<R>) raw;
         cancelQuietly(p.timeoutTask);
         try {

@@ -1,31 +1,37 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Windows COM initialization mode. Specifies how COM will be initialized for a new thread.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   COM_INIT_MODE_NONE = 0,
  *   COM_INIT_MODE_STA = 1,
  *   COM_INIT_MODE_MTA = 2
  * } cef_com_init_mode_t;</pre>
+ *
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#STA}, {@link Kind#MTA}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefComInitMode implements CefEnum<CefComInitMode> {
 
     /** Known constants for {@link CefComInitMode}. */
     public enum Kind {
-        /** No COM initialization.  */
+        /** No COM initialization. */
         NONE(0, "0", "COM_INIT_MODE_NONE"),
-        /** Initialize COM using single-threaded apartments.  */
+        /** Initialize COM using single-threaded apartments. */
         STA(1, "1", "COM_INIT_MODE_STA"),
-        /** Initialize COM using multi-threaded apartments.  */
+        /** Initialize COM using multi-threaded apartments. */
         MTA(2, "2", "COM_INIT_MODE_MTA");
 
         private static final Kind[] VALUES = Kind.values();
@@ -77,8 +83,8 @@ public final class CefComInitMode implements CefEnum<CefComInitMode> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

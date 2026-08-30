@@ -10,6 +10,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +24,7 @@ import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -403,12 +405,22 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     }
 
     private static boolean waitForSystemClipboardText(String expected, long timeoutMillis) throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            if (expected.equals(systemClipboardText())) return true;
-            Thread.sleep(20);
+        try {
+            TestDeadline.after(Duration.ofMillis(timeoutMillis))
+                    .until(
+                            () -> {
+                                try {
+                                    return expected.equals(systemClipboardText());
+                                } catch (Exception failure) {
+                                    throw new java.util.concurrent.CompletionException(failure);
+                                }
+                            },
+                            Duration.ofMillis(20),
+                            "system clipboard update");
+            return true;
+        } catch (java.util.concurrent.TimeoutException timedOut) {
+            return expected.equals(systemClipboardText());
         }
-        return expected.equals(systemClipboardText());
     }
 
     private static String systemClipboardText() throws Exception {

@@ -225,17 +225,26 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
     }
 
     private static void awaitViewSize(RemoteWebView view, int width, int height) throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
         double[] actual = new double[2];
-        while (System.nanoTime() < deadline) {
-            onFxThread(() -> {
-                actual[0] = view.getWidth();
-                actual[1] = view.getHeight();
-            });
-            if ((int) actual[0] == width && (int) actual[1] == height) return;
-            Thread.sleep(10);
+        try {
+            TestDeadline.after(Duration.ofSeconds(15))
+                    .until(
+                            () -> {
+                                try {
+                                    onFxThread(() -> {
+                                        actual[0] = view.getWidth();
+                                        actual[1] = view.getHeight();
+                                    });
+                                    return (int) actual[0] == width && (int) actual[1] == height;
+                                } catch (Exception failure) {
+                                    throw new java.util.concurrent.CompletionException(failure);
+                                }
+                            },
+                            Duration.ofMillis(10),
+                            "JavaFX view resize");
+        } catch (TimeoutException timedOut) {
+            throw new TimeoutException("JavaFX view did not resize to " + width + "x" + height + "; last was "
+                    + actual[0] + "x" + actual[1]);
         }
-        throw new TimeoutException(
-                "JavaFX view did not resize to " + width + "x" + height + "; last was " + actual[0] + "x" + actual[1]);
     }
 }

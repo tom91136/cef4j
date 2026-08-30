@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include <jni.h>
 #include "include/capi/cef_cookie_capi.h"
 #include "jni_util.h"
@@ -24,13 +24,13 @@ struct JniCefCookieVisitor : public cef_cookie_visitor_t {
         auto _bv_cookie_value = CefStringToJString(env, &(cookie)->value);
         auto _bv_cookie_domain = CefStringToJString(env, &(cookie)->domain);
         auto _bv_cookie_path = CefStringToJString(env, &(cookie)->path);
-        auto _bv_cookie_creation_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+        auto _bv_cookie_creation_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
         auto _bv_cookie_creation_ctor = env->GetMethodID(_bv_cookie_creation_cls, "<init>", "(J)V");
         auto _bv_cookie_creation = env->NewObject(_bv_cookie_creation_cls, _bv_cookie_creation_ctor, to_jlong((cookie)->creation.val));
-        auto _bv_cookie_last_access_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+        auto _bv_cookie_last_access_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
         auto _bv_cookie_last_access_ctor = env->GetMethodID(_bv_cookie_last_access_cls, "<init>", "(J)V");
         auto _bv_cookie_last_access = env->NewObject(_bv_cookie_last_access_cls, _bv_cookie_last_access_ctor, to_jlong((cookie)->last_access.val));
-        auto _bv_cookie_expires_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+        auto _bv_cookie_expires_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBaseTime");
         auto _bv_cookie_expires_ctor = env->GetMethodID(_bv_cookie_expires_cls, "<init>", "(J)V");
         auto _bv_cookie_expires = env->NewObject(_bv_cookie_expires_cls, _bv_cookie_expires_ctor, to_jlong((cookie)->expires.val));
         auto _bv_cookie_same_site_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCookieSameSite");
@@ -40,7 +40,7 @@ struct JniCefCookieVisitor : public cef_cookie_visitor_t {
         auto _bv_cookie_priority_of = env->GetStaticMethodID(_bv_cookie_priority_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefCookiePriority;");
         auto _bv_cookie_priority = env->CallStaticObjectMethod(_bv_cookie_priority_cls, _bv_cookie_priority_of, static_cast<jlong>((cookie)->priority));
         auto j_cookie_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCookie");
-        auto j_cookie_ctor = env->GetMethodID(j_cookie_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILnet/kurobako/cef4j/gen/CefBasetime;Lnet/kurobako/cef4j/gen/CefBasetime;ILnet/kurobako/cef4j/gen/CefBasetime;Lnet/kurobako/cef4j/gen/CefCookieSameSite;Lnet/kurobako/cef4j/gen/CefCookiePriority;)V");
+        auto j_cookie_ctor = env->GetMethodID(j_cookie_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILnet/kurobako/cef4j/gen/CefBaseTime;Lnet/kurobako/cef4j/gen/CefBaseTime;ILnet/kurobako/cef4j/gen/CefBaseTime;Lnet/kurobako/cef4j/gen/CefCookieSameSite;Lnet/kurobako/cef4j/gen/CefCookiePriority;)V");
         auto j_cookie = cookie
     ? env->NewObject(j_cookie_cls, j_cookie_ctor,
         _bv_cookie_name,

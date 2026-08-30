@@ -1,13 +1,19 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
-/** Opaque native pointer wrapper. Raw pointers without a known bound is lowered to this representation, use with caution. */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+/**
+ * Opaque native pointer wrapper. Raw pointers without a known bound is lowered to this representation, use with
+ * caution.
+ */
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public class NativePointer {
 
     public final long address;
@@ -38,9 +44,8 @@ public class NativePointer {
     }
 
     /**
-     * A {@link NativePointer} that owns the native memory it points to. Implements {@link AutoCloseable}
-     * for use in try-with-resources - when {@link #close()} is called, the destructor is invoked to free
-     * the native memory.
+     * A {@link NativePointer} that owns the native memory it points to. Implements {@link AutoCloseable} for use in
+     * try-with-resources - when {@link #close()} is called, the destructor is invoked to free the native memory.
      */
     public static final class Managed extends NativePointer implements AutoCloseable {
 

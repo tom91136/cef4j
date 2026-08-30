@@ -25,6 +25,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.util.Callback;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.CefScriptEngine;
+import net.kurobako.cef4j.policy.NullableBoundary;
 import org.w3c.dom.Document;
 
 /**
@@ -33,7 +34,8 @@ import org.w3c.dom.Document;
  * <p>The API intentionally tracks the most common {@code WebEngine} entry points first. Callers that need full CEF
  * control can drop down to the owning {@link CefWebView}.
  */
-@SuppressWarnings({"unused", "NullableForbidden"}) // JavaFX bean accessors treat unset properties as null
+@SuppressWarnings("unused")
+@NullableBoundary("JavaFX bean properties use null for unset values")
 public final class CefWebEngine {
     // XXX: Chromium 150 truncates data URLs near 2 MiB; remove or revise this guard when the minimum Chromium version
     // has a documented higher data-URL limit and the loadContent boundary test covers that limit.

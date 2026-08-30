@@ -178,7 +178,7 @@ public final class DownloadItem implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:119</a>
      */
-    public CompletableFuture<Basetime> getStartTime() {
+    public CompletableFuture<BaseTime> getStartTime() {
         return CefFutures.map(
             session.request(new DownloadItemGetStartTimeRequest(handle), DownloadItemGetStartTimeResponse.DECODER),
             DownloadItemGetStartTimeResponse::result);
@@ -190,7 +190,7 @@ public final class DownloadItem implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:125</a>
      */
-    public CompletableFuture<Basetime> getEndTime() {
+    public CompletableFuture<BaseTime> getEndTime() {
         return CefFutures.map(
             session.request(new DownloadItemGetEndTimeRequest(handle), DownloadItemGetEndTimeResponse.DECODER),
             DownloadItemGetEndTimeResponse::result);

@@ -283,7 +283,7 @@ public final class V8Value implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:749</a>
      */
-    public CompletableFuture<Basetime> getDateValue() {
+    public CompletableFuture<BaseTime> getDateValue() {
         return CefFutures.map(
             session.request(new V8ValueGetDateValueRequest(frame, handle), V8ValueGetDateValueResponse.DECODER),
             V8ValueGetDateValueResponse::result);

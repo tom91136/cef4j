@@ -1,12 +1,18 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.processing.Generated;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * Linux window properties, such as X11's WM_CLASS or Wayland's app_id. Those are passed to CefWindowDelegate, so the client can set them for the CefWindow's top-level. Thus, allowing window managers to correctly display the application's information (e.g., icons).
+ * Linux window properties, such as X11's WM_CLASS or Wayland's app_id. Those are passed to CefWindowDelegate, so the
+ * client can set them for the CefWindow's top-level. Thus, allowing window managers to correctly display the
+ * application's information (e.g., icons).
+ *
  * <p>Definition generated from internal/cef_types.h
+ *
  * <pre>typedef struct _cef_linux_window_properties_t {
  *   size_t size;
  *   cef_string_t* wayland_app_id;
@@ -17,28 +23,29 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:1979</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefLinuxWindowProperties {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     private volatile long size = -1;
 
-        /**
-         * Main window's Wayland's app_id 
-         */    public final @Nullable String waylandAppId;
-        /**
-         * Main window's WM_CLASS_CLASS in X11 
-         */    public final @Nullable String wmClassClass;
-        /**
-         * Main window's WM_CLASS_NAME in X11 
-         */    public final @Nullable String wmClassName;
-        /**
-         * Main window's WM_WINDOW_ROLE in X11 
-         */    public final @Nullable String wmRoleName;
+    /** Main window's Wayland's app_id */
+    public final @Nullable String waylandAppId;
+    /** Main window's WM_CLASS_CLASS in X11 */
+    public final @Nullable String wmClassClass;
+    /** Main window's WM_CLASS_NAME in X11 */
+    public final @Nullable String wmClassName;
+    /** Main window's WM_WINDOW_ROLE in X11 */
+    public final @Nullable String wmRoleName;
 
-    public CefLinuxWindowProperties(@Nullable String waylandAppId, @Nullable String wmClassClass, @Nullable String wmClassName, @Nullable String wmRoleName) {
+    public CefLinuxWindowProperties(
+            @Nullable String waylandAppId,
+            @Nullable String wmClassClass,
+            @Nullable String wmClassName,
+            @Nullable String wmRoleName) {
         this.waylandAppId = waylandAppId;
         this.wmClassClass = wmClassClass;
         this.wmClassName = wmClassName;
@@ -56,9 +63,9 @@ public final class CefLinuxWindowProperties {
         if (!(obj instanceof CefLinuxWindowProperties)) return false;
         CefLinuxWindowProperties other = (CefLinuxWindowProperties) obj;
         return java.util.Objects.equals(this.waylandAppId, other.waylandAppId)
-                    && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
-                    && java.util.Objects.equals(this.wmClassName, other.wmClassName)
-                    && java.util.Objects.equals(this.wmRoleName, other.wmRoleName);
+                && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
+                && java.util.Objects.equals(this.wmClassName, other.wmClassName)
+                && java.util.Objects.equals(this.wmRoleName, other.wmRoleName);
     }
 
     @Override
@@ -68,37 +75,42 @@ public final class CefLinuxWindowProperties {
 
     @Override
     public String toString() {
-        return "CefLinuxWindowProperties{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "waylandAppId=" + waylandAppId + ", " + "wmClassClass=" + wmClassClass + ", " + "wmClassName=" + wmClassName + ", " + "wmRoleName=" + wmRoleName + "}";
+        return "CefLinuxWindowProperties{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", "
+                + "waylandAppId=" + waylandAppId + ", " + "wmClassClass=" + wmClassClass + ", " + "wmClassName="
+                + wmClassName + ", " + "wmRoleName=" + wmRoleName + "}";
     }
 
     /**
-     * Mutable variant of {@link CefLinuxWindowProperties}. Linux window properties, such as X11's WM_CLASS or Wayland's app_id. Those are passed to CefWindowDelegate, so the client can set them for the CefWindow's top-level. Thus, allowing window managers to correctly display the application's information (e.g., icons).
+     * Mutable variant of {@link CefLinuxWindowProperties}. Linux window properties, such as X11's WM_CLASS or Wayland's
+     * app_id. Those are passed to CefWindowDelegate, so the client can set them for the CefWindow's top-level. Thus,
+     * allowing window managers to correctly display the application's information (e.g., icons).
+     *
      * <p>Definition generated from internal/cef_types.h
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:1979</a>
      */
     public static final class Mutable {
 
-    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
-    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
-    private volatile long size = -1;
+        // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+        @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+        private volatile long size = -1;
 
-            /**
-             * Main window's Wayland's app_id 
-             */        public @Nullable String waylandAppId;
-            /**
-             * Main window's WM_CLASS_CLASS in X11 
-             */        public @Nullable String wmClassClass;
-            /**
-             * Main window's WM_CLASS_NAME in X11 
-             */        public @Nullable String wmClassName;
-            /**
-             * Main window's WM_WINDOW_ROLE in X11 
-             */        public @Nullable String wmRoleName;
+        /** Main window's Wayland's app_id */
+        public @Nullable String waylandAppId;
+        /** Main window's WM_CLASS_CLASS in X11 */
+        public @Nullable String wmClassClass;
+        /** Main window's WM_CLASS_NAME in X11 */
+        public @Nullable String wmClassName;
+        /** Main window's WM_WINDOW_ROLE in X11 */
+        public @Nullable String wmRoleName;
 
         public Mutable() {}
 
-        public Mutable(@Nullable String waylandAppId, @Nullable String wmClassClass, @Nullable String wmClassName, @Nullable String wmRoleName) {
+        public Mutable(
+                @Nullable String waylandAppId,
+                @Nullable String wmClassClass,
+                @Nullable String wmClassName,
+                @Nullable String wmRoleName) {
             this.waylandAppId = waylandAppId;
             this.wmClassClass = wmClassClass;
             this.wmClassName = wmClassName;
@@ -107,7 +119,8 @@ public final class CefLinuxWindowProperties {
 
         /** Create an immutable snapshot of this instance. */
         public CefLinuxWindowProperties toImmutable() {
-            return new CefLinuxWindowProperties(this.waylandAppId, this.wmClassClass, this.wmClassName, this.wmRoleName);
+            return new CefLinuxWindowProperties(
+                    this.waylandAppId, this.wmClassClass, this.wmClassName, this.wmRoleName);
         }
 
         @Override
@@ -116,9 +129,9 @@ public final class CefLinuxWindowProperties {
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.waylandAppId, other.waylandAppId)
-                        && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
-                        && java.util.Objects.equals(this.wmClassName, other.wmClassName)
-                        && java.util.Objects.equals(this.wmRoleName, other.wmRoleName);
+                    && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
+                    && java.util.Objects.equals(this.wmClassName, other.wmClassName)
+                    && java.util.Objects.equals(this.wmRoleName, other.wmRoleName);
         }
 
         @Override
@@ -128,7 +141,9 @@ public final class CefLinuxWindowProperties {
 
         @Override
         public String toString() {
-            return "CefLinuxWindowProperties.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "waylandAppId=" + waylandAppId + ", " + "wmClassClass=" + wmClassClass + ", " + "wmClassName=" + wmClassName + ", " + "wmRoleName=" + wmRoleName + "}";
+            return "CefLinuxWindowProperties.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", "
+                    + "waylandAppId=" + waylandAppId + ", " + "wmClassClass=" + wmClassClass + ", " + "wmClassName="
+                    + wmClassName + ", " + "wmRoleName=" + wmRoleName + "}";
         }
     }
 }

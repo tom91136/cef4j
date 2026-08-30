@@ -16,6 +16,7 @@ import net.kurobako.cef4j.gen.CefListValue;
 import net.kurobako.cef4j.gen.CefProcessId;
 import net.kurobako.cef4j.gen.CefProcessMessage;
 import net.kurobako.cef4j.gen.CefValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -376,7 +377,7 @@ public final class CefScriptEngine implements AutoCloseable {
      *
      * @return true if the message was handled
      */
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("CEF process-message callbacks may omit browser and frame handles")
     public boolean handleMessage(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,

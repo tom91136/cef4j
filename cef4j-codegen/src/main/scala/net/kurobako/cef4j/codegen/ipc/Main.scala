@@ -21,27 +21,27 @@ object Main {
   def main(args: Array[String]): Unit = {
     val cfg         = parseArgs(args.toList)
     val handWritten = Specs.all(cfg.javaPackage)
-    val (astSpecs, astFacades, astHandlersAll, clientGetters, astDataStructs, astJvmVisitors)
-        : (
-            List[MessageSpec],
-            List[FacadeSpec],
-            List[HandlerSpec],
-            Map[String, String],
-            List[DataStructSpec],
-            List[JvmVisitorSpec]
-        ) =
+    val derived     =
       cfg.cefInclude match {
         case Some(inc) => deriveFromCef(inc, cfg.compilerId, cfg.javaPackage, cfg.cefApiVersionRaw)
         case None      =>
-          (
-            List.empty[MessageSpec],
-            List.empty[FacadeSpec],
-            List.empty[HandlerSpec],
-            Map.empty[String, String],
-            List.empty[DataStructSpec],
-            List.empty[JvmVisitorSpec]
+          Derived(
+            specs = Nil,
+            facades = Nil,
+            handlers = Nil,
+            clientGetters = Map.empty,
+            dataStructs = Nil,
+            jvmVisitors = Nil,
+            namingContext = Naming.Context.empty.copy(javaPackage = cfg.javaPackage)
           )
       }
+    given Naming.Context = derived.namingContext
+    val astSpecs         = derived.specs
+    val astFacades       = derived.facades
+    val astHandlersAll   = derived.handlers
+    val clientGetters    = derived.clientGetters
+    val astDataStructs   = derived.dataStructs
+    val astJvmVisitors   = derived.jvmVisitors
     // JVM-owned visitors replace their broadcast handlers.
     val visitorStructs                       = astJvmVisitors.map(_.cefStructName).toSet
     val astHandlers                          = astHandlersAll.filterNot(h => visitorStructs.contains(h.cefStructName))
@@ -56,11 +56,8 @@ object Main {
     // Hand-written protocol shapes override derived ones.
     val handWrittenNames                   = handWritten.map(_.className).toSet
     val visitorEventBlocklist: Set[String] = astJvmVisitors.map { v =>
-      val structPrefix = v.cefStructName.stripPrefix("cef_").stripSuffix("_t")
-      val opName       = v.cefMethodName
-      val sp           = structPrefix.split('_').iterator.filter(_.nonEmpty).map(p => p.head.toUpper +: p.tail).mkString
-      val mp           = opName.split('_').iterator.filter(_.nonEmpty).map(p => p.head.toUpper +: p.tail).mkString
-      sp + mp + "Event"
+      Naming.toPascalCase(v.cefStructName.stripPrefix("cef_").stripSuffix("_t")) +
+        Naming.toPascalCase(v.cefMethodName) + "Event"
     }.toSet
     val astFiltered =
       astSpecs.filterNot(s => handWrittenNames.contains(s.className) || visitorEventBlocklist.contains(s.className))
@@ -223,19 +220,22 @@ object Main {
     }
 
   // Preprocessing must use the runtime's CEF_API_VERSION to preserve struct layout.
+  private final case class Derived(
+      specs: List[MessageSpec],
+      facades: List[FacadeSpec],
+      handlers: List[HandlerSpec],
+      clientGetters: Map[String, String],
+      dataStructs: List[DataStructSpec],
+      jvmVisitors: List[JvmVisitorSpec],
+      namingContext: Naming.Context
+  )
+
   private def deriveFromCef(
       cefInclude: Path,
       compilerId: String,
       packageName: String,
       cefApiVersionRaw: Option[String]
-  ): (
-      List[MessageSpec],
-      List[FacadeSpec],
-      List[HandlerSpec],
-      Map[String, String],
-      List[DataStructSpec],
-      List[JvmVisitorSpec]
-  ) = {
+  ): Derived = {
     val cefRoot     = cefInclude.getParent
     val capiDir     = cefInclude.resolve("capi")
     val typesHeader = cefInclude.resolve("internal/cef_types.h")
@@ -281,13 +281,14 @@ object Main {
 
     val dataStructs      = SpecDeriver.deriveDataStructs(decls, packageName)
     val knownDataStructs = dataStructs.map(_.cefStructName).toSet
-    (
-      SpecDeriver.derive(decls, packageName, knownDataStructs),
-      SpecDeriver.deriveFacades(decls, packageName, knownDataStructs, methodDocs),
-      SpecDeriver.deriveHandlers(decls, packageName, knownDataStructs, methodDocs),
-      SpecDeriver.deriveClientGetters(decls),
-      dataStructs,
-      SpecDeriver.deriveJvmVisitors(decls, packageName, methodDocs)
+    Derived(
+      specs = SpecDeriver.derive(decls, packageName, knownDataStructs),
+      facades = SpecDeriver.deriveFacades(decls, packageName, knownDataStructs, methodDocs),
+      handlers = SpecDeriver.deriveHandlers(decls, packageName, knownDataStructs, methodDocs),
+      clientGetters = SpecDeriver.deriveClientGetters(decls),
+      dataStructs = dataStructs,
+      jvmVisitors = SpecDeriver.deriveJvmVisitors(decls, packageName, methodDocs),
+      namingContext = ipcNamingContext
     )
   }
 

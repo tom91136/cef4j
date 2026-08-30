@@ -13,14 +13,14 @@ public final class V8ValueGetDateValueResponse implements CefMessageView, CefMes
 
     public static final int MESSAGE_ID = 1318956872;
 
-    private final Basetime result;
+    private final BaseTime result;
 
-    public V8ValueGetDateValueResponse(@Nonnull Basetime result) {
+    public V8ValueGetDateValueResponse(@Nonnull BaseTime result) {
         this.result = result;
     }
 
     @Nonnull
-    public Basetime result() {
+    public BaseTime result() {
         return result;
     }
 
@@ -48,7 +48,7 @@ public final class V8ValueGetDateValueResponse implements CefMessageView, CefMes
     public static final CefMessageDecoder<V8ValueGetDateValueResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        Basetime result = Basetime.decode(__buf);
+        BaseTime result = BaseTime.decode(__buf);
         WireDecoder.requireFullyConsumed(__buf, "V8ValueGetDateValueResponse");
         return new V8ValueGetDateValueResponse(result);
     };

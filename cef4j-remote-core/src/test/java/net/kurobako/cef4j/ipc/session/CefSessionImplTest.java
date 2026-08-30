@@ -286,15 +286,9 @@ class CefSessionImplTest {
                 Objects.requireNonNull(receiver).accept(response);
             } else {
                 CompletableFuture<Void> unused = CompletableFuture.runAsync(
-                        () -> {
-                            try {
-                                Thread.sleep(acknowledgementDelayMillis);
-                                Objects.requireNonNull(receiver).accept(response);
-                            } catch (InterruptedException interrupted) {
-                                Thread.currentThread().interrupt();
-                            }
-                        },
-                        delayedAcknowledgements);
+                        () -> Objects.requireNonNull(receiver).accept(response),
+                        CompletableFuture.delayedExecutor(
+                                acknowledgementDelayMillis, TimeUnit.MILLISECONDS, delayedAcknowledgements));
             }
         }
 
@@ -420,6 +414,37 @@ class CefSessionImplTest {
         } finally {
             rejected.close();
             isolatedPeer.close();
+        }
+    }
+
+    @Test
+    void pendingRequestLimitRejectsExcessAndCancellationReleasesCapacity() throws Exception {
+        LoopbackTransport.Pair isolated = LoopbackTransport.create();
+        ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+        CefSessionImpl bounded = new CefSessionImpl(isolated.a, Duration.ofSeconds(10), timer, 1);
+        TestPeer isolatedPeer = new TestPeer(isolated.b);
+        try {
+            CompletableFuture<TestMessages.BytesView> first = bounded.request(
+                    new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+            Objects.requireNonNull(isolatedPeer.poll(2, TimeUnit.SECONDS), "first request");
+
+            CompletableFuture<TestMessages.BytesView> rejected = bounded.request(
+                    new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+            assertThatThrownBy(() -> rejected.get(2, TimeUnit.SECONDS))
+                    .isInstanceOf(ExecutionException.class)
+                    .hasCauseInstanceOf(CefTransportException.class)
+                    .hasMessageContaining("pending request limit");
+            assertThat(isolatedPeer.poll(100, TimeUnit.MILLISECONDS)).isNull();
+
+            first.cancel(false);
+            CompletableFuture<TestMessages.BytesView> admitted = bounded.request(
+                    new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
+            assertThat(isolatedPeer.poll(2, TimeUnit.SECONDS)).isNotNull();
+            admitted.cancel(false);
+        } finally {
+            bounded.close();
+            isolatedPeer.close();
+            timer.shutdownNow();
         }
     }
 

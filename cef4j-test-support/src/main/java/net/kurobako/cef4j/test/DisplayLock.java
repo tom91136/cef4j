@@ -6,18 +6,23 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public final class DisplayLock implements BeforeAllCallback, AfterAllCallback {
+public final class DisplayLock implements BeforeAllCallback, AfterAllCallback, AutoCloseable {
     private static final String LOCK_PATH = System.getProperty(
             "cef4j.test.displayLockPath",
             Path.of(System.getProperty("java.io.tmpdir", "/tmp"), "cef4j-ui-display.lock")
                     .toString());
     private static final long ACQUIRE_TIMEOUT_SECONDS = Long.getLong("cef4j.test.displayLockTimeoutSeconds", 600L);
+
+    private final Path path;
+    private final Duration acquireTimeout;
 
     @Nullable
     private FileChannel channel;
@@ -25,30 +30,57 @@ public final class DisplayLock implements BeforeAllCallback, AfterAllCallback {
     @Nullable
     private FileLock lock;
 
+    public DisplayLock() {
+        this(Path.of(LOCK_PATH), Duration.ofSeconds(ACQUIRE_TIMEOUT_SECONDS));
+    }
+
+    DisplayLock(Path path, Duration acquireTimeout) {
+        this.path = Objects.requireNonNull(path, "path");
+        this.acquireTimeout = Objects.requireNonNull(acquireTimeout, "acquireTimeout");
+        if (acquireTimeout.isNegative() || acquireTimeout.isZero()) {
+            throw new IllegalArgumentException("acquireTimeout must be positive");
+        }
+    }
+
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        channel = FileChannel.open(Path.of(LOCK_PATH), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(ACQUIRE_TIMEOUT_SECONDS);
-        while (true) {
-            try {
-                FileLock acquired = channel.tryLock();
-                if (acquired != null) {
-                    lock = acquired;
-                    return;
+        acquire();
+    }
+
+    void acquire() throws Exception {
+        FileChannel opened = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        try {
+            long deadline = System.nanoTime() + acquireTimeout.toNanos();
+            while (true) {
+                try {
+                    FileLock acquired = opened.tryLock();
+                    if (acquired != null) {
+                        channel = opened;
+                        lock = acquired;
+                        return;
+                    }
+                } catch (OverlappingFileLockException sameJvm) {
+                    throw new IllegalStateException("display lock already held by this JVM: " + path, sameJvm);
                 }
-            } catch (OverlappingFileLockException sameJvm) {
-                throw new IllegalStateException("display lock already held by this JVM: " + LOCK_PATH, sameJvm);
+                if (System.nanoTime() > deadline) {
+                    throw new IllegalStateException("timed out acquiring display lock after " + acquireTimeout + " at "
+                            + path + "; another fork is holding it");
+                }
+                TimeUnit.MILLISECONDS.sleep(100);
             }
-            if (System.nanoTime() > deadline) {
-                throw new IllegalStateException("timed out acquiring display lock after " + ACQUIRE_TIMEOUT_SECONDS
-                        + "s at " + LOCK_PATH + "; another fork is holding it");
-            }
-            Thread.sleep(100);
+        } catch (Exception failure) {
+            opened.close();
+            throw failure;
         }
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
+        close();
+    }
+
+    @Override
+    public void close() throws IOException {
         IOException failure = null;
         if (lock != null) {
             try {
@@ -64,6 +96,8 @@ public final class DisplayLock implements BeforeAllCallback, AfterAllCallback {
                 if (failure == null) failure = e;
             }
         }
+        lock = null;
+        channel = null;
         if (failure != null) throw failure;
     }
 }

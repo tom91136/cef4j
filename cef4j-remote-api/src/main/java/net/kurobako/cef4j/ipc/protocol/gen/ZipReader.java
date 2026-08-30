@@ -130,7 +130,7 @@ public final class ZipReader implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
      */
-    public CompletableFuture<Basetime> getFileLastModified() {
+    public CompletableFuture<BaseTime> getFileLastModified() {
         return CefFutures.map(
             session.request(new ZipReaderGetFileLastModifiedRequest(handle), ZipReaderGetFileLastModifiedResponse.DECODER),
             ZipReaderGetFileLastModifiedResponse::result);

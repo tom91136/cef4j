@@ -4,6 +4,13 @@ import scala.annotation.tailrec
 
 object Naming {
 
+  private val KnownCompoundSegments: Map[String, List[String]] = Map(
+    "basetime"        -> List("Base", "Time"),
+    "postdataelement" -> List("Post", "Data", "Element"),
+    "resultcode"      -> List("Result", "Code"),
+    "textfield"       -> List("Text", "Field")
+  )
+
   case class Context(
       cppClassNames: Map[String, String],
       compoundSegments: Map[String, List[String]],
@@ -72,11 +79,15 @@ object Naming {
 
   private def titleCase(s: String): String = if (s.isEmpty) s else s"${s.head.toUpper}${s.tail.toLowerCase}"
 
-  private def normalizePascal(cpp: String): String = splitPascalWords(cpp).map(titleCase).mkString
+  private def normalizePascal(cpp: String)(using Context): String =
+    splitPascalWords(cpp)
+      .flatMap(word => compoundSegments.getOrElse(word.toLowerCase, List(titleCase(word))))
+      .mkString
 
-  private def pascalToCamel(pascal: String): String = {
+  private def pascalToCamel(pascal: String)(using Context): String = {
     val words = splitPascalWords(pascal)
-    val name  = words match {
+      .flatMap(word => compoundSegments.getOrElse(word.toLowerCase, List(titleCase(word))))
+    val name = words match {
       case Nil     => ""
       case x :: xs => x.toLowerCase + xs.map(titleCase).mkString
     }
@@ -100,7 +111,8 @@ object Naming {
 
   def nativeMethodName(javaName: String): String = javaName + "0"
 
-  private def compoundSegments(using context: Context): Map[String, List[String]] = context.compoundSegments
+  private def compoundSegments(using context: Context): Map[String, List[String]] =
+    KnownCompoundSegments ++ context.compoundSegments
 
   def computeEnumPrefix(names: List[String]): String =
     if (names.size < 2) ""

@@ -1,28 +1,37 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Options that can be passed to CefParseJSON.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   JSON_PARSER_RFC = 0,
  *   JSON_PARSER_ALLOW_TRAILING_COMMAS = 1 &lt;&lt; 0
  * } cef_json_parser_options_t;</pre>
+ *
  * <p>Possible values: {@link Kind#RFC}, {@link Kind#ALLOW_TRAILING_COMMAS}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefJsonParserOptions implements CefEnum<CefJsonParserOptions> {
 
     /** Known constants for {@link CefJsonParserOptions}. */
     public enum Kind {
-        /** Parses the input strictly according to RFC 4627. See comments in Chromium's base/json/json_reader.h file for known limitations/ deviations from the RFC.  */
+        /**
+         * Parses the input strictly according to RFC 4627. See comments in Chromium's base/json/json_reader.h file for
+         * known limitations/ deviations from the RFC.
+         */
         RFC(0, "0", "JSON_PARSER_RFC"),
-        /** Allows commas to exist after the last element in structures.  */
+        /** Allows commas to exist after the last element in structures. */
         ALLOW_TRAILING_COMMAS(1 << 0, "1 << 0", "JSON_PARSER_ALLOW_TRAILING_COMMAS");
 
         private static final Kind[] VALUES = Kind.values();
@@ -74,8 +83,8 @@ public final class CefJsonParserOptions implements CefEnum<CefJsonParserOptions>
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

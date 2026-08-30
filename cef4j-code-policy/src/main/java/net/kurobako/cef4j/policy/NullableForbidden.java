@@ -50,6 +50,7 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
 
     private static final String NULLABLE = "javax.annotation.Nullable";
     private static final String NULL_UNMARKED = "com.uber.nullaway.annotations.NullUnmarked";
+    private static final String NULLABLE_BOUNDARY = "net.kurobako.cef4j.policy.NullableBoundary";
     private static final String ALLOWED_PACKAGES = "NullableForbidden:AllowedPackages";
 
     private final ImmutableSet<String> allowedPackages;
@@ -73,7 +74,7 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
             return NO_MATCH;
         }
         Element symbol = ASTHelpers.getSymbol(member);
-        if (symbol == null || inAnonymousOrLocal(symbol) || isNullUnmarked(symbol)) {
+        if (symbol == null || inAnonymousOrLocal(symbol) || isNullUnmarked(symbol) || isNullableBoundary(symbol)) {
             return NO_MATCH;
         }
         if (allowedPackages.contains(packageOf(symbol))) {
@@ -145,6 +146,20 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
         while (current != null) {
             for (AnnotationMirror annotation : current.getAnnotationMirrors()) {
                 if (NULL_UNMARKED.contentEquals(annotation.getAnnotationType().toString())) {
+                    return true;
+                }
+            }
+            current = current.getEnclosingElement();
+        }
+        return false;
+    }
+
+    private static boolean isNullableBoundary(Element symbol) {
+        Element current = symbol;
+        while (current != null) {
+            for (AnnotationMirror annotation : current.getAnnotationMirrors()) {
+                if (NULLABLE_BOUNDARY.contentEquals(
+                        annotation.getAnnotationType().toString())) {
                     return true;
                 }
             }

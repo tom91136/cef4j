@@ -13,14 +13,14 @@ public final class ZipReaderGetFileLastModifiedResponse implements CefMessageVie
 
     public static final int MESSAGE_ID = 537915238;
 
-    private final Basetime result;
+    private final BaseTime result;
 
-    public ZipReaderGetFileLastModifiedResponse(@Nonnull Basetime result) {
+    public ZipReaderGetFileLastModifiedResponse(@Nonnull BaseTime result) {
         this.result = result;
     }
 
     @Nonnull
-    public Basetime result() {
+    public BaseTime result() {
         return result;
     }
 
@@ -48,7 +48,7 @@ public final class ZipReaderGetFileLastModifiedResponse implements CefMessageVie
     public static final CefMessageDecoder<ZipReaderGetFileLastModifiedResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        Basetime result = Basetime.decode(__buf);
+        BaseTime result = BaseTime.decode(__buf);
         WireDecoder.requireFullyConsumed(__buf, "ZipReaderGetFileLastModifiedResponse");
         return new ZipReaderGetFileLastModifiedResponse(result);
     };

@@ -232,10 +232,10 @@ class CefViewsInteropTest extends CefTestBase {
     @Test
     @Order(55)
     void textfieldCreateAndSetValue() {
-        Optional<CefTextfield> optTf = CefTextfield.create(null);
-        assertThat(optTf).as("CefTextfield.create").isPresent();
+        Optional<CefTextField> optTf = CefTextField.create(null);
+        assertThat(optTf).as("CefTextField.create").isPresent();
 
-        try (CefTextfield tf = optTf.get()) {
+        try (CefTextField tf = optTf.get()) {
             tf.setText("hello");
             assertThat(tf.getText()).as("textfield text").hasValue("hello");
 
@@ -250,7 +250,7 @@ class CefViewsInteropTest extends CefTestBase {
     @Test
     @Order(56)
     void textfieldReadOnlyAndPasswordInput() {
-        try (CefTextfield tf = CefTextfield.create(null).orElseThrow()) {
+        try (CefTextField tf = CefTextField.create(null).orElseThrow()) {
             assertThat(tf.isReadOnly()).as("initially not read-only").isFalse();
             tf.setReadOnly(true);
             assertThat(tf.isReadOnly()).as("after setReadOnly(true)").isTrue();
@@ -263,7 +263,7 @@ class CefViewsInteropTest extends CefTestBase {
     @Test
     @Order(57)
     void textfieldSelectionOperations() {
-        try (CefTextfield tf = CefTextfield.create(null).orElseThrow()) {
+        try (CefTextField tf = CefTextField.create(null).orElseThrow()) {
             tf.setText("hello world");
             tf.selectAll(false);
             assertThat(tf.hasSelection()).as("hasSelection after selectAll").isTrue();

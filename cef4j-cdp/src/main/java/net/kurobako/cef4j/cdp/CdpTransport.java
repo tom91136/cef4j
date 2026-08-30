@@ -5,10 +5,11 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Raw, transport-independent CDP command and event channel. */
+@NullableBoundary("CDP transports use null bytes to omit command parameters")
 public interface CdpTransport extends AutoCloseable {
-    @SuppressWarnings("NullableForbidden")
     @Nonnull
     CompletionStage<byte[]> execute(@Nonnull String method, @Nullable byte[] params);
 

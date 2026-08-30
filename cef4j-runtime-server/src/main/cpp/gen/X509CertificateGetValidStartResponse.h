@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "Basetime.h"
+#include "BaseTime.h"
 
 namespace net_kurobako_cef4j_ipc_protocol_gen {
 
@@ -16,7 +16,7 @@ struct X509CertificateGetValidStartResponse {
     static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
     static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
-    Basetime result;
+    BaseTime result;
 
     /** Number of payload bytes that {@link encodeInto} writes for this instance. */
     std::size_t encodedSize() const noexcept {
@@ -38,7 +38,7 @@ struct X509CertificateGetValidStartResponse {
             if (pos > len || count > len - pos)
                 throw std::invalid_argument("truncated X509CertificateGetValidStartResponse payload");
         };
-        out.result = Basetime::decode(src + pos, len - pos);
+        out.result = BaseTime::decode(src + pos, len - pos);
         requireAvailable(out.result.encodedSize());
         pos += out.result.encodedSize();
         if (pos != len)

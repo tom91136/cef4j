@@ -208,33 +208,31 @@ public final class WebDriverServer implements AutoCloseable {
     private void route(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
-        if ("GET".equals(method) && "/status".equals(path)) {
+        WebDriverRoute.Match route = WebDriverRoute.match(method, path)
+                .orElseThrow(() -> error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path));
+        if (route.command() == WebDriverRoute.Command.STATUS) {
             JsonObject status = new JsonObject();
             status.addProperty("ready", !closed.get() && !creatingSession && sessions.isEmpty());
             status.addProperty("message", sessions.isEmpty() ? "cef4j WebDriver is ready" : "a session is active");
             sendSuccess(exchange, status);
             return;
         }
-        if ("POST".equals(method) && "/session".equals(path)) {
+        if (route.command() == WebDriverRoute.Command.NEW_SESSION) {
             createSession(exchange, parseObjectBody(exchange));
             return;
         }
-
-        String[] parts = pathParts(path);
-        if (parts.length < 2 || !"session".equals(parts[0])) {
-            throw error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path);
-        }
-        ActiveSession session = sessions.get(parts[1]);
+        String sessionId = route.parameter("session");
+        ActiveSession session = sessions.get(sessionId);
         if (session == null) {
-            throw error(WebDriverError.INVALID_SESSION_ID, "unknown session: " + parts[1]);
+            throw error(WebDriverError.INVALID_SESSION_ID, "unknown session: " + sessionId);
         }
-        if (parts.length == 2 && "DELETE".equals(method)) {
+        if (route.command() == WebDriverRoute.Command.DELETE_SESSION) {
             sessions.remove(session.id, session);
             session.close();
             sendSuccess(exchange, JsonNull.INSTANCE);
             return;
         }
-        routeSessionCommand(exchange, method, path, parts, session);
+        routeSessionCommand(exchange, route, session);
     }
 
     private void createSession(HttpExchange exchange, JsonObject body) throws IOException {
@@ -306,223 +304,179 @@ public final class WebDriverServer implements AutoCloseable {
         }
     }
 
-    private void routeSessionCommand(
-            HttpExchange exchange, String method, String path, String[] parts, ActiveSession session)
+    private void routeSessionCommand(HttpExchange exchange, WebDriverRoute.Match route, ActiveSession session)
             throws IOException {
         AutomationBackend backend = session.backend;
-        if (parts.length == 3 && "url".equals(parts[2])) {
-            if ("GET".equals(method)) {
+        switch (route.command()) {
+            case CURRENT_URL:
                 sendSuccess(exchange, string(command(session, backend::currentUrl)));
                 return;
-            }
-            if ("POST".equals(method)) {
+            case NAVIGATE:
                 JsonObject body = parseObjectBody(exchange);
                 String url = requiredString(body, "url");
                 command(session, "pageLoad", () -> backend.navigate(url));
                 sendSuccess(exchange, JsonNull.INSTANCE);
                 return;
-            }
-        }
-        if (parts.length == 3 && "GET".equals(method) && "title".equals(parts[2])) {
-            sendSuccess(exchange, string(command(session, backend::title)));
-            return;
-        }
-        if (parts.length == 3 && "GET".equals(method) && "source".equals(parts[2])) {
-            sendSuccess(exchange, string(command(session, backend::pageSource)));
-            return;
-        }
-        if (parts.length == 3 && "GET".equals(method) && "screenshot".equals(parts[2])) {
-            byte[] png = command(session, backend::screenshot);
-            sendSuccess(exchange, string(Base64.getEncoder().encodeToString(png)));
-            return;
-        }
-        if (parts.length == 4 && "POST".equals(method) && "execute".equals(parts[2]) && "sync".equals(parts[3])) {
-            JsonObject body = parseObjectBody(exchange);
-            String script = requiredString(body, "script");
-            JsonArray arguments = requiredArray(body, "args");
-            sendSuccess(
-                    exchange, command(session, "script", () -> backend.executeScript(script, arguments.deepCopy())));
-            return;
-        }
-        if (parts.length == 3 && "POST".equals(method)) {
-            boolean handled = true;
-            switch (parts[2]) {
-                case "back":
-                    parseObjectBody(exchange);
-                    command(session, "pageLoad", backend::back);
-                    break;
-                case "forward":
-                    parseObjectBody(exchange);
-                    command(session, "pageLoad", backend::forward);
-                    break;
-                case "refresh":
-                    parseObjectBody(exchange);
-                    command(session, "pageLoad", backend::refresh);
-                    break;
-                case "timeouts":
-                    JsonObject timeouts = parseObjectBody(exchange);
-                    validateTimeouts(timeouts);
-                    session.updateTimeouts(timeouts);
-                    break;
-                case "cookie":
-                    JsonObject body = parseObjectBody(exchange);
-                    command(
-                            session,
-                            () -> backend.addCookie(
-                                    requiredObject(body, "cookie").deepCopy()));
-                    break;
-                default:
-                    handled = false;
-                    break;
-            }
-            if (handled) {
+            case TITLE:
+                sendSuccess(exchange, string(command(session, backend::title)));
+                return;
+            case SOURCE:
+                sendSuccess(exchange, string(command(session, backend::pageSource)));
+                return;
+            case SCREENSHOT:
+                byte[] png = command(session, backend::screenshot);
+                sendSuccess(exchange, string(Base64.getEncoder().encodeToString(png)));
+                return;
+            case EXECUTE_SCRIPT:
+                JsonObject scriptBody = parseObjectBody(exchange);
+                String script = requiredString(scriptBody, "script");
+                JsonArray arguments = requiredArray(scriptBody, "args");
+                sendSuccess(
+                        exchange,
+                        command(session, "script", () -> backend.executeScript(script, arguments.deepCopy())));
+                return;
+            case BACK:
+                parseObjectBody(exchange);
+                command(session, "pageLoad", backend::back);
                 sendSuccess(exchange, JsonNull.INSTANCE);
                 return;
-            }
-        }
-        if (parts.length == 3 && "GET".equals(method) && "timeouts".equals(parts[2])) {
-            sendSuccess(exchange, session.timeouts());
-            return;
-        }
-        if (parts.length == 3 && "cookie".equals(parts[2])) {
-            if ("GET".equals(method)) {
+            case FORWARD:
+                parseObjectBody(exchange);
+                command(session, "pageLoad", backend::forward);
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case REFRESH:
+                parseObjectBody(exchange);
+                command(session, "pageLoad", backend::refresh);
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case GET_TIMEOUTS:
+                sendSuccess(exchange, session.timeouts());
+                return;
+            case SET_TIMEOUTS:
+                JsonObject timeouts = parseObjectBody(exchange);
+                validateTimeouts(timeouts);
+                session.updateTimeouts(timeouts);
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case GET_COOKIES:
                 sendSuccess(exchange, command(session, backend::cookies));
                 return;
-            }
-            if ("DELETE".equals(method)) {
+            case ADD_COOKIE:
+                JsonObject cookieBody = parseObjectBody(exchange);
+                command(
+                        session,
+                        () -> backend.addCookie(
+                                requiredObject(cookieBody, "cookie").deepCopy()));
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case DELETE_COOKIES:
                 command(session, backend::deleteAllCookies);
                 sendSuccess(exchange, JsonNull.INSTANCE);
                 return;
-            }
-        }
-        if (parts.length == 4 && "cookie".equals(parts[2])) {
-            if ("GET".equals(method)) {
-                sendSuccess(exchange, command(session, () -> backend.cookie(parts[3])));
+            case GET_COOKIE:
+                sendSuccess(exchange, command(session, () -> backend.cookie(route.parameter("name"))));
                 return;
-            }
-            if ("DELETE".equals(method)) {
-                command(session, () -> backend.deleteCookie(parts[3]));
+            case DELETE_COOKIE:
+                command(session, () -> backend.deleteCookie(route.parameter("name")));
                 sendSuccess(exchange, JsonNull.INSTANCE);
                 return;
-            }
+            case FIND_ELEMENT:
+            case FIND_ELEMENTS:
+                findElements(exchange, route.command(), session, backend, Optional.empty());
+                return;
+            case ACTIVE_ELEMENT:
+                sendSuccess(exchange, elementReference(command(session, backend::activeElement)));
+                return;
+            case FIND_CHILD_ELEMENT:
+            case FIND_CHILD_ELEMENTS:
+                findElements(exchange, route.command(), session, backend, Optional.of(route.parameter("element")));
+                return;
+            case ELEMENT_NAME:
+                sendSuccess(
+                        exchange, string(command(session, () -> backend.elementTagName(route.parameter("element")))));
+                return;
+            case ELEMENT_TEXT:
+                sendSuccess(exchange, string(command(session, () -> backend.elementText(route.parameter("element")))));
+                return;
+            case ELEMENT_RECT:
+                sendSuccess(exchange, command(session, () -> backend.elementRect(route.parameter("element"))));
+                return;
+            case ELEMENT_DISPLAYED:
+                sendSuccess(
+                        exchange,
+                        booleanValue(command(session, () -> backend.elementDisplayed(route.parameter("element")))));
+                return;
+            case ELEMENT_ENABLED:
+                sendSuccess(
+                        exchange,
+                        booleanValue(command(session, () -> backend.elementEnabled(route.parameter("element")))));
+                return;
+            case ELEMENT_SELECTED:
+                sendSuccess(
+                        exchange,
+                        booleanValue(command(session, () -> backend.elementSelected(route.parameter("element")))));
+                return;
+            case ELEMENT_CLICK:
+                parseObjectBody(exchange);
+                command(session, () -> backend.elementClick(route.parameter("element")));
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case ELEMENT_CLEAR:
+                parseObjectBody(exchange);
+                command(session, () -> backend.elementClear(route.parameter("element")));
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case ELEMENT_VALUE:
+                JsonObject valueBody = parseObjectBody(exchange);
+                command(
+                        session,
+                        () -> backend.elementSendKeys(route.parameter("element"), requiredString(valueBody, "text")));
+                sendSuccess(exchange, JsonNull.INSTANCE);
+                return;
+            case ELEMENT_ATTRIBUTE:
+                sendSuccess(
+                        exchange,
+                        command(
+                                session,
+                                () -> backend.elementAttribute(route.parameter("element"), route.parameter("name"))));
+                return;
+            case ELEMENT_PROPERTY:
+                sendSuccess(
+                        exchange,
+                        command(
+                                session,
+                                () -> backend.elementProperty(route.parameter("element"), route.parameter("name"))));
+                return;
+            case ELEMENT_CSS:
+                sendSuccess(
+                        exchange,
+                        string(command(
+                                session,
+                                () -> backend.elementCssValue(route.parameter("element"), route.parameter("name")))));
+                return;
+            default:
+                throw new AssertionError("non-session command reached session dispatch: " + route.command());
         }
-        if (parts.length == 3 && "POST".equals(method) && "element".equals(parts[2])) {
-            JsonObject body = parseObjectBody(exchange);
-            String id = findElementWithImplicitWait(
-                    session, backend, requiredString(body, "using"), requiredString(body, "value"), Optional.empty());
-            sendSuccess(exchange, elementReference(id));
-            return;
-        }
-        if (parts.length == 3 && "POST".equals(method) && "elements".equals(parts[2])) {
-            JsonObject body = parseObjectBody(exchange);
-            java.util.List<String> ids = findElementsWithImplicitWait(
-                    session, backend, requiredString(body, "using"), requiredString(body, "value"), Optional.empty());
-            sendSuccess(exchange, elementReferences(ids));
-            return;
-        }
-        if (parts.length == 4 && "GET".equals(method) && "element".equals(parts[2]) && "active".equals(parts[3])) {
-            sendSuccess(exchange, elementReference(command(session, backend::activeElement)));
-            return;
-        }
-        if (parts.length >= 4 && "element".equals(parts[2])) {
-            routeElementCommand(exchange, method, path, parts, session, backend);
-            return;
-        }
-        throw error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path);
     }
 
-    private void routeElementCommand(
+    private void findElements(
             HttpExchange exchange,
-            String method,
-            String path,
-            String[] parts,
+            WebDriverRoute.Command route,
             ActiveSession session,
-            AutomationBackend backend)
+            AutomationBackend backend,
+            Optional<String> parent)
             throws IOException {
-        String elementId = parts[3];
-        if (parts.length == 5 && "POST".equals(method) && ("element".equals(parts[4]) || "elements".equals(parts[4]))) {
-            JsonObject body = parseObjectBody(exchange);
-            String using = requiredString(body, "using");
-            String value = requiredString(body, "value");
-            if ("element".equals(parts[4])) {
-                sendSuccess(
-                        exchange,
-                        elementReference(
-                                findElementWithImplicitWait(session, backend, using, value, Optional.of(elementId))));
-            } else {
-                sendSuccess(
-                        exchange,
-                        elementReferences(
-                                findElementsWithImplicitWait(session, backend, using, value, Optional.of(elementId))));
-            }
-            return;
+        JsonObject body = parseObjectBody(exchange);
+        String using = requiredString(body, "using");
+        String value = requiredString(body, "value");
+        if (route == WebDriverRoute.Command.FIND_ELEMENT || route == WebDriverRoute.Command.FIND_CHILD_ELEMENT) {
+            sendSuccess(
+                    exchange, elementReference(findElementWithImplicitWait(session, backend, using, value, parent)));
+        } else {
+            sendSuccess(
+                    exchange, elementReferences(findElementsWithImplicitWait(session, backend, using, value, parent)));
         }
-        if (parts.length == 5 && "GET".equals(method)) {
-            JsonElement value;
-            switch (parts[4]) {
-                case "name":
-                    value = string(command(session, () -> backend.elementTagName(elementId)));
-                    break;
-                case "text":
-                    value = string(command(session, () -> backend.elementText(elementId)));
-                    break;
-                case "rect":
-                    value = command(session, () -> backend.elementRect(elementId));
-                    break;
-                case "displayed":
-                    value = booleanValue(command(session, () -> backend.elementDisplayed(elementId)));
-                    break;
-                case "enabled":
-                    value = booleanValue(command(session, () -> backend.elementEnabled(elementId)));
-                    break;
-                case "selected":
-                    value = booleanValue(command(session, () -> backend.elementSelected(elementId)));
-                    break;
-                default:
-                    throw error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path);
-            }
-            sendSuccess(exchange, value);
-            return;
-        }
-        if (parts.length == 5 && "POST".equals(method)) {
-            switch (parts[4]) {
-                case "click":
-                    parseObjectBody(exchange);
-                    command(session, () -> backend.elementClick(elementId));
-                    break;
-                case "clear":
-                    parseObjectBody(exchange);
-                    command(session, () -> backend.elementClear(elementId));
-                    break;
-                case "value":
-                    JsonObject body = parseObjectBody(exchange);
-                    command(session, () -> backend.elementSendKeys(elementId, requiredString(body, "text")));
-                    break;
-                default:
-                    throw error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path);
-            }
-            sendSuccess(exchange, JsonNull.INSTANCE);
-            return;
-        }
-        if (parts.length == 6 && "GET".equals(method)) {
-            JsonElement value;
-            switch (parts[4]) {
-                case "attribute":
-                    value = command(session, () -> backend.elementAttribute(elementId, parts[5]));
-                    break;
-                case "property":
-                    value = command(session, () -> backend.elementProperty(elementId, parts[5]));
-                    break;
-                case "css":
-                    value = string(command(session, () -> backend.elementCssValue(elementId, parts[5])));
-                    break;
-                default:
-                    throw error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path);
-            }
-            sendSuccess(exchange, value);
-            return;
-        }
-        throw error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path);
     }
 
     private static JsonObject elementReference(String id) {
@@ -789,11 +743,6 @@ public final class WebDriverServer implements AutoCloseable {
         }
         result.add("timeouts", timeouts);
         return result;
-    }
-
-    private static String[] pathParts(String path) {
-        if (path.length() < 2 || path.charAt(0) != '/' || path.endsWith("/")) return new String[0];
-        return path.substring(1).split("/");
     }
 
     private JsonObject parseObjectBody(HttpExchange exchange) throws IOException {

@@ -1,20 +1,26 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Structure representing a size.
+ *
  * <p>Definition generated from internal/cef_types_geometry.h
+ *
  * <pre>typedef struct _cef_size_t {
  *   int width;
  *   int height;
  * } cef_size_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:56</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:56</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefSize {
 
     public final int width;
@@ -35,8 +41,7 @@ public final class CefSize {
         if (this == obj) return true;
         if (!(obj instanceof CefSize)) return false;
         CefSize other = (CefSize) obj;
-        return this.width == other.width
-                    && this.height == other.height;
+        return this.width == other.width && this.height == other.height;
     }
 
     @Override
@@ -51,9 +56,11 @@ public final class CefSize {
 
     /**
      * Mutable variant of {@link CefSize}. Structure representing a size.
+     *
      * <p>Definition generated from internal/cef_types_geometry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:56</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:56</a>
      */
     public static final class Mutable {
 
@@ -77,8 +84,7 @@ public final class CefSize {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
-            return this.width == other.width
-                        && this.height == other.height;
+            return this.width == other.width && this.height == other.height;
         }
 
         @Override

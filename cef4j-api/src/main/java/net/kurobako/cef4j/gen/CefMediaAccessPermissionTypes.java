@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Media access permissions used by OnRequestMediaAccessPermission.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_MEDIA_PERMISSION_NONE = 0,
  *   CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE = 1 &lt;&lt; 0,
@@ -13,25 +17,28 @@ import javax.annotation.processing.Generated;
  *   CEF_MEDIA_PERMISSION_DESKTOP_AUDIO_CAPTURE = 1 &lt;&lt; 2,
  *   CEF_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE = 1 &lt;&lt; 3
  * } cef_media_access_permission_types_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#DEVICE_AUDIO_CAPTURE}, {@link Kind#DEVICE_VIDEO_CAPTURE}, {@link Kind#DESKTOP_AUDIO_CAPTURE}, {@link Kind#DESKTOP_VIDEO_CAPTURE}
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#DEVICE_AUDIO_CAPTURE}, {@link Kind#DEVICE_VIDEO_CAPTURE},
+ * {@link Kind#DESKTOP_AUDIO_CAPTURE}, {@link Kind#DESKTOP_VIDEO_CAPTURE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefMediaAccessPermissionTypes implements CefEnum<CefMediaAccessPermissionTypes> {
 
     /** Known constants for {@link CefMediaAccessPermissionTypes}. */
     public enum Kind {
-        /** No permission.  */
+        /** No permission. */
         NONE(0, "0", "CEF_MEDIA_PERMISSION_NONE"),
-        /** Device audio capture permission.  */
+        /** Device audio capture permission. */
         DEVICE_AUDIO_CAPTURE(1 << 0, "1 << 0", "CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE"),
-        /** Device video capture permission.  */
+        /** Device video capture permission. */
         DEVICE_VIDEO_CAPTURE(1 << 1, "1 << 1", "CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE"),
-        /** Desktop audio capture permission.  */
+        /** Desktop audio capture permission. */
         DESKTOP_AUDIO_CAPTURE(1 << 2, "1 << 2", "CEF_MEDIA_PERMISSION_DESKTOP_AUDIO_CAPTURE"),
-        /** Desktop video capture permission.  */
+        /** Desktop video capture permission. */
         DESKTOP_VIDEO_CAPTURE(1 << 3, "1 << 3", "CEF_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE");
 
         private static final Kind[] VALUES = Kind.values();
@@ -83,8 +90,8 @@ public final class CefMediaAccessPermissionTypes implements CefEnum<CefMediaAcce
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

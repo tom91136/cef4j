@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object CppHandlerForwarderEmitter {
 
   case class ForwarderInputs(
@@ -10,7 +12,7 @@ object CppHandlerForwarderEmitter {
       clientGetters: Map[String, String] = Map.empty
   )
 
-  def emit(in: ForwarderInputs): String = {
+  def emit(in: ForwarderInputs)(using Naming.Context): String = {
     val ns            = in.packageName.replace('.', '_').toLowerCase
     val capiIncludes  = in.capiHeaders.sorted.map(h => s"""#include "$h"""").mkString("\n")
     val eventIncludes = in.handlers
@@ -139,17 +141,15 @@ object CppHandlerForwarderEmitter {
        |""".stripMargin
   }
 
-  private def forwarderClassName(spec: HandlerSpec): String = forwarderClassName(spec.cefStructName)
+  private def forwarderClassName(spec: HandlerSpec)(using Naming.Context): String =
+    forwarderClassName(spec.cefStructName)
 
-  private def forwarderClassName(cefStruct: String): String =
-    toCamelCase(stripCefPrefix(cefStruct)) + "Forwarder"
+  private def forwarderClassName(cefStruct: String)(using Naming.Context): String =
+    Naming.toPascalCase(stripCefPrefix(cefStruct)) + "Forwarder"
 
   private def stripCefPrefix(name: String): String = name.stripPrefix("cef_").stripSuffix("_t")
 
-  private def toCamelCase(s: String): String =
-    s.split('_').iterator.filter(_.nonEmpty).map(p => p.head.toUpper +: p.tail).mkString
-
-  private def renderHandlerClass(spec: HandlerSpec, facadeStructs: Set[String]): String = {
+  private def renderHandlerClass(spec: HandlerSpec, facadeStructs: Set[String])(using Naming.Context): String = {
     val cls       = forwarderClassName(spec)
     val cefStruct = spec.cefStructName
     val callbacks = spec.methods.map(m => renderCallbackInit(m, cefStruct, facadeStructs)).mkString("\n")
@@ -170,7 +170,11 @@ object CppHandlerForwarderEmitter {
   private def decapitalize(s: String): String =
     if (s.isEmpty) s else s.head.toLower +: s.tail
 
-  private def renderCallbackInit(m: HandlerMethod, cefStruct: String, facadeStructs: Set[String]): String = {
+  private def renderCallbackInit(
+      m: HandlerMethod,
+      cefStruct: String,
+      facadeStructs: Set[String]
+  )(using Naming.Context): String = {
     val unsupported = m.params.exists { p =>
       p.ty match {
         case FieldType.RemoteHandle => !m.handleStructByField.get(p.name).exists(facadeStructs.contains)
@@ -197,7 +201,7 @@ object CppHandlerForwarderEmitter {
           case FieldType.Utf8String   => s"            ev.${p.name} = utf16ToUtf8(${p.name});"
           case FieldType.RemoteHandle =>
             val struct = m.handleStructByField(p.name)
-            val tbl    = decapitalize(toCamelCase(stripCefPrefix(struct)))
+            val tbl    = Naming.toCamelCase(stripCefPrefix(struct))
             s"            ev.${p.name} = gendisp::tables::$tbl.insert(${p.name});"
           case FieldType.Bytes         => "" // unreachable
           case FieldType.StringList    => "" // unreachable; deriveHandlerMethod skips StringList

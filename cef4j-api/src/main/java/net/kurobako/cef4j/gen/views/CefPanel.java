@@ -1,20 +1,25 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.processing.Generated;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefBoxLayoutSettings;
 import net.kurobako.cef4j.gen.CefInsets;
 import net.kurobako.cef4j.gen.CefLibraryObject;
 import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * A Panel is a container in the views hierarchy that can contain other Views as children. Methods must be called on the browser process UI thread unless otherwise indicated.
+ * A Panel is a container in the views hierarchy that can contain other Views as children. Methods must be called on the
+ * browser process UI thread unless otherwise indicated.
+ *
  * <p>Definition generated from views/cef_panel_capi.h
+ *
  * <pre>typedef struct _cef_panel_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -22,13 +27,16 @@ import net.kurobako.cef4j.gen.CefSize;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:49</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public interface CefPanel extends CefView {
 
     /**
      * Returns this Panel as a Window or {@code null} if this is not a Window.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>cef_window_t* (CEF_CALLBACK* as_window)(struct _cef_panel_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:63</a>
@@ -37,7 +45,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Set this Panel's Layout to FillLayout and return the FillLayout object.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>cef_fill_layout_t* (CEF_CALLBACK* set_to_fill_layout)(struct _cef_panel_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:69</a>
@@ -46,8 +56,12 @@ public interface CefPanel extends CefView {
 
     /**
      * Set this Panel's Layout to BoxLayout and return the BoxLayout object.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
-     * <pre>cef_box_layout_t* (CEF_CALLBACK* set_to_box_layout)(struct _cef_panel_t* self, const cef_box_layout_settings_t* settings);</pre>
+     *
+     * <pre>
+     * cef_box_layout_t* (CEF_CALLBACK* set_to_box_layout)(struct _cef_panel_t* self, const cef_box_layout_settings_t* settings);
+     * </pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:75</a>
      */
@@ -55,7 +69,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Get the Layout.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>cef_layout_t* (CEF_CALLBACK* get_layout)(struct _cef_panel_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:82</a>
@@ -64,7 +80,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Lay out the child Views (set their bounds based on sizing heuristics specific to the current Layout).
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>void (CEF_CALLBACK* layout)(struct _cef_panel_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:88</a>
@@ -73,7 +91,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Add a child View.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>void (CEF_CALLBACK* add_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:95</a>
@@ -81,20 +101,27 @@ public interface CefPanel extends CefView {
     void addChildView(@Nullable CefView view);
 
     /**
-     * Add a child View at the specified {@code index}. If {@code index} matches the result of GetChildCount() then the View will be added at the end.
+     * Add a child View at the specified {@code index}. If {@code index} matches the result of GetChildCount() then the
+     * View will be added at the end.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
-     * <pre>void (CEF_CALLBACK* add_child_view_at)(struct _cef_panel_t* self, struct _cef_view_t* view, int index);</pre>
+     *
+     * <pre>void (CEF_CALLBACK* add_child_view_at)(struct _cef_panel_t* self, struct _cef_view_t* view, int index);
+     * </pre>
      *
      * @param index zero-based index
-     *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:101</a>
      */
     void addChildViewAt(@Nullable CefView view, int index);
 
     /**
-     * Move the child View to the specified {@code index}. A negative value for {@code index} will move the View to the end.
+     * Move the child View to the specified {@code index}. A negative value for {@code index} will move the View to the
+     * end.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
-     * <pre>void (CEF_CALLBACK* reorder_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view, int index);</pre>
+     *
+     * <pre>void (CEF_CALLBACK* reorder_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view, int index);
+     * </pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:108</a>
      */
@@ -102,7 +129,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Remove a child View. The View can then be added to another Panel.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>void (CEF_CALLBACK* remove_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:115</a>
@@ -111,7 +140,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Remove all child Views. The removed Views will be deleted if the client holds no references to them.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>void (CEF_CALLBACK* remove_all_child_views)(struct _cef_panel_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:121</a>
@@ -120,7 +151,9 @@ public interface CefPanel extends CefView {
 
     /**
      * Returns the number of child Views.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>size_t (CEF_CALLBACK* get_child_view_count)(struct _cef_panel_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:128</a>
@@ -129,24 +162,27 @@ public interface CefPanel extends CefView {
 
     /**
      * Returns the child View at the specified {@code index}.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>cef_view_t* (CEF_CALLBACK* get_child_view_at)(struct _cef_panel_t* self, int index);</pre>
      *
      * @param index zero-based index
-     *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:134</a>
      */
     Optional<CefView> getChildViewAt(int index);
     /**
      * Create a new Panel.
+     *
      * <p>Definition generated from views/cef_panel_capi.h
+     *
      * <pre>CEF_EXPORT cef_panel_t* cef_panel_create(struct _cef_panel_delegate_t* delegate);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:57</a>
      */
     static Optional<CefPanel> create(@Nullable CefPanelDelegate delegate) {
-      return Optional.ofNullable(NativePeer.create0(delegate));
-  }
+        return Optional.ofNullable(NativePeer.create0(delegate));
+    }
 
     final class NativePeer implements CefPanel, AutoCloseable {
         private final long nativePtr;
@@ -192,395 +228,395 @@ public interface CefPanel extends CefView {
         private static native void release0(long ptr);
 
         @Override
-      public Optional<CefWindow> asWindow() {
-          checkNotClosed();
-          return Optional.ofNullable(asWindow0(nativePtr));
-      }
+        public Optional<CefWindow> asWindow() {
+            checkNotClosed();
+            return Optional.ofNullable(asWindow0(nativePtr));
+        }
 
         @Override
-      public Optional<CefFillLayout> setToFillLayout() {
-          checkNotClosed();
-          return Optional.ofNullable(setToFillLayout0(nativePtr));
-      }
+        public Optional<CefFillLayout> setToFillLayout() {
+            checkNotClosed();
+            return Optional.ofNullable(setToFillLayout0(nativePtr));
+        }
 
         @Override
-      public Optional<CefBoxLayout> setToBoxLayout(@Nonnull CefBoxLayoutSettings settings) {
-          checkNotClosed();
-          return Optional.ofNullable(setToBoxLayout0(nativePtr, settings));
-      }
+        public Optional<CefBoxLayout> setToBoxLayout(@Nonnull CefBoxLayoutSettings settings) {
+            checkNotClosed();
+            return Optional.ofNullable(setToBoxLayout0(nativePtr, settings));
+        }
 
         @Override
-      public Optional<CefLayout> getLayout() {
-          checkNotClosed();
-          return Optional.ofNullable(getLayout0(nativePtr));
-      }
+        public Optional<CefLayout> getLayout() {
+            checkNotClosed();
+            return Optional.ofNullable(getLayout0(nativePtr));
+        }
 
         @Override
-      public void layout() {
-          checkNotClosed();
-          layout0(nativePtr);
-      }
+        public void layout() {
+            checkNotClosed();
+            layout0(nativePtr);
+        }
 
         @Override
-      public void addChildView(@Nullable CefView view) {
-          checkNotClosed();
+        public void addChildView(@Nullable CefView view) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-          addChildView0(nativePtr, view);
-      }
+            addChildView0(nativePtr, view);
+        }
 
         @Override
-      public void addChildViewAt(@Nullable CefView view, int index) {
-          checkNotClosed();
+        public void addChildViewAt(@Nullable CefView view, int index) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-          addChildViewAt0(nativePtr, view, index);
-      }
+            addChildViewAt0(nativePtr, view, index);
+        }
 
         @Override
-      public void reorderChildView(@Nullable CefView view, int index) {
-          checkNotClosed();
+        public void reorderChildView(@Nullable CefView view, int index) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-          reorderChildView0(nativePtr, view, index);
-      }
+            reorderChildView0(nativePtr, view, index);
+        }
 
         @Override
-      public void removeChildView(@Nullable CefView view) {
-          checkNotClosed();
+        public void removeChildView(@Nullable CefView view) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-          removeChildView0(nativePtr, view);
-      }
+            removeChildView0(nativePtr, view);
+        }
 
         @Override
-      public void removeAllChildViews() {
-          checkNotClosed();
-          removeAllChildViews0(nativePtr);
-      }
+        public void removeAllChildViews() {
+            checkNotClosed();
+            removeAllChildViews0(nativePtr);
+        }
 
         @Override
-      public long getChildViewCount() {
-          checkNotClosed();
-          return getChildViewCount0(nativePtr);
-      }
+        public long getChildViewCount() {
+            checkNotClosed();
+            return getChildViewCount0(nativePtr);
+        }
 
         @Override
-      public Optional<CefView> getChildViewAt(int index) {
-          checkNotClosed();
-          return Optional.ofNullable(getChildViewAt0(nativePtr, index));
-      }
+        public Optional<CefView> getChildViewAt(int index) {
+            checkNotClosed();
+            return Optional.ofNullable(getChildViewAt0(nativePtr, index));
+        }
 
         @Override
-      public Optional<CefBrowserView> asBrowserView() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.asBrowserView0(nativePtr));
-      }
+        public Optional<CefBrowserView> asBrowserView() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.asBrowserView0(nativePtr));
+        }
 
         @Override
-      public Optional<CefButton> asButton() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.asButton0(nativePtr));
-      }
+        public Optional<CefButton> asButton() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.asButton0(nativePtr));
+        }
 
         @Override
-      public Optional<CefPanel> asPanel() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.asPanel0(nativePtr));
-      }
+        public Optional<CefPanel> asPanel() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.asPanel0(nativePtr));
+        }
 
         @Override
-      public Optional<CefScrollView> asScrollView() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.asScrollView0(nativePtr));
-      }
+        public Optional<CefScrollView> asScrollView() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.asScrollView0(nativePtr));
+        }
 
         @Override
-      public Optional<CefTextfield> asTextfield() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.asTextfield0(nativePtr));
-      }
+        public Optional<CefTextField> asTextField() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.asTextField0(nativePtr));
+        }
 
         @Override
-      public Optional<String> getTypeString() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.getTypeString0(nativePtr));
-      }
+        public Optional<String> getTypeString() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.getTypeString0(nativePtr));
+        }
 
         @Override
-      public Optional<String> cefToString(boolean includeChildren) {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.cefToString0(nativePtr, includeChildren));
-      }
+        public Optional<String> cefToString(boolean includeChildren) {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.cefToString0(nativePtr, includeChildren));
+        }
 
         @Override
-      public boolean isValid() {
-          checkNotClosed();
-          return CefView.NativePeer.isValid0(nativePtr);
-      }
+        public boolean isValid() {
+            checkNotClosed();
+            return CefView.NativePeer.isValid0(nativePtr);
+        }
 
         @Override
-      public boolean isAttached() {
-          checkNotClosed();
-          return CefView.NativePeer.isAttached0(nativePtr);
-      }
+        public boolean isAttached() {
+            checkNotClosed();
+            return CefView.NativePeer.isAttached0(nativePtr);
+        }
 
         @Override
-      public boolean isSame(@Nullable CefView that) {
-          checkNotClosed();
+        public boolean isSame(@Nullable CefView that) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefView");
-          return CefView.NativePeer.isSame0(nativePtr, that);
-      }
+            return CefView.NativePeer.isSame0(nativePtr, that);
+        }
 
         @Override
-      public Optional<CefViewDelegate> getDelegate() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.getDelegate0(nativePtr));
-      }
+        public Optional<CefViewDelegate> getDelegate() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.getDelegate0(nativePtr));
+        }
 
         @Override
-      public Optional<CefWindow> getWindow() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.getWindow0(nativePtr));
-      }
+        public Optional<CefWindow> getWindow() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.getWindow0(nativePtr));
+        }
 
         @Override
-      public int getId() {
-          checkNotClosed();
-          return CefView.NativePeer.getId0(nativePtr);
-      }
+        public int getId() {
+            checkNotClosed();
+            return CefView.NativePeer.getId0(nativePtr);
+        }
 
         @Override
-      public void setId(int id) {
-          checkNotClosed();
-          CefView.NativePeer.setId0(nativePtr, id);
-      }
+        public void setId(int id) {
+            checkNotClosed();
+            CefView.NativePeer.setId0(nativePtr, id);
+        }
 
         @Override
-      public int getGroupId() {
-          checkNotClosed();
-          return CefView.NativePeer.getGroupId0(nativePtr);
-      }
+        public int getGroupId() {
+            checkNotClosed();
+            return CefView.NativePeer.getGroupId0(nativePtr);
+        }
 
         @Override
-      public void setGroupId(int groupId) {
-          checkNotClosed();
-          CefView.NativePeer.setGroupId0(nativePtr, groupId);
-      }
+        public void setGroupId(int groupId) {
+            checkNotClosed();
+            CefView.NativePeer.setGroupId0(nativePtr, groupId);
+        }
 
         @Override
-      public Optional<CefView> getParentView() {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.getParentView0(nativePtr));
-      }
+        public Optional<CefView> getParentView() {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.getParentView0(nativePtr));
+        }
 
         @Override
-      public Optional<CefView> getViewForId(int id) {
-          checkNotClosed();
-          return Optional.ofNullable(CefView.NativePeer.getViewForId0(nativePtr, id));
-      }
+        public Optional<CefView> getViewForId(int id) {
+            checkNotClosed();
+            return Optional.ofNullable(CefView.NativePeer.getViewForId0(nativePtr, id));
+        }
 
         @Override
-      public void setBounds(@Nonnull CefRect bounds) {
-          checkNotClosed();
-          CefView.NativePeer.setBounds0(nativePtr, bounds);
-      }
+        public void setBounds(@Nonnull CefRect bounds) {
+            checkNotClosed();
+            CefView.NativePeer.setBounds0(nativePtr, bounds);
+        }
 
         @Override
-      public CefRect getBounds() {
-          checkNotClosed();
-          return CefView.NativePeer.getBounds0(nativePtr);
-      }
+        public CefRect getBounds() {
+            checkNotClosed();
+            return CefView.NativePeer.getBounds0(nativePtr);
+        }
 
         @Override
-      public CefRect getBoundsInScreen() {
-          checkNotClosed();
-          return CefView.NativePeer.getBoundsInScreen0(nativePtr);
-      }
+        public CefRect getBoundsInScreen() {
+            checkNotClosed();
+            return CefView.NativePeer.getBoundsInScreen0(nativePtr);
+        }
 
         @Override
-      public void setSize(@Nonnull CefSize size) {
-          checkNotClosed();
-          CefView.NativePeer.setSize0(nativePtr, size);
-      }
+        public void setSize(@Nonnull CefSize size) {
+            checkNotClosed();
+            CefView.NativePeer.setSize0(nativePtr, size);
+        }
 
         @Override
-      public CefSize getSize() {
-          checkNotClosed();
-          return CefView.NativePeer.getSize0(nativePtr);
-      }
+        public CefSize getSize() {
+            checkNotClosed();
+            return CefView.NativePeer.getSize0(nativePtr);
+        }
 
         @Override
-      public void setPosition(@Nonnull CefPoint position) {
-          checkNotClosed();
-          CefView.NativePeer.setPosition0(nativePtr, position);
-      }
+        public void setPosition(@Nonnull CefPoint position) {
+            checkNotClosed();
+            CefView.NativePeer.setPosition0(nativePtr, position);
+        }
 
         @Override
-      public CefPoint getPosition() {
-          checkNotClosed();
-          return CefView.NativePeer.getPosition0(nativePtr);
-      }
+        public CefPoint getPosition() {
+            checkNotClosed();
+            return CefView.NativePeer.getPosition0(nativePtr);
+        }
 
         @Override
-      public void setInsets(@Nonnull CefInsets insets) {
-          checkNotClosed();
-          CefView.NativePeer.setInsets0(nativePtr, insets);
-      }
+        public void setInsets(@Nonnull CefInsets insets) {
+            checkNotClosed();
+            CefView.NativePeer.setInsets0(nativePtr, insets);
+        }
 
         @Override
-      public CefInsets getInsets() {
-          checkNotClosed();
-          return CefView.NativePeer.getInsets0(nativePtr);
-      }
+        public CefInsets getInsets() {
+            checkNotClosed();
+            return CefView.NativePeer.getInsets0(nativePtr);
+        }
 
         @Override
-      public CefSize getPreferredSize() {
-          checkNotClosed();
-          return CefView.NativePeer.getPreferredSize0(nativePtr);
-      }
+        public CefSize getPreferredSize() {
+            checkNotClosed();
+            return CefView.NativePeer.getPreferredSize0(nativePtr);
+        }
 
         @Override
-      public void sizeToPreferredSize() {
-          checkNotClosed();
-          CefView.NativePeer.sizeToPreferredSize0(nativePtr);
-      }
+        public void sizeToPreferredSize() {
+            checkNotClosed();
+            CefView.NativePeer.sizeToPreferredSize0(nativePtr);
+        }
 
         @Override
-      public CefSize getMinimumSize() {
-          checkNotClosed();
-          return CefView.NativePeer.getMinimumSize0(nativePtr);
-      }
+        public CefSize getMinimumSize() {
+            checkNotClosed();
+            return CefView.NativePeer.getMinimumSize0(nativePtr);
+        }
 
         @Override
-      public CefSize getMaximumSize() {
-          checkNotClosed();
-          return CefView.NativePeer.getMaximumSize0(nativePtr);
-      }
+        public CefSize getMaximumSize() {
+            checkNotClosed();
+            return CefView.NativePeer.getMaximumSize0(nativePtr);
+        }
 
         @Override
-      public int getHeightForWidth(int width) {
-          checkNotClosed();
-          return CefView.NativePeer.getHeightForWidth0(nativePtr, width);
-      }
+        public int getHeightForWidth(int width) {
+            checkNotClosed();
+            return CefView.NativePeer.getHeightForWidth0(nativePtr, width);
+        }
 
         @Override
-      public void invalidateLayout() {
-          checkNotClosed();
-          CefView.NativePeer.invalidateLayout0(nativePtr);
-      }
+        public void invalidateLayout() {
+            checkNotClosed();
+            CefView.NativePeer.invalidateLayout0(nativePtr);
+        }
 
         @Override
-      public void setVisible(boolean visible) {
-          checkNotClosed();
-          CefView.NativePeer.setVisible0(nativePtr, visible);
-      }
+        public void setVisible(boolean visible) {
+            checkNotClosed();
+            CefView.NativePeer.setVisible0(nativePtr, visible);
+        }
 
         @Override
-      public boolean isVisible() {
-          checkNotClosed();
-          return CefView.NativePeer.isVisible0(nativePtr);
-      }
+        public boolean isVisible() {
+            checkNotClosed();
+            return CefView.NativePeer.isVisible0(nativePtr);
+        }
 
         @Override
-      public boolean isDrawn() {
-          checkNotClosed();
-          return CefView.NativePeer.isDrawn0(nativePtr);
-      }
+        public boolean isDrawn() {
+            checkNotClosed();
+            return CefView.NativePeer.isDrawn0(nativePtr);
+        }
 
         @Override
-      public void setEnabled(boolean enabled) {
-          checkNotClosed();
-          CefView.NativePeer.setEnabled0(nativePtr, enabled);
-      }
+        public void setEnabled(boolean enabled) {
+            checkNotClosed();
+            CefView.NativePeer.setEnabled0(nativePtr, enabled);
+        }
 
         @Override
-      public boolean isEnabled() {
-          checkNotClosed();
-          return CefView.NativePeer.isEnabled0(nativePtr);
-      }
+        public boolean isEnabled() {
+            checkNotClosed();
+            return CefView.NativePeer.isEnabled0(nativePtr);
+        }
 
         @Override
-      public void setFocusable(boolean focusable) {
-          checkNotClosed();
-          CefView.NativePeer.setFocusable0(nativePtr, focusable);
-      }
+        public void setFocusable(boolean focusable) {
+            checkNotClosed();
+            CefView.NativePeer.setFocusable0(nativePtr, focusable);
+        }
 
         @Override
-      public boolean isFocusable() {
-          checkNotClosed();
-          return CefView.NativePeer.isFocusable0(nativePtr);
-      }
+        public boolean isFocusable() {
+            checkNotClosed();
+            return CefView.NativePeer.isFocusable0(nativePtr);
+        }
 
         @Override
-      public boolean isAccessibilityFocusable() {
-          checkNotClosed();
-          return CefView.NativePeer.isAccessibilityFocusable0(nativePtr);
-      }
+        public boolean isAccessibilityFocusable() {
+            checkNotClosed();
+            return CefView.NativePeer.isAccessibilityFocusable0(nativePtr);
+        }
 
         @Override
-      public boolean hasFocus() {
-          checkNotClosed();
-          return CefView.NativePeer.hasFocus0(nativePtr);
-      }
+        public boolean hasFocus() {
+            checkNotClosed();
+            return CefView.NativePeer.hasFocus0(nativePtr);
+        }
 
         @Override
-      public void requestFocus() {
-          checkNotClosed();
-          CefView.NativePeer.requestFocus0(nativePtr);
-      }
+        public void requestFocus() {
+            checkNotClosed();
+            CefView.NativePeer.requestFocus0(nativePtr);
+        }
 
         @Override
-      public void setBackgroundColor(int color) {
-          checkNotClosed();
-          CefView.NativePeer.setBackgroundColor0(nativePtr, color);
-      }
+        public void setBackgroundColor(int color) {
+            checkNotClosed();
+            CefView.NativePeer.setBackgroundColor0(nativePtr, color);
+        }
 
         @Override
-      public int getBackgroundColor() {
-          checkNotClosed();
-          return CefView.NativePeer.getBackgroundColor0(nativePtr);
-      }
+        public int getBackgroundColor() {
+            checkNotClosed();
+            return CefView.NativePeer.getBackgroundColor0(nativePtr);
+        }
 
         @Override
-      public int getThemeColor(int colorId) {
-          checkNotClosed();
-          return CefView.NativePeer.getThemeColor0(nativePtr, colorId);
-      }
+        public int getThemeColor(int colorId) {
+            checkNotClosed();
+            return CefView.NativePeer.getThemeColor0(nativePtr, colorId);
+        }
 
         @Override
-      public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
-          checkNotClosed();
-          return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
-      }
+        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+            checkNotClosed();
+            return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
+        }
 
         @Override
-      public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
-          checkNotClosed();
-          return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
-      }
+        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+            checkNotClosed();
+            return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
+        }
 
         @Override
-      public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
-          checkNotClosed();
-          return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
-      }
+        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+            checkNotClosed();
+            return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
+        }
 
         @Override
-      public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
-          checkNotClosed();
-          return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
-      }
+        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+            checkNotClosed();
+            return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
+        }
 
         @Override
-      public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
-          checkNotClosed();
+        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-          return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
-      }
+            return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
+        }
 
         @Override
-      public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
-          checkNotClosed();
+        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+            checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-          return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
-      }
+            return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
+        }
 
         static native CefWindow asWindow0(long self);
 
@@ -625,5 +661,4 @@ public interface CefPanel extends CefView {
             return "CefPanel{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
-
 }

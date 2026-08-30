@@ -1,8 +1,10 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Naming
+
 object JavaEmitter {
 
-  def emit(spec: MessageSpec): String = {
+  def emit(spec: MessageSpec)(using Naming.Context): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
     val importsBlock = renderImports(spec)
@@ -59,7 +61,7 @@ object JavaEmitter {
     ).mkString("\n")
   }
 
-  private def javaType(ty: FieldType): String = ty match {
+  private def javaType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "int"
     case FieldType.I64                 => "long"
     case FieldType.Bool                => "boolean"
@@ -70,7 +72,7 @@ object JavaEmitter {
     case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
   }
 
-  private def constructorParam(field: FieldSpec): String =
+  private def constructorParam(field: FieldSpec)(using Naming.Context): String =
     field.ty match {
       case FieldType.Utf8String | FieldType.Bytes | FieldType.StringList | FieldType.RemoteHandle |
           FieldType.DataStruct(_) =>
@@ -78,7 +80,7 @@ object JavaEmitter {
       case _ => s"${javaType(field.ty)} ${field.name}"
     }
 
-  private def renderFields(spec: MessageSpec): String =
+  private def renderFields(spec: MessageSpec)(using Naming.Context): String =
     spec.fields.flatMap { f =>
       f.ty match {
         case FieldType.Utf8String =>
@@ -88,7 +90,7 @@ object JavaEmitter {
       }
     }.mkString("\n")
 
-  private def renderConstructor(spec: MessageSpec): String = {
+  private def renderConstructor(spec: MessageSpec)(using Naming.Context): String = {
     val params = spec.fields.map(constructorParam).mkString(", ")
     val body   = spec.fields.flatMap { f =>
       f.ty match {
@@ -106,7 +108,7 @@ object JavaEmitter {
        |    }""".stripMargin
   }
 
-  private def renderAccessors(spec: MessageSpec): String =
+  private def renderAccessors(spec: MessageSpec)(using Naming.Context): String =
     spec.fields.map { f =>
       val ret = javaType(f.ty)
       f.ty match {
@@ -196,7 +198,7 @@ object JavaEmitter {
       List(s"            ${field.name}.encodeInto(__dst);")
   }
 
-  private def renderDecoder(spec: MessageSpec): String = {
+  private def renderDecoder(spec: MessageSpec)(using Naming.Context): String = {
     val reads = spec.fields.flatMap(decodeRead).mkString("\n")
     val args  = spec.fields.map(_.name).mkString(", ")
     s"""    public static final CefMessageDecoder<${spec.className}> DECODER = payload -> {
@@ -208,7 +210,7 @@ object JavaEmitter {
        |    };""".stripMargin
   }
 
-  private def decodeRead(field: FieldSpec): List[String] = field.ty match {
+  private def decodeRead(field: FieldSpec)(using Naming.Context): List[String] = field.ty match {
     case FieldType.I32 =>
       List(
         s"        WireDecoder.requireRemaining(__buf, Integer.BYTES, \"${field.name}\");",

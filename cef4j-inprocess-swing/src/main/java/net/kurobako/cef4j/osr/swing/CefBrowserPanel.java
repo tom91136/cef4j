@@ -56,6 +56,7 @@ import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefScreenInfo;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Swing off-screen rendering panel for a CEF browser. */
 @SuppressWarnings({"this-escape", "resource"})
@@ -517,7 +518,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     protected void onViewPainted(int width, int height) {}
 
     /** Attaches an already-created browser to this panel and refreshes its OSR viewport. */
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("null detaches the browser from the Swing component")
     public void browser(@Nullable CefBrowser browser) {
         this.browser = browser;
         if (browser == null) return;
@@ -530,7 +531,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     /** Returns the attached browser, or {@code null} if none is attached. */
-    @SuppressWarnings("NullableForbidden")
+    @NullableBoundary("Swing component may not have an attached browser")
     @Nullable
     public CefBrowser browser() {
         return browser;

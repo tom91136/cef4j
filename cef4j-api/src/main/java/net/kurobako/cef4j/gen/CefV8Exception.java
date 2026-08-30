@@ -1,12 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.processing.Generated;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Class representing a V8 exception. The methods of this class may be called on any render process thread.
+ *
  * <p>Definition generated from cef_v8_capi.h
+ *
  * <pre>typedef struct _cef_v8_exception_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -14,13 +18,16 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:352</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the exception message.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_message)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:359</a>
@@ -29,7 +36,9 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the line of source code that the exception occurred within.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_source_line)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:365</a>
@@ -38,7 +47,9 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the resource name for the script from where the function causing the error originates.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_script_resource_name)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:371</a>
@@ -47,7 +58,9 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the 1-based number of the line where the error occurred or 0 if the line number is unknown.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:378</a>
@@ -56,7 +69,9 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the index within the script of the first character where the error occurred.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>int (CEF_CALLBACK* get_start_position)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:385</a>
@@ -65,7 +80,9 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the index within the script of the last character where the error occurred.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>int (CEF_CALLBACK* get_end_position)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:392</a>
@@ -74,7 +91,9 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the index within the line of the first character where the error occurred.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>int (CEF_CALLBACK* get_start_column)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:399</a>
@@ -83,12 +102,15 @@ public interface CefV8Exception extends CefLibraryObject {
 
     /**
      * Returns the index within the line of the last character where the error occurred.
+     *
      * <p>Definition generated from cef_v8_capi.h
+     *
      * <pre>int (CEF_CALLBACK* get_end_column)(struct _cef_v8_exception_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:406</a>
      */
     int getEndColumn();
+
     final class NativePeer implements CefV8Exception, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -133,53 +155,52 @@ public interface CefV8Exception extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-      public Optional<String> getMessage() {
-          checkNotClosed();
-          return Optional.ofNullable(getMessage0(nativePtr));
-      }
+        public Optional<String> getMessage() {
+            checkNotClosed();
+            return Optional.ofNullable(getMessage0(nativePtr));
+        }
 
         @Override
-      public Optional<String> getSourceLine() {
-          checkNotClosed();
-          return Optional.ofNullable(getSourceLine0(nativePtr));
-      }
+        public Optional<String> getSourceLine() {
+            checkNotClosed();
+            return Optional.ofNullable(getSourceLine0(nativePtr));
+        }
 
         @Override
-      public Optional<String> getScriptResourceName() {
-          checkNotClosed();
-          return Optional.ofNullable(getScriptResourceName0(nativePtr));
-      }
+        public Optional<String> getScriptResourceName() {
+            checkNotClosed();
+            return Optional.ofNullable(getScriptResourceName0(nativePtr));
+        }
 
         @Override
-      public int getLineNumber() {
-          checkNotClosed();
-          return getLineNumber0(nativePtr);
-      }
+        public int getLineNumber() {
+            checkNotClosed();
+            return getLineNumber0(nativePtr);
+        }
 
         @Override
-      public int getStartPosition() {
-          checkNotClosed();
-          return getStartPosition0(nativePtr);
-      }
+        public int getStartPosition() {
+            checkNotClosed();
+            return getStartPosition0(nativePtr);
+        }
 
         @Override
-      public int getEndPosition() {
-          checkNotClosed();
-          return getEndPosition0(nativePtr);
-      }
+        public int getEndPosition() {
+            checkNotClosed();
+            return getEndPosition0(nativePtr);
+        }
 
         @Override
-      public int getStartColumn() {
-          checkNotClosed();
-          return getStartColumn0(nativePtr);
-      }
+        public int getStartColumn() {
+            checkNotClosed();
+            return getStartColumn0(nativePtr);
+        }
 
         @Override
-      public int getEndColumn() {
-          checkNotClosed();
-          return getEndColumn0(nativePtr);
-      }
-
+        public int getEndColumn() {
+            checkNotClosed();
+            return getEndColumn0(nativePtr);
+        }
 
         static native String getMessage0(long self);
 
@@ -196,7 +217,6 @@ public interface CefV8Exception extends CefLibraryObject {
         static native int getStartColumn0(long self);
 
         static native int getEndColumn0(long self);
-
 
         @Override
         public boolean equals(Object obj) {
@@ -215,5 +235,4 @@ public interface CefV8Exception extends CefLibraryObject {
             return "CefV8Exception{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
-
 }

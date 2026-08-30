@@ -13,14 +13,14 @@ public final class NavigationEntryGetCompletionTimeResponse implements CefMessag
 
     public static final int MESSAGE_ID = 1702441752;
 
-    private final Basetime result;
+    private final BaseTime result;
 
-    public NavigationEntryGetCompletionTimeResponse(@Nonnull Basetime result) {
+    public NavigationEntryGetCompletionTimeResponse(@Nonnull BaseTime result) {
         this.result = result;
     }
 
     @Nonnull
-    public Basetime result() {
+    public BaseTime result() {
         return result;
     }
 
@@ -48,7 +48,7 @@ public final class NavigationEntryGetCompletionTimeResponse implements CefMessag
     public static final CefMessageDecoder<NavigationEntryGetCompletionTimeResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        Basetime result = Basetime.decode(__buf);
+        BaseTime result = BaseTime.decode(__buf);
         WireDecoder.requireFullyConsumed(__buf, "NavigationEntryGetCompletionTimeResponse");
         return new NavigationEntryGetCompletionTimeResponse(result);
     };

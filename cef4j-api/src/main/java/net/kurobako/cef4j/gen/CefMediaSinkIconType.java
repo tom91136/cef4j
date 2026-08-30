@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Icon types for a MediaSink object. Should be kept in sync with Chromium's media_router::SinkIconType type.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_MSIT_CAST = 0,
  *   CEF_MSIT_CAST_AUDIO_GROUP = 1,
@@ -14,12 +18,16 @@ import javax.annotation.processing.Generated;
  *   CEF_MSIT_HANGOUT = 4,
  *   ...
  * } cef_media_sink_icon_type_t;</pre>
- * <p>Possible values: {@link Kind#CAST}, {@link Kind#CAST_AUDIO_GROUP}, {@link Kind#CAST_AUDIO}, {@link Kind#MEETING}, {@link Kind#HANGOUT}, {@link Kind#EDUCATION}, {@link Kind#WIRED_DISPLAY}, {@link Kind#GENERIC}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#CAST}, {@link Kind#CAST_AUDIO_GROUP}, {@link Kind#CAST_AUDIO}, {@link Kind#MEETING},
+ * {@link Kind#HANGOUT}, {@link Kind#EDUCATION}, {@link Kind#WIRED_DISPLAY}, {@link Kind#GENERIC},
+ * {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefMediaSinkIconType implements CefEnum<CefMediaSinkIconType> {
 
     /** Known constants for {@link CefMediaSinkIconType}. */
@@ -83,8 +91,8 @@ public final class CefMediaSinkIconType implements CefEnum<CefMediaSinkIconType>
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

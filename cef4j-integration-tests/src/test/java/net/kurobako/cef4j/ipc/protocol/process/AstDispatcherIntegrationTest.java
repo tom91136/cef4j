@@ -19,6 +19,7 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -153,14 +154,16 @@ class AstDispatcherIntegrationTest {
 
             frame.loadUrl(dataUrl).get(5, TimeUnit.SECONDS);
 
-            String url = "";
-            long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
-            while (System.nanoTime() < deadline) {
-                Frame current = browser.getMainFrame().get(5, TimeUnit.SECONDS);
-                url = current.getUrl().get(5, TimeUnit.SECONDS);
-                if (url.startsWith("data:text/html")) break;
-                Thread.sleep(100);
-            }
+            String url = TestDeadline.after(Duration.ofSeconds(20))
+                    .poll(
+                            () -> {
+                                try (Frame current = browser.getMainFrame().get(5, TimeUnit.SECONDS)) {
+                                    return current.getUrl().get(5, TimeUnit.SECONDS);
+                                }
+                            },
+                            candidate -> candidate.startsWith("data:text/html"),
+                            Duration.ofMillis(100),
+                            "frame URL update");
             assertThat(url).startsWith("data:text/html");
         }
     }
@@ -207,15 +210,16 @@ class AstDispatcherIntegrationTest {
     }
 
     private static String pollFrameUrl(Browser browser, String expectedPrefix) throws Exception {
-        long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
-        String url = "";
-        while (System.nanoTime() < deadline) {
-            Frame current = browser.getMainFrame().get(5, TimeUnit.SECONDS);
-            url = current.getUrl().get(5, TimeUnit.SECONDS);
-            if (url.startsWith(expectedPrefix)) return url;
-            Thread.sleep(100);
-        }
-        return url;
+        return TestDeadline.after(Duration.ofSeconds(20))
+                .poll(
+                        () -> {
+                            try (Frame current = browser.getMainFrame().get(5, TimeUnit.SECONDS)) {
+                                return current.getUrl().get(5, TimeUnit.SECONDS);
+                            }
+                        },
+                        url -> url.startsWith(expectedPrefix),
+                        Duration.ofMillis(100),
+                        "frame URL update");
     }
 
     @Test

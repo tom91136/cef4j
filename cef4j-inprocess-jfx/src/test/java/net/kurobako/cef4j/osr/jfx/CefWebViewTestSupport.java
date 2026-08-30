@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.OS;
+import net.kurobako.cef4j.test.TestDeadline;
 
 final class CefWebViewTestSupport {
     private CefWebViewTestSupport() {}
@@ -173,12 +174,13 @@ final class CefWebViewTestSupport {
     }
 
     static boolean waitUntil(BooleanSupplier condition, long timeoutMillis) throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            if (condition.getAsBoolean()) return true;
-            Thread.sleep(20);
+        try {
+            TestDeadline.after(java.time.Duration.ofMillis(timeoutMillis))
+                    .until(condition, java.time.Duration.ofMillis(20), "test condition");
+            return true;
+        } catch (TimeoutException timedOut) {
+            return condition.getAsBoolean();
         }
-        return condition.getAsBoolean();
     }
 
     static boolean waitForRenderedColor(CefWebView view, double x, double y, Color expected, long timeoutMillis)

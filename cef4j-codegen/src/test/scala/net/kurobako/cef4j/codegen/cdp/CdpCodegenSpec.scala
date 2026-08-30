@@ -132,7 +132,8 @@ class CdpCodegenSpec extends TempDirectorySuite {
         s"--schema-metadata=${resourcePath("schema.properties")}",
         s"--out-java=${root.resolve("java")}",
         s"--out-resources=${root.resolve("resources")}",
-        "--java-package=example.cdp"
+        "--java-package=example.cdp",
+        "--regenerate-command=./mvnw generate-sources -pl cef4j-cdp"
       ))
 
       val page     = Files.readString(root.resolve("java/example/cdp/Page.java"))
@@ -140,16 +141,16 @@ class CdpCodegenSpec extends TempDirectorySuite {
       val domains  = Files.readString(root.resolve("java/example/cdp/CdpDomains.java"))
       val metadata = Files.readString(root.resolve("resources/META-INF/cef4j/cdp/schema.properties"))
 
-      assert(page.startsWith("// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform"))
+      assert(page.startsWith("// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp"))
       assert(page.contains("import javax.annotation.processing.Generated;"))
-      assert(page.contains("@Generated(\"mvn generate-sources -pl cef4j-platform\")"))
+      assert(page.contains("@Generated(\"./mvnw generate-sources -pl cef4j-cdp\")"))
       assert(page.contains("public CompletionStage<Page.FrameId> navigate(String url)"))
       assert(page.contains("public CompletionStage<Void> enable(Optional<Boolean> includeDebug)"))
       assert(page.contains("return enable(Optional.empty());"))
       assert(page.contains("@Deprecated\n        public CdpSubscription onLoadEventFired"))
       assert(page.contains("{@code Page}"))
       assert(runtime.contains("public Optional<String> classValue()"))
-      assert(domains.contains("@Generated(\"mvn generate-sources -pl cef4j-platform\")"))
+      assert(domains.contains("@Generated(\"./mvnw generate-sources -pl cef4j-cdp\")"))
       assert(domains.contains("public Page.Client page()"))
       assert(domains.contains("public DOM.Client dom()"))
       assert(domains.contains("@Deprecated @SuppressWarnings(\"InlineMeSuggester\") public DOM.Client dOM()"))

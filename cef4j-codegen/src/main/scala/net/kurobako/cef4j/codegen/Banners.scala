@@ -7,7 +7,8 @@ final class Banners private (val regenerateCommand: String) {
   val java: String                    = s"// GENERATED - do not edit. Regenerate via: $regenerateCommand"
   val javaGeneratedAnnotation: String = s"@Generated(\"$regenerateCommand\")"
   val javaAnnotation: String          =
-    javaAnnotations("SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden")
+    s"${javaAnnotations("SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused")}\n" +
+      "@NullableBoundary(\"generated external ABI\")"
   val cpp: String = s"// GENERATED - do not edit. Regenerate via: $regenerateCommand"
 
   def javaAnnotations(suppressions: String*): String = {
@@ -22,6 +23,8 @@ object Banners {
   val javaAnnotationClass: String = "javax.annotation.processing.Generated"
 
   val javaAnnotationImport: String = s"import $javaAnnotationClass;"
+
+  val javaBoundaryImport: String = "import net.kurobako.cef4j.policy.NullableBoundary;"
 
   def forCefVersion(cefVersion: String): Banners =
     new Banners(s"mvn generate-sources -pl cef4j-platform -Dcef.version=$cefVersion")

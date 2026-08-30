@@ -53,6 +53,18 @@ public final class UnresponsiveProcessCallback implements AutoCloseable {
     }
 
     /**
+     * Reset the timeout for the unresponsive process.
+     * <p>Definition generated from cef_unresponsive_process_callback.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__unresponsive__process__callback_8h.html">cef_unresponsive_process_callback.h:49</a>
+     */
+    public CompletableFuture<Void> cefWait() {
+        return CefFutures.map(
+            session.request(new UnresponsiveProcessCallbackWaitRequest(handle), UnresponsiveProcessCallbackWaitResponse.DECODER),
+            r -> null);
+    }
+
+    /**
      * Terminate the unresponsive process.
      * <p>Definition generated from cef_unresponsive_process_callback.h
      *

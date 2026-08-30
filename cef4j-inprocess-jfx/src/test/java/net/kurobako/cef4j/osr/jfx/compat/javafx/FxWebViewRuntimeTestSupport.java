@@ -294,12 +294,13 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static boolean waitUntil(BooleanSupplier condition, long timeoutMillis) throws Exception {
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        while (System.nanoTime() < deadline) {
-            if (condition.getAsBoolean()) return true;
-            Thread.sleep(20);
+        try {
+            TestDeadline.after(java.time.Duration.ofMillis(timeoutMillis))
+                    .until(condition, java.time.Duration.ofMillis(20), "test condition");
+            return true;
+        } catch (TimeoutException timedOut) {
+            return condition.getAsBoolean();
         }
-        return condition.getAsBoolean();
     }
 
     static boolean waitUntilOnFx(Callable<Boolean> condition, long timeoutMillis) throws Exception {
@@ -505,7 +506,7 @@ final class FxWebViewRuntimeTestSupport {
         if (response.requestStarted != null) response.requestStarted.countDown();
         if (response.delayMillis > 0) {
             try {
-                Thread.sleep(response.delayMillis);
+                new java.util.concurrent.CountDownLatch(1).await(response.delayMillis, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IOException("Interrupted while delaying response", e);

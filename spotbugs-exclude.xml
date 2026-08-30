@@ -28,6 +28,25 @@
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
     <Match>
+        <Class name="net.kurobako.cef4j.osr.jfx.CefWebEngine"/>
+        <Method name="~(getHistory|getView|.*Property)"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.osr.jfx.CefWebHistory"/>
+        <Method name="maxSizeProperty"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.osr.jfx.CefWebView"/>
+        <Method name="~(getEngine|getScriptEngine|zoomProperty)"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.osr.jfx.CefWebErrorEvent"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
         <Class name="net.kurobako.cef4j.http.CefHttpURLConnection"/>
         <Method name="getOutputStream"/>
         <Bug pattern="EI_EXPOSE_REP"/>
@@ -36,10 +55,6 @@
         <Class name="net.kurobako.cef4j.http.CefHttpURLConnection$Sink"/>
         <Method name="onError"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
-    </Match>
-    <Match>
-        <Class name="~net\.kurobako\.cef4j\.osr\.jfx\..*"/>
-        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
     <Match>
         <Class name="net.kurobako.cef4j.osr.jfx.CefWebView$2"/>

@@ -1,11 +1,15 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Show states supported by {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#getInitialShowState(CefWindow)}.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_SHOW_STATE_NORMAL = 0,
  *   CEF_SHOW_STATE_MINIMIZED = 1,
@@ -14,12 +18,15 @@ import javax.annotation.processing.Generated;
  *   CEF_SHOW_STATE_HIDDEN = 4,
  *   ...
  * } cef_show_state_t;</pre>
- * <p>Possible values: {@link Kind#NORMAL}, {@link Kind#MINIMIZED}, {@link Kind#MAXIMIZED}, {@link Kind#FULLSCREEN}, {@link Kind#HIDDEN}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#NORMAL}, {@link Kind#MINIMIZED}, {@link Kind#MAXIMIZED}, {@link Kind#FULLSCREEN},
+ * {@link Kind#HIDDEN}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefShowState implements CefEnum<CefShowState> {
 
     /** Known constants for {@link CefShowState}. */
@@ -80,8 +87,8 @@ public final class CefShowState implements CefEnum<CefShowState> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

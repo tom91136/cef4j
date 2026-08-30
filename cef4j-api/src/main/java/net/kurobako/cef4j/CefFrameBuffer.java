@@ -5,6 +5,7 @@ import java.nio.ByteOrder;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Thread-safe frame buffer for CEF off-screen rendering.
@@ -43,6 +44,7 @@ import net.kurobako.cef4j.gen.CefRect;
  * @param <I> the toolkit image type (e.g. {@code BufferedImage}, {@code WritableImage})
  */
 @SuppressWarnings("unused")
+@NullableBoundary("CEF paint callbacks use null for an unspecified dirty region")
 public final class CefFrameBuffer<I> {
 
     static final int MAX_PIXEL_COUNT = 7_680 * 4_320;
@@ -72,7 +74,6 @@ public final class CefFrameBuffer<I> {
          * @param dirtyRects regions that changed, or {@code null} for a full-frame update
          * @return the image containing the stamped pixels (may be {@code prev} reused, or a new instance)
          */
-        @SuppressWarnings("NullableForbidden")
         I stamp(Optional<I> prev, int[] pixels, int width, int height, @Nullable CefRect[] dirtyRects);
     }
 
@@ -155,7 +156,6 @@ public final class CefFrameBuffer<I> {
      * @param dirtyRects array of dirty rectangles, or {@code null} for a full-frame copy
      * @return the stamped image, or empty if the frame was skipped
      */
-    @SuppressWarnings("NullableForbidden")
     public Optional<I> onPaint(ByteBuffer buffer, int width, int height, @Nullable CefRect[] dirtyRects) {
         if (width <= 0 || height <= 0 || buffer == null) return Optional.empty();
 

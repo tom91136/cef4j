@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * The manner in which a link click should be opened. These constants match their equivalents in Chromium's window_open_disposition.h and should not be renumbered.
+ * The manner in which a link click should be opened. These constants match their equivalents in Chromium's
+ * window_open_disposition.h and should not be renumbered.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   CEF_WOD_UNKNOWN = 0,
  *   CEF_WOD_CURRENT_TAB = 1,
@@ -14,40 +19,50 @@ import javax.annotation.processing.Generated;
  *   CEF_WOD_NEW_BACKGROUND_TAB = 4,
  *   ...
  * } cef_window_open_disposition_t;</pre>
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CURRENT_TAB}, {@link Kind#SINGLETON_TAB}, {@link Kind#NEW_FOREGROUND_TAB}, {@link Kind#NEW_BACKGROUND_TAB}, {@link Kind#NEW_POPUP}, {@link Kind#NEW_WINDOW}, {@link Kind#SAVE_TO_DISK}, {@link Kind#OFF_THE_RECORD}, {@link Kind#IGNORE_ACTION}, {@link Kind#SWITCH_TO_TAB}, {@link Kind#NEW_PICTURE_IN_PICTURE}, {@link Kind#NEW_SPLIT_VIEW}, {@link Kind#NUM_VALUES}
+ *
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CURRENT_TAB}, {@link Kind#SINGLETON_TAB},
+ * {@link Kind#NEW_FOREGROUND_TAB}, {@link Kind#NEW_BACKGROUND_TAB}, {@link Kind#NEW_POPUP}, {@link Kind#NEW_WINDOW},
+ * {@link Kind#SAVE_TO_DISK}, {@link Kind#OFF_THE_RECORD}, {@link Kind#IGNORE_ACTION}, {@link Kind#SWITCH_TO_TAB},
+ * {@link Kind#NEW_PICTURE_IN_PICTURE}, {@link Kind#NEW_SPLIT_VIEW}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefWindowOpenDisposition implements CefEnum<CefWindowOpenDisposition> {
 
     /** Known constants for {@link CefWindowOpenDisposition}. */
     public enum Kind {
         UNKNOWN(0, "0", "CEF_WOD_UNKNOWN"),
-        /** Current tab. This is the default in most cases.  */
+        /** Current tab. This is the default in most cases. */
         CURRENT_TAB(1, "1", "CEF_WOD_CURRENT_TAB"),
-        /** Indicates that only one tab with the url should exist in the same window.  */
+        /** Indicates that only one tab with the url should exist in the same window. */
         SINGLETON_TAB(2, "2", "CEF_WOD_SINGLETON_TAB"),
-        /** Shift key + Middle mouse button or meta/ctrl key while clicking.  */
+        /** Shift key + Middle mouse button or meta/ctrl key while clicking. */
         NEW_FOREGROUND_TAB(3, "3", "CEF_WOD_NEW_FOREGROUND_TAB"),
-        /** Middle mouse button or meta/ctrl key while clicking.  */
+        /** Middle mouse button or meta/ctrl key while clicking. */
         NEW_BACKGROUND_TAB(4, "4", "CEF_WOD_NEW_BACKGROUND_TAB"),
-        /** New popup window.  */
+        /** New popup window. */
         NEW_POPUP(5, "5", "CEF_WOD_NEW_POPUP"),
-        /** Shift key while clicking.  */
+        /** Shift key while clicking. */
         NEW_WINDOW(6, "6", "CEF_WOD_NEW_WINDOW"),
-        /** Alt key while clicking.  */
+        /** Alt key while clicking. */
         SAVE_TO_DISK(7, "7", "CEF_WOD_SAVE_TO_DISK"),
-        /** New off-the-record (incognito) window.  */
+        /** New off-the-record (incognito) window. */
         OFF_THE_RECORD(8, "8", "CEF_WOD_OFF_THE_RECORD"),
-        /** Special case error condition from the renderer.  */
+        /** Special case error condition from the renderer. */
         IGNORE_ACTION(9, "9", "CEF_WOD_IGNORE_ACTION"),
-        /** Activates an existing tab containing the url, rather than navigating. This is similar to SINGLETON_TAB, but searches across all windows from the current profile and anonymity (instead of just the current one); closes the current tab on switching if the current tab was the NTP with no session history; and behaves like CURRENT_TAB instead of NEW_FOREGROUND_TAB when no existing tab is found.  */
+        /**
+         * Activates an existing tab containing the url, rather than navigating. This is similar to SINGLETON_TAB, but
+         * searches across all windows from the current profile and anonymity (instead of just the current one); closes
+         * the current tab on switching if the current tab was the NTP with no session history; and behaves like
+         * CURRENT_TAB instead of NEW_FOREGROUND_TAB when no existing tab is found.
+         */
         SWITCH_TO_TAB(10, "10", "CEF_WOD_SWITCH_TO_TAB"),
-        /** Creates a new document picture-in-picture window showing a child WebView.  */
+        /** Creates a new document picture-in-picture window showing a child WebView. */
         NEW_PICTURE_IN_PICTURE(11, "11", "CEF_WOD_NEW_PICTURE_IN_PICTURE"),
-        /** Opens a link in a split view alongside the current tab.  */
+        /** Opens a link in a split view alongside the current tab. */
         NEW_SPLIT_VIEW(12, "12", "CEF_WOD_NEW_SPLIT_VIEW"),
         NUM_VALUES(13, "13", "CEF_WOD_NUM_VALUES");
 
@@ -100,8 +115,8 @@ public final class CefWindowOpenDisposition implements CefEnum<CefWindowOpenDisp
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

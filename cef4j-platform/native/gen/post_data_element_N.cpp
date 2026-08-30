@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include <jni.h>
 #include "include/capi/cef_request_capi.h"
 #include "jni_util.h"
@@ -42,8 +42,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPostDataElement), getType0)(JNIEnv* env,
     auto* s = reinterpret_cast<cef_post_data_element_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type(s);
-    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPostdataelementType");
-    auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefPostdataelementType;");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPostDataElementType");
+    auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefPostDataElementType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 

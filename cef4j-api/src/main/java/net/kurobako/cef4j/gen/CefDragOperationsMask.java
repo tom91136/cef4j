@@ -1,11 +1,16 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-api
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
- * "Verb" of a drag-and-drop operation as negotiated between the source and destination. These constants match their equivalents in WebCore's DragActions.h and should not be renumbered.
+ * "Verb" of a drag-and-drop operation as negotiated between the source and destination. These constants match their
+ * equivalents in WebCore's DragActions.h and should not be renumbered.
+ *
  * <p>Definition generated from cef_types.h
+ *
  * <pre>typedef enum {
  *   DRAG_OPERATION_NONE = 0,
  *   DRAG_OPERATION_COPY = 1,
@@ -14,12 +19,15 @@ import javax.annotation.processing.Generated;
  *   DRAG_OPERATION_PRIVATE = 8,
  *   ...
  * } cef_drag_operations_mask_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC}, {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}, {@link Kind#EVERY}
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC},
+ * {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}, {@link Kind#EVERY}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
+@Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@NullableBoundary("generated external ABI")
 public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMask> {
 
     /** Known constants for {@link CefDragOperationsMask}. */
@@ -82,8 +90,8 @@ public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMas
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
-     * Use this for exhaustive switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

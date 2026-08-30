@@ -56,11 +56,15 @@
                             <arguments>
                                 <argument>--cef-include=${cef.codegen.linux.dir}/include</argument>
                                 <argument>--out-cpp=${project.basedir}/native/gen</argument>
-                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--out-java=${project.build.directory}/discarded-codegen-java</argument>
+                                <argument>--runtime-java-source-root=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
                                 <argument>--cef-api-version=${cef.version}</argument>
                                 <argument>--target-platform=${cef.codegen.linux.platform}</argument>
+                                <argument>--java-platform-subpackage=linux</argument>
+                                <argument>--emit-java=false</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-platform -Dcef.version=${cef.version}</argument>
                                 <argument>--extra-cpp-dirs=views</argument>
                                 <argument>--extra-capi-dirs=views</argument>
                             </arguments>
@@ -78,14 +82,15 @@
                             <arguments>
                                 <argument>--cef-include=${cef.codegen.macos.dir}/include</argument>
                                 <argument>--out-cpp=${project.basedir}/native/gen</argument>
-                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--out-java=${project.build.directory}/discarded-codegen-java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
                                 <argument>--cef-api-version=${cef.version}</argument>
                                 <argument>--target-platform=${cef.codegen.macos.platform}</argument>
-                                <argument>--emit-common-cpp=false</argument>
-                                <argument>--emit-java-platform-only=true</argument>
                                 <argument>--java-platform-subpackage=mac</argument>
+                                <argument>--emit-java=false</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-platform -Dcef.version=${cef.version}</argument>
+                                <argument>--emit-common-cpp=false</argument>
                                 <argument>--extra-cpp-dirs=views</argument>
                                 <argument>--extra-capi-dirs=views</argument>
                             </arguments>
@@ -103,57 +108,17 @@
                             <arguments>
                                 <argument>--cef-include=${cef.codegen.windows.dir}/include</argument>
                                 <argument>--out-cpp=${project.basedir}/native/gen</argument>
-                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--out-java=${project.build.directory}/discarded-codegen-java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
                                 <argument>--cef-api-version=${cef.version}</argument>
                                 <argument>--target-platform=${cef.codegen.windows.platform}</argument>
-                                <argument>--emit-common-cpp=false</argument>
-                                <argument>--emit-java-platform-only=true</argument>
                                 <argument>--java-platform-subpackage=win</argument>
-                                <argument>--extra-cpp-dirs=views</argument>
-                                <argument>--extra-capi-dirs=views</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>run-codegen-linux-platform-java</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
-                            <arguments>
-                                <argument>--cef-include=${cef.codegen.linux.dir}/include</argument>
-                                <argument>--out-cpp=${project.basedir}/native/gen</argument>
-                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
-                                <argument>--java-package=${cef4j.generated.java.package}</argument>
-                                <argument>--compiler=${native.compiler.id}</argument>
-                                <argument>--cef-api-version=${cef.version}</argument>
-                                <argument>--target-platform=${cef.codegen.linux.platform}</argument>
+                                <argument>--emit-java=false</argument>
+                                <argument>--regenerate-command=./mvnw generate-sources -pl cef4j-platform -Dcef.version=${cef.version}</argument>
                                 <argument>--emit-common-cpp=false</argument>
-                                <argument>--emit-java-platform-only=true</argument>
-                                <argument>--java-platform-subpackage=linux</argument>
                                 <argument>--extra-cpp-dirs=views</argument>
                                 <argument>--extra-capi-dirs=views</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>run-cdp-codegen</id>
-                        <phase>generate-sources</phase>
-                        <goals><goal>java</goal></goals>
-                        <configuration>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <mainClass>net.kurobako.cef4j.codegen.cdp.Main</mainClass>
-                            <arguments>
-                                <argument>--cef-version=${cef.version}</argument>
-                                <argument>--schema-cache=${cef.dist.cache}</argument>
-                                <argument>--out-java=${project.basedir}/../cef4j-cdp/src/main/java</argument>
-                                <argument>--out-resources=${project.basedir}/../cef4j-cdp/src/main/resources</argument>
-                                <argument>--java-package=net.kurobako.cef4j.cdp.generated</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -252,16 +217,6 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <configuration>
-                    <java>
-                        <includes>
-                            <include>../cef4j-api/src/main/java/net/kurobako/cef4j/gen/**/*.java</include>
-                        </includes>
-                        <palantirJavaFormat>
-                            <version>${palantir.java.format.version}</version>
-                            <style>PALANTIR</style>
-                            <formatJavadoc>true</formatJavadoc>
-                        </palantirJavaFormat>
-                    </java>
                     <cpp>
                         <includes>
                             <include>cef4j-platform/native/gen/**/*.cpp</include>
@@ -293,6 +248,7 @@
             <artifactId>cef4j-cef-dist</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

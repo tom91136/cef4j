@@ -94,7 +94,7 @@ public final class X509Certificate implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
      */
-    public CompletableFuture<Basetime> getValidStart() {
+    public CompletableFuture<BaseTime> getValidStart() {
         return CefFutures.map(
             session.request(new X509CertificateGetValidStartRequest(handle), X509CertificateGetValidStartResponse.DECODER),
             X509CertificateGetValidStartResponse::result);
@@ -106,7 +106,7 @@ public final class X509Certificate implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
      */
-    public CompletableFuture<Basetime> getValidExpiry() {
+    public CompletableFuture<BaseTime> getValidExpiry() {
         return CefFutures.map(
             session.request(new X509CertificateGetValidExpiryRequest(handle), X509CertificateGetValidExpiryResponse.DECODER),
             X509CertificateGetValidExpiryResponse::result);

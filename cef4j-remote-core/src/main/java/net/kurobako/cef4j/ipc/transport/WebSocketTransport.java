@@ -6,7 +6,6 @@ import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.ArrayDeque;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +29,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     private final Object sendLock = new Object();
     private final Object receiveLock = new Object();
     private final Object fragmentLock = new Object();
-    private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
+    private final PendingFrames pending = new PendingFrames();
     private final ByteArrayOutputStream fragments = new ByteArrayOutputStream();
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
@@ -241,10 +240,19 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     }
 
     private void accept(byte[] frame) {
+        boolean overflow = false;
         synchronized (receiveLock) {
             Consumer<ByteBuffer> handler = receiveHandler;
-            if (handler == null) pending.add(frame);
-            else dispatch(handler, frame);
+            if (handler == null && !pending.offer(frame)) {
+                overflow = true;
+            } else if (handler != null) dispatch(handler, frame);
+        }
+        if (overflow) {
+            LOG.warn("pending receive queue on {} is full", endpoint);
+            disconnected = true;
+            WebSocket current = socket;
+            if (current != null) current.abort();
+            fireDisconnectIfReady();
         }
     }
 

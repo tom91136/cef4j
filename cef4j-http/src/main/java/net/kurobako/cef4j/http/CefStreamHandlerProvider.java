@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import java.net.URLStreamHandler;
 import java.net.spi.URLStreamHandlerProvider;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Routes {@code http}/{@code https} URLs through CEF's network stack. Registered via
@@ -11,10 +12,10 @@ import javax.annotation.Nullable;
  * classpath - no explicit wiring required from consumers.
  */
 @AutoService(URLStreamHandlerProvider.class)
+@NullableBoundary("URLStreamHandlerProvider returns null for unsupported protocols")
 public final class CefStreamHandlerProvider extends URLStreamHandlerProvider {
 
     @Override
-    @SuppressWarnings("NullableForbidden")
     @Nullable
     public URLStreamHandler createURLStreamHandler(@Nullable String protocol) {
         if (protocol == null) return null;

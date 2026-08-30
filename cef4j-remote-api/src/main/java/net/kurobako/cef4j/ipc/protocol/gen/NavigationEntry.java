@@ -142,7 +142,7 @@ public final class NavigationEntry implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:98</a>
      */
-    public CompletableFuture<Basetime> getCompletionTime() {
+    public CompletableFuture<BaseTime> getCompletionTime() {
         return CefFutures.map(
             session.request(new NavigationEntryGetCompletionTimeRequest(handle), NavigationEntryGetCompletionTimeResponse.DECODER),
             NavigationEntryGetCompletionTimeResponse::result);
@@ -166,9 +166,9 @@ public final class NavigationEntry implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:114</a>
      */
-    public CompletableFuture<Sslstatus> getSslstatus() {
+    public CompletableFuture<SslStatus> getSslStatus() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetSslstatusRequest(handle), NavigationEntryGetSslstatusResponse.DECODER),
-            __r -> new Sslstatus(session, __r.result()));
+            session.request(new NavigationEntryGetSslStatusRequest(handle), NavigationEntryGetSslStatusResponse.DECODER),
+            __r -> new SslStatus(session, __r.result()));
     }
 }

@@ -13,7 +13,8 @@ package $javaPackage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
-import ${Banners.javaAnnotationClass};
+${Banners.javaAnnotationImport}
+${Banners.javaBoundaryImport}
 
 /** Opaque native pointer wrapper. Raw pointers without a known bound is lowered to this representation, use with caution. */
 ${Banners.javaAnnotation}

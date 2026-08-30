@@ -33,6 +33,7 @@ import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessBrowserRuntime;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessWebDriverServer;
+import net.kurobako.cef4j.webdriver.jackson.JacksonWebDriverJsonCodec;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -90,8 +91,8 @@ class InProcessWebDriverIntegrationTest {
         fixture.start();
         URI pageUri = URI.create("http://127.0.0.1:" + fixture.getAddress().getPort() + "/page");
 
-        try (WebDriverServer server =
-                InProcessWebDriverServer.start(InProcessWebDriverIntegrationTest::createBrowser)) {
+        try (WebDriverServer server = InProcessWebDriverServer.start(
+                InProcessWebDriverIntegrationTest::createBrowser, new JacksonWebDriverJsonCodec())) {
             RemoteWebDriver driver =
                     new RemoteWebDriver(server.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j"));
             try {
