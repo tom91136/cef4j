@@ -120,6 +120,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-code-policy</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
