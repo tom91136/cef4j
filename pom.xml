@@ -921,7 +921,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.6</version>
                     <configuration>
-                        <argLine>${jacoco.argLine} ${surefire.argLine}</argLine>
+                        <argLine>@{jacoco.argLine} ${surefire.argLine}</argLine>
                         <!-- Must exceed the longest class-level timeout. A constrained runner can spend
                              several minutes establishing CEF before the test itself makes progress. -->
                         <forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>
@@ -982,7 +982,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.5.6</version>
                     <configuration>
-                        <argLine>${jacoco.argLine} ${surefire.argLine}</argLine>
+                        <argLine>@{jacoco.argLine} ${surefire.argLine}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>

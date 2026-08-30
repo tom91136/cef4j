@@ -3,6 +3,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <thread>
 
@@ -28,8 +29,16 @@ unsigned int positiveInteger(const std::string& value, const char* description) 
 }
 
 std::string environmentOr(const char* name, std::string fallback) {
+#ifdef _WIN32
+    char* configured = nullptr;
+    std::size_t length = 0;
+    if (_dupenv_s(&configured, &length, name) != 0) return fallback;
+    std::unique_ptr<char, decltype(&std::free)> owned(configured, &std::free);
+    return owned ? std::string(owned.get()) : fallback;
+#else
     if (const char* configured = std::getenv(name)) return configured;
     return fallback;
+#endif
 }
 
 } // namespace
