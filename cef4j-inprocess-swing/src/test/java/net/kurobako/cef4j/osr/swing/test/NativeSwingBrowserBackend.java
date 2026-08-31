@@ -2,6 +2,7 @@ package net.kurobako.cef4j.osr.swing.test;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -333,7 +334,9 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             try {
                 onEdt(() -> {
                     panel.setPreferredSize(new Dimension(width, height));
-                    frame.pack();
+                    Insets insets = frame.getInsets();
+                    frame.setSize(width + insets.left + insets.right, height + insets.top + insets.bottom);
+                    frame.validate();
                     this.width = width;
                     this.height = height;
                     result.complete(null);
