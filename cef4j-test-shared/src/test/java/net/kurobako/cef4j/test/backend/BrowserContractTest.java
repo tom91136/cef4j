@@ -14,6 +14,52 @@ import org.junit.jupiter.api.Test;
 class BrowserContractTest {
 
     @Test
+    void convergesInitialPaintThroughViewportResize() throws Exception {
+        AtomicInteger resizes = new AtomicInteger();
+        Queue<BrowserSession.PaintInfo> paints = new ArrayDeque<>();
+        paints.add(new BrowserSession.PaintInfo(800, 600, 800L * 600L * 4L));
+        BrowserSession session = new BrowserSession() {
+            @Override
+            @Nonnull
+            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            @Nonnull
+            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+                return CompletableFuture.completedFuture("640x480");
+            }
+
+            @Override
+            @Nonnull
+            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws TimeoutException {
+                PaintInfo paint = paints.poll();
+                if (paint == null) throw new TimeoutException("no paint");
+                return paint;
+            }
+
+            @Override
+            @Nonnull
+            public CompletableFuture<Void> resizeViewport(int width, int height) {
+                resizes.incrementAndGet();
+                paints.add(new PaintInfo(width, height, (long) width * height * 4L));
+                return CompletableFuture.completedFuture(null);
+            }
+
+            @Override
+            public void close() {}
+        };
+
+        BrowserSession.PaintInfo paint =
+                BrowserContract.awaitInitialPaint(session, true, 640, 480, Duration.ofSeconds(1));
+
+        assertThat(paint.width).isEqualTo(640);
+        assertThat(paint.height).isEqualTo(480);
+        assertThat(resizes).hasValue(1);
+    }
+
+    @Test
     void preservesBackendDiagnosticsWhenPaintTimesOut() {
         BrowserSession session = new BrowserSession() {
             @Override
