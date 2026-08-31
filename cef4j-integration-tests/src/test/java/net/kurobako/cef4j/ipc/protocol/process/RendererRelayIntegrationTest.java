@@ -27,7 +27,7 @@ class RendererRelayIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<V8ContextCreatedEvent> events = new LinkedBlockingQueue<>();
-            session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, events::offer);
+            session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, events::offer);
 
             V8ContextCreatedEvent ev = events.poll(20, TimeUnit.SECONDS);
             assertThat(ev)

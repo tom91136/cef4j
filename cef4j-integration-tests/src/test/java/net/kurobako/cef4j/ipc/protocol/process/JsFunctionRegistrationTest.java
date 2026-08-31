@@ -51,7 +51,7 @@ class JsFunctionRegistrationTest {
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> browsers.offer(ev.browser()));
             LinkedBlockingQueue<V8ContextCreatedEvent> contexts = new LinkedBlockingQueue<>();
-            session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
+            session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
             RemoteHandle browser = browsers.poll(20, TimeUnit.SECONDS);
             assertThat(browser).isNotNull();
             assertThat(contexts.poll(15, TimeUnit.SECONDS)).isNotNull();
