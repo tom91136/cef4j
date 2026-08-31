@@ -552,7 +552,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
         lastPaintedImage = null;
         hideOsrPopup();
         if (b != null) {
-            b.getHost().ifPresent(host -> host.closeBrowser(true));
+            b.getHost().ifPresent(host -> host.closeBrowser(false));
         }
     }
 
