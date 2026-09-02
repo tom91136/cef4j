@@ -234,6 +234,9 @@ start() {
         rm -f "${pid_file}"
     fi
     write_metadata
+    collect_snapshot "${snapshot_file}"
+    send_file "${metadata_file}" metadata.txt true || true
+    send_file "${snapshot_file}" snapshots.log false || true
     (
         export RUNNER_TRACKING_ID=
         exec nohup bash "${script_path}" stream
