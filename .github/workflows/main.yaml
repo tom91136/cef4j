@@ -18,6 +18,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Start runner telemetry
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: start
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: maven-wrapper
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+
       - &setup-java
         uses: actions/setup-java@v5
         with:
@@ -27,6 +41,21 @@ jobs:
           cache-dependency-path: '**/pom.xml'
 
       - uses: ./.github/actions/maven-wrapper
+
+      - name: Stop runner telemetry
+        if: always()
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: stop
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: maven-wrapper
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
 
   packager:
     name: Runtime packager / ${{ matrix.os }}
@@ -40,6 +69,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Start runner telemetry
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: start
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: packager-${{ matrix.os }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+
       - *setup-java
 
       - uses: ./.github/actions/maven-wrapper
@@ -50,6 +93,21 @@ jobs:
       - name: Verify packager release artifacts
         if: matrix.os == 'ubuntu-24.04'
         run: ./mvnw -B -f cef4j-runtime-packager/pom.xml clean verify -Pruntime-packager-release -Dgpg.skip=true
+
+      - name: Stop runner telemetry
+        if: always()
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: stop
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: packager-${{ matrix.os }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
 
   build:
     needs: maven-wrapper
@@ -155,6 +213,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Start runner telemetry
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: start
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: build-${{ matrix.os.label }}-cef-${{ matrix.cef.api }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
 
       - name: Set up JDK 11 (runtime smoke)
         id: jdk11
@@ -295,6 +367,21 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Stop runner telemetry
+        if: always()
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: stop
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: build-${{ matrix.os.label }}-cef-${{ matrix.cef.api }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+
   consumer:
     name: Consumer examples
     needs: maven-wrapper
@@ -305,6 +392,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Start runner telemetry
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: start
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: consumer
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
 
       - name: Verify consumer example consistency
         run: ./examples/verify-consistency.sh
@@ -402,3 +503,18 @@ jobs:
           jar tf "${runtime_sbt}" | grep -q '^cef-runtime/linux64/cef-runtime.properties$'
           jar tf "${runtime_sbt}" | grep -q '^cef-runtime/linux64/libcef.so$'
           unzip -p "${runtime_sbt}" cef-runtime/linux64/cef-runtime.properties | grep -q '^stripped=true$'
+
+      - name: Stop runner telemetry
+        if: always()
+        uses: ./.github/actions/runner-telemetry
+        with:
+          enabled: ${{ github.event_name != 'pull_request' }}
+          mode: stop
+          host: ${{ vars.CI_TELEMETRY_HOST }}
+          user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
+          known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
+          remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
+          context: consumer
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
