@@ -13,11 +13,11 @@ fi
 
 host=${CI_TELEMETRY_HOST:-}
 user=${CI_TELEMETRY_USER:-tom}
-port=${CI_TELEMETRY_PORT:-22}
+port=${CI_TELEMETRY_PORT:-2222}
 ssh_key=${CI_TELEMETRY_SSH_KEY:-}
 known_hosts=${CI_TELEMETRY_KNOWN_HOSTS:-}
 remote_root=${CI_TELEMETRY_REMOTE_ROOT:-/home/tom/gha-telemetry}
-interval=${CI_TELEMETRY_INTERVAL:-30}
+interval=${CI_TELEMETRY_INTERVAL:-10}
 
 if [ -z "${host}" ] || [ -z "${ssh_key}" ] || [ -z "${known_hosts}" ]; then
     [ "${mode}" = start ] && echo "runner telemetry disabled: CI_TELEMETRY_HOST, CI_TELEMETRY_SSH_KEY, and CI_TELEMETRY_KNOWN_HOSTS are required" >&2
@@ -25,10 +25,10 @@ if [ -z "${host}" ] || [ -z "${ssh_key}" ] || [ -z "${known_hosts}" ]; then
 fi
 
 case "${port}" in
-    ''|*[!0-9]*) port=22 ;;
+    ''|*[!0-9]*) port=2222 ;;
 esac
 case "${interval}" in
-    ''|*[!0-9]*) interval=30 ;;
+    ''|*[!0-9]*) interval=10 ;;
 esac
 [ "${interval}" -ge 5 ] 2>/dev/null || interval=5
 

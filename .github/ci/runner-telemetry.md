@@ -9,8 +9,9 @@ Configure these repository variables:
 ```text
 CI_TELEMETRY_HOST
 CI_TELEMETRY_USER=tom
+CI_TELEMETRY_PORT=2222
 CI_TELEMETRY_REMOTE_ROOT=/home/tom/gha-telemetry
-CI_TELEMETRY_INTERVAL=30
+CI_TELEMETRY_INTERVAL=10
 ```
 
 Configure these repository secrets:

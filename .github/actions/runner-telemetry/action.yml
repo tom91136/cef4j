@@ -20,7 +20,7 @@ inputs:
   port:
     description: OCI SSH port
     required: false
-    default: '22'
+    default: '2222'
   ssh-key:
     description: Private key used for the OCI SSH connection
     required: false
@@ -40,7 +40,7 @@ inputs:
   interval:
     description: Seconds between health snapshots
     required: false
-    default: '30'
+    default: '10'
 
 runs:
   using: composite

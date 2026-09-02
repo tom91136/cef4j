@@ -25,12 +25,12 @@ jobs:
           mode: start
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: maven-wrapper
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
       - &setup-java
         uses: actions/setup-java@v5
@@ -50,12 +50,12 @@ jobs:
           mode: stop
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: maven-wrapper
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
   packager:
     name: Runtime packager / ${{ matrix.os }}
@@ -76,12 +76,12 @@ jobs:
           mode: start
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: packager-${{ matrix.os }}
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
       - *setup-java
 
@@ -102,12 +102,12 @@ jobs:
           mode: stop
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: packager-${{ matrix.os }}
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
   build:
     needs: maven-wrapper
@@ -221,12 +221,12 @@ jobs:
           mode: start
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: build-${{ matrix.os.label }}-cef-${{ matrix.cef.api }}
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
       - name: Set up JDK 11 (runtime smoke)
         id: jdk11
@@ -375,12 +375,12 @@ jobs:
           mode: stop
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: build-${{ matrix.os.label }}-cef-${{ matrix.cef.api }}
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
   consumer:
     name: Consumer examples
@@ -400,12 +400,12 @@ jobs:
           mode: start
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: consumer
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
 
       - name: Verify consumer example consistency
         run: ./examples/verify-consistency.sh
@@ -512,9 +512,9 @@ jobs:
           mode: stop
           host: ${{ vars.CI_TELEMETRY_HOST }}
           user: ${{ vars.CI_TELEMETRY_USER || 'tom' }}
-          port: ${{ vars.CI_TELEMETRY_PORT || '22' }}
+          port: ${{ vars.CI_TELEMETRY_PORT || '2222' }}
           ssh-key: ${{ secrets.CI_TELEMETRY_SSH_KEY }}
           known-hosts: ${{ secrets.CI_TELEMETRY_KNOWN_HOSTS }}
           remote-root: ${{ vars.CI_TELEMETRY_REMOTE_ROOT || '/home/tom/gha-telemetry' }}
           context: consumer
-          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '30' }}
+          interval: ${{ vars.CI_TELEMETRY_INTERVAL || '10' }}
