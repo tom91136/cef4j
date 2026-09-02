@@ -118,7 +118,7 @@ send_file() {
 compact_processes() {
     local pattern=$1 lower_pattern
     lower_pattern=$(printf '%s' "${pattern}" | tr '[:upper:]' '[:lower:]')
-    ps -axo pid=,ppid=,state=,%cpu=,%mem=,rss=,etime=,command= 2>/dev/null \
+    ps -axo pid=,ppid=,state=,%cpu=,%mem=,rss=,etime=,comm= 2>/dev/null \
         | awk -v pattern="${lower_pattern}" 'tolower($0) ~ pattern { $1=$1; printf "%s;", $0 }' \
         | sed 's/;$//' || true
 }
@@ -155,7 +155,7 @@ snapshot_unix() {
     printf 'cpu_count=%s\n' "${cpu_count:-unknown}"
     printf 'load=%s\n' "${load:-unknown}"
     printf 'tcp_established=%s\n' "${tcp_established:-unknown}"
-    printf 'runner_processes=%s\n' "$(compact_processes 'Runner\.(Listener|Worker)')"
+    printf 'runner_processes=%s\n' "$(compact_processes 'Runner[.](Listener|Worker)')"
     printf 'build_processes=%s\n' "$(compact_processes 'java|mvn|cmake|ninja|cef4j')"
 }
 
@@ -234,7 +234,10 @@ start() {
         rm -f "${pid_file}"
     fi
     write_metadata
-    nohup bash "${script_path}" stream > "${state_dir}/sidecar.log" 2>&1 < /dev/null &
+    (
+        export RUNNER_TRACKING_ID=
+        exec nohup bash "${script_path}" stream
+    ) > "${state_dir}/sidecar.log" 2>&1 < /dev/null &
     printf '%s\n' "$!" > "${pid_file}"
     echo "runner telemetry started (interval=${interval}s, remote=${remote_dir})"
 }
