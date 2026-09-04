@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
 import org.junit.jupiter.api.Test;
 
@@ -127,6 +129,24 @@ class RemoteNavigationProbeTest {
             deadline.await(invocation, "navigation queue completion");
             assertThat(Objects.requireNonNull(loaded.get(), "navigation result"))
                     .isCancelled();
+            assertThat(queued).isCancelled();
+        } finally {
+            pair.b.close();
+        }
+    }
+
+    @Test
+    void sessionDisconnectFailsPendingNavigationWithoutWaitingForTimeout() throws Exception {
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
+                RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1))) {
+            CompletableFuture<Void> queued = new CompletableFuture<>();
+            CompletableFuture<Void> loaded =
+                    navigation.load("https://disconnect.test", Duration.ofMinutes(1), () -> queued);
+
+            pair.b.close();
+
+            assertThatThrownBy(() -> loaded.get(2, TimeUnit.SECONDS)).hasCauseInstanceOf(CefTransportException.class);
             assertThat(queued).isCancelled();
         } finally {
             pair.b.close();

@@ -9,16 +9,20 @@ import java.util.function.Supplier;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.transport.CefTransportException;
 
 public final class RemoteNavigationProbe implements AutoCloseable {
     private final AtomicReference<PendingNavigation> pending = new AtomicReference<>();
     private final AtomicBoolean closed = new AtomicBoolean();
-    private final CefSession.HandlerRegistration registration;
+    private final CefSession.HandlerRegistration contextRegistration;
+    private final CefSession.HandlerRegistration closeRegistration;
     private final Supplier<RemoteHandle> browser;
 
     public RemoteNavigationProbe(CefSession session, Supplier<RemoteHandle> browser) {
         this.browser = browser;
-        registration = session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, this::onContext);
+        contextRegistration =
+                session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, this::onContext);
+        closeRegistration = session.onClose(this::onSessionClosed);
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
@@ -77,9 +81,15 @@ public final class RemoteNavigationProbe implements AutoCloseable {
     @Override
     public void close() {
         if (!closed.compareAndSet(false, true)) return;
-        registration.close();
+        contextRegistration.close();
+        closeRegistration.close();
         PendingNavigation current = pending.getAndSet(null);
         if (current != null) current.result.cancel(true);
+    }
+
+    private void onSessionClosed() {
+        PendingNavigation current = pending.getAndSet(null);
+        if (current != null) current.result.completeExceptionally(new CefTransportException("session closed"));
     }
 
     private static final class PendingNavigation {
