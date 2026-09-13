@@ -382,6 +382,8 @@ jobs:
 
       - uses: ./.github/actions/maven-wrapper
 
+      - uses: ./.github/actions/linux-prereqs
+
       - name: Resolve project versions
         shell: bash
         run: |

@@ -52,10 +52,7 @@ class CefWebViewV117PlusInputTest {
 
     @AfterAll
     static void shutdownCef() throws Exception {
-        closeAllWindows();
-        drainJavaFx();
-        onFxThread(CefWebView::terminate);
-        shutdownJavaFx();
+        shutdownCefWebView();
     }
 
     @Test

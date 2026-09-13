@@ -112,6 +112,15 @@ final class CefWebViewTestSupport {
         }
     }
 
+    static void shutdownCefWebView() throws Exception {
+        Thread applicationThread = javaFxApplicationThread();
+        if (applicationThread == null || !applicationThread.isAlive()) return;
+        closeAllWindows();
+        drainJavaFx();
+        onFxThread(CefWebView::terminate);
+        shutdownJavaFx();
+    }
+
     @Nullable
     private static Thread javaFxApplicationThread() {
         for (Thread thread : Thread.getAllStackTraces().keySet()) {

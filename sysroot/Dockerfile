@@ -13,6 +13,7 @@ RUN mkdir -p /mnt/sys-root \
  && dnf --installroot /mnt/sys-root --releasever 8 --setopt install_weak_deps=false \
         --nodocs -y install \
         glibc glibc-devel glibc-headers glibc-static \
+        glib2-devel \
         libgcc libstdc++ libstdc++-devel libstdc++-static \
         libatomic libatomic-static \
         libgfortran \

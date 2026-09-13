@@ -131,10 +131,7 @@ class CefWebViewSchemeTest {
 
     @AfterAll
     static void cleanup() throws Exception {
-        closeAllWindows();
-        drainJavaFx();
-        onFxThread(CefWebView::terminate);
-        shutdownJavaFx();
+        shutdownCefWebView();
     }
 
     @Test

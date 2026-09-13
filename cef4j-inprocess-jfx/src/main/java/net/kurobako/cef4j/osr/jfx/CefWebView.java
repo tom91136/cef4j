@@ -453,7 +453,7 @@ public class CefWebView extends Region implements AutoCloseable {
      */
     @SuppressWarnings("FutureReturnValueIgnored")
     public CompletableFuture<Void> releaseAsync() {
-        if (!releaseStarted.compareAndSet(false, true)) return browserReleased;
+        if (!releaseStarted.compareAndSet(false, true)) return browserReleased.copy();
         boolean creationPending = browserCreationPosted;
         releaseRequested = true;
         popupSurface.hide();
@@ -481,7 +481,7 @@ public class CefWebView extends Region implements AutoCloseable {
         }
         Platform.runLater(() -> engine.fireVisibilityChanged(false));
         cleanable.clean();
-        return browserReleased;
+        return browserReleased.copy();
     }
 
     private void releaseBrowserAfterClose(BrowserHandle handle) {

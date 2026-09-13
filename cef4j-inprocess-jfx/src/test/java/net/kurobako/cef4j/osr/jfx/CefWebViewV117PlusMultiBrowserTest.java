@@ -47,10 +47,7 @@ class CefWebViewV117PlusMultiBrowserTest {
 
     @AfterAll
     static void cleanup() throws Exception {
-        closeAllWindows();
-        drainJavaFx();
-        onFxThread(CefWebView::terminate);
-        shutdownJavaFx();
+        shutdownCefWebView();
     }
 
     private static CefScriptEngine createAndLoad(String bodyContent) throws Exception {

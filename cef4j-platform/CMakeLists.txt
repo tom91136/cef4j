@@ -96,6 +96,11 @@ elseif(WIN32)
     # MSVC links against the import library (.lib), not the runtime DLL.
     target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef.lib)
 else()
+    if(CMAKE_SYSROOT)
+        set(ENV{PKG_CONFIG_SYSROOT_DIR} "${CMAKE_SYSROOT}")
+        set(ENV{PKG_CONFIG_LIBDIR}
+            "${CMAKE_SYSROOT}/usr/lib64/pkgconfig:${CMAKE_SYSROOT}/usr/share/pkgconfig")
+    endif()
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
     target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})

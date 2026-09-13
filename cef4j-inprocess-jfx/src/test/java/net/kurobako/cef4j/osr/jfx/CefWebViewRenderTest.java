@@ -97,10 +97,7 @@ class CefWebViewRenderTest {
                 assertThat(releasedAgain).isCompletedWithValue(null);
             }
         } finally {
-            closeAllWindows();
-            drainJavaFx();
-            onFxThread(CefWebView::terminate);
-            shutdownJavaFx();
+            shutdownCefWebView();
         }
     }
 
