@@ -139,11 +139,15 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       assert(java.contains("static CefSession.HandlerRegistration register("))
       assert(java.contains("return CefSession.HandlerRegistration.combine("))
       h.methods.foreach { m =>
-        val voidShape = java.contains(s"default void ${m.methodName}(")
-        val boolShape = java.contains(s"default Boolean ${m.methodName}(")
+        val returnType = m.returnType match {
+          case None                 => "void"
+          case Some(FieldType.Bool) => "Boolean"
+          case Some(FieldType.I32)  => "Integer"
+          case Some(_)              => "void"
+        }
         assert(
-          voidShape || boolShape,
-          s"Java handler ${h.className} missing method ${m.methodName}"
+          java.contains(s"default $returnType ${m.methodName}("),
+          s"Java handler ${h.className} missing $returnType method ${m.methodName}"
         )
       }
     }
