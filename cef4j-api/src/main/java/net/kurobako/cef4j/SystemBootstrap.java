@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
@@ -218,6 +219,15 @@ public final class SystemBootstrap {
             log.warn("Unable to read packaged CEF API version", e);
             return null;
         }
+    }
+
+    /** Return the major CEF API version embedded in this cef4j build, if available. */
+    public static OptionalInt packagedCefApiMajor() {
+        String version = packagedCefApiVersion();
+        if (version == null) return OptionalInt.empty();
+        java.util.regex.Matcher matcher =
+                java.util.regex.Pattern.compile("^(\\d+)").matcher(version);
+        return matcher.find() ? OptionalInt.of(Integer.parseInt(matcher.group(1))) : OptionalInt.empty();
     }
 
     private static boolean isValidCefReleaseDir(Path release) {
@@ -535,6 +545,22 @@ public final class SystemBootstrap {
     static native void dispatchToMainThreadSync0(Runnable runnable);
 
     static native void quitAndWaitMainThreadMessageLoop0();
+
+    private static native void scheduleLinuxMessageLoopWork0(long delayMs);
+
+    private static native void cancelLinuxMessageLoopWork0();
+
+    /** Schedule one CEF message-loop iteration on Linux's default GLib context. */
+    public static void scheduleLinuxMessageLoopWork(long delayMs) {
+        if (!OS.isLinux()) throw new UnsupportedOperationException("Linux only");
+        scheduleLinuxMessageLoopWork0(delayMs);
+    }
+
+    /** Cancel a pending CEF message-loop iteration on Linux's default GLib context. */
+    public static void cancelLinuxMessageLoopWork() {
+        if (!OS.isLinux()) throw new UnsupportedOperationException("Linux only");
+        cancelLinuxMessageLoopWork0();
+    }
 
     /**
      * macOS only: initialise CEF, run the message loop, and run cleanup — all on Thread 0 in a single GCD block. See

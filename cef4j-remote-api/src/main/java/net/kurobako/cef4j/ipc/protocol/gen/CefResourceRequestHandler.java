@@ -25,7 +25,7 @@ public interface CefResourceRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:78</a>
      */
     @Nullable
-    default Boolean onBeforeResourceLoad(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
+    default Integer onBeforeResourceLoad(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
 
     /**
      * Called on the IO thread when a resource load is redirected. The {@code browser} and {@code frame} values represent the source of the request, and may be {@code null} for requests originating from service workers or CefURLRequest. The {@code request} parameter will contain the old URL and other request-related information. The {@code response} parameter will contain the response that resulted in the redirect. The {@code new_url} parameter will contain the new URL and can be changed if desired. The {@code request} and {@code response} objects cannot be modified in this callback.
@@ -67,8 +67,8 @@ public interface CefResourceRequestHandler {
     static CefSession.HandlerRegistration register(CefSession session, CefResourceRequestHandler handler) {
         return CefSession.HandlerRegistration.combine(
                 session.intercept(ResourceRequestHandlerOnBeforeResourceLoadEvent.MESSAGE_ID, ResourceRequestHandlerOnBeforeResourceLoadEvent.DECODER, ev -> {
-                    Boolean answer = handler.onBeforeResourceLoad(ev.browser(), ev.frame(), ev.request(), ev.callback());
-                    return new ResourceRequestHandlerOnBeforeResourceLoadResponse(answer != null && answer.booleanValue());
+                    Integer answer = handler.onBeforeResourceLoad(ev.browser(), ev.frame(), ev.request(), ev.callback());
+                    return answer == null ? null : new ResourceRequestHandlerOnBeforeResourceLoadResponse(answer.intValue());
                 }),
                 session.on(ResourceRequestHandlerOnResourceRedirectEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceRedirectEvent.DECODER,
                         ev -> handler.onResourceRedirect(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.newUrl())),

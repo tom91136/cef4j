@@ -51,15 +51,16 @@ public final class StubRuntimeServerMain {
     }
 
     private static String parseBindArg(String[] args) {
-        for (int i = 0; i < args.length - 1; i++) {
-            if ("--bind".equals(args[i])) return args[i + 1];
-        }
+        String bind = parseOption(args, "--bind", "");
+        if (!bind.isEmpty()) return bind;
         throw new IllegalArgumentException("missing --bind <endpoint>");
     }
 
     private static String parseOption(String[] args, String name, String fallback) {
-        for (int i = 0; i < args.length - 1; i++) {
-            if (name.equals(args[i])) return args[i + 1];
+        String prefix = name + "=";
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith(prefix)) return args[i].substring(prefix.length());
+            if (name.equals(args[i]) && i + 1 < args.length) return args[i + 1];
         }
         return fallback;
     }

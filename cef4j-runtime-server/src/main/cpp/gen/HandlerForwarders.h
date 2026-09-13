@@ -2016,7 +2016,7 @@ struct ResourceRequestHandlerForwarder : cef_resource_request_handler_t {
     ResourceRequestHandlerForwarder() : cef_resource_request_handler_t{} {
         initForwarderBase<ResourceRequestHandlerForwarder, cef_resource_request_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         on_before_resource_load = [](gendisp::fn_args<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>::template arg<0> /*self*/, gendisp::fn_args<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>::template arg<1> browser, gendisp::fn_args<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>::template arg<2> frame, gendisp::fn_args<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>::template arg<3> request, gendisp::fn_args<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>::template arg<4> callback) -> typename gendisp::fn_args<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>::result {
-            if (!g_ipc) return gendisp::cefRet<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>(0);
+            if (!g_ipc) return gendisp::cefRet<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>(RV_CONTINUE);
             gen::ResourceRequestHandlerOnBeforeResourceLoadEvent ev;
             ev.browser = gendisp::tables::browser.insert(browser);
             ev.frame = gendisp::tables::frame.insert(frame);
@@ -2029,10 +2029,10 @@ struct ResourceRequestHandlerForwarder : cef_resource_request_handler_t {
                         gen::ResourceRequestHandlerOnBeforeResourceLoadEvent::kMessageId, payload.data(), payload.size());
             std::vector<std::uint8_t> respBytes;
             bool got = g_intercepts.awaitResponse(corrId, std::chrono::milliseconds(2000), respBytes);
-            int answer = 0;
+            int answer = RV_CONTINUE;
             if (got && !respBytes.empty()) {
                 auto resp = gen::ResourceRequestHandlerOnBeforeResourceLoadResponse::decode(respBytes.data(), respBytes.size());
-                answer = resp.result ? 1 : 0;
+                answer = resp.result;
             }
             return gendisp::cefRet<decltype(static_cast<::cef_resource_request_handler_t*>(nullptr)->on_before_resource_load)>(answer);
         };

@@ -46,10 +46,12 @@ import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
+import net.kurobako.cef4j.gen.CefBrowserProcessHandler;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefFrame;
+import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefKeyEvent;
 import net.kurobako.cef4j.gen.CefKeyEventType;
 import net.kurobako.cef4j.gen.CefLoadHandler;
@@ -60,6 +62,8 @@ import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefScreenInfo;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.gen.CefTask;
+import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -72,13 +76,13 @@ public class CefWebView extends Region implements AutoCloseable {
     private static final CefKeyEventType KEY_CHAR = CefKeyEventType.of(CefKeyEventType.Kind.CHAR);
     private static final CefKeyEventType KEY_KEYUP = CefKeyEventType.of(CefKeyEventType.Kind.KEYUP);
     private static final CefPaintElementType PAINT_VIEW = CefPaintElementType.of(CefPaintElementType.Kind.VIEW);
+    private static final CefThreadId CEF_UI_THREAD = CefThreadId.of(CefThreadId.Kind.UI);
     private static final long FX_CALLBACK_TIMEOUT_SECONDS = 10;
     private static final java.util.concurrent.Executor CREATED_BROWSER_CLOSER = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r, "cef4j-created-browser-closer");
         thread.setDaemon(true);
         return thread;
     });
-
     private final ImageView imageView = new ImageView();
     private final CefFrameBuffer<int[]> frameBuffer;
     final CefWebEngine engine = new CefWebEngine(this);
@@ -88,7 +92,9 @@ public class CefWebView extends Region implements AutoCloseable {
     });
     private final CefClient client = new CefWebViewClient(this);
     private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
+    private final CompletableFuture<Void> browserReleased = new CompletableFuture<>();
     private final AtomicBoolean releaseStarted = new AtomicBoolean();
+    private final AtomicBoolean deferredViewRefreshPosted = new AtomicBoolean();
     private final ChangeListener<Boolean> windowShowingListener = (obs, wasShowing, isShowing) -> {
         if (isShowing) {
             maybeCreateBrowser(false);
@@ -137,6 +143,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
     private int bufWidth;
     private int bufHeight;
+    private int pressedKeyCode;
     private final CefWebViewPopupSurface popupSurface = new CefWebViewPopupSurface(this);
 
     @Nullable
@@ -144,6 +151,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
     private volatile boolean browserCreationPosted;
     private volatile boolean browserCreated;
+    volatile boolean popupBrowser;
     volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
     private volatile ViewportSnapshot viewportSnapshot = ViewportSnapshot.detached();
     private final Queue<Consumer<BrowserHandle>> pendingBrowserActions = new ConcurrentLinkedQueue<>();
@@ -187,6 +195,25 @@ public class CefWebView extends Region implements AutoCloseable {
             settings.windowlessRenderingEnabled = osrDefaults.windowlessRenderingEnabled;
             settings.externalMessagePump = osrDefaults.externalMessagePump;
             settings.multiThreadedMessageLoop = osrDefaults.multiThreadedMessageLoop;
+            if (net.kurobako.cef4j.OS.isLinux()
+                    && SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) <= 85) {
+                if (!Platform.isFxApplicationThread()) {
+                    throw new IllegalStateException("Legacy CEF JavaFX initialisation must run on the JavaFX thread");
+                }
+                settings.externalMessagePump = 1;
+                settings.multiThreadedMessageLoop = 0;
+                Cef.INSTANCE.addAppHandler(new CefApp() {
+                    @Override
+                    public Optional<CefBrowserProcessHandler> getBrowserProcessHandler() {
+                        return Optional.of(new CefBrowserProcessHandler() {
+                            @Override
+                            public void onScheduleMessagePumpWork(long delayMs) {
+                                SystemBootstrap.scheduleLinuxMessageLoopWork(delayMs);
+                            }
+                        });
+                    }
+                });
+            }
             List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
             combinedArgs.addAll(defaults.args());
             combinedArgs.addAll(extraArgs);
@@ -199,6 +226,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
     /** Terminate CEF. See {@link Cef#terminate()}. */
     public static void terminate() {
+        if (net.kurobako.cef4j.OS.isLinux()) SystemBootstrap.cancelLinuxMessageLoopWork();
         Cef.INSTANCE.terminate();
     }
 
@@ -423,8 +451,9 @@ public class CefWebView extends Region implements AutoCloseable {
      * <p>The returned future is useful when an application must establish a clean browser-lifecycle boundary before
      * calling {@link #terminate()}.
      */
+    @SuppressWarnings("FutureReturnValueIgnored")
     public CompletableFuture<Void> releaseAsync() {
-        if (!releaseStarted.compareAndSet(false, true)) return browserClosed.thenApply(ignored -> null);
+        if (!releaseStarted.compareAndSet(false, true)) return browserReleased;
         boolean creationPending = browserCreationPosted;
         releaseRequested = true;
         popupSurface.hide();
@@ -444,13 +473,32 @@ public class CefWebView extends Region implements AutoCloseable {
         }
         scriptEngine.dispose();
         if (h != null) {
+            releaseBrowserAfterClose(h);
             h.close(true);
         } else if (!creationPending) {
             browserClosed.complete(null);
+            browserReleased.complete(null);
         }
         Platform.runLater(() -> engine.fireVisibilityChanged(false));
         cleanable.clean();
-        return browserClosed.thenApply(ignored -> null);
+        return browserReleased;
+    }
+
+    private void releaseBrowserAfterClose(BrowserHandle handle) {
+        browserClosed.whenComplete((ignored, failure) -> {
+            boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
+                @Override
+                public void execute() {
+                    handle.release();
+                    browserReleased.complete(null);
+                }
+            });
+            if (!posted) {
+                handle.release();
+                browserReleased.completeExceptionally(
+                        new IllegalStateException("CEF UI queue rejected browser release"));
+            }
+        });
     }
 
     @Override
@@ -535,6 +583,15 @@ public class CefWebView extends Region implements AutoCloseable {
                         framesPainted.increment();
                         onViewPainted(width, height);
                         Platform.runLater(() -> blitFrame(width, height));
+                    } else if (deferredViewRefreshPosted.compareAndSet(false, true)) {
+                        // CEF paints are demand-driven. If a newer frame arrives before JavaFX consumes the current
+                        // one, CefFrameBuffer applies back-pressure and records its dirty region, but CEF may not
+                        // schedule another paint by itself. Queue the refresh behind the accepted frame's blit so the
+                        // accumulated damage is delivered instead of leaving the first frame visible indefinitely.
+                        Platform.runLater(() -> {
+                            deferredViewRefreshPosted.set(false);
+                            requestViewRefresh(false);
+                        });
                     }
                 }
             }
@@ -578,9 +635,7 @@ public class CefWebView extends Region implements AutoCloseable {
                     new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            int result =
-                    CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
-            if (result == 0) {
+            if (!Cef.createBrowserAsync(windowInfo, client, "", browserSettings.toImmutable())) {
                 throw new IllegalStateException("CEF failed to create windowless browser");
             }
         } catch (RuntimeException e) {
@@ -946,6 +1001,7 @@ public class CefWebView extends Region implements AutoCloseable {
         }
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
+        pressedKeyCode = keyCode;
         runWithBrowserHost(false, host -> {
             host.sendKeyEvent(new CefKeyEvent(KEY_RAWKEYDOWN, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         });
@@ -956,14 +1012,16 @@ public class CefWebView extends Region implements AutoCloseable {
         if (text == null || text.isEmpty() || KeyEvent.CHAR_UNDEFINED.equals(text)) return;
         char c = text.charAt(0);
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
+        int keyCode = pressedKeyCode != 0 ? pressedKeyCode : c;
         runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, c, c, 0, c, c, 0));
+            host.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, keyCode, keyCode, 0, c, c, 0));
         });
     }
 
     private void handleKeyReleased(KeyEvent e) {
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
+        if (pressedKeyCode == keyCode) pressedKeyCode = 0;
         runWithBrowserHost(false, host -> {
             host.sendKeyEvent(new CefKeyEvent(KEY_KEYUP, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         });
@@ -1038,10 +1096,17 @@ public class CefWebView extends Region implements AutoCloseable {
         if (browser == null) return;
         BrowserHandle created = new BrowserHandle(browser);
         if (releaseRequested) {
-            // XXX: CEF 144-150 CreateInternal dereferences a cleared popup delegate if close runs inside
-            // onAfterCreated; remove this deferral when the minimum supported CEF is above 150 and the popup-close
-            // regression passes with synchronous close in this callback.
-            CREATED_BROWSER_CLOSER.execute(() -> created.close(true));
+            releaseBrowserAfterClose(created);
+            // Closing from onAfterCreated can invalidate CEF's popup delegate before the surrounding CreateBrowser /
+            // AddNewContents call returns. A CEF UI task establishes the required callback-stack boundary.
+            if (!CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
+                @Override
+                public void execute() {
+                    created.close(true);
+                }
+            })) {
+                CREATED_BROWSER_CLOSER.execute(() -> created.close(true));
+            }
             return;
         }
         if (this.browser == null) {
@@ -1079,26 +1144,8 @@ public class CefWebView extends Region implements AutoCloseable {
         });
         CefWebEngine createdEngine = popupEngine.get();
         if (createdEngine == null) return true;
-        CefRect popupBounds;
-        if (windowInfo instanceof net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) {
-            var wi = (net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) windowInfo;
-            wi.windowlessRenderingEnabled = 1;
-            if (wi.bounds == null) wi.bounds = new CefRect(0, 0, 800, 600);
-            popupBounds = wi.bounds;
-        } else if (windowInfo instanceof net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) {
-            var wi = (net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) windowInfo;
-            wi.windowlessRenderingEnabled = 1;
-            if (wi.bounds == null) wi.bounds = new CefRect(0, 0, 800, 600);
-            popupBounds = wi.bounds;
-        } else if (windowInfo instanceof net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) {
-            var wi = (net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) windowInfo;
-            wi.windowlessRenderingEnabled = 1;
-            if (wi.bounds == null) wi.bounds = new CefRect(0, 0, 800, 600);
-            popupBounds = wi.bounds;
-        } else {
-            throw new IllegalStateException(
-                    "Unsupported platform: " + windowInfo.getClass().getName());
-        }
+        CefRect popupBounds = Cef.configureWindowlessPopup(windowInfo, new CefRect(0, 0, 800, 600));
+        createdEngine.getView().popupBrowser = true;
         createdEngine.getView().updateDetachedBounds(popupBounds, true);
         clientRef.set(createdEngine.getView().getCefClient());
         return false;
@@ -1158,6 +1205,8 @@ public class CefWebView extends Region implements AutoCloseable {
 
     private static final class BrowserHandle {
         private final CefBrowser browser;
+        private final AtomicBoolean closeRequested = new AtomicBoolean();
+        private final AtomicBoolean released = new AtomicBoolean();
 
         private BrowserHandle(CefBrowser browser) {
             this.browser = Objects.requireNonNull(browser, "browser");
@@ -1169,14 +1218,40 @@ public class CefWebView extends Region implements AutoCloseable {
 
         @Nullable
         private CefBrowserHost getHost() {
-            return browser.getHost().orElse(null);
+            if (released.get()) return null;
+            try {
+                return browser.getHost().orElse(null);
+            } catch (IllegalStateException alreadyReleased) {
+                // A queued close may race the browser-closed callback, which releases the Java peer on the same
+                // CEF UI thread. Treat only that completed lifecycle transition as an idempotent close.
+                if (released.get()) return null;
+                throw alreadyReleased;
+            }
         }
 
         private void close(boolean force) {
-            CefBrowserHost host = getHost();
-            if (host != null) {
+            if (!closeRequested.compareAndSet(false, true)) return;
+            if (CefGlobals.currentlyOn(CEF_UI_THREAD) == 0) {
+                boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
+                    @Override
+                    public void execute() {
+                        closeOnCefUi(force);
+                    }
+                });
+                if (posted) return;
+            }
+            closeOnCefUi(force);
+        }
+
+        private void closeOnCefUi(boolean force) {
+            try (CefBrowserHost host = getHost()) {
+                if (host == null) return;
                 host.closeBrowser(force);
             }
+        }
+
+        private void release() {
+            if (released.compareAndSet(false, true)) browser.close();
         }
     }
 }

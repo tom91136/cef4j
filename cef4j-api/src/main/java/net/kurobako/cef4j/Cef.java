@@ -1,5 +1,6 @@
 package net.kurobako.cef4j;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,8 @@ import net.kurobako.cef4j.gen.CefMainArgs;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefSettings.Mutable;
+import net.kurobako.cef4j.gen.CefTask;
+import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +115,9 @@ public enum Cef implements AutoCloseable {
         }
         List<String> args = new ArrayList<>();
         args.add("--disable-popup-blocking");
-        if (OS.isLinux()) args.add("--ozone-platform=x11");
+        if (OS.isLinux()) {
+            args.add("--ozone-platform=x11");
+        }
         return new LaunchArgs(settings, args);
     }
 
@@ -411,6 +416,17 @@ public enum Cef implements AutoCloseable {
     static List<String> processArguments(List<String> extraArgs) {
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
         argv.add("cef4j");
+        if (OS.isLinux() && SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) == 75) {
+            // CEF 75's GPU process races NetworkContext startup under Xvfb, and its out-of-process NetworkService
+            // can dereference a destroyed PrefService while an AWT embedding is starting. Keep both workarounds
+            // version-scoped; adjacent supported CEF releases do not need them.
+            addArgIfMissing(argv, "--disable-gpu");
+            addArgIfMissing(argv, "--disable-features=NetworkService");
+        }
+        // Chromium 151+ can otherwise block startup on its first-run terms dialog when using a fresh cache.
+        if (SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) >= 151) {
+            addArgIfMissing(argv, "--no-first-run");
+        }
         argv.addAll(extraArgs);
         if (!OS.isWindows()) {
             // XXX: CEF 109.1.18 and 116.0.27 lack disable_signal_handlers; keep HotSpot's fatal handlers protected
@@ -428,8 +444,43 @@ public enum Cef implements AutoCloseable {
      */
     public CefBrowser createBrowser(CefClient client, String url, CefWindowInfo info, CefBrowserSettings settings) {
         checkState();
-        return CefBrowserHost.createBrowserSync(info, client, url, settings, null, null)
-                .orElseThrow();
+        return createBrowserSync(info, client, url, settings).orElseThrow();
+    }
+
+    /**
+     * Begin creating a windowless browser using the factory signature exposed by the active CEF ABI.
+     *
+     * <p>CEF 73-100 expose fewer optional parameters than current releases. The omitted values are null in every case,
+     * so selecting the available overload preserves the same behavior.
+     */
+    public static boolean createBrowserAsync(
+            CefWindowInfo info, CefClient client, String url, CefBrowserSettings settings) {
+        Class<?>[] signatures = {CefWindowInfo.class, CefClient.class, String.class, CefBrowserSettings.class};
+        try {
+            var method = CefBrowserHost.class.getMethod(
+                    "createBrowser",
+                    append(
+                            append(signatures, net.kurobako.cef4j.gen.CefDictionaryValue.class),
+                            net.kurobako.cef4j.gen.CefRequestContext.class));
+            return ((Number) method.invoke(null, info, client, url, settings, null, null)).intValue() != 0;
+        } catch (NoSuchMethodException newerSignatureMissing) {
+            try {
+                var method = CefBrowserHost.class.getMethod(
+                        "createBrowser", append(signatures, net.kurobako.cef4j.gen.CefRequestContext.class));
+                return ((Number) method.invoke(null, info, client, url, settings, null)).intValue() != 0;
+            } catch (NoSuchMethodException requestContextMissing) {
+                try {
+                    var method = CefBrowserHost.class.getMethod("createBrowser", signatures);
+                    return ((Number) method.invoke(null, info, client, url, settings)).intValue() != 0;
+                } catch (ReflectiveOperationException failure) {
+                    throw new IllegalStateException("Unable to create CEF browser", failure);
+                }
+            } catch (ReflectiveOperationException failure) {
+                throw new IllegalStateException("Unable to create CEF browser", failure);
+            }
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unable to create CEF browser", failure);
+        }
     }
 
     /**
@@ -467,7 +518,14 @@ public enum Cef implements AutoCloseable {
         if (isMacOs) {
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
         } else if (isDaemon) {
-            CefGlobals.quitMessageLoop();
+            CefThreadId uiThread = CefThreadId.of(CefThreadId.Kind.UI);
+            boolean posted = CefGlobals.postTask(uiThread, new CefTask() {
+                @Override
+                public void execute() {
+                    CefGlobals.quitMessageLoop();
+                }
+            });
+            if (!posted) throw new IllegalStateException("CEF UI queue rejected message-loop shutdown");
             if (shutdownLatch != null) awaitUninterruptibly(shutdownLatch);
         } else {
             int released = NativeCleaner.INSTANCE.releaseAll();
@@ -506,25 +564,55 @@ public enum Cef implements AutoCloseable {
     public static CefWindowInfo createWindowlessInfo(CefRect bounds) {
         if (OS.isMacOS()) {
             var wi = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
-            wi.bounds = bounds;
+            setWindowInfoBounds(wi, bounds);
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
         } else if (OS.isWindows()) {
             var wi = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
-            wi.bounds = bounds;
+            setWindowInfoBounds(wi, bounds);
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
         } else {
             var wi = new net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable();
-            wi.bounds = bounds;
+            setWindowInfoBounds(wi, bounds);
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
         }
     }
 
+    /** Configure mutable popup window information for windowless rendering across old and current CEF layouts. */
+    public static CefRect configureWindowlessPopup(Object windowInfo, CefRect defaultBounds) {
+        try {
+            windowInfo.getClass().getField("windowlessRenderingEnabled").setInt(windowInfo, 1);
+            try {
+                Field boundsField = windowInfo.getClass().getField("bounds");
+                CefRect bounds = (CefRect) boundsField.get(windowInfo);
+                if (bounds == null) {
+                    boundsField.set(windowInfo, defaultBounds);
+                    return defaultBounds;
+                }
+                return bounds;
+            } catch (NoSuchFieldException oldLayout) {
+                int width = windowInfo.getClass().getField("width").getInt(windowInfo);
+                int height = windowInfo.getClass().getField("height").getInt(windowInfo);
+                if (width <= 0 || height <= 0) {
+                    setWindowInfoBounds(windowInfo, defaultBounds);
+                    return defaultBounds;
+                }
+                return new CefRect(
+                        windowInfo.getClass().getField("x").getInt(windowInfo),
+                        windowInfo.getClass().getField("y").getInt(windowInfo),
+                        width,
+                        height);
+            }
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unsupported CEF window info layout", failure);
+        }
+    }
+
     private static CefMainArgs mainArgs(List<String> argv) {
         if (OS.isWindows()) {
-            return new net.kurobako.cef4j.gen.win.CefMainArgs(0L);
+            return mainArgsWindows(argv);
         }
         if (OS.isMacOS()) {
             return new net.kurobako.cef4j.gen.mac.CefMainArgs(argv.size(), argv);
@@ -566,6 +654,84 @@ public enum Cef implements AutoCloseable {
             // compatibility lanes are dropped.
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("Unable to set CEF setting: " + fieldName, e);
+        }
+    }
+
+    private static void setWindowInfoBounds(Object wi, CefRect bounds) {
+        try {
+            Field f = wi.getClass().getField("bounds");
+            f.set(wi, bounds);
+            return;
+        } catch (NoSuchFieldException oldLayout) {
+            // CEF <= 94 stores windowless bounds as x/y/width/height rather than a CefRect.
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unable to configure CEF window info bounds", failure);
+        }
+        try {
+            wi.getClass().getField("x").setInt(wi, bounds.x);
+            wi.getClass().getField("y").setInt(wi, bounds.y);
+            wi.getClass().getField("width").setInt(wi, bounds.width);
+            wi.getClass().getField("height").setInt(wi, bounds.height);
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unsupported CEF window info layout", failure);
+        }
+    }
+
+    private static Optional<CefBrowser> createBrowserSync(Object info, CefClient client, String url, Object settings) {
+        Class<?>[] signatures = {
+            net.kurobako.cef4j.gen.CefWindowInfo.class,
+            CefClient.class,
+            String.class,
+            net.kurobako.cef4j.gen.CefBrowserSettings.class,
+        };
+        // Try decreasing param counts: 6 (CefDictionaryValue + CefRequestContext), 5 (CefRequestContext), 4 (none)
+        try {
+            var m = CefBrowserHost.class.getMethod(
+                    "createBrowserSync",
+                    append(
+                            append(signatures, net.kurobako.cef4j.gen.CefDictionaryValue.class),
+                            net.kurobako.cef4j.gen.CefRequestContext.class));
+            return (Optional<CefBrowser>) m.invoke(null, info, client, url, settings, null, null);
+        } catch (NoSuchMethodException missingSixParameterOverload) {
+            try {
+                var m = CefBrowserHost.class.getMethod(
+                        "createBrowserSync", append(signatures, net.kurobako.cef4j.gen.CefRequestContext.class));
+                return (Optional<CefBrowser>) m.invoke(null, info, client, url, settings, null);
+            } catch (NoSuchMethodException missingFiveParameterOverload) {
+                try {
+                    var m = CefBrowserHost.class.getMethod("createBrowserSync", signatures);
+                    return (Optional<CefBrowser>) m.invoke(null, info, client, url, settings);
+                } catch (ReflectiveOperationException failure) {
+                    throw new IllegalStateException("Unable to create CEF browser", failure);
+                }
+            } catch (ReflectiveOperationException failure) {
+                throw new IllegalStateException("Unable to create CEF browser", failure);
+            }
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unable to create CEF browser", failure);
+        }
+    }
+
+    private static Class<?>[] append(Class<?>[] arr, Class<?> elem) {
+        Class<?>[] result = new Class<?>[arr.length + 1];
+        System.arraycopy(arr, 0, result, 0, arr.length);
+        result[arr.length] = elem;
+        return result;
+    }
+
+    private static CefMainArgs mainArgsWindows(List<String> argv) {
+        try {
+            var ctor = net.kurobako.cef4j.gen.win.CefMainArgs.class.getConstructor(long.class);
+            return ctor.newInstance(0L);
+        } catch (NoSuchMethodException missingLongConstructor) {
+            try {
+                var ctor = net.kurobako.cef4j.gen.win.CefMainArgs.class.getConstructor();
+                return ctor.newInstance();
+            } catch (ReflectiveOperationException failure) {
+                throw new IllegalStateException("Unable to construct Windows CEF main args", failure);
+            }
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unable to construct Windows CEF main args", failure);
         }
     }
 }

@@ -25,7 +25,9 @@
 #include "include/capi/cef_browser_capi.h"
 #include "include/capi/cef_browser_process_handler_capi.h"
 #include "include/capi/cef_client_capi.h"
+#if CEF_VERSION_MAJOR >= 81
 #include "include/capi/cef_devtools_message_observer_capi.h"
+#endif
 #include "include/capi/cef_life_span_handler_capi.h"
 #include "include/capi/cef_load_handler_capi.h"
 #include "include/capi/cef_process_message_capi.h"
@@ -223,6 +225,9 @@ static bool g_runtimeQuitPosted = false;
 static decltype(genhandlers::g_lifeSpanHandlerForwarder.on_after_created) g_forwardOnAfterCreated = nullptr;
 static decltype(genhandlers::g_lifeSpanHandlerForwarder.do_close) g_forwardDoClose = nullptr;
 static decltype(genhandlers::g_lifeSpanHandlerForwarder.on_before_close) g_forwardOnBeforeClose = nullptr;
+static decltype(genhandlers::g_loadHandlerForwarder.on_load_start) g_forwardOnLoadStart = nullptr;
+static decltype(genhandlers::g_loadHandlerForwarder.on_load_end) g_forwardOnLoadEnd = nullptr;
+static decltype(genhandlers::g_loadHandlerForwarder.on_load_error) g_forwardOnLoadError = nullptr;
 
 static cef_browser_t* canonicalBrowser(cef_browser_t* browser) {
     if (!browser) return nullptr;
@@ -245,7 +250,9 @@ static bool untrackBrowser(cef_browser_t* browser) {
     return true;
 }
 
+#if CEF_VERSION_MAJOR >= 81
 static void releaseAllDevToolsRegistrations();
+#endif
 static void releaseBrowserState(cef_browser_t* browser);
 static void finishRuntimeShutdown();
 
@@ -310,6 +317,26 @@ static void installLifeSpanHooks() {
     };
 }
 
+static void installLoadHooks() {
+    auto& handler = genhandlers::g_loadHandlerForwarder;
+    g_forwardOnLoadStart = handler.on_load_start;
+    g_forwardOnLoadEnd = handler.on_load_end;
+    g_forwardOnLoadError = handler.on_load_error;
+    handler.on_load_start = [](cef_load_handler_t* self, cef_browser_t* browser,
+                               cef_frame_t* frame, cef_transition_type_t transitionType) {
+        g_forwardOnLoadStart(self, canonicalBrowser(browser), frame, transitionType);
+    };
+    handler.on_load_end = [](cef_load_handler_t* self, cef_browser_t* browser,
+                             cef_frame_t* frame, int httpStatusCode) {
+        g_forwardOnLoadEnd(self, canonicalBrowser(browser), frame, httpStatusCode);
+    };
+    handler.on_load_error = [](cef_load_handler_t* self, cef_browser_t* browser,
+                               cef_frame_t* frame, cef_errorcode_t errorCode,
+                               const cef_string_t* errorText, const cef_string_t* failedUrl) {
+        g_forwardOnLoadError(self, canonicalBrowser(browser), frame, errorCode, errorText, failedUrl);
+    };
+}
+
 static void releaseTrackedBrowsers() {
     g_liveBrowsers.clear();
 }
@@ -335,6 +362,7 @@ static std::unordered_map<int, Viewport> g_viewports;
 
 // DevTools observer registrations are deliberately owned by the server, not a transport implementation.
 // Releasing a cef_registration_t unregisters the observer. All mutations happen on CEF's UI thread.
+#if CEF_VERSION_MAJOR >= 81
 struct DevToolsRegistration {
     cef_registration_t* registration;
     int browserIdentifier;
@@ -402,6 +430,7 @@ static void releaseAllDevToolsRegistrations() {
     }
     g_devToolsRegistrations.clear();
 }
+#endif
 
 static void releaseBrowserState(cef_browser_t* browser) {
     if (!browser) return;
@@ -414,6 +443,7 @@ static void releaseBrowserState(cef_browser_t* browser) {
         std::lock_guard<std::mutex> lock(g_viewportsMu);
         g_viewports.erase(identifier);
     }
+#if CEF_VERSION_MAJOR >= 81
     for (auto it = g_devToolsRegistrations.begin(); it != g_devToolsRegistrations.end();) {
         if (it->second.browserIdentifier != identifier) {
             ++it;
@@ -423,6 +453,7 @@ static void releaseBrowserState(cef_browser_t* browser) {
         registrationBase->release(registrationBase);
         it = g_devToolsRegistrations.erase(it);
     }
+#endif
 }
 
 struct RenderHandler : cef_render_handler_t {
@@ -563,9 +594,15 @@ struct Client : cef_client_t {
             base->add_ref(base);
             return c->renderHandler;
         };
+#if CEF_VERSION_MAJOR >= 75
         on_process_message_received = [](cef_client_t* /*self*/, cef_browser_t* browser,
                                          cef_frame_t* /*frame*/, cef_process_id_t /*src*/,
                                          cef_process_message_t* msg) -> int {
+#else
+        on_process_message_received = [](cef_client_t* /*self*/, cef_browser_t* browser,
+                                         cef_process_id_t /*src*/,
+                                         cef_process_message_t* msg) -> int {
+#endif
             if (!msg || !browser) return 0;
             cef_string_userfree_t nameUF = msg->get_name(msg);
             std::string name;
@@ -1095,6 +1132,21 @@ static void writeJsResultArgs(cef_list_value_t* args, std::int32_t corrId, const
     args->set_int(args, 8, r.valueHandle);
 }
 
+static bool sendProcessMessage(cef_frame_t* frame, cef_process_id_t target, cef_process_message_t* message) {
+    if (!frame || !message) return false;
+#if CEF_VERSION_MAJOR >= 75
+    frame->send_process_message(frame, target, message);
+    return true;
+#else
+    cef_browser_t* browser = frame->get_browser(frame);
+    if (!browser) return false;
+    bool sent = browser->send_process_message(browser, target, message) != 0;
+    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
+    base->release(base);
+    return sent;
+#endif
+}
+
 static void sendV8Response(cef_frame_t* frame, const char* name, std::size_t nameLen,
                            std::function<void(cef_list_value_t*)> fillArgs) {
     cef_string_t cefName{};
@@ -1108,7 +1160,10 @@ static void sendV8Response(cef_frame_t* frame, const char* name, std::size_t nam
         auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(respArgs);
         ab->release(ab);
     }
-    frame->send_process_message(frame, PID_BROWSER, respMsg);
+    if (!sendProcessMessage(frame, PID_BROWSER, respMsg)) {
+        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(respMsg);
+        base->release(base);
+    }
 }
 
 static void handleV8EvalReq(cef_frame_t* frame, cef_process_message_t* msg) {
@@ -1718,7 +1773,10 @@ struct JvmJsHandler : cef_v8_handler_t {
                             auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(a);
                             ab->release(ab);
                         }
-                        frame->send_process_message(frame, PID_BROWSER, m);
+                        if (!sendProcessMessage(frame, PID_BROWSER, m)) {
+                            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(m);
+                            base->release(base);
+                        }
                     }
                 }
             }
@@ -1792,92 +1850,111 @@ struct RenderProcessHandler : cef_render_process_handler_t {
             // the |message| reference will be invalidated." So send_process_message ADOPTS our +1 from
             // cef_process_message_create — we must NOT release it afterward, that would double-decrement
             // and corrupt the IPC bus.
-            frame->send_process_message(frame, PID_BROWSER, msg);
+            if (!sendProcessMessage(frame, PID_BROWSER, msg)) {
+                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(msg);
+                base->release(base);
+            }
         };
+#if CEF_VERSION_MAJOR >= 75
         on_process_message_received = [](cef_render_process_handler_t* /*self*/, cef_browser_t* /*browser*/,
                                          cef_frame_t* frame, cef_process_id_t /*src*/,
                                          cef_process_message_t* msg) -> int {
-            if (!msg || !frame) return 0;
-            std::string name = readMessageName(msg);
-            if (name == "v8_eval_req") {
-                handleV8EvalReq(frame, msg);
-                return 1;
+#else
+        on_process_message_received = [](cef_render_process_handler_t* /*self*/, cef_browser_t* browser,
+                                         cef_process_id_t /*src*/,
+                                         cef_process_message_t* msg) -> int {
+            cef_frame_t* frame = browser ? browser->get_main_frame(browser) : nullptr;
+#endif
+            int result = [&]() -> int {
+              if (!msg || !frame) return 0;
+              std::string name = readMessageName(msg);
+              if (name == "v8_eval_req") {
+                  handleV8EvalReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_get_string_req") {
+                  handleV8GetStringReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_get_property_req") {
+                  handleV8GetPropertyReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_release_handle_req") {
+                  handleV8ReleaseHandleReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_execute_function_req") {
+                  handleV8ExecuteFunctionReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_set_property_req") {
+                  handleV8SetPropertyReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_has_property_req") {
+                  handleV8HasPropertyReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_get_keys_req") {
+                  handleV8GetKeysReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_get_array_length_req") {
+                  handleV8GetArrayLengthReq(frame, msg);
+                  return 1;
+              }
+              if (name == "v8_get_value_by_index_req") {
+                  handleV8GetValueByIndexReq(frame, msg);
+                  return 1;
+              }
+              if (name == "js_register_func_req") {
+                  handleJsRegisterFuncReq(frame, msg);
+                  return 1;
+              }
+              if (name == "cef4j_renderer_req") {
+                  auto* args = msg->get_argument_list(msg);
+                  if (!args || args->get_size(args) < 3) {
+                      if (args) {
+                          auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                          ab->release(ab);
+                      }
+                      return 1;
+                  }
+                  std::int32_t corrId    = args->get_int(args, 0);
+                  std::int32_t messageId = args->get_int(args, 1);
+                  std::vector<std::uint8_t> payload;
+                  cef_binary_value_t* binary = args->get_binary(args, 2);
+                  if (binary) {
+                      std::size_t size = binary->get_size(binary);
+                      payload.resize(size);
+                      if (size > 0) binary->get_data(binary, payload.data(), size, 0);
+                      auto* bb = reinterpret_cast<cef_base_ref_counted_t*>(binary);
+                      bb->release(bb);
+                  }
+                  auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                  ab->release(ab);
+                  if (messageId == net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::kMessageId) {
+                      auto req = net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::decode(
+                              payload.data(), payload.size());
+                      (void)gendisp::dispatchRelease(req.kind, req.handle);
+                      std::vector<std::uint8_t> empty;
+                      genrender::sendResponseEnvelope(
+                              frame, "cef4j_renderer_resp", corrId, messageId, empty.data(), empty.size());
+                  } else if (!genrender::dispatch(frame, corrId, messageId, payload)) {
+                      genrender::sendReceiverGone(frame, corrId, messageId);
+                  }
+                  return 1;
+              }
+              return 0;
+            }();
+#if CEF_VERSION_MAJOR < 75
+            if (frame) {
+              auto* fb = reinterpret_cast<cef_base_ref_counted_t*>(frame);
+              fb->release(fb);
             }
-            if (name == "v8_get_string_req") {
-                handleV8GetStringReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_get_property_req") {
-                handleV8GetPropertyReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_release_handle_req") {
-                handleV8ReleaseHandleReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_execute_function_req") {
-                handleV8ExecuteFunctionReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_set_property_req") {
-                handleV8SetPropertyReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_has_property_req") {
-                handleV8HasPropertyReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_get_keys_req") {
-                handleV8GetKeysReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_get_array_length_req") {
-                handleV8GetArrayLengthReq(frame, msg);
-                return 1;
-            }
-            if (name == "v8_get_value_by_index_req") {
-                handleV8GetValueByIndexReq(frame, msg);
-                return 1;
-            }
-            if (name == "js_register_func_req") {
-                handleJsRegisterFuncReq(frame, msg);
-                return 1;
-            }
-            if (name == "cef4j_renderer_req") {
-                auto* args = msg->get_argument_list(msg);
-                if (!args || args->get_size(args) < 3) {
-                    if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
-                    }
-                    return 1;
-                }
-                std::int32_t corrId    = args->get_int(args, 0);
-                std::int32_t messageId = args->get_int(args, 1);
-                std::vector<std::uint8_t> payload;
-                cef_binary_value_t* binary = args->get_binary(args, 2);
-                if (binary) {
-                    std::size_t size = binary->get_size(binary);
-                    payload.resize(size);
-                    if (size > 0) binary->get_data(binary, payload.data(), size, 0);
-                    auto* bb = reinterpret_cast<cef_base_ref_counted_t*>(binary);
-                    bb->release(bb);
-                }
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
-                if (messageId == net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::kMessageId) {
-                    auto req = net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::decode(
-                            payload.data(), payload.size());
-                    (void)gendisp::dispatchRelease(req.kind, req.handle);
-                    std::vector<std::uint8_t> empty;
-                    genrender::sendResponseEnvelope(
-                            frame, "cef4j_renderer_resp", corrId, messageId, empty.data(), empty.size());
-                } else if (!genrender::dispatch(frame, corrId, messageId, payload)) {
-                    genrender::sendReceiverGone(frame, corrId, messageId);
-                }
-                return 1;
-            }
-            return 0;
+#endif
+            return result;
         };
     }
 };
@@ -1919,6 +1996,14 @@ struct App : cef_app_t {
             base->add_ref(base);
             return a->renderProcessHandler;
         };
+#if CEF_VERSION_MAJOR >= 151
+        on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
+            // Chrome 151+ may otherwise block cef_initialize behind an interactive first-run EULA. The runtime
+            // server has no interactive browser chrome, so first-run UI is neither visible nor actionable.
+            ScopedCefString noFirstRun("no-first-run");
+            commandLine->append_switch(commandLine, noFirstRun.get());
+        };
+#endif
 #if defined(__APPLE__) && CEF_VERSION_MAJOR <= 109
         on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
             ScopedCefString disableGpu("disable-gpu");
@@ -1960,10 +2045,17 @@ struct CreateBrowserTask : cef_task_t {
         windowInfo.size = sizeof(windowInfo);
 #endif
         windowInfo.windowless_rendering_enabled = 1;
+#if CEF_VERSION_MAJOR >= 95
         windowInfo.bounds.x = 0;
         windowInfo.bounds.y = 0;
         windowInfo.bounds.width = 800;
         windowInfo.bounds.height = 600;
+#else
+        windowInfo.x = 0;
+        windowInfo.y = 0;
+        windowInfo.width = 800;
+        windowInfo.height = 600;
+#endif
 
         cef_browser_settings_t native{};
         native.size = sizeof(native);
@@ -1986,7 +2078,11 @@ struct CreateBrowserTask : cef_task_t {
         }
 
         ScopedCefString cefUrl(url);
+#if CEF_VERSION_MAJOR >= 75
         return cef_browser_host_create_browser(&windowInfo, g_client, cefUrl.get(), &native, nullptr, nullptr);
+#else
+        return cef_browser_host_create_browser(&windowInfo, g_client, cefUrl.get(), &native, nullptr);
+#endif
     }
 };
 
@@ -2106,6 +2202,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             }
             return;
         }
+#if CEF_VERSION_MAJOR >= 81
         case kMsgDevToolsAttach: {
             auto req = gen::DevToolsAttachRequest::decode(payload.data(), payload.size());
             std::int32_t browserHandle = req.browser;
@@ -2166,6 +2263,22 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             if (!gendisp::postUiTask(task)) gendisp::sendTaskRejected(g_ipc, corrId, msgId);
             return;
         }
+#else
+        case kMsgDevToolsAttach:
+        case kMsgDevToolsDetach: {
+            const std::string message = "DevTools requires CEF 81 or newer";
+            std::vector<std::uint8_t> error(8 + message.size());
+            auto writeI32 = [](std::uint8_t* out, std::int32_t value) {
+                auto bits = static_cast<std::uint32_t>(value);
+                for (int i = 0; i < 4; ++i) out[i] = static_cast<std::uint8_t>(bits >> (i * 8));
+            };
+            writeI32(error.data(), cef4j::ipc::ErrorCode::UnsupportedFeature);
+            writeI32(error.data() + 4, static_cast<std::int32_t>(message.size()));
+            std::memcpy(error.data() + 8, message.data(), message.size());
+            if (g_ipc) g_ipc->send(Kind::Error, 0, h.corrId, h.messageId, error.data(), error.size());
+            return;
+        }
+#endif
         default: {
             if (h.messageId == gen::EvaluateJavascriptRequest::kMessageId) {
                 auto req = gen::EvaluateJavascriptRequest::decode(payload.data(), payload.size());
@@ -2198,7 +2311,10 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                             auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
                             ab->release(ab);
                         }
-                        receiver->send_process_message(receiver, PID_RENDERER, m);
+                        if (!sendProcessMessage(receiver, PID_RENDERER, m)) {
+                            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(m);
+                            base->release(base);
+                        }
                     }
                     auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                     base->release(base);
@@ -2240,8 +2356,10 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                                                                   cef_base_ref_counted_t*>(args);
                                                           ab->release(ab);
                                                       }
-                                                      receiver->send_process_message(receiver,
-                                                                                     PID_RENDERER, m);
+                                                      if (!sendProcessMessage(receiver, PID_RENDERER, m)) {
+                                                          auto* base = reinterpret_cast<cef_base_ref_counted_t*>(m);
+                                                          base->release(base);
+                                                      }
                                                   }
                                                   auto* base =
                                                           reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -2500,7 +2618,15 @@ int main(int argc, char* argv[]) {
     cefArguments.reserve(cefArgumentStorage.size());
     for (auto& argument : cefArgumentStorage) cefArguments.push_back(argument.data());
 #endif
-    cef4j_verify_api_hash();
+    const char* runtimeApiHash = cef4j_runtime_api_hash();
+    if (!cef4j_verify_api_hash(runtimeApiHash)) {
+        std::fprintf(
+            stderr,
+            "[cef4j-runtime-server] CEF API hash mismatch (expected %s, actual %s)\n",
+            CEF_API_HASH_PLATFORM,
+            runtimeApiHash ? runtimeApiHash : "<null>");
+        return 1;
+    }
 
     cef_main_args_t args{};
 #ifdef _WIN32
@@ -2551,7 +2677,9 @@ int main(int argc, char* argv[]) {
                         / ("cef4j-runtime-server-" + std::to_string(processId()))).string();
         }
         ScopedCefString cachePath(cacheDir);
+#if CEF_VERSION_MAJOR >= 80
         cef_string_set(cachePath.get()->str, cachePath.get()->length, &settings.root_cache_path, 1);
+#endif
     }
 
     std::string resourceDirectory;
@@ -2616,6 +2744,7 @@ int main(int argc, char* argv[]) {
     genhandlers::g_ipc = ipc.get();
 
     installLifeSpanHooks();
+    installLoadHooks();
     auto* client = new Client();
     g_client     = client;
     ipc->start(onIpcFrame);
@@ -2623,13 +2752,19 @@ int main(int argc, char* argv[]) {
     const std::string advertisedEndpoint = ipc->endpoint();
     g_publishEndpoint = [transportName, frameTransportName, advertisedEndpoint]() {
         std::fprintf(stderr, "[cef4j-runtime-server] CEF context initialized; publishing endpoint\n");
+#if CEF_VERSION_MAJOR >= 81
+        constexpr const char* capabilities = "remote-cef-api,devtools,osr,input,graceful-shutdown";
+#else
+        constexpr const char* capabilities = "remote-cef-api,osr,input,graceful-shutdown";
+#endif
         std::printf(
             "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
-            "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
+            "capabilities=%s\n",
             CEF_API_VERSION,
             transportName.c_str(),
             frameTransportName.c_str(),
-            advertisedEndpoint.c_str());
+            advertisedEndpoint.c_str(),
+            capabilities);
         std::fflush(stdout);
     };
     if (g_contextInitialized) {
@@ -2660,7 +2795,9 @@ int main(int argc, char* argv[]) {
     cef_run_message_loop();
 #endif
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: CEF message loop returned\n");
+#if CEF_VERSION_MAJOR >= 81
     releaseAllDevToolsRegistrations();
+#endif
     releaseTrackedBrowsers();
     joinInterceptWorkers();
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");

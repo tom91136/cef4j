@@ -24,20 +24,35 @@ import net.kurobako.cef4j.cdp.gson.GsonCdpCodec;
 import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAgentDetachedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
+import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
+import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class DevToolsSessionTest {
+
+    private static boolean hasSendDevToolsMessage;
+
+    @BeforeAll
+    static void checkAvailable() {
+        try {
+            Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest");
+            hasSendDevToolsMessage = true;
+        } catch (ClassNotFoundException e) {
+            hasSendDevToolsMessage = false;
+        }
+    }
+
     @Test
     void installsRemoteFactoryProvider() {
         assertThat(ServiceLoader.load(RemoteDevToolsSessionFactory.class))
@@ -46,6 +61,7 @@ class DevToolsSessionTest {
 
     @Test
     void correlatesCommandsAndEventsOverTransportNeutralSession() throws Exception {
+        Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
@@ -61,16 +77,14 @@ class DevToolsSessionTest {
             Map<String, Object> params = Map.of("expression", "6 * 7");
             var command = devTools.send("Runtime.evaluate", params);
             Frame send = peer.receive();
-            assertThat(send.messageId).isEqualTo(BrowserHostSendDevToolsMessageRequest.MESSAGE_ID);
-            BrowserHostSendDevToolsMessageRequest request =
-                    BrowserHostSendDevToolsMessageRequest.DECODER.decode(ByteBuffer.wrap(send.payload));
-            JsonObject wireJson = JsonParser.parseString(new String(request.message(), StandardCharsets.UTF_8))
+            assertThat(send.messageId).isEqualTo(sendDevToolsMessageId());
+            JsonObject wireJson = JsonParser.parseString(new String(requestMessage(send), StandardCharsets.UTF_8))
                     .getAsJsonObject();
             assertThat(wireJson.get("method").getAsString()).isEqualTo("Runtime.evaluate");
             assertThat(wireJson.getAsJsonObject("params").get("expression").getAsString())
                     .isEqualTo("6 * 7");
             int commandId = wireJson.get("id").getAsInt();
-            peer.respond(send, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(send, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + commandId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
@@ -82,7 +96,7 @@ class DevToolsSessionTest {
             var typedCommand = typed.domains().runtime().evaluate("document.title");
             Frame typedSend = peer.receive();
             int typedId = commandId(typedSend);
-            peer.respond(typedSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(typedSend, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + typedId + ",\"result\":{\"result\":{\"type\":\"string\",\"value\":\"cef4j\"}}}")
@@ -113,6 +127,7 @@ class DevToolsSessionTest {
 
     @Test
     void reportsCdpErrorsAndFailsPendingCallsWhenAgentDetaches() throws Exception {
+        Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
@@ -125,7 +140,7 @@ class DevToolsSessionTest {
             var failed = devTools.send("No.suchMethod", null);
             Frame failedSend = peer.receive();
             int failedId = commandId(failedSend);
-            peer.respond(failedSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(failedSend, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + failedId + ",\"error\":{\"code\":-32601,\"message\":\"unknown method\"}}")
@@ -136,7 +151,7 @@ class DevToolsSessionTest {
 
             var pending = devTools.send("Page.captureScreenshot", null);
             Frame pendingSend = peer.receive();
-            peer.respond(pendingSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(pendingSend, successfulSendResponse());
             peer.event(new DevToolsAgentDetachedEvent(browser));
             assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS))
                     .hasRootCauseInstanceOf(IllegalStateException.class)
@@ -147,6 +162,7 @@ class DevToolsSessionTest {
     @Test
     @SuppressWarnings("try")
     void transportDisconnectFailsPendingCdpCalls() throws Exception {
+        Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
@@ -156,7 +172,7 @@ class DevToolsSessionTest {
             peer.respond(peer.receive(), null);
             DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
             var pending = devTools.send("Page.captureScreenshot", null);
-            peer.respond(peer.receive(), new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(peer.receive(), successfulSendResponse());
             peer.close();
             assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS)).satisfies(failure -> {
                 Throwable cause = Objects.requireNonNull(failure.getCause());
@@ -168,6 +184,7 @@ class DevToolsSessionTest {
 
     @Test
     void cancelledCommandDoesNotConsumeALaterResponse() throws Exception {
+        Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
@@ -180,7 +197,7 @@ class DevToolsSessionTest {
             CompletableFuture<Map<String, Object>> cancelled = devTools.send("Runtime.evaluate", null);
             Frame firstSend = peer.receive();
             int firstId = commandId(firstSend);
-            peer.respond(firstSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(firstSend, successfulSendResponse());
             cancelled.cancel(false);
             peer.event(new DevToolsMessageEvent(
                     browser,
@@ -189,7 +206,7 @@ class DevToolsSessionTest {
             CompletableFuture<Map<String, Object>> next = devTools.send("Runtime.evaluate", null);
             Frame nextSend = peer.receive();
             int nextId = commandId(nextSend);
-            peer.respond(nextSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(nextSend, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser, ("{\"id\":" + nextId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
 
@@ -198,13 +215,32 @@ class DevToolsSessionTest {
         }
     }
 
-    private static int commandId(Frame frame) {
-        BrowserHostSendDevToolsMessageRequest request =
-                BrowserHostSendDevToolsMessageRequest.DECODER.decode(ByteBuffer.wrap(frame.payload));
-        return JsonParser.parseString(new String(request.message(), StandardCharsets.UTF_8))
+    private static int commandId(Frame frame) throws Exception {
+        return JsonParser.parseString(new String(requestMessage(frame), StandardCharsets.UTF_8))
                 .getAsJsonObject()
                 .get("id")
                 .getAsInt();
+    }
+
+    private static int sendDevToolsMessageId() throws ReflectiveOperationException {
+        return sendRequestClass().getField("MESSAGE_ID").getInt(null);
+    }
+
+    private static byte[] requestMessage(Frame frame) throws ReflectiveOperationException {
+        @SuppressWarnings("unchecked")
+        CefMessageDecoder<CefMessageView> decoder = (CefMessageDecoder<CefMessageView>)
+                sendRequestClass().getField("DECODER").get(null);
+        Object request = decoder.decode(ByteBuffer.wrap(frame.payload));
+        return (byte[]) request.getClass().getMethod("message").invoke(request);
+    }
+
+    private static CefMessageEncoder successfulSendResponse() throws ReflectiveOperationException {
+        Class<?> type = Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageResponse");
+        return (CefMessageEncoder) type.getConstructor(int.class).newInstance(1);
+    }
+
+    private static Class<?> sendRequestClass() throws ClassNotFoundException {
+        return Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest");
     }
 
     private static final class Peer implements AutoCloseable {

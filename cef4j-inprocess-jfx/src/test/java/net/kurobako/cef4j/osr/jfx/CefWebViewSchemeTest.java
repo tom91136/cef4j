@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -21,6 +22,7 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.UrlSchemeHandlerFactory;
 import net.kurobako.cef4j.gen.CefApp;
+import net.kurobako.cef4j.gen.CefBrowserProcessHandler;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefSchemeOptions;
 import net.kurobako.cef4j.gen.CefSchemeRegistrar;
@@ -37,6 +39,8 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(30)
 @ExtendWith(DisplayLock.class)
 class CefWebViewSchemeTest {
+
+    private static final CompletableFuture<String> resourceOpened = new CompletableFuture<>();
 
     // XXX: CEF 150 keeps macOS cache files mapped until process exit; restore eager TempDir cleanup when the minimum
     // CEF major is above 150 and the macOS scheme-test fork deletes its cache after normal cef_shutdown.
@@ -61,6 +65,7 @@ class CefWebViewSchemeTest {
                             @Override
                             public void connect() throws IOException {
                                 String path = u.getPath();
+                                resourceOpened.complete(path);
                                 stream = CefWebViewSchemeTest.class.getResourceAsStream(path);
                                 if (stream == null) {
                                     throw new IOException("Resource not found: " + path);
@@ -101,25 +106,34 @@ class CefWebViewSchemeTest {
                     registrar.addCustomScheme("classpath", options);
                 }
             }
+
+            @Override
+            public Optional<CefBrowserProcessHandler> getBrowserProcessHandler() {
+                return Optional.of(new CefBrowserProcessHandler() {
+                    @Override
+                    public void onContextInitialized() {
+                        CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
+                    }
+                });
+            }
         });
 
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
         launch.settings().noSandbox = 1;
         launch.settings().cachePath = cacheRoot.toAbsolutePath().toString();
-        launch.settings().rootCachePath = cacheRoot.toAbsolutePath().toString();
+        net.kurobako.cef4j.test.CefTestLaunch.setRootCachePath(
+                launch.settings(), cacheRoot.toAbsolutePath().toString());
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();
-        Cef.INSTANCE.initialise(launch.settings(), args);
-
-        CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
+        onFxThread(() -> CefWebView.initialise(launch.settings(), args, Optional.empty()));
     }
 
     @AfterAll
     static void cleanup() throws Exception {
         closeAllWindows();
         drainJavaFx();
-        Cef.INSTANCE.terminate();
+        onFxThread(CefWebView::terminate);
         shutdownJavaFx();
     }
 
@@ -144,6 +158,7 @@ class CefWebViewSchemeTest {
             }
         });
 
+        assertThat(resourceOpened.get(5, TimeUnit.SECONDS)).isEqualTo("/cef4j-webview-scheme-test.html");
         CefScriptEngine eng = engineFuture.get(15, TimeUnit.SECONDS);
         String bodyText = eng.evaluate("document.body.textContent.trim()").get(5, TimeUnit.SECONDS);
         assertThat(bodyText).isEqualTo("\"webview scheme handler works\"");

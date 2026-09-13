@@ -16,18 +16,24 @@ struct ResourceRequestHandlerOnBeforeResourceLoadResponse {
     static constexpr std::size_t kMaxFieldBytes = 64U * 1024U * 1024U;
     static constexpr std::size_t kMaxCollectionItems = 1000000U;
 
-    bool result = false;
+    std::int32_t result = 0;
 
     /** Number of payload bytes that {@link encodeInto} writes for this instance. */
     std::size_t encodedSize() const noexcept {
-        return 1;
+        return 4;
     }
 
     /** Writes exactly {@link encodedSize} bytes starting at {@code dst}. */
     void encodeInto(std::uint8_t* dst) const noexcept {
         std::size_t pos = 0;
-        dst[pos] = static_cast<std::uint8_t>(result ? 1 : 0);
-        pos += 1;
+        {
+            std::uint32_t v = static_cast<std::uint32_t>(result);
+            dst[pos + 0] = static_cast<std::uint8_t>(v & 0xFF);
+            dst[pos + 1] = static_cast<std::uint8_t>((v >> 8) & 0xFF);
+            dst[pos + 2] = static_cast<std::uint8_t>((v >> 16) & 0xFF);
+            dst[pos + 3] = static_cast<std::uint8_t>((v >> 24) & 0xFF);
+            pos += 4;
+        }
     }
 
     /** Reads a ResourceRequestHandlerOnBeforeResourceLoadResponse from a payload starting at {@code src}; {@code len} bounds the buffer. */
@@ -38,9 +44,9 @@ struct ResourceRequestHandlerOnBeforeResourceLoadResponse {
             if (pos > len || count > len - pos)
                 throw std::invalid_argument("truncated ResourceRequestHandlerOnBeforeResourceLoadResponse payload");
         };
-        requireAvailable(1);
-        out.result = src[pos] != 0;
-        pos += 1;
+        requireAvailable(4);
+        out.result = static_cast<std::int32_t>(static_cast<std::uint32_t>(src[pos]) | (static_cast<std::uint32_t>(src[pos + 1]) << 8) | (static_cast<std::uint32_t>(src[pos + 2]) << 16) | (static_cast<std::uint32_t>(src[pos + 3]) << 24));
+        pos += 4;
         if (pos != len)
             throw std::invalid_argument("trailing ResourceRequestHandlerOnBeforeResourceLoadResponse payload");
         return out;

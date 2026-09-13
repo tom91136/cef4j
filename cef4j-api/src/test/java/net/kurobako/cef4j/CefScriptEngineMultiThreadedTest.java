@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
+import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
@@ -23,9 +24,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(DisplayLock.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Timeout(60)
 class CefScriptEngineMultiThreadedTest {
@@ -49,7 +52,6 @@ class CefScriptEngineMultiThreadedTest {
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.noSandbox = 1;
             settings.cachePath = cacheDir.toAbsolutePath().toString();
-            settings.rootCachePath = cacheDir.toAbsolutePath().toString();
             settings.windowlessRenderingEnabled = 1;
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 1;
@@ -200,7 +202,12 @@ class CefScriptEngineMultiThreadedTest {
                 return Optional.of(new CefInteropTest.MinimalRenderHandler(800, 600));
             }
 
-            @Override
+            public boolean onProcessMessageReceived(
+                    @Nullable CefBrowser b, @Nullable CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
+                if (b == null || sourceProcess == null || message == null) return false;
+                return engine.handleMessage(b, null, sourceProcess, message);
+            }
+
             public boolean onProcessMessageReceived(
                     @Nullable CefBrowser b,
                     @Nullable CefFrame frame,
@@ -216,7 +223,7 @@ class CefScriptEngineMultiThreadedTest {
         CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, 800, 600));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
-        int ok = CefBrowserHost.createBrowser(windowInfo, client, url, browserSettings.toImmutable(), null, null);
+        int ok = CefTestBase.createBrowserCompat(windowInfo, client, url, browserSettings.toImmutable());
         assertThat(ok).as("createBrowser should succeed").isNotEqualTo(0);
     }
 }

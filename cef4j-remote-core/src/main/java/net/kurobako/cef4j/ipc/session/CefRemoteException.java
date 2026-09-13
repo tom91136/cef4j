@@ -17,6 +17,8 @@ public class CefRemoteException extends RuntimeException {
 
     public static final int CODE_TASK_REJECTED = 3;
 
+    public static final int CODE_UNSUPPORTED_FEATURE = 4;
+
     private final int code;
 
     public CefRemoteException(int code, String message) {

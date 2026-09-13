@@ -18,7 +18,6 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.*;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.gen.CefBrowser;
-import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCursorInfo;
@@ -598,19 +597,6 @@ public final class SwingBrowserApp {
                             });
                             return true;
                         }
-
-                        @Override
-                        public boolean runQuickMenu(
-                                @javax.annotation.Nullable CefBrowser b,
-                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefFrame f,
-                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefPoint location,
-                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefSize size,
-                                @javax.annotation.Nullable
-                                        net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags editStateFlags,
-                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefRunQuickMenuCallback callback) {
-                            if (callback != null) callback.cancel();
-                            return true;
-                        }
                     });
                 }
             };
@@ -619,7 +605,7 @@ public final class SwingBrowserApp {
                     new CefRect(0, 0, Math.max(1, surface.getWidth()), Math.max(1, surface.getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            CefBrowserHost.createBrowser(windowInfo, client, initialUrl, browserSettings.toImmutable(), null, null);
+            Cef.createBrowserAsync(windowInfo, client, initialUrl, browserSettings.toImmutable());
         }
 
         JComponent createTabHeader() {
@@ -748,8 +734,8 @@ public final class SwingBrowserApp {
 
         private static List<MenuEntry> extractMenuEntries(net.kurobako.cef4j.gen.CefMenuModel model) {
             List<MenuEntry> entries = new ArrayList<>();
-            long count = model.getCount();
-            for (long i = 0; i < count; i++) {
+            int count = Math.toIntExact(model.getCount());
+            for (int i = 0; i < count; i++) {
                 int commandId = model.getCommandIdAt(i);
                 net.kurobako.cef4j.gen.CefMenuItemType.Kind kind =
                         model.getType(commandId).kind().orElse(net.kurobako.cef4j.gen.CefMenuItemType.Kind.NONE);

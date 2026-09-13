@@ -184,14 +184,12 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Override
     @Nonnull
     public CompletableFuture<byte[]> screenshot() {
-        return page.captureScreenshot(
-                        Optional.of(Page.CaptureScreenshotFormatValues.PNG),
-                        OptionalLong.empty(),
-                        Optional.empty(),
-                        Optional.of(true),
-                        Optional.empty(),
-                        Optional.empty())
-                .thenApply(data -> Base64.getDecoder().decode(data))
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("format", CdpObject.json("png"));
+        params.put("captureBeyondViewport", true);
+        return client.<String>call("Page.captureScreenshot", params, result ->
+                        (String) java.util.Objects.requireNonNull(result.get("data")))
+                .thenApply(Base64.getDecoder()::decode)
                 .toCompletableFuture();
     }
 
@@ -299,9 +297,13 @@ public final class CdpAutomationBackend implements AutomationBackend {
     public CompletableFuture<Void> elementClick(String elementId) {
         DOM.BackendNodeId backendNodeId = requireElementId(elementId);
         return resolveElement(elementId)
-                .thenCompose(objectId -> dom.scrollIntoViewIfNeeded(
-                                Optional.empty(), Optional.of(backendNodeId), Optional.empty(), Optional.empty())
-                        .whenComplete((ignored, failure) -> releaseObject(objectId)))
+                .thenCompose(objectId -> {
+                    Map<String, Object> scrollParams = new LinkedHashMap<>();
+                    scrollParams.put("backendNodeId", CdpObject.json(backendNodeId.value()));
+                    return client.<Void>call("DOM.scrollIntoViewIfNeeded", scrollParams, result_ -> null)
+                            .toCompletableFuture()
+                            .whenComplete((ignored, failure) -> releaseObject(objectId));
+                })
                 .thenCompose(ignored -> elementDisplayed(elementId))
                 .thenCompose(displayed -> {
                     if (!displayed) {
@@ -328,11 +330,9 @@ public final class CdpAutomationBackend implements AutomationBackend {
                                             WebDriverError.ELEMENT_CLICK_INTERCEPTED,
                                             "another element obscures the click point");
                                 }
-                                return dispatchMouse("mouseMoved", x, y, Input.MouseButton.NONE, 0, 0)
-                                        .thenCompose(ignored ->
-                                                dispatchMouse("mousePressed", x, y, Input.MouseButton.LEFT, 1, 1))
-                                        .thenCompose(ignored ->
-                                                dispatchMouse("mouseReleased", x, y, Input.MouseButton.LEFT, 1, 0));
+                                return dispatchMouse("mouseMoved", x, y, "none", 0, 0)
+                                        .thenCompose(ignored -> dispatchMouse("mousePressed", x, y, "left", 1, 1))
+                                        .thenCompose(ignored -> dispatchMouse("mouseReleased", x, y, "left", 1, 0));
                             });
                 });
     }
@@ -550,7 +550,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<Void> dispatchMouse(
-            String type, double x, double y, Input.MouseButton button, int clickCount, int buttons) {
+            String type, double x, double y, String button, int clickCount, int buttons) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("type", CdpObject.json(type));
         params.put("x", x);
@@ -569,17 +569,17 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<List<String>> readElementArray(String arrayObjectId) {
-        return runtime.getProperties(
-                        new Runtime.RemoteObjectId(arrayObjectId),
-                        Optional.of(true),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty())
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("objectId", CdpObject.json(arrayObjectId));
+        params.put("ownProperties", true);
+        return client.<Runtime.GetPropertiesResult>call(
+                        "Runtime.getProperties", params, Runtime.GetPropertiesResult::fromMap)
                 .thenCompose(properties -> {
                     List<Runtime.PropertyDescriptor> entries = new ArrayList<>();
                     for (Runtime.PropertyDescriptor property : properties.result()) {
                         if (property.value().isPresent()
-                                && property.value().get().objectId().isPresent()) {
+                                && property.value().get().objectId().isPresent()
+                                && isArrayIndex(property.name())) {
                             entries.add(property);
                         }
                     }
@@ -596,6 +596,18 @@ public final class CdpAutomationBackend implements AutomationBackend {
                 })
                 .whenComplete((ignored, failure) -> releaseObject(arrayObjectId))
                 .toCompletableFuture();
+    }
+
+    private static boolean isArrayIndex(String name) {
+        if (name.isEmpty()) return false;
+        for (int i = 0; i < name.length(); i++) {
+            if (!Character.isDigit(name.charAt(i))) return false;
+        }
+        try {
+            return Integer.parseInt(name) >= 0;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
     }
 
     private CompletableFuture<String> registerObject(String objectId) {

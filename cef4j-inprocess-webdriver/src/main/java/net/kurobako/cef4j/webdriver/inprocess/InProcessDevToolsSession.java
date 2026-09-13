@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.webdriver.inprocess;
 
+import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -16,8 +17,6 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
-import net.kurobako.cef4j.gen.CefDevToolsMessageObserver;
-import net.kurobako.cef4j.gen.CefRegistration;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefTaskRunner;
 import net.kurobako.cef4j.gen.CefThreadId;
@@ -27,7 +26,7 @@ import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class InProcessDevToolsSession implements CdpTransport, CefDevToolsMessageObserver {
+public final class InProcessDevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(InProcessDevToolsSession.class);
 
     private final CefBrowserHost host;
@@ -38,7 +37,10 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
             new ConcurrentHashMap<>();
 
     @Nullable
-    private volatile CefRegistration registration;
+    private volatile Object registration;
+
+    @Nullable
+    private volatile Object observer;
 
     private InProcessDevToolsSession(CefBrowserHost host, WebDriverJsonCodec jsonCodec) {
         this.host = host;
@@ -55,12 +57,23 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
             @Nonnull CefBrowser browser, @Nonnull WebDriverJsonCodec jsonCodec) {
         Objects.requireNonNull(browser, "browser");
         Objects.requireNonNull(jsonCodec, "jsonCodec");
+        Class<?> observerType;
+        try {
+            observerType = Class.forName("net.kurobako.cef4j.gen.CefDevToolsMessageObserver");
+        } catch (ClassNotFoundException unavailableInOlderCef) {
+            return failed(new UnsupportedOperationException("DevTools requires CEF 81 or newer"));
+        }
         CefBrowserHost host = browser.getHost().orElse(null);
         if (host == null) return failed(new IllegalStateException("in-process browser has no host"));
         InProcessDevToolsSession session = new InProcessDevToolsSession(host, jsonCodec);
         return onUiThread(() -> {
-                    session.registration = host.addDevToolsMessageObserver(session)
-                            .orElseThrow(() -> new IllegalStateException("CEF rejected DevTools observer"));
+                    session.observer = createObserver(observerType, session);
+                    @SuppressWarnings("unchecked")
+                    java.util.Optional<Object> registration = (java.util.Optional<Object>) host.getClass()
+                            .getMethod("addDevToolsMessageObserver", observerType)
+                            .invoke(host, session.observer);
+                    session.registration =
+                            registration.orElseThrow(() -> new IllegalStateException("CEF rejected DevTools observer"));
                     return session;
                 })
                 .whenComplete((ignored, failure) -> {
@@ -96,7 +109,7 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
         }
         ByteBuffer message = ByteBuffer.allocateDirect(bytes.length);
         message.put(bytes).flip();
-        onUiThread(() -> host.sendDevToolsMessage(message)).whenComplete((accepted, failure) -> {
+        onUiThread(() -> sendDevToolsMessage(host, message)).whenComplete((accepted, failure) -> {
             if (failure != null) completeFailure(id, failure);
             else if (!accepted) completeFailure(id, new IllegalStateException("CEF rejected DevTools message " + id));
         });
@@ -120,21 +133,18 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
         return () -> current.remove(handler);
     }
 
-    @Override
-    public boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
+    private boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
         return false;
     }
 
-    @Override
-    public void onDevToolsMethodResult(
+    private void onDevToolsMethodResult(
             @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
         byte[] bytes = bytes(result);
         if (success) requests.complete(messageId, bytes);
         else requests.fail(messageId, decodeError(bytes));
     }
 
-    @Override
-    public void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
+    private void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
         if (!open.get() || method == null) return;
         CopyOnWriteArrayList<Consumer<byte[]>> current = handlers.get(method);
         if (current == null) return;
@@ -148,8 +158,7 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
         }
     }
 
-    @Override
-    public void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
+    private void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
         terminate(new IllegalStateException("DevTools agent detached"));
     }
 
@@ -162,11 +171,12 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
         if (!open.compareAndSet(true, false)) return;
         handlers.clear();
         requests.failAll(failure);
-        CefRegistration current = registration;
+        Object current = registration;
         registration = null;
+        observer = null;
         if (current != null)
             onUiThread(() -> {
-                        current.close();
+                        current.getClass().getMethod("close").invoke(current);
                         return Boolean.TRUE;
                     })
                     .exceptionally(closeFailure -> {
@@ -195,6 +205,44 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
 
     private void completeFailure(int id, Throwable failure) {
         requests.fail(id, failure);
+    }
+
+    private static Object createObserver(Class<?> observerType, InProcessDevToolsSession session) {
+        return Proxy.newProxyInstance(
+                observerType.getClassLoader(), new Class<?>[] {observerType}, (proxy, method, args) -> {
+                    switch (method.getName()) {
+                        case "onDevToolsMessage":
+                            return session.onDevToolsMessage((CefBrowser) args[0], (ByteBuffer) args[1]);
+                        case "onDevToolsMethodResult":
+                            session.onDevToolsMethodResult(
+                                    (CefBrowser) args[0], (Integer) args[1], (Boolean) args[2], (ByteBuffer) args[3]);
+                            return null;
+                        case "onDevToolsEvent":
+                            session.onDevToolsEvent((CefBrowser) args[0], (String) args[1], (ByteBuffer) args[2]);
+                            return null;
+                        case "onDevToolsAgentDetached":
+                            session.onDevToolsAgentDetached((CefBrowser) args[0]);
+                            return null;
+                        case "onDevToolsAgentAttached":
+                            return null;
+                        case "toString":
+                            return "InProcessDevToolsObserver";
+                        case "hashCode":
+                            return System.identityHashCode(proxy);
+                        case "equals":
+                            return proxy == args[0];
+                        default:
+                            throw new UnsupportedOperationException("Unexpected DevTools observer method: " + method);
+                    }
+                });
+    }
+
+    private static boolean sendDevToolsMessage(CefBrowserHost host, ByteBuffer message) throws Exception {
+        Object accepted = host.getClass()
+                .getMethod("sendDevToolsMessage", ByteBuffer.class)
+                .invoke(host, message);
+        if (accepted instanceof Boolean) return (Boolean) accepted;
+        return ((Number) accepted).intValue() != 0;
     }
 
     private static byte[] bytes(@Nullable ByteBuffer source) {
@@ -236,6 +284,6 @@ public final class InProcessDevToolsSession implements CdpTransport, CefDevTools
 
     @FunctionalInterface
     interface UiCallable<T> {
-        T call();
+        T call() throws Exception;
     }
 }

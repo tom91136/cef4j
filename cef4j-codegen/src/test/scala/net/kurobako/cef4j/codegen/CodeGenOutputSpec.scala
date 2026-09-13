@@ -1026,6 +1026,30 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
   }
 
+  test("resource handler read default falls back to legacy readResponse") {
+    val handlerDecl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
+      "cef_resource_handler_t",
+      List(
+        FnPtr(
+          "read",
+          CType.Bool,
+          List(
+            Param("data_out", CType.OpaquePtr),
+            Param("bytes_read", CType.Ptr("int")),
+            Param("callback", CType.ObjectPtr("cef_resource_read_callback_t"))
+          )
+        )
+      )
+    )
+
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+    val tmpDir                            = tempDirectory("codegen-test")
+    JavaInterfaceCodeGen.emitHandler(handlerDecl, tmpDir)
+    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceHandler.java"))
+    assert(javaCode.contains("bytesRead[0] = -1;"), javaCode)
+  }
+
   test("type recovery promotes C int to Bool when C++ header says bool") {
     val handlerDecl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
       "cef_resource_bundle_handler_t",

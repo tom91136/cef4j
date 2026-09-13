@@ -34,6 +34,7 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -106,7 +107,12 @@ class RuntimeServerIntegrationTest {
             assertThat(server.transport()).isEqualTo("uds");
             assertThat(server.endpoint()).startsWith("unix://");
             assertThat(server.handshake().cefApiVersion()).isPositive();
-            assertThat(server.handshake().capabilities()).contains("remote-cef-api", "devtools", "osr", "input");
+            assertThat(server.handshake().capabilities()).contains("remote-cef-api", "osr", "input");
+            if (CefTestCompatibility.supportsDevTools()) {
+                assertThat(server.handshake().capabilities()).contains("devtools");
+            } else {
+                assertThat(server.handshake().capabilities()).doesNotContain("devtools");
+            }
         }
     }
 

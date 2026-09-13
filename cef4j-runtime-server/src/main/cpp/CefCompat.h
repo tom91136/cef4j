@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstring>
+
+#include "include/cef_api_hash.h"
 #include "include/cef_version.h"
 #include "include/capi/cef_frame_capi.h"
 #include "include/capi/cef_v8_capi.h"
@@ -26,10 +29,14 @@
 #define get_v8_context get_v8context
 #endif
 
-inline void cef4j_verify_api_hash() {
+inline const char* cef4j_runtime_api_hash() {
 #if CEF_VERSION_MAJOR < 133
-    (void)cef_api_hash(0);
+    return cef_api_hash(0);
 #else
-    (void)cef_api_hash(CEF_API_VERSION, 0);
+    return cef_api_hash(CEF_API_VERSION, 0);
 #endif
+}
+
+inline bool cef4j_verify_api_hash(const char* actual) {
+    return actual && std::strcmp(actual, CEF_API_HASH_PLATFORM) == 0;
 }

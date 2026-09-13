@@ -29,7 +29,7 @@ class AstDispatcherIntegrationTest {
     private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     @Test
-    void browserIsValidThroughAstDispatcher() throws Exception {
+    void browserIdentifierThroughAstDispatcher() throws Exception {
         try (RuntimeServerProcess server = RUNTIME.spawn();
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
@@ -45,9 +45,9 @@ class AstDispatcherIntegrationTest {
 
             Browser browser = new Browser(session, handle);
 
-            Integer valid = browser.isValid().get(5, TimeUnit.SECONDS);
-            assertThat(valid).isNotNull();
-            assertThat(valid).isNotZero();
+            Integer identifier = browser.getIdentifier().get(5, TimeUnit.SECONDS);
+            assertThat(identifier).isNotNull();
+            assertThat(identifier).isPositive();
         }
     }
 

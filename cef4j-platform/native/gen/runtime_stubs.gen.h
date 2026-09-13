@@ -13,6 +13,8 @@ CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jc
 
 CEF4J_JNI_EXPORT_RT(void, NativeStderr, setCrashLogPath0)(JNIEnv* env, jclass clz, jstring path);
 
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, cancelLinuxMessageLoopWork0)(JNIEnv* env, jclass clz);
+
 CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, dispatchToMainThreadSync0)(JNIEnv* env, jclass clz, jobject runnable);
 
 CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env, jclass clz, jobject initializer, jobject cleanupRunnable);
@@ -20,4 +22,6 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env,
 CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv* env, jclass clz, jstring frameworkBinaryPath);
 
 CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, quitAndWaitMainThreadMessageLoop0)(JNIEnv* env, jclass clz);
+
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, scheduleLinuxMessageLoopWork0)(JNIEnv* env, jclass clz, jlong delayMs);
 

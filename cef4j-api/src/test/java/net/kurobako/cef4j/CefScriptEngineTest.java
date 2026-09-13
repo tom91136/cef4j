@@ -68,7 +68,12 @@ class CefScriptEngineTest extends CefTestBase {
                 return Optional.of(new CefInteropTest.MinimalRenderHandler(800, 600));
             }
 
-            @Override
+            public boolean onProcessMessageReceived(
+                    @Nullable CefBrowser b, @Nullable CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
+                if (b == null || sourceProcess == null || message == null) return false;
+                return evaluator.handleMessage(b, null, sourceProcess, message);
+            }
+
             public boolean onProcessMessageReceived(
                     @Nullable CefBrowser b,
                     @Nullable CefFrame frame,
@@ -779,11 +784,17 @@ class CefScriptEngineTest extends CefTestBase {
     }
 
     private static CefFrame nonRespondingFrame() {
+        CefBrowser browser = (CefBrowser) Proxy.newProxyInstance(
+                CefBrowser.class.getClassLoader(), new Class<?>[] {CefBrowser.class}, (proxy, method, arguments) -> {
+                    if (method.getName().equals("sendProcessMessage")) return true;
+                    throw new UnsupportedOperationException(method.getName());
+                });
         return (CefFrame) Proxy.newProxyInstance(
                 CefFrame.class.getClassLoader(), new Class<?>[] {CefFrame.class}, (proxy, method, arguments) -> {
                     if (method.getName().equals("sendProcessMessage")) {
                         return null;
                     }
+                    if (method.getName().equals("getBrowser")) return Optional.of(browser);
                     throw new UnsupportedOperationException(method.getName());
                 });
     }

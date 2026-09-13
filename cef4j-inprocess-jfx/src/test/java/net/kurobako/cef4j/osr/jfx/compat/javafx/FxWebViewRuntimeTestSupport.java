@@ -104,10 +104,10 @@ final class FxWebViewRuntimeTestSupport {
         postStartup();
     }
 
-    static void postStartup() {
+    static void postStartup() throws Exception {
         if (!isCefCompatHarness()) return;
         if (Cef.INSTANCE.state() == Cef.State.INITIALISED) return;
-        initialiseCef();
+        onFxThread(FxWebViewRuntimeTestSupport::initialiseCef);
     }
 
     static void shutdownCefHarness() {
@@ -115,8 +115,10 @@ final class FxWebViewRuntimeTestSupport {
         try {
             if (isCefCompatHarness()) {
                 drainJavaFx();
-                Cef.INSTANCE.terminate();
+                onFxThread(Cef.INSTANCE::terminate);
             }
+        } catch (Exception e) {
+            throw new IllegalStateException("failed to terminate CEF on the JavaFX application thread", e);
         } finally {
             Platform.exit();
             awaitJavaFxShutdown();
@@ -172,7 +174,8 @@ final class FxWebViewRuntimeTestSupport {
             throw new IllegalStateException("Failed to create CEF test cache directory", e);
         }
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-        launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();
+        net.kurobako.cef4j.test.CefTestLaunch.setRootCachePath(
+                launch.settings(), cacheDir.toAbsolutePath().toString());
         try {
             Path reportDir = Files.createDirectories(Path.of("target", "surefire-reports"));
             launch.settings().logFile = reportDir

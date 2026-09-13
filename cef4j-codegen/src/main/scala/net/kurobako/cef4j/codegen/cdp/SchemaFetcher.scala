@@ -48,13 +48,26 @@ object SchemaFetcher {
           .map(_.group(1))
           .getOrElse(throw IOException("Could not derive V8 revision from Chromium DEPS"))
 
-        extractTarGzip(
-          s"https://chromium.googlesource.com/chromium/src/+archive/refs/tags/$chromiumVersion/third_party/blink/public/devtools_protocol.tar.gz",
-          work
-        )
+        if (usesLegacyBrowserSchema(chromiumVersion))
+          fetchBase64(
+            s"$chromiumBase/third_party/blink/renderer/core/inspector/browser_protocol.pdl",
+            work.resolve("browser_protocol.pdl"),
+            Some(
+              s"https://raw.githubusercontent.com/chromium/chromium/$chromiumVersion/third_party/blink/renderer/core/inspector/browser_protocol.pdl"
+            )
+          )
+        else
+          extractTarGzip(
+            s"https://chromium.googlesource.com/chromium/src/+archive/refs/tags/$chromiumVersion/third_party/blink/public/devtools_protocol.tar.gz",
+            work
+          )
+        val v8SchemaPath =
+          if (usesLegacyV8Schema(chromiumVersion)) "src/inspector/js_protocol.pdl"
+          else "include/js_protocol.pdl"
         fetchBase64(
-          s"https://chromium.googlesource.com/v8/v8/+/$v8Revision/include/js_protocol.pdl",
-          work.resolve("js_protocol.pdl")
+          s"https://chromium.googlesource.com/v8/v8/+/$v8Revision/$v8SchemaPath",
+          work.resolve("js_protocol.pdl"),
+          Some(s"https://raw.githubusercontent.com/v8/v8/$v8Revision/$v8SchemaPath")
         )
 
         val _ = Files.writeString(
@@ -79,6 +92,12 @@ object SchemaFetcher {
     cefVersion.substring(index + marker.length)
   }
 
+  private[cdp] def usesLegacyBrowserSchema(chromiumVersion: String): Boolean =
+    chromiumVersion.takeWhile(_ != '.').toInt < 80
+
+  private[cdp] def usesLegacyV8Schema(chromiumVersion: String): Boolean =
+    chromiumVersion.takeWhile(_ != '.').toInt < 78
+
   private def paths(directory: Path): Schema = Schema(
     directory.resolve("browser_protocol.pdl"),
     directory.resolve("js_protocol.pdl"),
@@ -90,8 +109,23 @@ object SchemaFetcher {
       Files.isRegularFile(path) && Files.size(path) > 0
     )
 
-  private def fetchBase64(url: String, destination: Path): Unit = {
-    val _ = Files.write(destination, Base64.getMimeDecoder.decode(fetch(s"$url?format=TEXT")))
+  private def fetchBase64(url: String, destination: Path, rawFallback: Option[String] = None): Unit = {
+    val contents = rawFallback match {
+      case None           => Base64.getMimeDecoder.decode(fetch(s"$url?format=TEXT"))
+      case Some(fallback) =>
+        retry(
+          () =>
+            fetchOnce(s"$url?format=TEXT") match {
+              case Right(encoded)     => Right(Base64.getMimeDecoder.decode(encoded))
+              case Left(primaryError) => fetchOnce(fallback) match {
+                  case Right(raw) => Right(raw)
+                  case Left(_)    => Left(primaryError)
+                }
+            },
+          sleep
+        )
+    }
+    val _ = Files.write(destination, contents)
   }
 
   private def extractTarGzip(url: String, destination: Path): Unit = {
@@ -115,20 +149,18 @@ object SchemaFetcher {
     } finally tar.close()
   }
 
-  private def fetch(url: String): Array[Byte] =
-    retry(
-      () =>
-        try {
-          val request  = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofMinutes(2)).GET().build()
-          val response = client.send(request, HttpResponse.BodyHandlers.ofByteArray())
-          if (response.statusCode() >= 200 && response.statusCode() < 300) Right(response.body())
-          else Left(IOException(s"HTTP ${response.statusCode()} while downloading $url"))
-        } catch {
-          case error: IOException          => Left(error)
-          case error: InterruptedException => Thread.currentThread().interrupt(); throw error
-        },
-      sleep
-    )
+  private def fetch(url: String): Array[Byte] = retry(() => fetchOnce(url), sleep)
+
+  private def fetchOnce(url: String): Either[IOException, Array[Byte]] =
+    try {
+      val request  = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofMinutes(2)).GET().build()
+      val response = client.send(request, HttpResponse.BodyHandlers.ofByteArray())
+      if (response.statusCode() >= 200 && response.statusCode() < 300) Right(response.body())
+      else Left(IOException(s"HTTP ${response.statusCode()} while downloading $url"))
+    } catch {
+      case error: IOException          => Left(error)
+      case error: InterruptedException => Thread.currentThread().interrupt(); throw error
+    }
 
   private[cdp] def retry[A](operation: () => Either[IOException, A], pause: Duration => Unit): A = {
     @tailrec

@@ -217,14 +217,14 @@ public final class RuntimeServerProcess implements Closeable {
      */
     static List<String> serverCommand(
             Path binary, String transport, String bindEndpoint, String frameTransport, @Nullable String extraArgs) {
+        // Chromium normalizes its command line before launching subprocesses by moving all
+        // switches ahead of positional arguments. Keep application options self-contained so
+        // their values cannot become stray startup URLs in renderer processes.
         List<String> command = new ArrayList<>(List.of(
                 binary.toString(),
-                "--transport",
-                transport,
-                "--bind",
-                bindEndpoint,
-                "--frame-transport",
-                frameTransport));
+                "--transport=" + transport,
+                "--bind=" + bindEndpoint,
+                "--frame-transport=" + frameTransport));
         if (extraArgs != null && !extraArgs.isBlank()) {
             Stream.of(extraArgs.split(","))
                     .map(String::trim)

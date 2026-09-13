@@ -1,5 +1,9 @@
 package net.kurobako.cef4j.osr.jfx;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +13,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
@@ -35,28 +38,27 @@ import net.kurobako.cef4j.gen.CefJsDialogCallback;
 import net.kurobako.cef4j.gen.CefJsDialogHandler;
 import net.kurobako.cef4j.gen.CefJsDialogType;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
+import net.kurobako.cef4j.gen.CefListValue;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefLogSeverity;
 import net.kurobako.cef4j.gen.CefMenuItemType;
 import net.kurobako.cef4j.gen.CefMenuModel;
 import net.kurobako.cef4j.gen.CefNavigationEntry;
 import net.kurobako.cef4j.gen.CefNavigationEntryVisitor;
-import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefPopupFeatures;
 import net.kurobako.cef4j.gen.CefProcessId;
 import net.kurobako.cef4j.gen.CefProcessMessage;
-import net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefRunContextMenuCallback;
-import net.kurobako.cef4j.gen.CefRunQuickMenuCallback;
-import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.gen.CefTransitionType;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.gen.CefWindowOpenDisposition;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 @SuppressWarnings("resource")
 final class CefWebViewClient implements CefClient {
+    private static final String LEGACY_CONTENTS_BOUNDS_MESSAGE = "cef4j:contents-bounds";
     private final CefWebView view;
     private final CefRenderHandler renderHandler;
     private final CefLoadHandler scrollbarLoadHandler;
@@ -213,20 +215,6 @@ final class CefWebViewClient implements CefClient {
                 Platform.runLater(() -> view.engine.fireStatusChanged(Objects.requireNonNullElse(value, "")));
             }
 
-            @Override
-            public boolean onAutoResize(@Nullable CefBrowser browser, @Nonnull CefSize newSize) {
-                Rectangle2D currentBounds = view.detachedBounds;
-                view.updateDetachedBounds(
-                        new CefRect(
-                                (int) Math.round(currentBounds.getMinX()),
-                                (int) Math.round(currentBounds.getMinY()),
-                                Math.max(1, newSize.width),
-                                Math.max(1, newSize.height)),
-                        false);
-                Platform.runLater(() -> view.engine.fireResized(new Rectangle2D(0, 0, newSize.width, newSize.height)));
-                return false;
-            }
-
             @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
             public boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
                 view.updateDetachedBounds(newBounds, true);
@@ -264,7 +252,7 @@ final class CefWebViewClient implements CefClient {
 
     @Override
     public Optional<CefContextMenuHandler> getContextMenuHandler() {
-        return Optional.of(new CefContextMenuHandler() {
+        CefContextMenuHandler handler = new CefContextMenuHandler() {
             @Override
             public boolean runContextMenu(
                     @Nullable CefBrowser browser,
@@ -300,19 +288,8 @@ final class CefWebViewClient implements CefClient {
                 });
                 return true;
             }
-
-            @Override
-            public boolean runQuickMenu(
-                    @Nullable CefBrowser browser,
-                    @Nullable CefFrame frame,
-                    @Nonnull CefPoint location,
-                    @Nonnull CefSize touchHandleSize,
-                    @Nonnull CefQuickMenuEditStateFlags editStateFlags,
-                    @Nullable CefRunQuickMenuCallback callback) {
-                if (callback != null) callback.cancel();
-                return true;
-            }
-        });
+        };
+        return Optional.of(withQuickMenuCompatibility(handler));
     }
 
     @Override
@@ -371,13 +348,37 @@ final class CefWebViewClient implements CefClient {
         });
     }
 
-    @Override
+    @NullableBoundary("CEF client callbacks are nullable across supported ABI versions")
+    @SuppressWarnings({"MissingOverride", "UnusedMethod"})
+    public boolean onProcessMessageReceived(
+            @Nullable CefBrowser browser, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
+        if (handleLegacyContentsBounds(message)) return true;
+        return view.scriptEngine.handleMessage(browser, null, sourceProcess, message);
+    }
+
+    @NullableBoundary("CEF client callbacks are nullable across supported ABI versions")
+    @SuppressWarnings({"MissingOverride", "UnusedMethod"})
     public boolean onProcessMessageReceived(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
             @Nonnull CefProcessId sourceProcess,
             @Nullable CefProcessMessage message) {
+        if (handleLegacyContentsBounds(message)) return true;
         return view.scriptEngine.handleMessage(browser, frame, sourceProcess, message);
+    }
+
+    private boolean handleLegacyContentsBounds(@Nullable CefProcessMessage message) {
+        if (!view.popupBrowser || message == null) return false;
+        if (!LEGACY_CONTENTS_BOUNDS_MESSAGE.equals(message.getName().orElse(null))) return false;
+        CefListValue arguments = message.getArgumentList().orElse(null);
+        if (arguments == null) return true;
+        try (arguments) {
+            view.updateDetachedBounds(
+                    new CefRect(arguments.getInt(0), arguments.getInt(1), arguments.getInt(2), arguments.getInt(3)),
+                    true);
+            view.requestViewRefresh(true);
+        }
+        return true;
     }
 
     private List<MenuItem> buildMenuItems(
@@ -385,7 +386,8 @@ final class CefWebViewClient implements CefClient {
         List<MenuItem> items = new ArrayList<>();
         long count = model.getCount();
         for (long i = 0; i < count; i++) {
-            int commandId = model.getCommandIdAt(i);
+            int index = Math.toIntExact(i);
+            int commandId = model.getCommandIdAt(index);
             CefMenuItemType.Kind kind = model.getType(commandId).kind().orElse(CefMenuItemType.Kind.NONE);
             String label = stripMnemonic(model.getLabel(commandId).orElse(""));
             javafx.event.EventHandler<javafx.event.ActionEvent> fire = e -> {
@@ -400,7 +402,7 @@ final class CefWebViewClient implements CefClient {
                     items.add(new SeparatorMenuItem());
                     break;
                 case SUBMENU:
-                    model.getSubMenuAt(i).ifPresent(sub -> {
+                    model.getSubMenuAt(index).ifPresent(sub -> {
                         Menu menu = new Menu(label);
                         menu.getItems().addAll(buildMenuItems(sub, callback, dispatched));
                         items.add(menu);
@@ -469,7 +471,7 @@ final class CefWebViewClient implements CefClient {
                         String url = entry != null ? entry.getUrl().orElse("") : "";
                         String title = entry != null ? entry.getTitle().orElse("") : "";
                         snapshots.add(new CefWebHistory.EntrySnapshot(
-                                url, title, completionDate(entry != null ? entry.getCompletionTime().val : 0)));
+                                url, title, completionDate(entry != null ? entry.getCompletionTime() : null)));
                         fingerprint.append(url).append('\u0001').append(title).append('\u0002');
                         if (current) currentIndex[0] = index;
                         if (index + 1 == total) {
@@ -489,5 +491,47 @@ final class CefWebViewClient implements CefClient {
     static Date completionDate(long cefMicroseconds) {
         if (cefMicroseconds == 0) return new Date(0);
         return new Date(Math.floorDiv(cefMicroseconds - 11_644_473_600_000_000L, 1_000L));
+    }
+
+    private static Date completionDate(@Nullable Object cefTime) {
+        if (cefTime == null) return new Date(0);
+        try {
+            try {
+                return completionDate(cefTime.getClass().getField("val").getLong(cefTime));
+            } catch (NoSuchFieldException oldCefTime) {
+                int year = cefTime.getClass().getField("year").getInt(cefTime);
+                if (year == 0) return new Date(0);
+                LocalDateTime value = LocalDateTime.of(
+                        year,
+                        cefTime.getClass().getField("month").getInt(cefTime),
+                        cefTime.getClass().getField("dayOfMonth").getInt(cefTime),
+                        cefTime.getClass().getField("hour").getInt(cefTime),
+                        cefTime.getClass().getField("minute").getInt(cefTime),
+                        cefTime.getClass().getField("second").getInt(cefTime),
+                        cefTime.getClass().getField("millisecond").getInt(cefTime) * 1_000_000);
+                return Date.from(value.toInstant(ZoneOffset.UTC));
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unsupported CEF time representation", e);
+        }
+    }
+
+    private static CefContextMenuHandler withQuickMenuCompatibility(CefContextMenuHandler delegate) {
+        return (CefContextMenuHandler) Proxy.newProxyInstance(
+                CefContextMenuHandler.class.getClassLoader(),
+                new Class<?>[] {CefContextMenuHandler.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("runQuickMenu")) {
+                        Object callback = args == null || args.length == 0 ? null : args[args.length - 1];
+                        if (callback != null)
+                            callback.getClass().getMethod("cancel").invoke(callback);
+                        return true;
+                    }
+                    try {
+                        return method.invoke(delegate, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                });
     }
 }

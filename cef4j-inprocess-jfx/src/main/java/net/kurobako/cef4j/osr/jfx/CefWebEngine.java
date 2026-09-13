@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.osr.jfx;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -545,7 +546,12 @@ public final class CefWebEngine {
     }
 
     private boolean matchesCurrentNavigation(@Nullable String callbackUrl) {
-        return callbackUrl == null || callbackUrl.isEmpty() || callbackUrl.equals(location.get());
+        if (callbackUrl == null || callbackUrl.isEmpty() || callbackUrl.equals(location.get())) return true;
+        try {
+            return URI.create(callbackUrl).equals(URI.create(location.get()));
+        } catch (IllegalArgumentException malformedUrl) {
+            return false;
+        }
     }
 
     void refreshHistory(List<CefWebHistory.EntrySnapshot> entries, int currentIndex) {

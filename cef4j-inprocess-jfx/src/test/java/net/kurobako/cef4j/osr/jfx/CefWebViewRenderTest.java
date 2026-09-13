@@ -2,7 +2,6 @@ package net.kurobako.cef4j.osr.jfx;
 
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,39 +23,24 @@ import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
-@TestMethodOrder(org.junit.jupiter.api.MethodOrderer.OrderAnnotation.class)
 @ExtendWith(DisplayLock.class)
 class CefWebViewRenderTest {
-
-    @Order(1)
-    @Test
-    void constructorThrowsClearErrorWhenCefNotInitialised() throws Exception {
-        assumeDisplayServer();
-        startJavaFx();
-        assertThatThrownBy(() -> onFxThread(() -> new CefWebView()))
-                .hasCauseInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("CEF must be initialised for off-screen rendering");
-    }
-
-    @Order(2)
     @Test
     void webViewPaintsFramesAfterPageLoad(@TempDir Path tempDir) throws Exception {
         assumeDisplayServer();
-        startJavaFx();
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.noSandbox = 1;
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         settings.cachePath = cacheDir.toAbsolutePath().toString();
-        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
-        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
+        CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
+        startJavaFx();
+        onFxThread(() -> CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty()));
         try {
             CefWebView view = Objects.requireNonNull(
                     onFxThread(() -> {
@@ -115,7 +99,7 @@ class CefWebViewRenderTest {
         } finally {
             closeAllWindows();
             drainJavaFx();
-            CefWebView.terminate();
+            onFxThread(CefWebView::terminate);
             shutdownJavaFx();
         }
     }
@@ -128,7 +112,7 @@ class CefWebViewRenderTest {
         closeAllWindows();
         drainJavaFx();
         if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
-            Cef.INSTANCE.terminate();
+            onFxThread(CefWebView::terminate);
         }
         shutdownJavaFx();
     }

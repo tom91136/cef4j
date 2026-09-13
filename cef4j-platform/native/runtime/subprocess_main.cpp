@@ -160,7 +160,7 @@ static std::atomic<int> g_nextHandle{1};
 
 static std::string frameId(cef_frame_t* frame) {
     if (!frame) return {};
-#if CEF_VERSION_MAJOR < 133
+#if CEF_VERSION_MAJOR < 125
     return std::to_string(frame->get_identifier(frame));
 #else
     auto id = ScopedCefString::take(frame->get_identifier(frame));
@@ -241,6 +241,21 @@ static std::string jsonStringify(
     return jsonStr.toUtf8();
 }
 
+static void sendToBrowser(cef_frame_t* frame, cef_process_message_t* message) {
+    // CEF owns the message reference after a successful send.
+#if CEF_VERSION_MAJOR >= 75
+    if (frame) {
+        frame->send_process_message(frame, PID_BROWSER, message);
+        return;
+    }
+#else
+    CefScopedPtr<cef_browser_t> browser(frame ? frame->get_browser(frame) : nullptr);
+    if (browser && browser->send_process_message(browser.get(), PID_BROWSER, message)) return;
+#endif
+    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(message);
+    base->release(base);
+}
+
 static void sendResult(cef_frame_t* frame, int reqId, bool ok, int type, const std::string& payload) {
     ScopedCefString msgName("cef4j:result");
     auto* msg = cef_process_message_create(msgName.get());
@@ -259,9 +274,7 @@ static void sendResult(cef_frame_t* frame, int reqId, bool ok, int type, const s
     ScopedCefString payloadStr(payload);
     args->set_string(args, 3, payloadStr.get());
 
-    // XXX: CEF 109-150 invalidates the message reference after send_process_message; remove only if a future CEF API
-    // explicitly changes that ownership contract.
-    frame->send_process_message(frame, PID_BROWSER, msg);
+    sendToBrowser(frame, msg);
 }
 
 static void sendResultHandle(cef_frame_t* frame, int reqId, int handleId) {
@@ -281,9 +294,7 @@ static void sendResultHandle(cef_frame_t* frame, int reqId, int handleId) {
     args->set_int(args, 2, TYPE_HANDLE);
     args->set_int(args, 3, handleId);
 
-    // XXX: CEF 109-150 invalidates the message reference after send_process_message; remove only if a future CEF API
-    // explicitly changes that ownership contract.
-    frame->send_process_message(frame, PID_BROWSER, msg);
+    sendToBrowser(frame, msg);
 }
 
 static void sendError(cef_frame_t* frame, int reqId, const std::string& message) {
@@ -354,12 +365,28 @@ static void evalAndReply(cef_frame_t* frame, cef4j_v8_context_t* ctx, int reqId,
     replyWithValue(frame, ctx, reqId, retval, mode, fid);
 }
 
-static cef4j_v8_context_t* acquireContext(const std::string& fid) {
+static cef4j_v8_context_t* acquireContext(const std::string& fid, cef_frame_t* frame) {
     auto it = g_frames.find(fid);
-    if (it == g_frames.end() || !it->second.context) return nullptr;
-    auto* ctx = it->second.context;
-    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
-    base->add_ref(base);
+    if (it != g_frames.end() && it->second.context) {
+        auto* ctx = it->second.context;
+        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
+        base->add_ref(base);
+        return ctx;
+    }
+
+    // Old CEF releases can deliver process messages without first delivering
+    // on_context_created to this handler. The frame still owns the live context,
+    // so initialise the same per-frame state lazily in that case.
+#if CEF_VERSION_MAJOR >= 135
+    auto* ctx = frame ? frame->get_v8_context(frame) : nullptr;
+#else
+    auto* ctx = frame ? frame->get_v8context(frame) : nullptr;
+#endif
+    if (!ctx) return nullptr;
+    // Keep handle bookkeeping, but do not retain the lazily acquired context.
+    // Some old releases omit the matching on_context_released callback and
+    // would otherwise keep the renderer alive during cef_shutdown.
+    g_frames.try_emplace(fid);
     return ctx;
 }
 
@@ -385,7 +412,7 @@ static void handleEval(cef_frame_t* frame, cef_list_value_t* args) {
     int mode = args->get_int(args, 2);
     auto fid = frameId(frame);
 
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (!ctx) {
         sendError(frame, reqId, "no V8 context available");
         return;
@@ -406,7 +433,7 @@ static void handleGet(cef_frame_t* frame, cef_list_value_t* args) {
     int mode = args->get_int(args, 3);
     auto fid = frameId(frame);
 
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (!ctx) {
         sendError(frame, reqId, "no V8 context available");
         return;
@@ -451,7 +478,7 @@ static void handleSet(cef_frame_t* frame, cef_list_value_t* args) {
     std::string valueJson = listGetString(args, 3);
     auto fid = frameId(frame);
 
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (!ctx) {
         sendError(frame, reqId, "no V8 context available");
         return;
@@ -502,7 +529,7 @@ static void handleCall(cef_frame_t* frame, cef_list_value_t* args) {
     int mode = args->get_int(args, 4);
     auto fid = frameId(frame);
 
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (!ctx) {
         sendError(frame, reqId, "no V8 context available");
         return;
@@ -574,7 +601,7 @@ static void handleInvoke(cef_frame_t* frame, cef_list_value_t* args) {
     int mode = args->get_int(args, 3);
     auto fid = frameId(frame);
 
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (!ctx) {
         sendError(frame, reqId, "no V8 context available");
         return;
@@ -599,7 +626,7 @@ static void handleInvoke(cef_frame_t* frame, cef_list_value_t* args) {
 static void handleRelease(cef_frame_t* frame, cef_list_value_t* args) {
     int handleId = args->get_int(args, 0);
     auto fid = frameId(frame);
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (ctx) {
         CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
         EnteredV8Context entered(ctx);
@@ -669,7 +696,7 @@ struct CallbackHandler : public cef4j_v8_handler_t {
                     }
                     msgArgs->set_int(msgArgs, 2 + i, handleId);
                 }
-                frame->send_process_message(frame, PID_BROWSER, msg);
+                sendToBrowser(frame, msg);
             } else {
                 auto* base = reinterpret_cast<cef_base_ref_counted_t*>(msg);
                 base->release(base);
@@ -681,12 +708,104 @@ struct CallbackHandler : public cef4j_v8_handler_t {
     }
 };
 
+#if CEF_VERSION_MAJOR < 138
+struct ContentsBoundsHandler : public cef4j_v8_handler_t {
+    std::atomic<int> refCount{1};
+    cef_frame_t* frame;
+
+    explicit ContentsBoundsHandler(cef_frame_t* creatingFrame)
+        : cef4j_v8_handler_t{}, frame(creatingFrame) {
+        InitSubprocessRefCount<ContentsBoundsHandler, cef4j_v8_handler_t>(
+            reinterpret_cast<cef_base_ref_counted_t*>(this));
+        if (frame) {
+            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
+            base->add_ref(base);
+        }
+        execute = _execute;
+    }
+
+    ~ContentsBoundsHandler() {
+        if (frame) {
+            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
+            base->release(base);
+        }
+    }
+
+    static int CEF_CALLBACK _execute(
+            cef4j_v8_handler_t* self,
+            const cef_string_t* /*name*/,
+            cef4j_v8_value_t* /*object*/,
+            size_t argumentsCount,
+            cef4j_v8_value_t* const* arguments,
+            cef4j_v8_value_t** retval,
+            cef_string_t* /*exception*/) {
+        auto* handler = reinterpret_cast<ContentsBoundsHandler*>(self);
+        if (!handler->frame || argumentsCount < 4) return 0;
+
+        ScopedCefString msgName("cef4j:contents-bounds");
+        auto* msg = cef_process_message_create(msgName.get());
+        if (!msg) return 0;
+        auto* msgArgs = msg->get_argument_list(msg);
+        if (!msgArgs) {
+            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(msg);
+            base->release(base);
+            return 0;
+        }
+        msgArgs->set_size(msgArgs, 4);
+        for (size_t i = 0; i < 4; ++i) {
+            msgArgs->set_int(msgArgs, i, arguments[i] ? arguments[i]->get_int_value(arguments[i]) : 0);
+        }
+        sendToBrowser(handler->frame, msg);
+        *retval = cef4j_v8_create_undefined();
+        return 1;
+    }
+};
+
+static void installContentsBoundsBridge(cef_frame_t* frame, cef4j_v8_context_t* context) {
+    if (!frame || !context) return;
+    EnteredV8Context entered(context);
+    if (!entered) return;
+    CefScopedPtr<cef4j_v8_value_t> global(context->get_global(context));
+    if (!global) return;
+
+    auto* handler = new ContentsBoundsHandler(frame);
+    ScopedCefString functionName("__cef4jContentsBoundsChange");
+    CefScopedPtr<cef4j_v8_value_t> function(
+        cef4j_v8_create_function(functionName.get(), addRefForTransfer(handler)));
+    auto* handlerBase = reinterpret_cast<cef_base_ref_counted_t*>(handler);
+    handlerBase->release(handlerBase);
+    if (!function || !global->set_value_bykey(
+            global.get(), functionName.get(), addRefForTransfer(function.get()),
+            static_cast<cef_v8_propertyattribute_t>(0))) {
+        return;
+    }
+
+    const char* source =
+        "(() => {"
+        "if (window.__cef4jContentsBoundsInstalled) return;"
+        "Object.defineProperty(window, '__cef4jContentsBoundsInstalled', {value:true});"
+        "const notify=window.__cef4jContentsBoundsChange;"
+        "const resizeTo=window.resizeTo.bind(window);"
+        "const resizeBy=window.resizeBy.bind(window);"
+        "window.resizeTo=function(w,h){const r=resizeTo(w,h);notify(screenX,screenY,Number(w),Number(h));return r;};"
+        "window.resizeBy=function(w,h){const width=outerWidth+Number(w),height=outerHeight+Number(h);const r=resizeBy(w,h);notify(screenX,screenY,width,height);return r;};"
+        "})()";
+    ScopedCefString code(source);
+    ScopedCefString scriptUrl("cef4j://contents-bounds-compat");
+    cef4j_v8_value_t* result = nullptr;
+    cef4j_v8_exception_t* exception = nullptr;
+    context->eval(context, code.get(), scriptUrl.get(), 0, &result, &exception);
+    CefScopedPtr<cef4j_v8_value_t> resultGuard(result);
+    CefScopedPtr<cef4j_v8_exception_t> exceptionGuard(exception);
+}
+#endif
+
 static void handleCreateCallback(cef_frame_t* frame, cef_list_value_t* args) {
     int reqId = args->get_int(args, 0);
     int callbackId = args->get_int(args, 1);
     auto fid = frameId(frame);
 
-    auto* ctx = acquireContext(fid);
+    auto* ctx = acquireContext(fid, frame);
     if (!ctx) {
         sendError(frame, reqId, "no V8 context available");
         return;
@@ -755,6 +874,9 @@ struct EvalHandler : public cef_render_process_handler_t {
             base->add_ref(base);
         }
         state.handles.clear();
+#if CEF_VERSION_MAJOR < 138
+        installContentsBoundsBridge(frame, context);
+#endif
     }
 
     static void CEF_CALLBACK _on_context_released(
@@ -766,12 +888,23 @@ struct EvalHandler : public cef_render_process_handler_t {
         g_frames.erase(fid);
     }
 
+#if CEF_VERSION_MAJOR >= 75
     static int CEF_CALLBACK _on_process_message_received(
             cef_render_process_handler_t* /*self*/,
             cef_browser_t* /*browser*/,
             cef_frame_t* frame,
             cef_process_id_t /*source_process*/,
             cef_process_message_t* message) {
+#else
+    static int CEF_CALLBACK _on_process_message_received(
+            cef_render_process_handler_t* /*self*/,
+            cef_browser_t* browser,
+            cef_process_id_t /*source_process*/,
+            cef_process_message_t* message) {
+        CefScopedPtr<cef_frame_t> frameGuard(
+                browser ? browser->get_main_frame(browser) : nullptr);
+        cef_frame_t* frame = frameGuard.get();
+#endif
         auto name = ScopedCefString::take(message->get_name(message));
         auto* args = message->get_argument_list(message);
         if (!args) return 0;

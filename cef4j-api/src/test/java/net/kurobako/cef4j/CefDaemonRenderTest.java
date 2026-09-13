@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -23,9 +24,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(DisplayLock.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Timeout(60)
 class CefDaemonRenderTest {
@@ -45,7 +48,6 @@ class CefDaemonRenderTest {
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.noSandbox = 1;
         settings.cachePath = cacheDir.toAbsolutePath().toString();
-        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
         settings.windowlessRenderingEnabled = 1;
         settings.externalMessagePump = 0;
         settings.multiThreadedMessageLoop = 0;
@@ -112,8 +114,7 @@ class CefDaemonRenderTest {
         CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, viewWidth, viewHeight));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
-        int ok = CefBrowserHost.createBrowser(
-                windowInfo, client, "about:blank", browserSettings.toImmutable(), null, null);
+        int ok = CefTestBase.createBrowserCompat(windowInfo, client, "about:blank", browserSettings.toImmutable());
         assertThat(ok).as("createBrowser should succeed").isNotEqualTo(0);
 
         CefBrowser browser = browserReady.get(10, TimeUnit.SECONDS);
@@ -146,7 +147,7 @@ class CefDaemonRenderTest {
         CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, viewWidth, viewHeight));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
-        CefBrowserHost.createBrowser(windowInfo, client, "about:blank", browserSettings.toImmutable(), null, null);
+        CefTestBase.createBrowserCompat(windowInfo, client, "about:blank", browserSettings.toImmutable());
 
         CefBrowser browser = browserReady.get(10, TimeUnit.SECONDS);
         ScheduledExecutorService poller = null;
@@ -200,20 +201,16 @@ class CefDaemonRenderTest {
 
         CefBrowserSettings.Mutable bs = new CefBrowserSettings.Mutable();
         bs.windowlessFrameRate = 60;
-        CefBrowserHost.createBrowser(
+        CefTestBase.createBrowserCompat(
                 Cef.createWindowlessInfo(new CefRect(0, 0, viewSize, viewSize)),
                 redClient,
                 "about:blank",
-                bs.toImmutable(),
-                null,
-                null);
-        CefBrowserHost.createBrowser(
+                bs.toImmutable());
+        CefTestBase.createBrowserCompat(
                 Cef.createWindowlessInfo(new CefRect(0, 0, viewSize, viewSize)),
                 blueClient,
                 "about:blank",
-                bs.toImmutable(),
-                null,
-                null);
+                bs.toImmutable());
 
         CefBrowser redBrowser = redBrowserReady.get(10, TimeUnit.SECONDS);
         CefBrowser blueBrowser = blueBrowserReady.get(10, TimeUnit.SECONDS);

@@ -17,6 +17,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.LoadHandlerOnLoadEndEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
@@ -92,14 +93,25 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
                 });
 
                 CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-                CefSession.HandlerRegistration registration = nextSession.onLatest(
+                CompletableFuture<LoadHandlerOnLoadEndEvent> bootstrapLoadFuture = new CompletableFuture<>();
+                CefSession.HandlerRegistration browserRegistration = nextSession.onLatest(
                         LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                         LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                         event -> handleFuture.complete(event.browser()));
+                CefSession.HandlerRegistration loadRegistration = nextSession.onLatest(
+                        LoadHandlerOnLoadEndEvent.MESSAGE_ID,
+                        LoadHandlerOnLoadEndEvent.DECODER,
+                        bootstrapLoadFuture::complete);
                 try {
                     nextBrowserHandle = handleFuture.get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                    LoadHandlerOnLoadEndEvent bootstrapLoad =
+                            bootstrapLoadFuture.get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                    if (!nextBrowserHandle.equals(bootstrapLoad.browser())) {
+                        throw new IllegalStateException("bootstrap load completed for an unexpected browser");
+                    }
                 } finally {
-                    registration.close();
+                    browserRegistration.close();
+                    loadRegistration.close();
                 }
                 nextBrowser = new Browser(nextSession, nextBrowserHandle);
                 RemoteHandle expectedBrowser = nextBrowserHandle;

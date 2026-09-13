@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.devtools;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -41,6 +41,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.session.CefRemoteException;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -48,6 +49,7 @@ import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.TestExecutor;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -84,8 +86,20 @@ class RuntimeServerDevToolsIntegrationTest {
                     .get(10, TimeUnit.SECONDS);
 
             Browser browser = new Browser(session, browserHandle.get(20, TimeUnit.SECONDS));
-            DevToolsSession devTools = DevToolsSession.attach(
-                            session, browser.handle(), browser.getHost().get(5, TimeUnit.SECONDS), new GsonCdpCodec())
+            net.kurobako.cef4j.ipc.protocol.gen.BrowserHost host =
+                    browser.getHost().get(5, TimeUnit.SECONDS);
+            if (!CefTestCompatibility.supportsDevTools()) {
+                assertThat(server.handshake().capabilities()).doesNotContain("devtools");
+                assertThatThrownBy(() -> DevToolsSession.attach(session, browser.handle(), host, new GsonCdpCodec())
+                                .get(10, TimeUnit.SECONDS))
+                        .hasRootCauseInstanceOf(CefRemoteException.class)
+                        .rootCause()
+                        .extracting(failure -> ((CefRemoteException) failure).code())
+                        .isEqualTo(CefRemoteException.CODE_UNSUPPORTED_FEATURE);
+                return;
+            }
+            assertThat(server.handshake().capabilities()).contains("devtools");
+            DevToolsSession devTools = DevToolsSession.attach(session, browser.handle(), host, new GsonCdpCodec())
                     .get(10, TimeUnit.SECONDS);
             CdpClient cdp = new CdpClient(devTools, new GsonCdpCodec());
             try {
@@ -198,13 +212,7 @@ class RuntimeServerDevToolsIntegrationTest {
                     exceptions.await(event -> event.exceptionDetails().text().contains("Uncaught"), EVENT_TIMEOUT);
             assertThat(thrown.exceptionDetails().exception().isPresent()).isTrue();
 
-            String screenshot = get(page.captureScreenshot(
-                    Optional.of(Page.CaptureScreenshotFormatValues.PNG),
-                    OptionalLong.empty(),
-                    Optional.empty(),
-                    Optional.of(true),
-                    Optional.empty(),
-                    Optional.empty()));
+            String screenshot = get(page.captureScreenshot());
             assertThat(Base64.getDecoder().decode(screenshot)).startsWith(0x89, 0x50, 0x4e, 0x47);
 
             consoleSubscription.close();
@@ -237,19 +245,17 @@ class RuntimeServerDevToolsIntegrationTest {
             if (continuedUrl.equals(request.url())) {
                 action = fetch.continueRequest(event.requestId()).toCompletableFuture();
             } else if (mockUrl.equals(request.url())) {
-                action = fetch.fulfillRequest(
-                                event.requestId(),
-                                200L,
-                                Optional.of(List.of(
+                action = fetch.fulfillRequest(new Fetch.FulfillRequestRequest()
+                                .requestId(event.requestId())
+                                .responseCode(200L)
+                                .responseHeaders(List.of(
                                         new Fetch.HeaderEntry()
                                                 .name("Content-Type")
                                                 .value("application/json; charset=utf-8"),
                                         new Fetch.HeaderEntry()
                                                 .name("X-Cef4j-Source")
-                                                .value("generated-cdp"))),
-                                Optional.empty(),
-                                Optional.of(mockBody),
-                                Optional.empty())
+                                                .value("generated-cdp")))
+                                .body(mockBody))
                         .toCompletableFuture();
             } else {
                 return;
@@ -322,12 +328,29 @@ class RuntimeServerDevToolsIntegrationTest {
         Input.DispatchMouseEventRequest request =
                 new Input.DispatchMouseEventRequest(Input.DispatchMouseEventTypeValues.of(type), x, y).buttons(buttons);
         if (!"none".equals(button)) {
-            request.button(Input.MouseButton.of(button));
+            setCdpEnum(request, "button", button);
         }
         if (clickCount > 0) {
             request.clickCount(clickCount);
         }
         get(input.dispatchMouseEvent(request));
+    }
+
+    private static void setCdpEnum(Object request, String setterName, String value) {
+        for (java.lang.reflect.Method setter : request.getClass().getMethods()) {
+            if (!setter.getName().equals(setterName)
+                    || setter.getParameterCount() != 1
+                    || setter.getParameterTypes()[0] == Optional.class) continue;
+            try {
+                Class<?> enumType = setter.getParameterTypes()[0];
+                Object enumValue = enumType.getMethod("of", String.class).invoke(null, value);
+                setter.invoke(request, enumValue);
+                return;
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Unable to set CDP field " + setterName, e);
+            }
+        }
+        throw new IllegalStateException("CDP setter is unavailable: " + setterName);
     }
 
     private static boolean consoleContains(Runtime.ConsoleAPICalledEvent event, Object value) {

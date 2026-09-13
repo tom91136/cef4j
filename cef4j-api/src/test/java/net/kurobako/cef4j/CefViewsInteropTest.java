@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -62,6 +63,7 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @Order(20)
     void browserViewCreateAndGetBrowser() {
@@ -70,8 +72,32 @@ class CefViewsInteropTest extends CefTestBase {
 
         CefClient client = new CefClient() {};
 
-        Optional<CefBrowserView> optBv =
-                CefBrowserView.create(client, "about:blank", bs.toImmutable(), null, null, null);
+        CefBrowserSettings settings = bs.toImmutable();
+        Optional<CefBrowserView> optBv;
+        try {
+            Method m = CefBrowserView.class.getMethod(
+                    "create",
+                    CefClient.class,
+                    String.class,
+                    CefBrowserSettings.class,
+                    net.kurobako.cef4j.gen.CefDictionaryValue.class,
+                    net.kurobako.cef4j.gen.CefRequestContext.class,
+                    CefBrowserViewDelegate.class);
+            optBv = invokeOptional(m, CefBrowserView.class, client, "about:blank", settings, null, null, null);
+        } catch (NoSuchMethodException missingSixParameterOverload) {
+            try {
+                Method m = CefBrowserView.class.getMethod(
+                        "create",
+                        CefClient.class,
+                        String.class,
+                        CefBrowserSettings.class,
+                        net.kurobako.cef4j.gen.CefRequestContext.class,
+                        CefBrowserViewDelegate.class);
+                optBv = invokeOptional(m, CefBrowserView.class, client, "about:blank", settings, null, null);
+            } catch (NoSuchMethodException missingFiveParameterOverload) {
+                throw new IllegalStateException("CefBrowserView.create is unavailable", missingFiveParameterOverload);
+            }
+        }
         assertThat(optBv).as("CefBrowserView.create").isPresent();
 
         try (CefBrowserView bv = optBv.get()) {
@@ -207,11 +233,25 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @Order(50)
     void labelButtonCreateAndGetText() {
-        try (CefLabelButton btn =
-                CefLabelButton.create(new CefButtonDelegate() {}, "Click me").orElseThrow()) {
+        CefLabelButton btn0;
+        try {
+            Method m = CefLabelButton.class.getMethod("create", CefButtonDelegate.class, String.class);
+            btn0 = invokeOptional(m, CefLabelButton.class, new CefButtonDelegate() {}, "Click me")
+                    .orElseThrow();
+        } catch (NoSuchMethodException missingTwoParameterOverload) {
+            try {
+                Method m = CefLabelButton.class.getMethod("create", CefButtonDelegate.class, String.class, int.class);
+                btn0 = invokeOptional(m, CefLabelButton.class, new CefButtonDelegate() {}, "Click me", 0)
+                        .orElseThrow();
+            } catch (NoSuchMethodException missingThreeParameterOverload) {
+                throw new IllegalStateException("CefLabelButton.create is unavailable", missingThreeParameterOverload);
+            }
+        }
+        try (CefLabelButton btn = btn0) {
             Optional<String> text = btn.getText();
             assertThat(text).as("button text").hasValue("Click me");
 
@@ -220,11 +260,25 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @Order(51)
     void labelButtonAsMenuButton() {
-        try (CefLabelButton btn =
-                CefLabelButton.create(new CefButtonDelegate() {}, "Test").orElseThrow()) {
+        CefLabelButton btn1;
+        try {
+            Method m = CefLabelButton.class.getMethod("create", CefButtonDelegate.class, String.class);
+            btn1 = invokeOptional(m, CefLabelButton.class, new CefButtonDelegate() {}, "Test")
+                    .orElseThrow();
+        } catch (NoSuchMethodException missingTwoParameterOverload) {
+            try {
+                Method m = CefLabelButton.class.getMethod("create", CefButtonDelegate.class, String.class, int.class);
+                btn1 = invokeOptional(m, CefLabelButton.class, new CefButtonDelegate() {}, "Test", 0)
+                        .orElseThrow();
+            } catch (NoSuchMethodException missingThreeParameterOverload) {
+                throw new IllegalStateException("CefLabelButton.create is unavailable", missingThreeParameterOverload);
+            }
+        }
+        try (CefLabelButton btn = btn1) {
             assertThat(btn.asMenuButton()).as("labelButton.asMenuButton()").isEmpty();
         }
     }
@@ -292,12 +346,36 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @Order(70)
     void menuButtonCreateDoesNotCrash() {
-        try (CefMenuButton btn =
-                CefMenuButton.create(new CefMenuButtonDelegate() {}, "Menu").orElseThrow()) {
+        CefMenuButton btn2;
+        try {
+            Method m = CefMenuButton.class.getMethod("create", CefMenuButtonDelegate.class, String.class);
+            btn2 = invokeOptional(m, CefMenuButton.class, new CefMenuButtonDelegate() {}, "Menu")
+                    .orElseThrow();
+        } catch (NoSuchMethodException missingTwoParameterOverload) {
+            try {
+                Method m =
+                        CefMenuButton.class.getMethod("create", CefMenuButtonDelegate.class, String.class, int.class);
+                btn2 = invokeOptional(m, CefMenuButton.class, new CefMenuButtonDelegate() {}, "Menu", 0)
+                        .orElseThrow();
+            } catch (NoSuchMethodException missingThreeParameterOverload) {
+                throw new IllegalStateException("CefMenuButton.create is unavailable", missingThreeParameterOverload);
+            }
+        }
+        try (CefMenuButton btn = btn2) {
             assertThat(btn).isNotNull();
+        }
+    }
+
+    private static <T> Optional<T> invokeOptional(Method method, Class<T> returnType, @Nullable Object... args) {
+        try {
+            Object result = method.invoke(null, args);
+            return ((Optional<?>) result).map(returnType::cast);
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("CEF factory invocation failed", failure);
         }
     }
 }

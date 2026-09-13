@@ -10,6 +10,9 @@ on:
 permissions:
   contents: read
 
+env:
+  ABI_RUNTIME_CEF_VERSION: '152.0.5+gb129680+chromium-152.0.7977.54'
+
 jobs:
   maven-wrapper:
     name: Bootstrap Maven wrapper
@@ -250,6 +253,72 @@ jobs:
           MAVEN_GOALS: test
           SKIP_BUILD_EXEC: true
         run: .github/ci/build.sh
+
+      - name: Prepare latest CEF runtime for stable ABI test
+        if: ${{ success() && matrix.cef.api == '138' }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: ${{ env.ABI_RUNTIME_CEF_VERSION }}
+          platform: ${{ matrix.os.cef-platform }}
+          include-codegen-archives: 'false'
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: CEF 138 stable ABI against latest runtime
+        if: ${{ success() && matrix.cef.api == '138' }}
+        shell: bash
+        env:
+          JAVA_HOME: ${{ steps.jdk17.outputs.path }}
+          JDK_VERSION: '17'
+          JAVAFX_VERSION: ${{ matrix.os.javafx17 }}
+          SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
+          SPOTBUGS_SKIP: true
+          JAVA11_SMOKE: false
+          MAVEN_GOALS: test
+          SKIP_BUILD_EXEC: true
+        run: |
+          set -euo pipefail
+
+          build_digest() {
+            {
+              git ls-files --cached --others --exclude-standard
+              find cef4j-platform/target/cmake-build cef4j-runtime-server/target/cmake-build \
+                -type f -print
+            } | LC_ALL=C sort -u |
+              while IFS= read -r file; do
+                if [ -f "${file}" ]; then
+                  printf '%s  %s\n' "$(git hash-object "${file}")" "${file}"
+                else
+                  printf 'missing  %s\n' "${file}"
+                fi
+              done | git hash-object --stdin
+          }
+
+          before=$(build_digest)
+          archive=".cef-dist/cef_binary_${ABI_RUNTIME_CEF_VERSION}_${CEF_PLATFORM}_minimal.tar.bz2"
+          packager=$(find cef4j-runtime-packager/target -maxdepth 1 -type f \
+            -name 'cef4j-runtime-packager-*.jar' \
+            ! -name 'original-*' ! -name '*-sources.jar' ! -name '*-javadoc.jar' \
+            -print -quit)
+          test -f "${archive}"
+          test -n "${packager}"
+
+          java -jar "${packager}" package \
+            "--cef-version=${ABI_RUNTIME_CEF_VERSION}" \
+            "--platform=${CEF_PLATFORM}" \
+            "--archive=${archive}" \
+            --cache=.cef-dist --offline --locales=en-US \
+            --output=cef4j-platform/target/reactor-runtime
+
+          runtime_properties="cef4j-platform/target/reactor-runtime/cef-runtime/${CEF_PLATFORM}/cef-runtime.properties"
+          grep -Fqx "cef.version=${ABI_RUNTIME_CEF_VERSION}" "${runtime_properties}"
+
+          .github/ci/build.sh
+
+          after=$(build_digest)
+          test "${before}" = "${after}" || {
+            echo 'Generated sources or native build outputs changed during the ABI test' >&2
+            exit 1
+          }
 
       - name: Verify checked-in generated sources
         if: ${{ success() && matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}

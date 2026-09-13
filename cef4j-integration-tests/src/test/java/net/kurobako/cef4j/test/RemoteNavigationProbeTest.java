@@ -22,6 +22,17 @@ import org.junit.jupiter.api.Test;
 
 class RemoteNavigationProbeTest {
     @Test
+    void treatsEquivalentLoopbackSpellingsAsTheSameNavigation() {
+        assertThat(RemoteNavigationProbe.sameNavigationUrl(
+                        "http://[0:0:0:0:0:0:0:1]:8123/page?q=1", "http://[::1]:8123/page?q=1"))
+                .isTrue();
+        assertThat(RemoteNavigationProbe.sameNavigationUrl("http://127.0.0.1:8123/page", "http://[::1]:8123/page"))
+                .isTrue();
+        assertThat(RemoteNavigationProbe.sameNavigationUrl("http://127.0.0.1:8123/a", "http://127.0.0.1:8123/b"))
+                .isFalse();
+    }
+
+    @Test
     void waitsForBothQueueAcknowledgementAndMatchingRendererContext() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));

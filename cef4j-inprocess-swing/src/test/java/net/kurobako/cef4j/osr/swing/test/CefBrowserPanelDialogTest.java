@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.gen.CefBrowser;
-import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
 import net.kurobako.cef4j.gen.CefFrame;
@@ -142,7 +141,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
             net.kurobako.cef4j.gen.CefBrowserSettings.Mutable browserSettings =
                     new net.kurobako.cef4j.gen.CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
+            net.kurobako.cef4j.Cef.createBrowserAsync(windowInfo, client, "", browserSettings.toImmutable());
         });
 
         TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(10));

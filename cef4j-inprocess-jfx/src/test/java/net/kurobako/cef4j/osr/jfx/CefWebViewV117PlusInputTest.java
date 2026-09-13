@@ -37,11 +37,12 @@ class CefWebViewV117PlusInputTest {
         launch.settings().noSandbox = 1;
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-        launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();
+        net.kurobako.cef4j.test.CefTestLaunch.setRootCachePath(
+                launch.settings(), cacheDir.toAbsolutePath().toString());
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();
-        Cef.INSTANCE.initialise(launch.settings(), args);
+        onFxThread(() -> CefWebView.initialise(launch.settings(), args, java.util.Optional.empty()));
     }
 
     @AfterEach
@@ -53,7 +54,7 @@ class CefWebViewV117PlusInputTest {
     static void shutdownCef() throws Exception {
         closeAllWindows();
         drainJavaFx();
-        Cef.INSTANCE.terminate();
+        onFxThread(CefWebView::terminate);
         shutdownJavaFx();
     }
 

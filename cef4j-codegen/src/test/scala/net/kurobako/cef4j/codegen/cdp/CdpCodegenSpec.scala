@@ -86,6 +86,18 @@ class CdpCodegenSpec extends TempDirectorySuite {
     intercept[IllegalArgumentException](SchemaFetcher.chromiumVersionOf("150.0.18+gdb11278"))
   }
 
+  test("selects the legacy monolithic browser schema before Chromium 80") {
+    assert(SchemaFetcher.usesLegacyBrowserSchema("73.0.3683.75"))
+    assert(SchemaFetcher.usesLegacyBrowserSchema("78.0.3904.108"))
+    assert(!SchemaFetcher.usesLegacyBrowserSchema("80.0.3987.163"))
+  }
+
+  test("selects the legacy V8 schema location before Chromium 78") {
+    assert(SchemaFetcher.usesLegacyV8Schema("73.0.3683.75"))
+    assert(SchemaFetcher.usesLegacyV8Schema("75.0.3770.100"))
+    assert(!SchemaFetcher.usesLegacyV8Schema("78.0.3904.108"))
+  }
+
   test("retries five consecutive transient download failures") {
     var attempts = 0
     val delays   = ListBuffer.empty[Duration]

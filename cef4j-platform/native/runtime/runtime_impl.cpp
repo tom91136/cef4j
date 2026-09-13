@@ -7,6 +7,11 @@
 #include <signal.h>
 #endif
 
+#ifdef __linux__
+#include <glib.h>
+#include <mutex>
+#endif
+
 int Cef4jInitialize(const cef_main_args_t* args, const cef_settings_t* settings,
         cef_app_t* application, void* windowsSandboxInfo) {
 #ifndef _WIN32
@@ -226,5 +231,50 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, quitAndWaitMainThreadMessageLoop0)(JN
         }
         g_cef_message_loop_done = nullptr;
     }
+#endif
+}
+
+#ifdef __linux__
+static std::mutex g_linux_message_pump_mutex;
+static guint g_linux_message_pump_source = 0;
+
+static gboolean RunLinuxMessagePumpWork(gpointer /*data*/) {
+    cef_do_message_loop_work();
+    return G_SOURCE_CONTINUE;
+}
+
+static void CancelLinuxMessagePumpWork() {
+    std::lock_guard<std::mutex> lock(g_linux_message_pump_mutex);
+    if (g_linux_message_pump_source != 0) {
+        g_source_remove(g_linux_message_pump_source);
+        g_linux_message_pump_source = 0;
+    }
+}
+#endif
+
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, scheduleLinuxMessageLoopWork0)(JNIEnv* /*env*/, jclass /*clz*/,
+        jlong delayMs) {
+#ifdef __linux__
+    (void)delayMs;
+    std::lock_guard<std::mutex> lock(g_linux_message_pump_mutex);
+    if (g_linux_message_pump_source != 0) return;
+
+    // Older CEF releases can omit an external-pump notification while completing a custom-scheme response. Keep a
+    // modest periodic source on JavaFX's GLib context so that CEF cannot lose that transition. Ten milliseconds is
+    // the cadence used by CEF's traditional external-loop examples and remains below a 60 Hz frame interval.
+    GSource* source = g_timeout_source_new(10);
+    g_source_set_callback(source, RunLinuxMessagePumpWork, nullptr, nullptr);
+    GMainContext* context = g_main_context_default();
+    g_linux_message_pump_source = g_source_attach(source, context);
+    g_source_unref(source);
+    g_main_context_wakeup(context);
+#else
+    (void)delayMs;
+#endif
+}
+
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, cancelLinuxMessageLoopWork0)(JNIEnv* /*env*/, jclass /*clz*/) {
+#ifdef __linux__
+    CancelLinuxMessagePumpWork();
 #endif
 }

@@ -240,6 +240,25 @@ object CppHandlerForwarderEmitter {
            |            }
            |            return gendisp::cefRet<$fnRef>(answer);
            |        };""".stripMargin
+        case Some(FieldType.I32) =>
+          val fnRef   = s"decltype(static_cast<::$cefStruct*>(nullptr)->${m.cefMethodName})"
+          val respCls = m.responseClassName.getOrElse(m.eventClassName + "Response")
+          val default = if (m.cefMethodName == "on_before_resource_load") "RV_CONTINUE" else "0"
+          s"""        ${m.cefMethodName} = []($lambdaParams) -> typename gendisp::fn_args<$fnRef>::result {
+           |            if (!g_ipc) return gendisp::cefRet<$fnRef>($default);
+           |$eventEncode
+           |            std::int32_t corrId = g_intercepts.allocateCorrId();
+           |            g_ipc->send(cef4j::ipc::Kind::Intercept, 0, corrId,
+           |                        gen::${m.eventClassName}::kMessageId, payload.data(), payload.size());
+           |            std::vector<std::uint8_t> respBytes;
+           |            bool got = g_intercepts.awaitResponse(corrId, std::chrono::milliseconds(2000), respBytes);
+           |            int answer = $default;
+           |            if (got && !respBytes.empty()) {
+           |                auto resp = gen::$respCls::decode(respBytes.data(), respBytes.size());
+           |                answer = resp.result;
+           |            }
+           |            return gendisp::cefRet<$fnRef>(answer);
+           |        };""".stripMargin
         case Some(_) =>
           s"        // ${m.cefMethodName}: skipped (unsupported return type)"
       }

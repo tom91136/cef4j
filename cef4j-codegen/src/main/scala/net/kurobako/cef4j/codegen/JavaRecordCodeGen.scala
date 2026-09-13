@@ -205,7 +205,7 @@ ${allLines.mkString("\n")}
 
 $sizeDecl$fieldDecls
 
-        public Mutable() {}
+        ${if (ctorParams.nonEmpty) "public Mutable() {}" else ""}
 
         public Mutable($ctorParams) {
 $ctorAssigns
@@ -296,15 +296,22 @@ $pad}"""
   }
 
   private def renderToString(className: String, fields: List[Field], indent: Int = 4)(using Naming.Context): String = {
-    val pad   = " " * indent
-    val parts = fields.map { f =>
-      val n = Naming.toCamelCase(f.name)
-      if (isSizeField(f)) s""""$n=" + ($n == -1 ? "pending" : Long.toString($n))"""
-      else s""""$n=" + $n"""
-    }.mkString(""" + ", " + """)
-    s"""$pad@Override
+    val pad = " " * indent
+    if (fields.isEmpty) {
+      s"""$pad@Override
+${pad}public String toString() {
+$pad    return "$className{}";
+$pad}"""
+    } else {
+      val parts = fields.map { f =>
+        val n = Naming.toCamelCase(f.name)
+        if (isSizeField(f)) s""""$n=" + ($n == -1 ? "pending" : Long.toString($n))"""
+        else s""""$n=" + $n"""
+      }.mkString(""" + ", " + """)
+      s"""$pad@Override
 ${pad}public String toString() {
 $pad    return "$className{" + $parts + "}";
 $pad}"""
+    }
   }
 }

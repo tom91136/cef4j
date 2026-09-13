@@ -326,7 +326,7 @@ public final class CefScriptEngine implements AutoCloseable {
             try (args) {
                 args.setSize(1);
                 args.setInt(0, handleId);
-                f.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
+                sendProcessMessageViaFrameOrBrowser(f, CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
             }
         }
     }
@@ -545,7 +545,7 @@ public final class CefScriptEngine implements AutoCloseable {
                 try (args) {
                     args.setSize(argCount);
                     requestWriter.accept(args, reqId);
-                    frame.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), message);
+                    sendProcessMessageViaFrameOrBrowser(frame, CefProcessId.of(CefProcessId.Kind.RENDERER), message);
                 }
             }
             return future;
@@ -575,5 +575,60 @@ public final class CefScriptEngine implements AutoCloseable {
         if (onFailure != null) onFailure.run();
         future.completeExceptionally(new IllegalStateException(message));
         return future;
+    }
+
+    private static void sendProcessMessageViaFrameOrBrowser(Object frame, Object processId, Object message) {
+        try {
+            var m = findMethod(frame.getClass(), "sendProcessMessage", processId, message);
+            invoke(m, frame, processId, message);
+            return;
+        } catch (NoSuchMethodException missingFrameMethod) {
+            // CEF versions before the frame-level API expose process messaging on CefBrowser instead.
+        }
+        final Object browser;
+        try {
+            var getBrowser = frame.getClass().getMethod("getBrowser");
+            Object candidate = getBrowser.invoke(frame);
+            browser = candidate instanceof java.util.Optional
+                    ? ((java.util.Optional<?>) candidate).orElse(null)
+                    : candidate;
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Unable to obtain browser for process message", failure);
+        }
+        if (browser == null) throw new IllegalStateException("CEF frame has no browser");
+        try {
+            var m = findMethod(browser.getClass(), "sendProcessMessage", processId, message);
+            invoke(m, browser, processId, message);
+        } catch (NoSuchMethodException failure) {
+            throw new IllegalStateException("CEF process-message API is unavailable", failure);
+        }
+    }
+
+    private static java.lang.reflect.Method findMethod(Class<?> clazz, String name, Object... args)
+            throws NoSuchMethodException {
+        for (var m : clazz.getMethods()) {
+            if (!m.getName().equals(name) || m.getParameterCount() != args.length) continue;
+            Class<?>[] parameterTypes = m.getParameterTypes();
+            boolean compatible = true;
+            for (int i = 0; i < args.length; i++) {
+                if (args[i] == null || !parameterTypes[i].isAssignableFrom(args[i].getClass())) {
+                    compatible = false;
+                    break;
+                }
+            }
+            if (compatible) return m;
+        }
+        throw new NoSuchMethodException(clazz.getName() + "." + name);
+    }
+
+    private static void invoke(java.lang.reflect.Method method, Object receiver, Object... args) {
+        try {
+            method.invoke(receiver, args);
+        } catch (java.lang.reflect.InvocationTargetException failure) {
+            Throwable cause = failure.getCause();
+            throw new IllegalStateException("CEF process-message invocation failed", cause != null ? cause : failure);
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("CEF process-message invocation failed", failure);
+        }
     }
 }

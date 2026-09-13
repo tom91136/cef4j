@@ -396,13 +396,22 @@ ${allLines.mkString("\n")}
       Naming.Context,
       DocComments.Context
   ): String =
-    if (isHandlerPtrReturn(fn.ret, handlerNames)) {
+    if (isResourceReadCompatibilityFallback(fn)) {
+      val bytesRead = Naming.toCamelCase(fn.params.find(_.name == "bytes_read").get.name)
+      s"\n        $bytesRead[0] = -1;\n        return false;"
+    } else if (isHandlerPtrReturn(fn.ret, handlerNames)) {
       "\n        return Optional.empty();"
     } else {
       fn.metaAttrs.collectFirst { case ("default_retval", v) => v } match {
         case Some(retVal) => defaultReturnFromMeta(fn.ret, retVal)
         case None         => defaultReturnForType(fn.ret)
       }
+    }
+
+  private def isResourceReadCompatibilityFallback(fn: FnPtr): Boolean =
+    fn.name == "read" && fn.ret == CType.Bool && fn.params.exists(_.name == "bytes_read") && fn.params.exists {
+      case Param(_, CType.ObjectPtr("cef_resource_read_callback_t"), _, _) => true
+      case _                                                               => false
     }
 
   private def renderStaticMethod(

@@ -149,6 +149,7 @@ object SpecDeriver {
   )(using Naming.Context): Option[HandlerMethod] = {
     val returnType: Option[Option[FieldType]] = fn.ret match {
       case CType.Void                             => Some(None)
+      case CType.Enum("cef_return_value_t")       => Some(Some(FieldType.I32))
       case CType.Int | CType.UInt | CType.Enum(_) => Some(Some(FieldType.Bool))
       case _                                      => None
     }
@@ -371,7 +372,12 @@ object SpecDeriver {
         val name      = baseName + "Event"
         val eventSpec = MessageSpec(name, packageName, stableId(name), explicitFields)
         fn.ret match {
-          case CType.Void                             => List(eventSpec)
+          case CType.Void                       => List(eventSpec)
+          case CType.Enum("cef_return_value_t") =>
+            val respName = baseName + "Response"
+            val respSpec =
+              MessageSpec(respName, packageName, stableId(respName), List(FieldSpec("result", FieldType.I32)))
+            List(eventSpec, respSpec)
           case CType.Int | CType.UInt | CType.Enum(_) =>
             val respName = baseName + "Response"
             val respSpec =

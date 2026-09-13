@@ -3,7 +3,6 @@ package net.kurobako.cef4j.osr.jfx;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.onFxThread;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -63,15 +62,17 @@ public final class NativeBrowserBackend implements BrowserBackend {
         }
     }
 
-    private static synchronized void ensureCefInitialised() throws IOException {
+    private static synchronized void ensureCefInitialised() throws Exception {
         if (cefInitialised) return;
         Path tmp = Files.createTempDirectory("cef4j-native-backend-cache");
         TestTempDirs.cleanupAtExit(tmp);
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.noSandbox = 1;
         settings.cachePath = tmp.toAbsolutePath().toString();
-        settings.rootCachePath = tmp.toAbsolutePath().toString();
-        CefWebView.initialise(settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), Optional.empty());
+        net.kurobako.cef4j.test.CefTestLaunch.setRootCachePath(
+                settings, tmp.toAbsolutePath().toString());
+        onFxThread(() ->
+                CefWebView.initialise(settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), Optional.empty()));
         cefInitialised = true;
     }
 
@@ -197,7 +198,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
         private boolean isNavigationReady(long paintBaseline) {
             CefBrowser browser = webView.getBrowser();
             return browser != null
-                    && browser.isValid()
+                    && browser.getHost().isPresent()
                     && webView.framesPainted.sum() > paintBaseline
                     && browser.getMainFrame()
                             .filter(frame -> frame.isValid() && frame.getUrl().isPresent())

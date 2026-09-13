@@ -16,6 +16,11 @@ public final class CefTestCompatibility {
         return apiVersion < 138 || apiVersion >= 142;
     }
 
+    /** CEF first exposed raw DevTools messaging and observer registration in release 81. */
+    public static boolean supportsDevTools() {
+        return cefApiVersion() >= 81;
+    }
+
     public static boolean supports(BrowserBackend backend) {
         boolean nativeBackend =
                 BrowserBackend.NATIVE_NAME.equals(backend.name()) || "native-swing".equals(backend.name());

@@ -18,14 +18,17 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(DisplayLock.class)
 @Timeout(60)
 class CefHttpIntegrationTest {
 
@@ -50,7 +53,7 @@ class CefHttpIntegrationTest {
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.noSandbox = 1;
             settings.cachePath = cacheDir.toAbsolutePath().toString();
-            settings.rootCachePath = cacheDir.toAbsolutePath().toString();
+            CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
             settings.windowlessRenderingEnabled = 1;
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;

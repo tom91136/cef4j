@@ -23,21 +23,34 @@ import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAgentDetachedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
+import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
+import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class DevToolsSessionTest {
     private static final ObjectMapper JSON = new ObjectMapper();
+    private static boolean hasSendDevToolsMessage;
+
+    @BeforeAll
+    static void checkAvailable() {
+        try {
+            Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest");
+            hasSendDevToolsMessage = true;
+        } catch (ClassNotFoundException e) {
+            hasSendDevToolsMessage = false;
+        }
+    }
 
     @Test
     void installsRemoteFactoryProvider() {
@@ -46,6 +59,7 @@ class DevToolsSessionTest {
 
     @Test
     void correlatesCommandsAndEventsOverTransportNeutralSession() throws Exception {
+        Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
@@ -61,14 +75,12 @@ class DevToolsSessionTest {
             Map<String, Object> params = Map.of("expression", "6 * 7");
             var command = devTools.send("Runtime.evaluate", params);
             Frame send = peer.receive();
-            assertThat(send.messageId).isEqualTo(BrowserHostSendDevToolsMessageRequest.MESSAGE_ID);
-            BrowserHostSendDevToolsMessageRequest request =
-                    BrowserHostSendDevToolsMessageRequest.DECODER.decode(ByteBuffer.wrap(send.payload));
-            JsonNode wireJson = JSON.readTree(request.message());
+            assertThat(send.messageId).isEqualTo(sendDevToolsMessageId());
+            JsonNode wireJson = JSON.readTree(requestMessage(send));
             assertThat(wireJson.get("method").asText()).isEqualTo("Runtime.evaluate");
             assertThat(wireJson.get("params").get("expression").asText()).isEqualTo("6 * 7");
             int commandId = wireJson.get("id").asInt();
-            peer.respond(send, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(send, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + commandId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
@@ -80,7 +92,7 @@ class DevToolsSessionTest {
             var typedCommand = typed.domains().runtime().evaluate("document.title");
             Frame typedSend = peer.receive();
             int typedId = commandId(typedSend);
-            peer.respond(typedSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(typedSend, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + typedId + ",\"result\":{\"result\":{\"type\":\"string\",\"value\":\"cef4j\"}}}")
@@ -111,6 +123,7 @@ class DevToolsSessionTest {
 
     @Test
     void reportsCdpErrorsAndFailsPendingCallsWhenAgentDetaches() throws Exception {
+        Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
@@ -123,7 +136,7 @@ class DevToolsSessionTest {
             var failed = devTools.send("No.suchMethod", null);
             Frame failedSend = peer.receive();
             int failedId = commandId(failedSend);
-            peer.respond(failedSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(failedSend, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + failedId + ",\"error\":{\"code\":-32601,\"message\":\"unknown method\"}}")
@@ -134,7 +147,7 @@ class DevToolsSessionTest {
 
             var pending = devTools.send("Page.captureScreenshot", null);
             Frame pendingSend = peer.receive();
-            peer.respond(pendingSend, new BrowserHostSendDevToolsMessageResponse(1));
+            peer.respond(pendingSend, successfulSendResponse());
             peer.event(new DevToolsAgentDetachedEvent(browser));
             assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS))
                     .hasRootCauseInstanceOf(IllegalStateException.class)
@@ -142,14 +155,33 @@ class DevToolsSessionTest {
         }
     }
 
-    private static int commandId(Frame frame) {
-        BrowserHostSendDevToolsMessageRequest request =
-                BrowserHostSendDevToolsMessageRequest.DECODER.decode(ByteBuffer.wrap(frame.payload));
+    private static int commandId(Frame frame) throws ReflectiveOperationException {
         try {
-            return JSON.readTree(request.message()).get("id").asInt();
+            return JSON.readTree(requestMessage(frame)).get("id").asInt();
         } catch (java.io.IOException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    private static int sendDevToolsMessageId() throws ReflectiveOperationException {
+        return sendRequestClass().getField("MESSAGE_ID").getInt(null);
+    }
+
+    private static byte[] requestMessage(Frame frame) throws ReflectiveOperationException {
+        @SuppressWarnings("unchecked")
+        CefMessageDecoder<CefMessageView> decoder = (CefMessageDecoder<CefMessageView>)
+                sendRequestClass().getField("DECODER").get(null);
+        Object request = decoder.decode(ByteBuffer.wrap(frame.payload));
+        return (byte[]) request.getClass().getMethod("message").invoke(request);
+    }
+
+    private static CefMessageEncoder successfulSendResponse() throws ReflectiveOperationException {
+        Class<?> type = Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageResponse");
+        return (CefMessageEncoder) type.getConstructor(int.class).newInstance(1);
+    }
+
+    private static Class<?> sendRequestClass() throws ClassNotFoundException {
+        return Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest");
     }
 
     private static final class Peer implements AutoCloseable {

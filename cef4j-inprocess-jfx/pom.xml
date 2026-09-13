@@ -183,6 +183,8 @@
                                             <replacestring from="import javafx.scene.web.PromptData;" to="import net.kurobako.cef4j.osr.jfx.CefPromptData;"/>
                                             <replacestring from="import javafx.scene.web.WebErrorEvent;" to="import net.kurobako.cef4j.osr.jfx.CefWebErrorEvent;"/>
                                             <replacestring from="import javafx.scene.web.WebEvent;" to="import net.kurobako.cef4j.osr.jfx.CefWebEvent;"/>
+                                            <replacestring from="Cef.INSTANCE.initialise(launch.settings(), args);" to="CefWebView.initialise(launch.settings(), args, java.util.Optional.empty());"/>
+                                            <replacestring from="onFxThread(Cef.INSTANCE::terminate);" to="onFxThread(CefWebView::terminate);"/>
                                             <replaceregex pattern="\bWebView\b" replace="CefWebView" flags="g"/>
                                             <replaceregex pattern="\bWebEngine\b" replace="CefWebEngine" flags="g"/>
                                             <replaceregex pattern="\bWebHistory\b" replace="CefWebHistory" flags="g"/>

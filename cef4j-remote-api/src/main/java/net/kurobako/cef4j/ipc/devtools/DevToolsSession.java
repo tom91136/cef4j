@@ -39,6 +39,16 @@ import org.slf4j.LoggerFactory;
  */
 public final class DevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(DevToolsSession.class);
+    private static final @Nullable java.lang.reflect.Method SEND_DEV_TOOLS_METHOD = findSendDevToolsMethod();
+
+    private static @Nullable java.lang.reflect.Method findSendDevToolsMethod() {
+        try {
+            return BrowserHost.class.getMethod("sendDevToolsMessage", byte[].class);
+        } catch (NoSuchMethodException unavailableInOlderCef) {
+            LOG.debug("sendDevToolsMessage is unavailable in this CEF version");
+            return null;
+        }
+    }
 
     private final CefSession session;
     private final RemoteHandle browser;
@@ -111,10 +121,28 @@ public final class DevToolsSession implements CdpTransport {
             requests.fail(id, new IllegalStateException("DevTools session is closed"));
             return request;
         }
-        host.sendDevToolsMessage(codec.encode(command)).whenComplete((accepted, failure) -> {
+        if (SEND_DEV_TOOLS_METHOD == null) {
+            requests.fail(
+                    id,
+                    new UnsupportedOperationException(
+                            "sendDevToolsMessage is not available in this CEF version (requires CEF 85+)"));
+            return request;
+        }
+        byte[] encoded = codec.encode(command);
+        CompletableFuture<?> sent;
+        try {
+            sent = (CompletableFuture<?>) SEND_DEV_TOOLS_METHOD.invoke(host, encoded);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            requests.fail(id, e.getCause() != null ? e.getCause() : e);
+            return request;
+        } catch (IllegalAccessException e) {
+            requests.fail(id, e);
+            return request;
+        }
+        sent.whenComplete((accepted, failure) -> {
             if (failure != null) {
                 completeSendFailure(id, failure);
-            } else if (accepted == null || accepted == 0) {
+            } else if (accepted == null || (accepted instanceof Number && ((Number) accepted).intValue() == 0)) {
                 completeSendFailure(id, new IllegalStateException("CEF rejected DevTools message " + id));
             }
         });

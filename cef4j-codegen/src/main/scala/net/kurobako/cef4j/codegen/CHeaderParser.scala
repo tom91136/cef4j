@@ -64,7 +64,7 @@ object CHeaderParser {
       if (state.idx >= lines.length) state
       else {
         val line = lines(state.idx)
-        if (StructTypedefRe.matches(line)) {
+        if (StructTypedefRe.findFirstIn(line).isDefined) {
           val (decl, next) = parseStruct(lines, state.idx, handlerNames, dataStructNames)
           loop(TopState(decl :: state.decls, next))
         } else if (EnumTypedefRe.matches(line)) {
@@ -118,6 +118,13 @@ object CHeaderParser {
       handlerNames: Set[String],
       dataStructNames: Set[String]
   ): (CefDecl, Int) = {
+
+    val openingLine = lines(startIdx)
+    if (StructClosingRe.findFirstIn(openingLine).isDefined) {
+      val structName = StructCloseRe.findFirstMatchIn(openingLine).map(_.group(1)).getOrElse("unknown_t")
+      val decl       = CefDecl.DataStruct(structName, Nil)
+      return (decl, startIdx + 1)
+    }
 
     @tailrec
     def loop(state: StructState): StructState =
@@ -357,6 +364,10 @@ object CHeaderParser {
       } else scan(idx + 1, acc)
 
     def scanStruct(lines: Vector[String], startIdx: Int): (Boolean, String, Int) = {
+      if (StructClosingRe.findFirstIn(lines(startIdx - 1)).isDefined) {
+        val m = StructCloseRe.findFirstMatchIn(lines(startIdx - 1))
+        return (false, m.map(_.group(1)).getOrElse(""), startIdx)
+      }
       @tailrec
       def loop(i: Int, hasBase: Boolean): (Boolean, String, Int) =
         if (i >= lines.length) (hasBase, "", i)

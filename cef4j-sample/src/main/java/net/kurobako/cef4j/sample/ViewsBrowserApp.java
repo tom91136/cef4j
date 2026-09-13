@@ -91,6 +91,43 @@ public final class ViewsBrowserApp {
 
     private static final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
+    @SuppressWarnings("unchecked")
+    private static Optional<CefLabelButton> createLabelButton(CefButtonDelegate delegate, String text) {
+        for (java.lang.reflect.Method method : CefLabelButton.class.getMethods()) {
+            if (!method.getName().equals("create")) continue;
+            try {
+                if (method.getParameterCount() == 2) {
+                    return (Optional<CefLabelButton>) method.invoke(null, delegate, text);
+                }
+                if (method.getParameterCount() == 3) {
+                    return (Optional<CefLabelButton>) method.invoke(null, delegate, text, 1);
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Unable to create CEF label button", e);
+            }
+        }
+        throw new IllegalStateException("CEF label-button factory is unavailable");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Optional<CefBrowserView> createBrowserView(
+            CefClient client, String url, CefBrowserSettings settings, CefBrowserViewDelegate delegate) {
+        for (java.lang.reflect.Method method : CefBrowserView.class.getMethods()) {
+            if (!method.getName().equals("create")) continue;
+            try {
+                if (method.getParameterCount() == 5) {
+                    return (Optional<CefBrowserView>) method.invoke(null, client, url, settings, null, delegate);
+                }
+                if (method.getParameterCount() == 6) {
+                    return (Optional<CefBrowserView>) method.invoke(null, client, url, settings, null, null, delegate);
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Unable to create CEF browser view", e);
+            }
+        }
+        throw new IllegalStateException("CEF browser-view factory is unavailable");
+    }
+
     private CefWindow window;
     private CefPanel mainPanel;
     private CefPanel tabBar;
@@ -126,7 +163,7 @@ public final class ViewsBrowserApp {
     private void openNewTab(String url) {
         TabEntry[] entryHolder = {null};
 
-        CefLabelButton tabButton = CefLabelButton.create(
+        CefLabelButton tabButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -139,13 +176,8 @@ public final class ViewsBrowserApp {
 
         CefClient tabClient = buildTabClient(entryHolder);
 
-        CefBrowserView browserView = CefBrowserView.create(
-                        tabClient,
-                        url,
-                        new CefBrowserSettings.Mutable().toImmutable(),
-                        null,
-                        null,
-                        new CefBrowserViewDelegate() {
+        CefBrowserView browserView = createBrowserView(
+                        tabClient, url, new CefBrowserSettings.Mutable().toImmutable(), new CefBrowserViewDelegate() {
                             @Override
                             public boolean onPopupBrowserViewCreated(
                                     @Nullable CefBrowserView bv, @Nullable CefBrowserView popup, boolean isDevtools) {
@@ -315,7 +347,7 @@ public final class ViewsBrowserApp {
         tabBar = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create tabBar"));
         tabBar.setToBoxLayout(HBOX);
 
-        addTabButton = CefLabelButton.create(
+        addTabButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -330,7 +362,7 @@ public final class ViewsBrowserApp {
         CefBoxLayout navLayout =
                 navBar.setToBoxLayout(HBOX).orElseThrow(() -> new RuntimeException("Failed to set navBar box layout"));
 
-        backButton = CefLabelButton.create(
+        backButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -341,7 +373,7 @@ public final class ViewsBrowserApp {
                 .orElseThrow(() -> new RuntimeException("Failed to create backButton"));
         backButton.setEnabled(false);
 
-        forwardButton = CefLabelButton.create(
+        forwardButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -352,7 +384,7 @@ public final class ViewsBrowserApp {
                 .orElseThrow(() -> new RuntimeException("Failed to create forwardButton"));
         forwardButton.setEnabled(false);
 
-        reloadButton = CefLabelButton.create(
+        reloadButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -376,7 +408,7 @@ public final class ViewsBrowserApp {
                 })
                 .orElseThrow(() -> new RuntimeException("Failed to create urlBar"));
 
-        devtoolsButton = CefLabelButton.create(
+        devtoolsButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -506,7 +538,7 @@ public final class ViewsBrowserApp {
         ViewsBrowserApp app = new ViewsBrowserApp();
 
         CefWindowDelegate windowDelegate = new CefWindowDelegate() {
-            @Override
+            @SuppressWarnings("MissingOverride")
             public CefRect getInitialBounds(@Nullable CefWindow window) {
                 return new CefRect(0, 0, 1280, 800);
             }
@@ -536,11 +568,6 @@ public final class ViewsBrowserApp {
                 if (window == null) return;
                 log.info("Window created - building UI");
                 app.buildUi(window);
-            }
-
-            @Override
-            public void onWindowClosing(@Nullable CefWindow window) {
-                log.info("Window closing");
             }
 
             @Override

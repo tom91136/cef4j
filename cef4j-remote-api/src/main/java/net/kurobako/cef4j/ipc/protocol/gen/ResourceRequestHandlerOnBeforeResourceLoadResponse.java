@@ -13,13 +13,13 @@ public final class ResourceRequestHandlerOnBeforeResourceLoadResponse implements
 
     public static final int MESSAGE_ID = 547084961;
 
-    private final boolean result;
+    private final int result;
 
-    public ResourceRequestHandlerOnBeforeResourceLoadResponse(boolean result) {
+    public ResourceRequestHandlerOnBeforeResourceLoadResponse(int result) {
         this.result = result;
     }
 
-    public boolean result() {
+    public int result() {
         return result;
     }
 
@@ -30,7 +30,7 @@ public final class ResourceRequestHandlerOnBeforeResourceLoadResponse implements
 
     @Override
     public int encodedSize() {
-        return 1;
+        return 4;
     }
 
     @Override
@@ -38,7 +38,7 @@ public final class ResourceRequestHandlerOnBeforeResourceLoadResponse implements
         ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.put((byte) (result ? 1 : 0));
+            __dst.putInt(result);
         } finally {
             __dst.order(originalOrder);
         }
@@ -47,8 +47,8 @@ public final class ResourceRequestHandlerOnBeforeResourceLoadResponse implements
     public static final CefMessageDecoder<ResourceRequestHandlerOnBeforeResourceLoadResponse> DECODER = payload -> {
         ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, 1, "result");
-        boolean result = __buf.get() != 0;
+        WireDecoder.requireRemaining(__buf, Integer.BYTES, "result");
+        int result = __buf.getInt();
         WireDecoder.requireFullyConsumed(__buf, "ResourceRequestHandlerOnBeforeResourceLoadResponse");
         return new ResourceRequestHandlerOnBeforeResourceLoadResponse(result);
     };

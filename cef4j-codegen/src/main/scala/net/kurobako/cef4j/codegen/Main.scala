@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.codegen
 
+import java.nio.file.Files
 import java.nio.file.Paths
 
 import net.kurobako.cef4j.codegen.CodegenPlatform
@@ -47,6 +48,14 @@ object Main {
       }
     }
     EmitTree(cfg, parseState, refinedTree)
+    cfg.outResourceDir.foreach { dir =>
+      cfg.cefApiVersionRaw.foreach { raw =>
+        val major  = raw.takeWhile(_.isDigit)
+        val target = dir.resolve("META-INF/cef4j/cef-api-version")
+        Files.createDirectories(target.getParent)
+        Files.writeString(target, major)
+      }
+    }
     if (cfg.emitCommonCpp) {
       val javaSourceRoot = cfg.runtimeJavaSourceRoot.getOrElse(cfg.outJava)
       EmitRuntimeStubs(javaSourceRoot, generatedPackageDir(javaSourceRoot, cfg.javaPackage), cfg.outCpp)
@@ -90,6 +99,8 @@ object Main {
           cfg.copy(compilerId = id)
         case s"--cef-api-version=$value" =>
           cfg.copy(cefApiVersionRaw = Some(value))
+        case s"--out-resource-dir=$path" =>
+          cfg.copy(outResourceDir = Some(Paths.get(path)))
         case s"--target-platform=$platform" =>
           CodegenPlatform.parse(platform) match {
             case Some(p) => cfg.copy(targetPlatform = p)

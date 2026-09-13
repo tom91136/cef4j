@@ -27,7 +27,6 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
-import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefErrorCode;
@@ -77,7 +76,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.noSandbox = 1;
             settings.cachePath = tmp.toAbsolutePath().toString();
-            settings.rootCachePath = tmp.toAbsolutePath().toString();
+            CefTestLaunch.setRootCachePath(settings, tmp.toAbsolutePath().toString());
             CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
             return new Session(config);
         } catch (Exception e) {
@@ -214,7 +213,15 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             });
                         }
 
-                        @Override
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod"})
+                        public boolean onProcessMessageReceived(
+                                @Nullable CefBrowser sourceBrowser,
+                                @Nonnull CefProcessId sourceProcess,
+                                @Nullable CefProcessMessage message) {
+                            return scripts.handleMessage(sourceBrowser, null, sourceProcess, message);
+                        }
+
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod"})
                         public boolean onProcessMessageReceived(
                                 @Nullable CefBrowser sourceBrowser,
                                 @Nullable CefFrame sourceFrame,
@@ -228,8 +235,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             Cef.createWindowlessInfo(new CefRect(0, 0, Math.max(1, width), Math.max(1, height)));
                     CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
                     browserSettings.windowlessFrameRate = 60;
-                    if (CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null)
-                            == 0) {
+                    if (!Cef.createBrowserAsync(windowInfo, client, "", browserSettings.toImmutable())) {
                         throw new IllegalStateException("CEF rejected native Swing browser creation");
                     }
                     panelRef.set(nextPanel);

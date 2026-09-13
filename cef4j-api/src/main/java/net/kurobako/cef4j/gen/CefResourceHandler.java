@@ -140,6 +140,7 @@ public interface CefResourceHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:159</a>
      */
     default boolean read(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
+        bytesRead[0] = -1;
         return false;
     }
 
@@ -234,6 +235,7 @@ public interface CefResourceHandler extends CefClientHandler {
                 if (d.read(dataOut, bytesRead, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
+            bytesRead[0] = -1;
             return false;
         }
 

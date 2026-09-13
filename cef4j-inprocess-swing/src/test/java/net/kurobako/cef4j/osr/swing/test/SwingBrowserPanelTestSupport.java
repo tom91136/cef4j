@@ -31,7 +31,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.gen.CefBrowser;
-import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCursorInfo;
@@ -84,7 +83,7 @@ final class SwingBrowserPanelTestSupport {
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.noSandbox = 1;
             settings.cachePath = cacheDir.toAbsolutePath().toString();
-            settings.rootCachePath = cacheDir.toAbsolutePath().toString();
+            CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
             settings.logFile = reportDir
                     .resolve("cef-" + ProcessHandle.current().pid() + ".log")
                     .toAbsolutePath()
@@ -246,7 +245,7 @@ final class SwingBrowserPanelTestSupport {
                     new CefRect(0, 0, Math.max(1, panel.getWidth()), Math.max(1, panel.getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
+            Cef.createBrowserAsync(windowInfo, client, "", browserSettings.toImmutable());
         });
 
         CefBrowserPanel panel = Objects.requireNonNull(panelRef.get(), "panel not created");
@@ -278,7 +277,7 @@ final class SwingBrowserPanelTestSupport {
                     new CefRect(0, 0, Math.max(1, panel.getWidth()), Math.max(1, panel.getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
+            Cef.createBrowserAsync(windowInfo, client, "", browserSettings.toImmutable());
         });
 
         CefBrowserPanel panel = Objects.requireNonNull(panelRef.get(), "panel not created");

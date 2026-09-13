@@ -54,11 +54,16 @@ class JsFunctionRegistrationTest {
             session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
             RemoteHandle browser = browsers.poll(20, TimeUnit.SECONDS);
             assertThat(browser).isNotNull();
-            assertThat(contexts.poll(15, TimeUnit.SECONDS)).isNotNull();
             net.kurobako.cef4j.ipc.protocol.gen.Browser facade =
                     new net.kurobako.cef4j.ipc.protocol.gen.Browser(session, browser);
             net.kurobako.cef4j.ipc.protocol.gen.Frame frame =
                     facade.getMainFrame().get(5, TimeUnit.SECONDS);
+            String marker = "cef4j-js-function-context";
+            frame.loadUrl("data:text/html,%3Cscript%3Evoid%200%3C/script%3E" + marker)
+                    .get(5, TimeUnit.SECONDS);
+            V8ContextCreatedEvent context = pollContextForUrl(contexts, marker, 15, TimeUnit.SECONDS);
+            assertThat(context).as("script-capable V8 context").isNotNull();
+            frame = facade.getMainFrame().get(5, TimeUnit.SECONDS);
 
             CompletableFuture<String> received = new CompletableFuture<>();
             int callbackId = jsCallbacks.register(argsJson -> {
@@ -77,6 +82,19 @@ class JsFunctionRegistrationTest {
 
             String observed = received.get(10, TimeUnit.SECONDS);
             assertThat(observed).isEqualTo("[\"hi\",42,true]");
+        }
+    }
+
+    private static V8ContextCreatedEvent pollContextForUrl(
+            LinkedBlockingQueue<V8ContextCreatedEvent> contexts, String marker, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+        while (true) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) throw new AssertionError("timed out waiting for V8 context at " + marker);
+            V8ContextCreatedEvent event = contexts.poll(remaining, TimeUnit.NANOSECONDS);
+            if (event == null) throw new AssertionError("timed out waiting for V8 context at " + marker);
+            if (event.frameUrl().contains(marker)) return event;
         }
     }
 }

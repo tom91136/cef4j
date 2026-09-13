@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.devtools.jackson.JacksonRemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.remote.RuntimeServerBrowserRuntimeFactory;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.jackson.JacksonWebDriverJsonCodec;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -65,6 +67,16 @@ class RuntimeServerWebDriverIntegrationTest {
 
     @Test
     void acceptsAnUnmodifiedSeleniumRemoteWebDriver() throws Exception {
+        if (!CefTestCompatibility.supportsDevTools()) {
+            RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory("zmq", "tcp://127.0.0.1:0", "mmap");
+            try (WebDriverServer webdriver = webdriver(runtimes)) {
+                assertThatThrownBy(() -> new RemoteWebDriver(
+                                webdriver.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j")))
+                        .isInstanceOf(SessionNotCreatedException.class)
+                        .hasMessageContaining("DevTools requires CEF 81 or newer");
+            }
+            return;
+        }
         byte[] page = ("<title>Selenium talks to CEF</title>"
                         + "<main id='root'><p id='value' class='shown' data-kind='answer'>contained</p>"
                         + "<input id='enabled'><input id='checked' type='checkbox' checked>"
@@ -135,8 +147,15 @@ class RuntimeServerWebDriverIntegrationTest {
 
         try (WebDriverServer webdriver = webdriver(runtimes)) {
             HttpClient client = HttpClient.newHttpClient();
-            JsonObject created =
-                    request(client, webdriver.endpoint().resolve("/session"), "POST", "{\"capabilities\":{}}");
+            HttpResponse<String> createResponse =
+                    send(client, webdriver.endpoint().resolve("/session"), "POST", "{\"capabilities\":{}}");
+            if (!CefTestCompatibility.supportsDevTools()) {
+                assertThat(createResponse.statusCode()).isEqualTo(500);
+                assertThat(createResponse.body()).contains("DevTools requires CEF 81 or newer");
+                return;
+            }
+            assertThat(createResponse.statusCode()).as(createResponse.body()).isEqualTo(200);
+            JsonObject created = JsonParser.parseString(createResponse.body()).getAsJsonObject();
             JsonObject session = created.getAsJsonObject("value");
             String id = session.get("sessionId").getAsString();
             assertThat(session.getAsJsonObject("capabilities")
@@ -204,6 +223,13 @@ class RuntimeServerWebDriverIntegrationTest {
 
     private static JsonObject request(HttpClient client, URI uri, String method, @Nullable String body)
             throws Exception {
+        HttpResponse<String> response = send(client, uri, method, body);
+        assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
+        return JsonParser.parseString(response.body()).getAsJsonObject();
+    }
+
+    private static HttpResponse<String> send(HttpClient client, URI uri, String method, @Nullable String body)
+            throws Exception {
         HttpRequest.BodyPublisher publisher = body == null
                 ? HttpRequest.BodyPublishers.noBody()
                 : HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8);
@@ -211,9 +237,7 @@ class RuntimeServerWebDriverIntegrationTest {
                 .header("Content-Type", "application/json; charset=utf-8")
                 .method(method, publisher)
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-        return JsonParser.parseString(response.body()).getAsJsonObject();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     private static com.google.gson.JsonElement value(JsonObject response) {

@@ -195,11 +195,28 @@ class V8EvalIntegrationTest {
         session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
         RemoteHandle browser = browsers.poll(45, TimeUnit.SECONDS);
         assertThat(browser).isNotNull();
-        V8ContextCreatedEvent ctx = contexts.poll(15, TimeUnit.SECONDS);
-        assertThat(ctx).isNotNull();
         net.kurobako.cef4j.ipc.protocol.gen.Browser facade =
                 new net.kurobako.cef4j.ipc.protocol.gen.Browser(session, browser);
+        net.kurobako.cef4j.ipc.protocol.gen.Frame frame = facade.getMainFrame().get(5, TimeUnit.SECONDS);
+        String marker = "cef4j-v8-eval-context";
+        frame.loadUrl("data:text/html,%3Cscript%3Evoid%200%3C/script%3E" + marker)
+                .get(5, TimeUnit.SECONDS);
+        V8ContextCreatedEvent ctx = pollContextForUrl(contexts, marker, 15, TimeUnit.SECONDS);
+        assertThat(ctx).as("script-capable V8 context").isNotNull();
         return facade.getMainFrame().get(5, TimeUnit.SECONDS);
+    }
+
+    private static V8ContextCreatedEvent pollContextForUrl(
+            LinkedBlockingQueue<V8ContextCreatedEvent> contexts, String marker, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+        while (true) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) throw new AssertionError("timed out waiting for V8 context at " + marker);
+            V8ContextCreatedEvent event = contexts.poll(remaining, TimeUnit.NANOSECONDS);
+            if (event == null) throw new AssertionError("timed out waiting for V8 context at " + marker);
+            if (event.frameUrl().contains(marker)) return event;
+        }
     }
 
     private EvaluateJavascriptResponse runEval(String code) throws Exception {

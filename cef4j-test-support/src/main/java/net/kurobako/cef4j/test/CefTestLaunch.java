@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -19,6 +20,18 @@ public final class CefTestLaunch {
                     .forEach(args::add);
         }
         return args;
+    }
+
+    /** Sets the cache root on CEF versions that expose the setting (CEF 74+). */
+    public static void setRootCachePath(Object settings, String path) {
+        try {
+            Field field = settings.getClass().getField("rootCachePath");
+            field.set(settings, path);
+        } catch (NoSuchFieldException ignored) {
+            // Older CEF versions use cachePath as the root and do not expose rootCachePath.
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Unable to set CEF root cache path", e);
+        }
     }
 
     private CefTestLaunch() {}

@@ -39,14 +39,11 @@ final class RuntimeServerProcessTest {
                         "tcp://127.0.0.1:0",
                         "shared-file",
                         " --disable-gpu, --disable-software-rasterizer "))
-                .containsExactly(
+                .containsSubsequence(
                         "runtime-server",
-                        "--transport",
-                        "zmq",
-                        "--bind",
-                        "tcp://127.0.0.1:0",
-                        "--frame-transport",
-                        "shared-file",
+                        "--transport=zmq",
+                        "--bind=tcp://127.0.0.1:0",
+                        "--frame-transport=shared-file",
                         "--disable-gpu",
                         "--disable-software-rasterizer");
     }

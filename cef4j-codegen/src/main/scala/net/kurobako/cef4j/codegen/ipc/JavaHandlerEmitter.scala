@@ -52,6 +52,13 @@ object JavaHandlerEmitter {
         )
         s"""$doc    @Nullable
            |    default Boolean ${m.methodName}($params) { return null; }""".stripMargin
+      case Some(FieldType.I32) =>
+        val doc = methodDoc(
+          m,
+          s"Mirrors the {@code ${snakeOf(m.methodName)}} callback. A null result selects CEF's default behavior."
+        )
+        s"""$doc    @Nullable
+           |    default Integer ${m.methodName}($params) { return null; }""".stripMargin
       case Some(_) =>
         s"""    default void ${m.methodName}($params) {}""".stripMargin
     }
@@ -75,6 +82,12 @@ object JavaHandlerEmitter {
         Some(s"""                session.intercept(${m.eventClassName}.MESSAGE_ID, ${m.eventClassName}.DECODER, ev -> {
                 |                    Boolean answer = handler.${m.methodName}($args);
                 |                    return new $respCls(answer != null && answer.booleanValue());
+                |                })""".stripMargin)
+      case Some(FieldType.I32) =>
+        val respCls = m.responseClassName.getOrElse(m.eventClassName + "Response")
+        Some(s"""                session.intercept(${m.eventClassName}.MESSAGE_ID, ${m.eventClassName}.DECODER, ev -> {
+                |                    Integer answer = handler.${m.methodName}($args);
+                |                    return answer == null ? null : new $respCls(answer.intValue());
                 |                })""".stripMargin)
       case Some(_) =>
         None

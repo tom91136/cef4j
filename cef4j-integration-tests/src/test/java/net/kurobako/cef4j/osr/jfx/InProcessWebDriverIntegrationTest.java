@@ -6,6 +6,7 @@ import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.onFxThread;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.waitUntil;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetAddress;
@@ -30,6 +31,7 @@ import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestTempDirs;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessBrowserRuntime;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessWebDriverServer;
@@ -43,6 +45,7 @@ import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ImmutableCapabilities;
+import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Timeout(600)
@@ -63,16 +66,18 @@ class InProcessWebDriverIntegrationTest {
         settings.noSandbox = 1;
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         settings.cachePath = cacheDir.toAbsolutePath().toString();
-        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
-        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
-        Platform.setImplicitExit(false);
+        CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
+        onFxThread(() -> {
+            CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
+            Platform.setImplicitExit(false);
+        });
     }
 
     @AfterAll
     static void terminateCef() throws Exception {
         try {
             closeAllWindows();
-            if (Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
+            if (Cef.INSTANCE.state() == Cef.State.INITIALISED) onFxThread(CefWebView::terminate);
         } finally {
             BROWSER_CREATOR.close();
         }
@@ -80,6 +85,16 @@ class InProcessWebDriverIntegrationTest {
 
     @Test
     void acceptsSeleniumWithoutChromeOrChromeDriver() throws Exception {
+        if (!CefTestCompatibility.supportsDevTools()) {
+            try (WebDriverServer server = InProcessWebDriverServer.start(
+                    InProcessWebDriverIntegrationTest::createBrowser, new JacksonWebDriverJsonCodec())) {
+                assertThatThrownBy(() -> new RemoteWebDriver(
+                                server.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j")))
+                        .isInstanceOf(SessionNotCreatedException.class)
+                        .hasMessageContaining("DevTools requires CEF 81 or newer");
+            }
+            return;
+        }
         byte[] page = "<title>In-process CEF</title><main id='answer'>portable</main>".getBytes(StandardCharsets.UTF_8);
         HttpServer fixture = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 1);
         fixture.createContext("/page", exchange -> {

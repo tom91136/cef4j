@@ -90,10 +90,12 @@ public final class BrowserContract {
                     exchange -> respond(
                             exchange,
                             "<html><body style='margin:0;background:rgb(255,0,0)'>"
-                                    + "<span id='marker'>first</span></body></html>"));
+                                    + "<span id='marker'>first</span><script>void 0</script></body></html>"));
             server.createContext(
                     "/second",
-                    exchange -> respond(exchange, "<html><body><span id='marker'>second</span></body></html>"));
+                    exchange -> respond(
+                            exchange,
+                            "<html><body><span id='marker'>second</span><script>void 0</script></body></html>"));
             server.start();
             return new FixtureSite(server);
         }

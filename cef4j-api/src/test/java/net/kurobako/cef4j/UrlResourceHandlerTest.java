@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -12,10 +13,23 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.kurobako.cef4j.gen.CefCallback;
 import net.kurobako.cef4j.gen.CefRequest;
 import org.junit.jupiter.api.Test;
 
 class UrlResourceHandlerTest {
+
+    @Test
+    void legacyProcessRequestContinuesAfterOpeningSynchronously() {
+        UrlResourceHandler handler = handler(new ByteArrayInputStream(new byte[] {1}));
+        CefRequest request = mock(CefRequest.class);
+        CefCallback callback = mock(CefCallback.class);
+        when(request.getUrl()).thenReturn(Optional.of("test:data"));
+
+        assertThat(handler.processRequest(request, callback)).isTrue();
+
+        verify(callback).cont();
+    }
 
     @Test
     void closesStreamAtEof() throws Exception {
@@ -23,8 +37,10 @@ class UrlResourceHandlerTest {
         UrlResourceHandler handler = handler(stream);
 
         open(handler);
-        assertThat(handler.read(ByteBuffer.allocate(1), new int[1], null)).isTrue();
-        assertThat(handler.read(ByteBuffer.allocate(1), new int[1], null)).isFalse();
+        assertThat(handler.readResponse(ByteBuffer.allocate(1), new int[1], null))
+                .isTrue();
+        assertThat(handler.readResponse(ByteBuffer.allocate(1), new int[1], null))
+                .isFalse();
 
         assertThat(stream.closeCount()).isOne();
     }
@@ -40,7 +56,8 @@ class UrlResourceHandlerTest {
         UrlResourceHandler handler = handler(stream);
 
         open(handler);
-        assertThat(handler.read(ByteBuffer.allocate(1), new int[1], null)).isFalse();
+        assertThat(handler.readResponse(ByteBuffer.allocate(1), new int[1], null))
+                .isFalse();
 
         assertThat(stream.closeCount()).isOne();
     }

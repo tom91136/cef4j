@@ -101,7 +101,9 @@ object CppRendererDispatcherEmitter {
        |        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
        |        ab->release(ab);
        |    }
+       |    #if CEF_VERSION_MAJOR >= 75
        |    frame->send_process_message(frame, PID_BROWSER, msg);
+       |    #endif
        |}
        |
        |// Sends ReceiverGone through the renderer error envelope.

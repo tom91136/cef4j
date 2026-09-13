@@ -1,0 +1,107 @@
+name: CEF compatibility (Linux)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cef-compatibility-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility:
+    name: CEF ${{ matrix.cef.api }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        cef:
+          - { version: '152.0.5+gb129680+chromium-152.0.7977.54', api: '152' }
+          - { version: '151.3.24+g2384915+chromium-151.0.7922.174', api: '151' }
+          - { version: '150.0.19+gcf60f42+chromium-150.0.7871.252', api: '150' }
+          - { version: '146.0.12+g6214c8e+chromium-146.0.7680.179', api: '146' }
+          - { version: '144.0.34+g8fc21c8+chromium-144.0.7559.261', api: '144' }
+          - { version: '140.1.20+g49f5d09+chromium-140.0.7339.214', api: '140' }
+          - { version: '138.0.62+g6981a09+chromium-138.0.7204.310', api: '138' }
+          - { version: '135.0.22+g442c600+chromium-135.0.7049.115', api: '135' }
+          - { version: '130.1.16+g5a7e5ed+chromium-130.0.6723.117', api: '130' }
+          - { version: '125.0.22+gc410c95+chromium-125.0.6422.142', api: '125' }
+          - { version: '120.2.7+g4bc6a59+chromium-120.0.6099.234', api: '120' }
+          - { version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', api: '116' }
+          - { version: '115.3.15+g21130e0+chromium-115.0.5790.173', api: '115' }
+          - { version: '110.0.32+g291f1df+chromium-110.0.5481.180', api: '110' }
+          - { version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', api: '109' }
+          - { version: '105.3.39+g2ec21f9+chromium-105.0.5195.127', api: '105' }
+          - { version: '100.0.24+g0783cf8+chromium-100.0.4896.127', api: '100' }
+          - { version: '95.7.18+g0d6005e+chromium-95.0.4638.69', api: '95' }
+          - { version: '90.6.7+g19ba721+chromium-90.0.4430.212', api: '90' }
+          - { version: '85.3.13+gcd6cbe0+chromium-85.0.4183.121', api: '85' }
+          - { version: '80.1.15+g7b802c9+chromium-80.0.3987.163', api: '80' }
+          - { version: '78.3.9+gc7345f2+chromium-78.0.3904.108', api: '78' }
+          - { version: '75.1.14+gc81164e+chromium-75.0.3770.100', api: '75' }
+          - { version: '73.1.13+g6e3c989+chromium-73.0.3683.75', api: '73' }
+
+    env:
+      CEF_VERSION: ${{ matrix.cef.version }}
+      CEF_PLATFORM: linux64
+      CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/x86_64
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+
+      - uses: ./.github/actions/maven-wrapper
+
+      - uses: ./.github/actions/linux-prereqs
+
+      - uses: ./.github/actions/almalinux-sysroot
+        with:
+          arch: x86_64
+
+      # exec-maven-plugin dependencies are resolved from the local repository,
+      # so install the reactor's code generator before each isolated lane.
+      - name: Bootstrap current code generator
+        run: ./mvnw -B -pl cef4j-codegen -am install -DskipTests
+
+      - name: Prepare CEF archives
+        uses: ./.github/actions/cef-archives
+        with:
+          version: ${{ matrix.cef.version }}
+          platform: linux64
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Smoke test CEF ${{ matrix.cef.api }}
+        shell: bash
+        env:
+          DBUS_SESSION_BUS_ADDRESS: 'disabled:'
+        run: >-
+          xvfb-run -a --server-args='-screen 0 1920x1080x24 -noreset'
+          ./mvnw -B -T1 --fail-at-end clean test
+          "-Dcef.version=${CEF_VERSION}"
+          "-Dcef.api.version=${{ matrix.cef.api }}"
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports-linux-x64-cef${{ matrix.cef.api }}
+          path: |
+            **/target/surefire-reports/**
+            **/hs_err_pid*.log
+          if-no-files-found: ignore
+          retention-days: 7

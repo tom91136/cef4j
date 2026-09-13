@@ -11,8 +11,11 @@ namespace cef4j::runtime {
 namespace {
 
 std::string option(int argc, char* argv[], const char* name, const std::string& fallback) {
-    for (int i = 1; i + 1 < argc; ++i) {
-        if (std::string(argv[i]) == name) return argv[i + 1];
+    const std::string prefix = std::string(name) + "=";
+    for (int i = 1; i < argc; ++i) {
+        const std::string argument(argv[i]);
+        if (argument.rfind(prefix, 0) == 0) return argument.substr(prefix.size());
+        if (argument == name && i + 1 < argc) return argv[i + 1];
     }
     return fallback;
 }

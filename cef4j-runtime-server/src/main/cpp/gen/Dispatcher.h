@@ -2138,7 +2138,9 @@ inline bool relayToRenderer(const DispatcherContext& ctx, const cef4j::ipc::Head
                 ab->release(ab);
             }
             // CEF adopts the message and invalidates our reference — do NOT release it ourselves.
+            #if CEF_VERSION_MAJOR >= 75
             frame->send_process_message(frame, PID_RENDERER, msg);
+            #endif
         }
         auto* base = reinterpret_cast<cef_base_ref_counted_t*>(frame);
         base->release(base);
