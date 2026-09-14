@@ -267,6 +267,9 @@ jobs:
         if: ${{ success() && matrix.cef.api == '138' }}
         shell: bash
         env:
+          # The bindings still report API 138 after the runtime swap, so Cef.java cannot infer that
+          # the CEF 152 first-run UI must be disabled.
+          CEF_EXTRA_ARGS: '${{ matrix.os.cef_args }},--no-first-run'
           JAVA_HOME: ${{ steps.jdk17.outputs.path }}
           JDK_VERSION: '17'
           JAVAFX_VERSION: ${{ matrix.os.javafx17 }}
