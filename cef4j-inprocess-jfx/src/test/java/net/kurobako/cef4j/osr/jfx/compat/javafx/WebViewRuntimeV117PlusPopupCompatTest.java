@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.concurrent.Worker;
@@ -18,12 +17,8 @@ import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
 class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase {
-    private static final CopyOnWriteArrayList<WebView> POPUP_VIEWS = new CopyOnWriteArrayList<>();
-
     private static WebView newPopupView() {
-        WebView view = trackWebView(new WebView());
-        POPUP_VIEWS.add(view);
-        return view;
+        return trackWebView(new WebView());
     }
 
     @Test
@@ -34,11 +29,16 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             WebView view = createAttachedWebView();
             AtomicBoolean popupRequested = new AtomicBoolean();
             AtomicReference<PopupFeatures> receivedFeatures = new AtomicReference<>();
+            AtomicReference<String> popupTitle = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 popupRequested.set(true);
                 receivedFeatures.set(features);
                 WebView popupView = newPopupView();
+                popupView
+                        .getEngine()
+                        .titleProperty()
+                        .addListener((obs, oldValue, newValue) -> popupTitle.set(newValue));
                 return popupView.getEngine();
             }));
 
@@ -46,6 +46,9 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
 
             assertThat(waitUntil(popupRequested::get, 8_000)).isTrue();
             assertThat(receivedFeatures.get()).isNotNull();
+            assertThat(waitUntil(() -> "popup-page".equals(popupTitle.get()), 8_000))
+                    .as("popup should finish creation before the test releases it")
+                    .isTrue();
         }
     }
 

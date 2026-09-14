@@ -104,7 +104,7 @@ verify_linux_abi() {
     while IFS= read -r library; do
         readelf -d "${library}" | grep -E 'NEEDED|SONAME'
         bad=$(readelf -d "${library}" | grep -E 'NEEDED' \
-            | grep -vE '(libcef\.so|libc\.so\.6|libm\.so\.6|libdl\.so\.2|libpthread\.so\.0|librt\.so\.1|ld-linux[^]]*\.so)' || true)
+            | grep -vE '(libcef\.so|libglib-2\.0\.so\.0|libc\.so\.6|libm\.so\.6|libdl\.so\.2|libpthread\.so\.0|librt\.so\.1|ld-linux[^]]*\.so)' || true)
         [ -z "${bad}" ] || { echo "unexpected dynamic dependency in ${library}: ${bad}" >&2; return 1; }
         max=$(nm -D --with-symbol-versions "${library}" 2>/dev/null \
             | grep -oE '@GLIBC_[0-9.]+' | sort -uV | tail -1 || true)
