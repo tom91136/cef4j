@@ -677,6 +677,7 @@ public enum Cef implements AutoCloseable {
         }
     }
 
+    @SuppressWarnings("unchecked") // Reflection supports the generated four-, five-, and six-argument CEF APIs.
     private static Optional<CefBrowser> createBrowserSync(Object info, CefClient client, String url, Object settings) {
         Class<?>[] signatures = {
             net.kurobako.cef4j.gen.CefWindowInfo.class,

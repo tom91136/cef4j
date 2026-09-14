@@ -393,6 +393,7 @@ class CefInteropTest extends CefTestBase {
                 hasGetFrameHandler = true;
                 break;
             } catch (NoSuchMethodException ignored) {
+                // Continue through CefClient's generated superinterfaces; older CEF APIs omit this callback.
             }
         }
         org.junit.jupiter.api.Assumptions.assumeTrue(hasGetFrameHandler, "getFrameHandler not available");
@@ -544,6 +545,7 @@ class CefInteropTest extends CefTestBase {
             Method getCharset = resp.getClass().getMethod("getCharset");
             assertThat((Optional<?>) getCharset.invoke(resp)).isPresent();
         } catch (NoSuchMethodException unsupportedOnThisCefVersion) {
+            // Charset accessors are absent from older supported CEF APIs.
         }
 
         try {
@@ -553,6 +555,7 @@ class CefInteropTest extends CefTestBase {
             Method getHeaderByName = resp.getClass().getMethod("getHeaderByName", String.class);
             assertThat((Optional<?>) getHeaderByName.invoke(resp, "X-Custom")).isPresent();
         } catch (NoSuchMethodException unsupportedOnThisCefVersion) {
+            // Named-header accessors are absent from older supported CEF APIs.
         }
     }
 

@@ -217,12 +217,14 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
                 return Optional.of(new CefInteropTest.MinimalRenderHandler(800, 600));
             }
 
+            @SuppressWarnings({"MissingOverride", "UnusedMethod", "EffectivelyPrivate"})
             public boolean onProcessMessageReceived(
                     @Nullable CefBrowser b, @Nullable CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
                 if (b == null || sourceProcess == null || message == null) return false;
                 return engine.handleMessage(b, null, sourceProcess, message);
             }
 
+            @SuppressWarnings({"MissingOverride", "UnusedMethod", "EffectivelyPrivate"})
             public boolean onProcessMessageReceived(
                     @Nullable CefBrowser b,
                     @Nullable CefFrame frame,
