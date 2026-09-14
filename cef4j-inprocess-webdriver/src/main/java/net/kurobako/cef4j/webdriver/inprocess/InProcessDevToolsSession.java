@@ -133,10 +133,12 @@ public final class InProcessDevToolsSession implements CdpTransport {
         return () -> current.remove(handler);
     }
 
+    @SuppressWarnings("UnusedVariable")
     private boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
         return false;
     }
 
+    @SuppressWarnings("UnusedVariable")
     private void onDevToolsMethodResult(
             @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
         byte[] bytes = bytes(result);
@@ -144,6 +146,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
         else requests.fail(messageId, decodeError(bytes));
     }
 
+    @SuppressWarnings("UnusedVariable")
     private void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
         if (!open.get() || method == null) return;
         CopyOnWriteArrayList<Consumer<byte[]>> current = handlers.get(method);
@@ -158,6 +161,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
         }
     }
 
+    @SuppressWarnings("UnusedVariable")
     private void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
         terminate(new IllegalStateException("DevTools agent detached"));
     }

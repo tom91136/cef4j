@@ -493,6 +493,7 @@ final class CefWebViewClient implements CefClient {
         return new Date(Math.floorDiv(cefMicroseconds - 11_644_473_600_000_000L, 1_000L));
     }
 
+    @SuppressWarnings("JavaUtilDate")
     private static Date completionDate(@Nullable Object cefTime) {
         if (cefTime == null) return new Date(0);
         try {

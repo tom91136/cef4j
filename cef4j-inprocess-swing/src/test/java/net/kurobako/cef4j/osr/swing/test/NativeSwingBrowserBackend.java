@@ -213,7 +213,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             });
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod"})
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "EffectivelyPrivate"})
                         public boolean onProcessMessageReceived(
                                 @Nullable CefBrowser sourceBrowser,
                                 @Nonnull CefProcessId sourceProcess,
@@ -221,7 +221,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             return scripts.handleMessage(sourceBrowser, null, sourceProcess, message);
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod"})
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "EffectivelyPrivate"})
                         public boolean onProcessMessageReceived(
                                 @Nullable CefBrowser sourceBrowser,
                                 @Nullable CefFrame sourceFrame,

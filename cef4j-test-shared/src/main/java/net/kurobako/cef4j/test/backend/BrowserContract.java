@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Assumptions;
 /** Shared behavioural contract run unchanged against in-process and Remote CEF browser surfaces. */
 public final class BrowserContract {
     private static final Duration MAX_PAINT_ATTEMPT = Duration.ofSeconds(5);
+    private static final Duration MAX_SCRIPT_ATTEMPT = Duration.ofSeconds(5);
     private static final Duration CONTRACT_TIMEOUT = Duration.ofMinutes(2);
 
     private BrowserContract() {}
@@ -64,6 +65,7 @@ public final class BrowserContract {
                     .isEqualTo("first");
 
             deadline.await(session.loadUrl(site.url("/second")), "navigate to second page", timeout);
+            awaitJavascriptReady(session, deadline.remainingUpTo(timeout));
             assertThat(unquote(deadline.await(
                             session.evaluateJavascript("document.getElementById('marker').textContent"),
                             "read second marker",
@@ -166,6 +168,25 @@ public final class BrowserContract {
             }
         }
         TimeoutException exhausted = new TimeoutException("no " + width + "x" + height + " paint within " + timeout);
+        if (lastTimeout != null) exhausted.initCause(lastTimeout);
+        throw exhausted;
+    }
+
+    static void awaitJavascriptReady(BrowserSession session, Duration timeout) throws Exception {
+        TestDeadline deadline = TestDeadline.after(timeout);
+        TimeoutException lastTimeout = null;
+        while (!deadline.isExpired()) {
+            try {
+                assertThat(deadline.await(
+                                session.evaluateJavascript("1"), "probe renderer script readiness", MAX_SCRIPT_ATTEMPT))
+                        .isEqualTo("1");
+                return;
+            } catch (TimeoutException timeoutException) {
+                // Some CEF releases report load completion before browser-info routing is ready.
+                lastTimeout = timeoutException;
+            }
+        }
+        TimeoutException exhausted = new TimeoutException("renderer script channel was not ready within " + timeout);
         if (lastTimeout != null) exhausted.initCause(lastTimeout);
         throw exhausted;
     }

@@ -484,6 +484,7 @@ public class CefWebView extends Region implements AutoCloseable {
         return browserReleased.copy();
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     private void releaseBrowserAfterClose(BrowserHandle handle) {
         browserClosed.whenComplete((ignored, failure) -> {
             boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {

@@ -6,12 +6,52 @@ import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Test;
 
 class BrowserContractTest {
+
+    @Test
+    void retriesJavascriptReadinessWhenCefTemporarilyCannotRouteProcessMessages() throws Exception {
+        AtomicInteger attempts = new AtomicInteger();
+        BrowserSession session = new BrowserSession() {
+            @Override
+            @Nonnull
+            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            @Nonnull
+            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+                if (attempts.incrementAndGet() > 1) return CompletableFuture.completedFuture("1");
+                return new CompletableFuture<>() {
+                    @Override
+                    public String get(long timeout, TimeUnit unit)
+                            throws InterruptedException, ExecutionException, TimeoutException {
+                        throw new TimeoutException("CEF browser-info routing is not ready");
+                    }
+                };
+            }
+
+            @Override
+            @Nonnull
+            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void close() {}
+        };
+
+        BrowserContract.awaitJavascriptReady(session, Duration.ofSeconds(1));
+
+        assertThat(attempts).hasValue(2);
+    }
 
     @Test
     void convergesInitialPaintThroughViewportResize() throws Exception {

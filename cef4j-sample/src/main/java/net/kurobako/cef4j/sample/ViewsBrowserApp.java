@@ -538,7 +538,7 @@ public final class ViewsBrowserApp {
         ViewsBrowserApp app = new ViewsBrowserApp();
 
         CefWindowDelegate windowDelegate = new CefWindowDelegate() {
-            @SuppressWarnings("MissingOverride")
+            @SuppressWarnings({"MissingOverride", "UnusedMethod"})
             public CefRect getInitialBounds(@Nullable CefWindow window) {
                 return new CefRect(0, 0, 1280, 800);
             }
