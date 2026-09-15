@@ -105,7 +105,7 @@ jobs:
             skip_spotbugs_jdk17: false
 
           - label: Windows ARM
-            runner: windows-11-arm
+            runner: windows-11-vs2026-arm
             arch: aarch64
             cef-platform: windowsarm64
             distro: zulu

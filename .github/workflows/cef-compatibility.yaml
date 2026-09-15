@@ -53,6 +53,7 @@ jobs:
       CEF_VERSION: ${{ matrix.cef.version }}
       CEF_PLATFORM: linux64
       CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/x86_64
+      CEF_EXTRA_ARGS: '--disable-gpu'
 
     steps:
       - uses: actions/checkout@v7
@@ -94,6 +95,8 @@ jobs:
           ./mvnw -B -T1 --fail-at-end clean test
           "-Dcef.version=${CEF_VERSION}"
           "-Dcef.api.version=${{ matrix.cef.api }}"
+          "-Dcef4j.test.extraArgs=${CEF_EXTRA_ARGS}"
+          "-Dcef4j.runtime.server.extraArgs=${CEF_EXTRA_ARGS}"
 
       - name: Upload test reports on failure
         if: failure()
