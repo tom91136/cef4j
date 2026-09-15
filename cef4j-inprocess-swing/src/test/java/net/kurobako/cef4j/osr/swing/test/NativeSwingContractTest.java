@@ -25,9 +25,11 @@ class NativeSwingContractTest {
     }
 
     @Test
-    void browserInfoHandshakeCarveMatchesAffectedCefRange() {
+    void browserInfoHandshakeRequiresCef142() {
+        assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(73))
+                .isFalse();
         assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(137))
-                .isTrue();
+                .isFalse();
         assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(138))
                 .isFalse();
         assertThat(CefTestCompatibility.hasReliableNativeBrowserInfoHandshake(141))
@@ -57,7 +59,7 @@ class NativeSwingContractTest {
     void nativeBrowserPanelSatisfiesSharedBrowserContract() throws Exception {
         Assumptions.assumeTrue(
                 CefTestCompatibility.supports(new NativeSwingBrowserBackend()),
-                "CEF 138-141 browser-info handshake race (chromiumembedded/cef#4001; fixed in CEF 142)");
+                "CEF <142 browser-info handshake race (chromiumembedded/cef#4001; fixed in CEF 142)");
         BrowserContract.verify(new NativeSwingBrowserBackend());
     }
 }

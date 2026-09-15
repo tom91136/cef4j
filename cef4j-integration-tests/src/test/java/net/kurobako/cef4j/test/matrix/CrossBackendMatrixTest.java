@@ -35,7 +35,7 @@ class CrossBackendMatrixTest {
     void satisfiesSharedBrowserContract(BrowserBackend backend) throws Exception {
         Assumptions.assumeTrue(
                 CefTestCompatibility.supports(backend),
-                "CEF 138-141 native browser-info handshake race (chromiumembedded/cef#4001; fixed in CEF 142)");
+                "CEF <142 native browser-info handshake race (chromiumembedded/cef#4001; fixed in CEF 142)");
         BrowserContract.verify(backend);
     }
 }

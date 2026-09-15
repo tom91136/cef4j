@@ -12,8 +12,9 @@ public final class CefTestCompatibility {
         return Integer.parseInt((separator < 0 ? value : value.substring(0, separator)).trim());
     }
 
+    /** CEF's native browser-info handshake can stall under contention before the upstream fix shipped in CEF 142. */
     public static boolean hasReliableNativeBrowserInfoHandshake(int apiVersion) {
-        return apiVersion < 138 || apiVersion >= 142;
+        return apiVersion >= 142;
     }
 
     /** CEF first exposed raw DevTools messaging and observer registration in release 81. */
