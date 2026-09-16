@@ -1,8 +1,9 @@
 #!/bin/sh
+# shellcheck disable=SC2016
 set -eu
 
-examples_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-repo_dir=$(CDPATH= cd -- "$examples_dir/.." && pwd)
+examples_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+repo_dir=$(CDPATH='' cd -- "$examples_dir/.." && pwd)
 
 cmp "$examples_dir/gradle-groovy/src/main/java/example/Main.java" \
     "$examples_dir/gradle-kotlin/src/main/java/example/Main.java"

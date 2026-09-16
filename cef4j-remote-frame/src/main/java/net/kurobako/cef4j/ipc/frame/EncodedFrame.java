@@ -25,6 +25,10 @@ public final class EncodedFrame {
             int height,
             @Nonnull ByteBuffer payload) {
         if (sequence < 0 || width <= 0 || height <= 0) throw new IllegalArgumentException("invalid frame envelope");
+        long pixels = (long) width * height;
+        if (pixels > Integer.MAX_VALUE / 4L) {
+            throw new IllegalArgumentException("frame dimensions exceed the maximum raw buffer size");
+        }
         if (keyFrame && baseSequence != NO_BASE_SEQUENCE) {
             throw new IllegalArgumentException("key frames cannot reference a base frame");
         }

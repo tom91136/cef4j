@@ -113,6 +113,15 @@ final class FrameCodecTest {
     }
 
     @Test
+    void encodedFramesRejectDimensionsBeyondRawBufferLimit() {
+        CodecDescriptor descriptor = new CodecDescriptor("test", "application/x-test", false);
+        assertThatThrownBy(() -> new EncodedFrame(
+                        descriptor, 1, EncodedFrame.NO_BASE_SEQUENCE, true, 32_768, 32_768, ByteBuffer.allocate(0)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("dimensions");
+    }
+
+    @Test
     void rawDecoderRejectsPayloadShorterThanItsEnvelope() {
         FrameDecoder decoder = new RawFrameCodecProvider().newDecoder(Map.of());
         EncodedFrame encoded = new EncodedFrame(

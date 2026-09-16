@@ -3,9 +3,18 @@ package net.kurobako.cef4j.webdriver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpPrincipal;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -181,6 +190,20 @@ public abstract class WebDriverServerContract {
         }
     }
 
+    @Test
+    final void failedNewSessionResponseClosesBackendAndReleasesSession() throws Exception {
+        Backend backend = new Backend();
+        try (WebDriverServer server =
+                WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(backend), codec())) {
+            Method handle = WebDriverServer.class.getDeclaredMethod("handle", HttpExchange.class);
+            handle.setAccessible(true);
+            handle.invoke(server, new FailingResponseExchange("{\"capabilities\":{}}"));
+
+            assertThat(backend.closed).isTrue();
+            assertThat(statusReady(server)).isTrue();
+        }
+    }
+
     private void assertCookieFailure(String json, String message) {
         JsonObject cookie = codec().decode(json).asObject();
         assertThatThrownBy(() -> CdpAutomationBackend.validateCookie(cookie))
@@ -313,6 +336,102 @@ public abstract class WebDriverServerContract {
 
         private JsonObject value() {
             return value;
+        }
+    }
+
+    @SuppressWarnings("NullAway")
+    private static final class FailingResponseExchange extends HttpExchange {
+        private final byte[] requestBody;
+        private int responseCode = -1;
+
+        private FailingResponseExchange(String body) {
+            requestBody = body.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        }
+
+        @Override
+        public Headers getRequestHeaders() {
+            Headers headers = new Headers();
+            headers.set("Content-Type", "application/json");
+            return headers;
+        }
+
+        @Override
+        public Headers getResponseHeaders() {
+            return new Headers();
+        }
+
+        @Override
+        public URI getRequestURI() {
+            return URI.create("/session");
+        }
+
+        @Override
+        public String getRequestMethod() {
+            return "POST";
+        }
+
+        @Override
+        public HttpContext getHttpContext() {
+            return null;
+        }
+
+        @Override
+        public void close() {}
+
+        @Override
+        public InputStream getRequestBody() {
+            return new ByteArrayInputStream(requestBody);
+        }
+
+        @Override
+        public OutputStream getResponseBody() {
+            return new OutputStream() {
+                @Override
+                public void write(int value) throws IOException {
+                    throw new IOException("client disconnected");
+                }
+            };
+        }
+
+        @Override
+        public void sendResponseHeaders(int responseCode, long responseLength) {
+            this.responseCode = responseCode;
+        }
+
+        @Override
+        public int getResponseCode() {
+            return responseCode;
+        }
+
+        @Override
+        public InetSocketAddress getRemoteAddress() {
+            return new InetSocketAddress(InetAddress.getLoopbackAddress(), 1);
+        }
+
+        @Override
+        public InetSocketAddress getLocalAddress() {
+            return new InetSocketAddress(InetAddress.getLoopbackAddress(), 2);
+        }
+
+        @Override
+        public String getProtocol() {
+            return "HTTP/1.1";
+        }
+
+        @Override
+        public Object getAttribute(String name) {
+            return null;
+        }
+
+        @Override
+        public void setAttribute(String name, Object value) {}
+
+        @Override
+        public void setStreams(InputStream input, OutputStream output) {}
+
+        @Override
+        public HttpPrincipal getPrincipal() {
+            return null;
         }
     }
 

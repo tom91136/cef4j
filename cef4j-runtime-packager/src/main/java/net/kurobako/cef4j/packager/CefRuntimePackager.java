@@ -117,7 +117,9 @@ public final class CefRuntimePackager {
             files.add("cef-runtime.properties");
             writeFileList(stagedRoot, files);
 
-            Files.createDirectories(runtimeRoot.getParent());
+            Path runtimeParent = runtimeRoot.getParent();
+            if (runtimeParent == null) throw new IOException("CEF runtime has no parent directory: " + runtimeRoot);
+            Files.createDirectories(runtimeParent);
             replaceRuntime(stagedRoot, runtimeRoot);
             return new Result(runtimeRoot, List.copyOf(files), matchedLocales);
         } finally {
@@ -160,7 +162,9 @@ public final class CefRuntimePackager {
 
                 Path target = stagedRoot.resolve(relative).normalize();
                 requireContained(stagedRoot, target);
-                Files.createDirectories(target.getParent());
+                Path targetParent = target.getParent();
+                if (targetParent == null) throw new IOException("CEF runtime entry has no parent: " + relative);
+                Files.createDirectories(targetParent);
                 Files.copy(tarInput, target, StandardCopyOption.REPLACE_EXISTING);
                 files.add(relative.replace('\\', '/'));
             }
@@ -282,8 +286,10 @@ public final class CefRuntimePackager {
             Path resources = root.resolve(MAC_FRAMEWORK + "Resources");
             boolean snapshot;
             try (var entries = Files.list(resources)) {
-                snapshot =
-                        entries.anyMatch(path -> path.getFileName().toString().startsWith("v8_context_snapshot"));
+                snapshot = entries.anyMatch(path -> {
+                    Path fileName = path.getFileName();
+                    return fileName != null && fileName.toString().startsWith("v8_context_snapshot");
+                });
             }
             if (!snapshot) missing.add(MAC_FRAMEWORK + "Resources/v8_context_snapshot.*.bin");
         }
@@ -525,7 +531,7 @@ public final class CefRuntimePackager {
 
         Result(Path runtimeRoot, List<String> files, Set<String> locales) {
             this.runtimeRoot = runtimeRoot;
-            this.files = files;
+            this.files = List.copyOf(files);
             this.locales = Set.copyOf(locales);
         }
 

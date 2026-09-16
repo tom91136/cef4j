@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -17,6 +17,8 @@
     <properties>
         <!-- Test-only reactor module; no distributable bytecode to inspect. -->
         <bytecode.check.skip>true</bytecode.check.skip>
+        <!-- Test-only aggregation intentionally consumes the APIs exposed by its fixture dependencies. -->
+        <dependency.analyze.skip>true</dependency.analyze.skip>
         <!-- Keep JavaFX artifacts aligned; mixed 11/13 binaries crash glassgtk3. -->
         <javafx.version>13.0.2</javafx.version>
         <javafx.test.version>13.0.2</javafx.test.version>
@@ -177,7 +179,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                                        <testExcludes>
+                    <testExcludes>
                         <testExclude>${cef4j.test.v8value.excludes}</testExclude>
                     </testExcludes>
                     <testIncrementalExcludes>

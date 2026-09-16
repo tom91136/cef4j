@@ -295,7 +295,12 @@ public final class WebDriverServer implements AutoCloseable {
             JsonObject value = new JsonObject();
             value.addProperty("sessionId", id);
             value.add("capabilities", actual);
-            sendSuccess(exchange, value);
+            try {
+                sendSuccess(exchange, value);
+            } catch (IOException failure) {
+                if (sessions.remove(id, active)) active.close();
+                throw failure;
+            }
         } finally {
             synchronized (creationLock) {
                 creatingSession = false;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -19,6 +19,8 @@
              lowerings). Not worth chasing; NullAway + Error Prone only run on Java, so this module is
              linted via Scala's own compiler warnings. -->
         <spotbugs.skip>true</spotbugs.skip>
+        <!-- maven-dependency-analyzer does not understand Scala 3's library and inline references. -->
+        <dependency.analyze.skip>true</dependency.analyze.skip>
         <!-- Scala 3.8 and the shaded code generator intentionally require Java 17. -->
         <bytecode.check.skip>true</bytecode.check.skip>
         <codegen.test.argLine/>

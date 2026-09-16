@@ -110,8 +110,10 @@ final class CefArchiveResolver {
         }
         Path parent = destination.toAbsolutePath().getParent();
         if (parent == null) throw new IOException("CEF archive has no parent directory: " + destination);
+        Path fileName = destination.getFileName();
+        if (fileName == null) throw new IOException("CEF archive has no file name: " + destination);
         Files.createDirectories(parent);
-        Path temporary = Files.createTempFile(parent, destination.getFileName().toString(), ".part");
+        Path temporary = Files.createTempFile(parent, fileName.toString(), ".part");
         try {
             HttpRequest request = HttpRequest.newBuilder(uri)
                     .timeout(Duration.ofMinutes(10))

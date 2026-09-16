@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.kurobako.cef4j</groupId>
@@ -61,6 +61,7 @@
         <commons.compress.version>1.28.0</commons.compress.version>
         <selenium.version>4.47.0</selenium.version>
         <spotbugs.version>4.10.3.0</spotbugs.version>
+        <maven.dependency.version>3.9.0</maven.dependency.version>
         <jacoco.version>0.8.14</jacoco.version>
         <maven.source.version>3.4.0</maven.source.version>
         <maven.release.version>3.3.1</maven.release.version>
@@ -70,6 +71,7 @@
         <native.test.sanitizers>false</native.test.sanitizers>
         <!-- Per-module opt-out; SpotBugs is disabled in modules where it is noisy (e.g. Scala codegen). -->
         <spotbugs.skip>false</spotbugs.skip>
+        <dependency.analyze.skip>false</dependency.analyze.skip>
         <!-- Java 17-only build tooling (currently cef4j-codegen) overrides this. -->
         <bytecode.check.skip>false</bytecode.check.skip>
         <java11.runtime.smoke.skip>true</java11.runtime.smoke.skip>
@@ -813,6 +815,46 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.version}</version>
+                <executions>
+                    <execution>
+                        <id>analyze-dependencies</id>
+                        <phase>verify</phase>
+                        <goals><goal>analyze-only</goal></goals>
+                        <configuration>
+                            <skip>${dependency.analyze.skip}</skip>
+                            <failOnWarning>true</failOnWarning>
+                            <ignoreNonCompile>true</ignoreNonCompile>
+                            <ignoreAllNonTestScoped>true</ignoreAllNonTestScoped>
+                            <ignoredUsedUndeclaredDependencies>
+                                <!-- Aggregate test artifacts and shared contracts expose these transitively. -->
+                                <dependency>org.junit.jupiter:*</dependency>
+                                <dependency>org.opentest4j:opentest4j</dependency>
+                                <dependency>net.kurobako.cef4j:cef4j-test-support</dependency>
+                                <!-- The analyzer does not match JavaFX's platform jars to their declarations. -->
+                                <dependency>org.openjfx:javafx-base</dependency>
+                                <dependency>org.openjfx:javafx-graphics</dependency>
+                                <dependency>org.openjfx:javafx-controls</dependency>
+                                <dependency>org.openjfx:javafx-web</dependency>
+                                <!-- junixsocket-core is an intentional optional POM aggregator. -->
+                                <dependency>com.kohlschutter.junixsocket:junixsocket-common</dependency>
+                            </ignoredUsedUndeclaredDependencies>
+                            <ignoredUnusedDeclaredDependencies>
+                                <!-- Build-time/compiler inputs and POM/classifier artifacts have no bytecode references. -->
+                                <dependency>org.checkerframework:checker-qual</dependency>
+                                <dependency>com.kohlschutter.junixsocket:junixsocket-core</dependency>
+                                <dependency>org.openjfx:javafx-base</dependency>
+                                <dependency>org.openjfx:javafx-graphics</dependency>
+                                <dependency>org.openjfx:javafx-controls</dependency>
+                                <dependency>net.kurobako.cef4j:cef4j-platform</dependency>
+                            </ignoredUnusedDeclaredDependencies>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
