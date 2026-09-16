@@ -74,6 +74,7 @@ public final class RuntimeServerProcess implements Closeable {
     private final String endpoint;
     private final RuntimeServerHandshake handshake;
     private final Deque<String> recentOutput;
+    private final Duration transportReconnectTimeout;
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public static RuntimeServerProcess spawn(@Nonnull Path binary, @Nonnull String bindEndpoint) throws IOException {
@@ -176,7 +177,7 @@ public final class RuntimeServerProcess implements Closeable {
                 cleanupUdsSocket(bindEndpoint);
                 throw new IOException("runtime server selected unexpected providers: " + handshake);
             }
-            return new RuntimeServerProcess(p, handshake, recentOutput);
+            return new RuntimeServerProcess(p, handshake, recentOutput, bootstrapTimeout);
         } catch (TimeoutException e) {
             terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
@@ -314,13 +315,18 @@ public final class RuntimeServerProcess implements Closeable {
                         ""));
     }
 
-    private RuntimeServerProcess(Process process, RuntimeServerHandshake handshake, Deque<String> recentOutput) {
+    private RuntimeServerProcess(
+            Process process,
+            RuntimeServerHandshake handshake,
+            Deque<String> recentOutput,
+            Duration transportReconnectTimeout) {
         this.process = process;
         this.handshake = handshake;
         this.transport = handshake.transport();
         this.frameTransport = handshake.frameTransport();
         this.endpoint = handshake.endpoint();
         this.recentOutput = recentOutput;
+        this.transportReconnectTimeout = transportReconnectTimeout;
     }
 
     @Nonnull
@@ -346,7 +352,7 @@ public final class RuntimeServerProcess implements Closeable {
     /** Connects using the provider selected by the runtime server. */
     @Nonnull
     public CefTransport connect() throws CefTransportException {
-        return supervise(CefTransports.connect(transport, endpoint, process::isAlive));
+        return supervise(CefTransports.connect(transport, endpoint, process::isAlive, transportReconnectTimeout));
     }
 
     /** Connects an authenticated WebSocket generation, optionally trusting a caller-supplied TLS context. */

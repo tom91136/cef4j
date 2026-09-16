@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.ipc.transport;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,6 +25,16 @@ public final class CefTransports {
             @Nonnull String name, @Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity)
             throws CefTransportException {
         return provider(name).connect(endpoint, reconnectContinuity);
+    }
+
+    @Nonnull
+    public static CefTransport connect(
+            @Nonnull String name,
+            @Nonnull String endpoint,
+            @Nonnull BooleanSupplier reconnectContinuity,
+            @Nonnull Duration reconnectTimeout)
+            throws CefTransportException {
+        return provider(name).connect(endpoint, reconnectContinuity, reconnectTimeout);
     }
 
     private static CefTransportProvider provider(String name) throws CefTransportException {

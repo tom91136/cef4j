@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.ipc.transport;
 
+import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nonnull;
 
@@ -21,5 +22,14 @@ public final class ZmqTransportProvider implements CefTransportProvider {
     @Nonnull
     public CefTransport connect(@Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity) {
         return ZmqTransport.connect(endpoint, reconnectContinuity);
+    }
+
+    @Override
+    @Nonnull
+    public CefTransport connect(
+            @Nonnull String endpoint,
+            @Nonnull BooleanSupplier reconnectContinuity,
+            @Nonnull Duration reconnectTimeout) {
+        return ZmqTransport.connect(endpoint, reconnectContinuity, reconnectTimeout);
     }
 }

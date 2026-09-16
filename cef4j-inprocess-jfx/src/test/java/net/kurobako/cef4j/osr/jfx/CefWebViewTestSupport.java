@@ -19,8 +19,11 @@ import javafx.stage.Window;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.UncaughtExceptionTracker;
 
 final class CefWebViewTestSupport {
+    private static final UncaughtExceptionTracker JAVA_FX_FAILURES = new UncaughtExceptionTracker();
+
     private CefWebViewTestSupport() {}
 
     static void assumeDisplayServer() {
@@ -52,6 +55,7 @@ final class CefWebViewTestSupport {
     static void startJavaFx() throws Exception {
         CountDownLatch fxLatch = new CountDownLatch(1);
         Runnable configure = () -> {
+            Thread.currentThread().setUncaughtExceptionHandler(JAVA_FX_FAILURES);
             Platform.setImplicitExit(false);
             fxLatch.countDown();
         };
@@ -110,6 +114,7 @@ final class CefWebViewTestSupport {
         if (applicationThread != null && applicationThread.isAlive()) {
             throw new IllegalStateException("JavaFX application thread did not stop after Platform.exit()");
         }
+        JAVA_FX_FAILURES.throwIfPresent();
     }
 
     static void shutdownCefWebView() throws Exception {
@@ -163,6 +168,7 @@ final class CefWebViewTestSupport {
         if (error.get() != null) {
             throw new RuntimeException(error.get());
         }
+        JAVA_FX_FAILURES.throwIfPresent();
         return result.get();
     }
 

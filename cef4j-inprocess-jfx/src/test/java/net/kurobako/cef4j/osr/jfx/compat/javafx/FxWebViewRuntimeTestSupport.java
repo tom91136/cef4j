@@ -55,6 +55,7 @@ import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.UncaughtExceptionTracker;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -66,6 +67,7 @@ final class FxWebViewRuntimeTestSupport {
 
     private static final CopyOnWriteArrayList<Stage> STAGES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<WebView> VIEWS = new CopyOnWriteArrayList<>();
+    private static final UncaughtExceptionTracker JAVA_FX_FAILURES = new UncaughtExceptionTracker();
 
     private FxWebViewRuntimeTestSupport() {}
 
@@ -80,6 +82,7 @@ final class FxWebViewRuntimeTestSupport {
         try {
             Platform.startup(() -> {
                 try {
+                    Thread.currentThread().setUncaughtExceptionHandler(JAVA_FX_FAILURES);
                     Platform.setImplicitExit(false);
                     started = true;
                 } catch (Throwable t) {
@@ -125,6 +128,7 @@ final class FxWebViewRuntimeTestSupport {
             awaitJavaFxShutdown();
             started = false;
         }
+        JAVA_FX_FAILURES.throwIfPresent();
     }
 
     private static void drainJavaFx() {
@@ -223,6 +227,7 @@ final class FxWebViewRuntimeTestSupport {
         if (error.get() != null) {
             throw new RuntimeException(error.get());
         }
+        JAVA_FX_FAILURES.throwIfPresent();
         return result.get();
     }
 

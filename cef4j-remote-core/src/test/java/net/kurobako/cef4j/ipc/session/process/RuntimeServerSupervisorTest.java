@@ -95,7 +95,10 @@ final class RuntimeServerSupervisorTest {
             assertThat(registration).isNotNull();
             RuntimeServerSupervisor.Connection first = deadline.await(supervisor.start(), "first generation startup");
             assertThat(poll(generations, deadline, "first generation delivery")).isSameAs(first);
-            RuntimeServerSupervisor.Connection second = poll(generations, deadline, "replacement generation delivery");
+            RuntimeServerSupervisor.Connection second = poll(
+                    generations,
+                    TestDeadline.after(Duration.ofSeconds(10)),
+                    "replacement generation before the disconnected process exits");
             assertThat(second).isNotNull();
             assertThat(second.pid()).isNotEqualTo(first.pid());
         }

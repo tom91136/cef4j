@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.transport;
 
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -112,6 +113,7 @@ public final class ZmqTransport implements CefTransport {
     private final BooleanSupplier reconnectContinuity;
     private final int handshakeTimeoutMs;
     private final long handshakeTimeoutNanos;
+    private final long reconnectTimeoutNanos;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>(MAX_QUEUED_FRAMES);
     private final PendingFrames pending = new PendingFrames();
@@ -137,11 +139,11 @@ public final class ZmqTransport implements CefTransport {
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
     public static ZmqTransport bind(@Nonnull String endpoint) {
-        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, () -> false);
+        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TIMEOUT_MS, () -> false);
     }
 
     static ZmqTransport bind(String endpoint, BooleanSupplier reconnectContinuity) {
-        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
+        return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
     }
 
     /** Connect to a previously bound endpoint. */
@@ -151,16 +153,34 @@ public final class ZmqTransport implements CefTransport {
 
     @Nonnull
     public static ZmqTransport connect(@Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity) {
-        return new ZmqTransport(false, endpoint, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
+        return new ZmqTransport(false, endpoint, HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
+    }
+
+    @Nonnull
+    public static ZmqTransport connect(
+            @Nonnull String endpoint,
+            @Nonnull BooleanSupplier reconnectContinuity,
+            @Nonnull Duration reconnectTimeout) {
+        return new ZmqTransport(
+                false, endpoint, HANDSHAKE_TIMEOUT_MS, timeoutMillis(reconnectTimeout), reconnectContinuity);
     }
 
     static ZmqTransport connect(String endpoint, int handshakeTimeoutMs) {
-        return new ZmqTransport(false, endpoint, handshakeTimeoutMs, () -> false);
+        return new ZmqTransport(false, endpoint, handshakeTimeoutMs, handshakeTimeoutMs, () -> false);
     }
 
     static ZmqTransport connect(String endpoint, int handshakeTimeoutMs, BooleanSupplier reconnectContinuity) {
         if (handshakeTimeoutMs <= 0) throw new IllegalArgumentException("handshakeTimeoutMs must be positive");
-        return new ZmqTransport(false, endpoint, handshakeTimeoutMs, reconnectContinuity);
+        return new ZmqTransport(false, endpoint, handshakeTimeoutMs, handshakeTimeoutMs, reconnectContinuity);
+    }
+
+    private static int timeoutMillis(Duration timeout) {
+        java.util.Objects.requireNonNull(timeout, "timeout");
+        long millis = timeout.toMillis();
+        if (millis <= 0 || millis > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("timeout must be between 1ms and " + Integer.MAX_VALUE + "ms");
+        }
+        return (int) millis;
     }
 
     static long sharedContextGeneration() {
@@ -173,11 +193,16 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private ZmqTransport(
-            boolean isBind, String requestedEndpoint, int handshakeTimeoutMs, BooleanSupplier reconnectContinuity) {
+            boolean isBind,
+            String requestedEndpoint,
+            int handshakeTimeoutMs,
+            int reconnectTimeoutMs,
+            BooleanSupplier reconnectContinuity) {
         this.runtimeServerClient = !isBind;
         this.reconnectContinuity = java.util.Objects.requireNonNull(reconnectContinuity, "reconnectContinuity");
         this.handshakeTimeoutMs = handshakeTimeoutMs;
         this.handshakeTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(handshakeTimeoutMs);
+        this.reconnectTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(reconnectTimeoutMs);
         this.endpoint = requestedEndpoint;
         int id = INSTANCE.incrementAndGet();
         CompletableFuture<String> setup = new CompletableFuture<>();
@@ -368,7 +393,7 @@ public final class ZmqTransport implements CefTransport {
             return;
         }
         if (reconnectDeadlineNanos == 0) {
-            reconnectDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
+            reconnectDeadlineNanos = System.nanoTime() + reconnectTimeoutNanos;
         }
     }
 

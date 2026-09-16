@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.ipc.transport;
 
+import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nonnull;
 
@@ -30,5 +31,16 @@ public final class LocalTransportProvider implements CefTransportProvider {
         }
         if (endpoint.startsWith("tcp://")) return ZmqTransport.connect(endpoint, reconnectContinuity);
         throw new CefTransportException("Unsupported local endpoint: " + endpoint);
+    }
+
+    @Override
+    @Nonnull
+    public CefTransport connect(
+            @Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity, @Nonnull Duration reconnectTimeout)
+            throws CefTransportException {
+        if (endpoint.startsWith("tcp://")) {
+            return ZmqTransport.connect(endpoint, reconnectContinuity, reconnectTimeout);
+        }
+        return connect(endpoint, reconnectContinuity);
     }
 }
