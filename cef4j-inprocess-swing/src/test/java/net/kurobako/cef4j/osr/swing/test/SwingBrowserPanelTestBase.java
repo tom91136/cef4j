@@ -7,6 +7,7 @@ import net.kurobako.cef4j.test.DisplayLock;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -27,6 +28,8 @@ abstract class SwingBrowserPanelTestBase {
     }
 
     @AfterAll
+    // Native CEF shutdown plus the final AWT queue barrier can exceed the default 30-second lifecycle budget on CI.
+    @Timeout(120)
     static void shutdown() {
         shutdownCef();
     }
