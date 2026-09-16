@@ -90,13 +90,18 @@ jobs:
         shell: bash
         env:
           DBUS_SESSION_BUS_ADDRESS: 'disabled:'
-        run: >-
-          xvfb-run -a --server-args='-screen 0 1920x1080x24 -noreset'
-          ./mvnw -B -T1 --fail-at-end clean test
-          "-Dcef.version=${CEF_VERSION}"
-          "-Dcef.api.version=${{ matrix.cef.api }}"
-          "-Dcef4j.test.extraArgs=${CEF_EXTRA_ARGS}"
-          "-Dcef4j.runtime.server.extraArgs=${CEF_EXTRA_ARGS}"
+        run: |
+          ulimit -c unlimited
+          xvfb-run -a --server-args='-screen 0 1920x1080x24 -noreset' \
+            ./mvnw -B -T1 --fail-at-end clean test \
+            "-Dcef.version=${CEF_VERSION}" \
+            "-Dcef.api.version=${{ matrix.cef.api }}" \
+            "-Dcef4j.test.extraArgs=${CEF_EXTRA_ARGS}" \
+            "-Dcef4j.runtime.server.extraArgs=${CEF_EXTRA_ARGS}"
+
+      - name: Collect native crash diagnostics
+        if: failure()
+        run: bash .github/ci/collect-native-crash-diagnostics.sh
 
       - name: Upload test reports on failure
         if: failure()
@@ -106,5 +111,6 @@ jobs:
           path: |
             **/target/surefire-reports/**
             **/hs_err_pid*.log
+            target/native-crash-diagnostics/**
           if-no-files-found: ignore
           retention-days: 7

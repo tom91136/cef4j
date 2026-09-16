@@ -19,6 +19,16 @@ class CefPlatformTest {
     }
 
     @Test
+    void selectsMinimalReleaseAndStandardDebugArchives() {
+        CefPlatform platform = CefPlatform.LINUX_X86_64;
+
+        assertThat(platform.archiveName("105.0+fixture", CefBuildType.RELEASE))
+                .isEqualTo("cef_binary_105.0+fixture_linux64_minimal.tar.bz2");
+        assertThat(platform.archiveName("105.0+fixture", CefBuildType.DEBUG))
+                .isEqualTo("cef_binary_105.0+fixture_linux64.tar.bz2");
+    }
+
+    @Test
     void detectsSupportedHostsWithoutGuessing() {
         assertThat(CefPlatform.detectHost("Linux", "amd64")).isEqualTo(CefPlatform.LINUX_X86_64);
         assertThat(CefPlatform.detectHost("Linux", "aarch64")).isEqualTo(CefPlatform.LINUX_ARM64);

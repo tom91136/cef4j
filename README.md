@@ -107,6 +107,10 @@ offline setting is forwarded to the child packager, and `-Dcef4j.packager.offlin
 independently. Linux packaging strips by default; set `-Dcef4j.strip-runtime=false` to retain debug symbols.
 For cross-packaging a Linux runtime, pass `--strip-command` with a target-capable strip executable.
 
+For native crash diagnosis, pass `--build-type=debug`. The packager then uses the Debug runtime from the upstream
+standard distribution; Release packaging continues to use the smaller minimal distribution by default. Debug
+runtimes cannot be combined with `--strip`.
+
 ## Runtime server
 
 ```text

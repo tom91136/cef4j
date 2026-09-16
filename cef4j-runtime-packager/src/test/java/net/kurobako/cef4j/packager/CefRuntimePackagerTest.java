@@ -62,6 +62,24 @@ class CefRuntimePackagerTest {
         assertThat(result.runtimeRoot().resolve(platform.runtimeBinary())).isRegularFile();
     }
 
+    @ParameterizedTest
+    @MethodSource("platforms")
+    void packagesDebugRuntimeFromStandardDistribution(CefPlatform platform) throws Exception {
+        Path archive = TestArchives.create(temporary.resolve("debug-" + platform.cefName() + ".tar.bz2"), platform);
+        Path output = temporary.resolve("debug-output-" + platform.cefName());
+        CefRuntimePackager.Request request =
+                request(archive, output, platform, List.of(), false, CefBuildType.DEBUG, false, "strip");
+
+        CefRuntimePackager.Result result = new CefRuntimePackager().packageArchive(request);
+
+        assertThat(result.runtimeRoot().resolve(platform.runtimeBinary())).hasContent("debug cef");
+        Properties metadata = new Properties();
+        try (var reader = Files.newBufferedReader(result.runtimeRoot().resolve("cef-runtime.properties"))) {
+            metadata.load(reader);
+        }
+        assertThat(metadata.getProperty("cef.build")).isEqualTo("debug");
+    }
+
     @Test
     void rejectsTraversalEntries() throws Exception {
         Path archive = TestArchives.createTraversal(temporary.resolve("traversal.tar.bz2"));
@@ -160,6 +178,25 @@ class CefRuntimePackagerTest {
     }
 
     @Test
+    void rejectsStrippingDebugRuntimes() throws Exception {
+        CefPlatform platform = CefPlatform.LINUX_X86_64;
+        Path archive = TestArchives.create(temporary.resolve("strip-debug.tar.bz2"), platform);
+
+        assertThatThrownBy(() -> new CefRuntimePackager()
+                        .packageArchive(request(
+                                archive,
+                                temporary.resolve("strip-debug-output"),
+                                platform,
+                                List.of(),
+                                false,
+                                CefBuildType.DEBUG,
+                                true,
+                                "strip")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("diagnostic symbols");
+    }
+
+    @Test
     void restoresPreviousRuntimeWhenStagedCommitFails() throws Exception {
         CefPlatform platform = CefPlatform.LINUX_X86_64;
         Path archive = TestArchives.create(temporary.resolve("rollback.tar.bz2"), platform);
@@ -238,6 +275,20 @@ class CefRuntimePackagerTest {
             boolean strip,
             String stripCommand)
             throws Exception {
+        return request(
+                archive, output, platform, locales, withoutSwiftShader, CefBuildType.RELEASE, strip, stripCommand);
+    }
+
+    private CefRuntimePackager.Request request(
+            Path archive,
+            Path output,
+            CefPlatform platform,
+            List<String> locales,
+            boolean withoutSwiftShader,
+            CefBuildType buildType,
+            boolean strip,
+            String stripCommand)
+            throws Exception {
         return new CefRuntimePackager.Request(
                 "150.0.0+fixture",
                 platform,
@@ -248,6 +299,7 @@ class CefRuntimePackagerTest {
                 Digests.digest(archive, "SHA-1"),
                 Digests.digest(archive, "SHA-256"),
                 false,
+                buildType,
                 strip,
                 stripCommand);
     }

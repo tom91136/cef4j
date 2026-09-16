@@ -31,6 +31,11 @@ final class TestArchives {
             files.put(framework + "Resources/en.lproj/locale.pak", bytes("en"));
             files.put(framework + "Resources/fr.lproj/locale.pak", bytes("fr"));
             files.put(framework + "Resources/fr_FEMININE.lproj/locale.pak", bytes("fr-f"));
+            files.put("Debug/Chromium Embedded Framework.framework/Chromium Embedded Framework", bytes("debug cef"));
+            files.put("Debug/Chromium Embedded Framework.framework/Resources/icudtl.dat", bytes("debug icu"));
+            files.put(
+                    "Debug/Chromium Embedded Framework.framework/Resources/v8_context_snapshot.x86_64.bin",
+                    bytes("debug v8"));
         } else {
             String cefBinary = platform.isWindows() ? "libcef.dll" : "libcef.so";
             files.put("Release/" + cefBinary, bytes("cef"));
@@ -44,6 +49,9 @@ final class TestArchives {
             }
             files.put("Release/vk_swiftshader_icd.json", bytes("{}"));
             files.put("Release/v8_context_snapshot.bin", bytes("v8"));
+            files.put("Debug/" + cefBinary, bytes("debug cef"));
+            if (platform.isWindows()) files.put("Debug/chrome_elf.dll", bytes("debug elf"));
+            files.put("Debug/v8_context_snapshot.bin", bytes("debug v8"));
             files.put("Resources/icudtl.dat", bytes("icu"));
             files.put("Resources/resources.pak", bytes("resources"));
             files.put("Resources/locales/en-US.pak", bytes("en"));

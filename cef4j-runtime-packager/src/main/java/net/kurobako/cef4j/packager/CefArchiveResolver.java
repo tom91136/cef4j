@@ -39,6 +39,7 @@ final class CefArchiveResolver {
     ResolvedArchive resolve(
             String version,
             CefPlatform platform,
+            CefBuildType buildType,
             Path cacheDirectory,
             Path explicitArchive,
             String expectedSha256,
@@ -47,7 +48,7 @@ final class CefArchiveResolver {
             URI indexUri)
             throws IOException, InterruptedException {
         Files.createDirectories(cacheDirectory);
-        String archiveName = platform.archiveName(version);
+        String archiveName = platform.archiveName(version, buildType);
         Path archive = explicitArchive == null ? cacheDirectory.resolve(archiveName) : explicitArchive;
         String upstreamSha1 = readCachedSha1(cacheDirectory.resolve(archiveName + ".sha1"));
 

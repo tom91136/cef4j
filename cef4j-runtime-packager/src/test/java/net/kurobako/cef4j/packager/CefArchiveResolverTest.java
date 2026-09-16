@@ -24,6 +24,7 @@ class CefArchiveResolverTest {
                 .resolve(
                         VERSION,
                         CefPlatform.LINUX_X86_64,
+                        CefBuildType.RELEASE,
                         temporary.resolve("cache"),
                         archive,
                         sha256,
@@ -44,6 +45,7 @@ class CefArchiveResolverTest {
                         .resolve(
                                 VERSION,
                                 CefPlatform.LINUX_X86_64,
+                                CefBuildType.RELEASE,
                                 temporary.resolve("cache"),
                                 archive,
                                 "0".repeat(64),
@@ -66,6 +68,7 @@ class CefArchiveResolverTest {
                 .resolve(
                         VERSION,
                         platform,
+                        CefBuildType.RELEASE,
                         cache,
                         null,
                         null,

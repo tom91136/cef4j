@@ -75,7 +75,13 @@ public enum CefPlatform {
 
     /** Returns the official minimal-distribution archive name for an exact CEF version. */
     public String archiveName(String cefVersion) {
-        return "cef_binary_" + cefVersion + "_" + cefName + "_minimal.tar.bz2";
+        return archiveName(cefVersion, CefBuildType.RELEASE);
+    }
+
+    /** Returns the upstream archive containing the selected CEF binary configuration. */
+    public String archiveName(String cefVersion, CefBuildType buildType) {
+        String suffix = buildType.usesMinimalArchive() ? "_minimal" : "";
+        return "cef_binary_" + cefVersion + "_" + cefName + suffix + ".tar.bz2";
     }
 
     /** Parses either a public or upstream platform name. */

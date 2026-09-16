@@ -59,6 +59,12 @@ public final class CefPackager implements Runnable {
         @Option(names = "--archive", description = "Use a local archive (valid with one platform only).")
         Path archive;
 
+        @Option(
+                names = "--build-type",
+                defaultValue = "release",
+                description = "CEF runtime configuration: release or debug (default: ${DEFAULT-VALUE}).")
+        String buildType;
+
         @Option(names = "--bridge-directory", description = "Add cef4j native bridge files from this directory.")
         Path bridgeDirectory;
 
@@ -98,6 +104,12 @@ public final class CefPackager implements Runnable {
         @Override
         public Integer call() throws Exception {
             List<CefPlatform> targets = parsePlatforms(platforms);
+            CefBuildType selectedBuild;
+            try {
+                selectedBuild = CefBuildType.parse(buildType);
+            } catch (IllegalArgumentException failure) {
+                throw new CommandLine.ParameterException(new CommandLine(this), failure.getMessage(), failure);
+            }
             if (archive != null && targets.size() != 1) {
                 throw new CommandLine.ParameterException(new CommandLine(this), "--archive requires one platform");
             }
@@ -112,11 +124,15 @@ public final class CefPackager implements Runnable {
                 throw new CommandLine.ParameterException(
                         new CommandLine(this), "--strip is currently supported only for Linux CEF runtimes");
             }
+            if (strip && selectedBuild == CefBuildType.DEBUG) {
+                throw new CommandLine.ParameterException(
+                        new CommandLine(this), "--strip cannot be combined with --build-type=debug");
+            }
             CefArchiveResolver resolver = new CefArchiveResolver();
             CefRuntimePackager packager = new CefRuntimePackager();
             for (CefPlatform platform : targets) {
-                CefArchiveResolver.ResolvedArchive resolved =
-                        resolver.resolve(cefVersion, platform, cache, archive, sha256, offline, baseUri, indexUri);
+                CefArchiveResolver.ResolvedArchive resolved = resolver.resolve(
+                        cefVersion, platform, selectedBuild, cache, archive, sha256, offline, baseUri, indexUri);
                 CefRuntimePackager.Request request = new CefRuntimePackager.Request(
                         cefVersion,
                         platform,
@@ -127,16 +143,25 @@ public final class CefPackager implements Runnable {
                         resolved.sha1,
                         resolved.sha256,
                         resolved.upstreamVerified,
+                        selectedBuild,
                         strip,
                         stripCommand);
                 if (skipIfCurrent && packager.isCurrent(request)) {
                     System.out.printf(
-                            "Reusing packaged CEF %s for %s in %s%n", cefVersion, platform.externalName(), output);
+                            "Reusing packaged CEF %s %s for %s in %s%n",
+                            cefVersion,
+                            selectedBuild.name().toLowerCase(java.util.Locale.ROOT),
+                            platform.externalName(),
+                            output);
                 } else {
                     CefRuntimePackager.Result result = packager.packageArchive(request);
                     System.out.printf(
-                            "Packaged CEF %s for %s: %d files in %s%n",
-                            cefVersion, platform.externalName(), result.files().size(), result.runtimeRoot());
+                            "Packaged CEF %s %s for %s: %d files in %s%n",
+                            cefVersion,
+                            selectedBuild.name().toLowerCase(java.util.Locale.ROOT),
+                            platform.externalName(),
+                            result.files().size(),
+                            result.runtimeRoot());
                 }
                 if (bridgeDirectory != null) stageBridge(bridgeDirectory, output, platform);
             }

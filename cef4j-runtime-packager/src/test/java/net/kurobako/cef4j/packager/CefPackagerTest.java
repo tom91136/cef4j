@@ -55,6 +55,39 @@ class CefPackagerTest {
     }
 
     @Test
+    void packagesDebugRuntimeThroughTheCli() throws Exception {
+        Path archive = TestArchives.create(temporary.resolve("cef-standard.tar.bz2"), CefPlatform.LINUX_X86_64);
+        Path output = temporary.resolve("debug-resources");
+
+        int status = new CommandLine(new CefPackager())
+                .execute(
+                        "package",
+                        "--cef-version=150.0.0+fixture",
+                        "--platform=linux-x86_64",
+                        "--build-type=debug",
+                        "--archive=" + archive,
+                        "--output=" + output);
+
+        assertThat(status).isZero();
+        assertThat(output.resolve("cef-runtime/linux64/libcef.so")).hasContent("debug cef");
+    }
+
+    @Test
+    void rejectsStrippingADebugRuntime() {
+        int status = new CommandLine(new CefPackager())
+                .execute(
+                        "package",
+                        "--cef-version=150.0.0+fixture",
+                        "--platform=linux-x86_64",
+                        "--build-type=debug",
+                        "--strip",
+                        "--archive=" + temporary.resolve("cef-standard.tar.bz2"),
+                        "--output=" + temporary.resolve("debug-resources"));
+
+        assertThat(status).isEqualTo(CommandLine.ExitCode.USAGE);
+    }
+
+    @Test
     void acceptsHostAsAnExplicitFailFastPlatformChoice() throws Exception {
         CefPlatform host = CefPlatform.detectHost(System.getProperty("os.name"), System.getProperty("os.arch"));
         Path archive = TestArchives.create(temporary.resolve("host.tar.bz2"), host);

@@ -78,6 +78,8 @@ public final class CefRuntimePackager {
         }
         if (!Boolean.toString(!request.withoutSwiftShader).equals(properties.getProperty("swiftshader"))) return false;
         if (!Boolean.toString(request.strip).equals(properties.getProperty("stripped", "false"))) return false;
+        if (!request.buildType.name().toLowerCase(Locale.ROOT).equals(properties.getProperty("cef.build")))
+            return false;
         if (request.strip && !request.stripCommand.equals(properties.getProperty("strip.command"))) return false;
         return true;
     }
@@ -87,6 +89,9 @@ public final class CefRuntimePackager {
         Objects.requireNonNull(request, "request");
         if (request.strip && !request.platform.isLinux()) {
             throw new IllegalArgumentException("Stripping is currently supported only for Linux CEF runtimes");
+        }
+        if (request.strip && request.buildType == CefBuildType.DEBUG) {
+            throw new IllegalArgumentException("Debug CEF runtimes must retain their diagnostic symbols");
         }
         Path output = request.output.toAbsolutePath().normalize();
         Files.createDirectories(output);
@@ -144,7 +149,7 @@ public final class CefRuntimePackager {
                     throw new IOException("CEF archive entry has an unsafe size: " + entry.getName());
                 }
                 String source = safeArchivePath(entry.getName());
-                String relative = mapRuntimePath(source, request.platform);
+                String relative = mapRuntimePath(source, request.platform, request.buildType);
                 if (relative == null || isBuildOnly(relative)) continue;
                 if (!requestedLocales.isEmpty() && isLocale(relative, request.platform)) {
                     String locale = localeOf(relative, request.platform);
@@ -187,16 +192,17 @@ public final class CefRuntimePackager {
         return path.toString().replace('\\', '/');
     }
 
-    private static String mapRuntimePath(String source, CefPlatform platform) {
+    private static String mapRuntimePath(String source, CefPlatform platform, CefBuildType buildType) {
         int firstSlash = source.indexOf('/');
         if (firstSlash < 0) return null;
         String relative = source.substring(firstSlash + 1);
         if (relative.equals("LICENSE.txt")) return "CEF-LICENSE.txt";
         if (relative.equals("CREDITS.html")) return "CEF-CREDITS.html";
+        String binaryPrefix = buildType.directory() + "/";
         if (platform.isMacOS()) {
-            return relative.startsWith("Release/" + MAC_FRAMEWORK) ? relative.substring("Release/".length()) : null;
+            return relative.startsWith(binaryPrefix + MAC_FRAMEWORK) ? relative.substring(binaryPrefix.length()) : null;
         }
-        if (relative.startsWith("Release/")) return relative.substring("Release/".length());
+        if (relative.startsWith(binaryPrefix)) return relative.substring(binaryPrefix.length());
         if (relative.startsWith("Resources/")) return relative.substring("Resources/".length());
         return null;
     }
@@ -296,6 +302,7 @@ public final class CefRuntimePackager {
             writer.write("cef.version=" + request.cefVersion + "\n");
             writer.write("cef.api.version=" + stableApiVersion(request.cefVersion) + "\n");
             writer.write("cef.platform=" + request.platform.cefName() + "\n");
+            writer.write("cef.build=" + request.buildType.name().toLowerCase(Locale.ROOT) + "\n");
             writer.write("archive.sha1=" + request.archiveSha1 + "\n");
             writer.write("archive.sha256=" + request.archiveSha256 + "\n");
             writer.write("archive.upstream-verified=" + request.upstreamVerified + "\n");
@@ -406,6 +413,7 @@ public final class CefRuntimePackager {
         final String archiveSha1;
         final String archiveSha256;
         final boolean upstreamVerified;
+        final CefBuildType buildType;
         final boolean strip;
         final String stripCommand;
 
@@ -414,7 +422,7 @@ public final class CefRuntimePackager {
          *
          * @param cefVersion exact upstream CEF version
          * @param platform target platform
-         * @param archive upstream minimal archive
+         * @param archive upstream minimal Release archive
          * @param output generated-resources root
          * @param locales locale families to retain, or an empty list for all
          * @param withoutSwiftShader whether to omit SwiftShader files
@@ -442,11 +450,12 @@ public final class CefRuntimePackager {
                     archiveSha1,
                     archiveSha256,
                     upstreamVerified,
+                    CefBuildType.RELEASE,
                     false,
                     "strip");
         }
 
-        /** Creates packaging inputs, optionally stripping the primary Linux CEF shared library. */
+        /** Creates Release packaging inputs, optionally stripping the primary Linux CEF shared library. */
         public Request(
                 String cefVersion,
                 CefPlatform platform,
@@ -459,6 +468,35 @@ public final class CefRuntimePackager {
                 boolean upstreamVerified,
                 boolean strip,
                 String stripCommand) {
+            this(
+                    cefVersion,
+                    platform,
+                    archive,
+                    output,
+                    locales,
+                    withoutSwiftShader,
+                    archiveSha1,
+                    archiveSha256,
+                    upstreamVerified,
+                    CefBuildType.RELEASE,
+                    strip,
+                    stripCommand);
+        }
+
+        /** Creates packaging inputs for a selected upstream binary configuration. */
+        public Request(
+                String cefVersion,
+                CefPlatform platform,
+                Path archive,
+                Path output,
+                List<String> locales,
+                boolean withoutSwiftShader,
+                String archiveSha1,
+                String archiveSha256,
+                boolean upstreamVerified,
+                CefBuildType buildType,
+                boolean strip,
+                String stripCommand) {
             this.cefVersion = Objects.requireNonNull(cefVersion, "cefVersion");
             this.platform = Objects.requireNonNull(platform, "platform");
             this.archive = Objects.requireNonNull(archive, "archive");
@@ -468,6 +506,7 @@ public final class CefRuntimePackager {
             this.archiveSha1 = Objects.requireNonNull(archiveSha1, "archiveSha1");
             this.archiveSha256 = Objects.requireNonNull(archiveSha256, "archiveSha256");
             this.upstreamVerified = upstreamVerified;
+            this.buildType = Objects.requireNonNull(buildType, "buildType");
             this.strip = strip;
             this.stripCommand = Objects.requireNonNull(stripCommand, "stripCommand");
         }
