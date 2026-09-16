@@ -48,12 +48,12 @@ public final class StubSupervisedServerMain {
     }
 
     private static byte[] awaitReadyRequest(ZMQ.Socket socket) {
-        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
         byte[] request;
-        while ((request = socket.recv(0)) == null && System.nanoTime() < deadline) {
+        while ((request = socket.recv(0)) == null) {
+            // The parent test owns the startup deadline and process cleanup. A shorter fixture deadline can race the
+            // client's ZMTP handshake, which is deliberately allowed up to 30 seconds on constrained hosts.
             // XXX: Replace polling when JeroMQ exposes an interruptible bounded receive primitive.
         }
-        if (request == null) throw new IllegalStateException("runtime readiness request timed out");
         if (request.length != 14 || request[4] != 1) {
             throw new IllegalArgumentException("invalid runtime readiness envelope");
         }
