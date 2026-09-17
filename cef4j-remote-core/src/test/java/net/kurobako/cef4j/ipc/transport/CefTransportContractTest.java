@@ -238,6 +238,13 @@ public abstract class CefTransportContractTest {
     @Test
     void remoteCloseFiresPeerDisconnect() throws Exception {
         try (Pair p = newPair()) {
+            CountDownLatch peerEstablished = new CountDownLatch(1);
+            p.b.onReceive(ignored -> peerEstablished.countDown());
+            p.a.send(buf("establish-peer"));
+            assertThat(peerEstablished.await(30, TimeUnit.SECONDS))
+                    .as("the peer must be established before its disconnect can be observed")
+                    .isTrue();
+
             CountDownLatch peerSawDisconnect = new CountDownLatch(1);
             p.b.onDisconnect(peerSawDisconnect::countDown);
             p.a.close();

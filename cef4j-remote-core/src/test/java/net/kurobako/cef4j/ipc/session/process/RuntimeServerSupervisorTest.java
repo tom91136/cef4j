@@ -95,9 +95,11 @@ final class RuntimeServerSupervisorTest {
             assertThat(registration).isNotNull();
             RuntimeServerSupervisor.Connection first = deadline.await(supervisor.start(), "first generation startup");
             assertThat(poll(generations, deadline, "first generation delivery")).isSameAs(first);
+            // Allow the 5-second reconnect window plus replacement bootstrap on constrained runners. The stub stays
+            // alive for 30 seconds, so this still fails if recovery incorrectly waits for process exit.
             RuntimeServerSupervisor.Connection second = poll(
                     generations,
-                    TestDeadline.after(Duration.ofSeconds(10)),
+                    TestDeadline.after(Duration.ofSeconds(20)),
                     "replacement generation before the disconnected process exits");
             assertThat(second).isNotNull();
             assertThat(second.pid()).isNotEqualTo(first.pid());

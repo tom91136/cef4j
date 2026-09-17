@@ -9,9 +9,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.concurrent.Worker.State;
 import javafx.scene.Scene;
@@ -27,6 +27,7 @@ import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefSchemeOptions;
 import net.kurobako.cef4j.gen.CefSchemeRegistrar;
 import net.kurobako.cef4j.test.DisplayLock;
+import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -136,6 +137,7 @@ class CefWebViewSchemeTest {
 
     @Test
     void classpathUrlLoadsInCefWebView() throws Exception {
+        TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(20));
         CompletableFuture<CefScriptEngine> engineFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
             try {
@@ -155,9 +157,10 @@ class CefWebViewSchemeTest {
             }
         });
 
-        assertThat(resourceOpened.get(5, TimeUnit.SECONDS)).isEqualTo("/cef4j-webview-scheme-test.html");
-        CefScriptEngine eng = engineFuture.get(15, TimeUnit.SECONDS);
-        String bodyText = eng.evaluate("document.body.textContent.trim()").get(5, TimeUnit.SECONDS);
+        assertThat(deadline.await(resourceOpened, "classpath resource request"))
+                .isEqualTo("/cef4j-webview-scheme-test.html");
+        CefScriptEngine eng = deadline.await(engineFuture, "classpath page load");
+        String bodyText = deadline.await(eng.evaluate("document.body.textContent.trim()"), "page body evaluation");
         assertThat(bodyText).isEqualTo("\"webview scheme handler works\"");
     }
 }

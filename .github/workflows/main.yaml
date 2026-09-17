@@ -350,6 +350,11 @@ jobs:
             exit 1
           fi
 
+      - name: Collect native crash diagnostics
+        if: failure()
+        shell: bash
+        run: bash .github/ci/collect-native-crash-diagnostics.sh
+
       - name: Upload test reports on failure
         if: failure()
         uses: actions/upload-artifact@v7
@@ -358,6 +363,7 @@ jobs:
           path: |
             **/target/surefire-reports/**
             **/hs_err_pid*.log
+            target/native-crash-diagnostics/**
           if-no-files-found: ignore
           retention-days: 7
 

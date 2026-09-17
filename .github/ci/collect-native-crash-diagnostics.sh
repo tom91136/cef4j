@@ -7,6 +7,25 @@ mkdir -p "${output}"
 found=false
 java_executable=$(command -v java || true)
 workspace=${GITHUB_WORKSPACE:-${PWD}}
+os_name=${CEF4J_OS_NAME:-${RUNNER_OS:-$(uname -s)}}
+
+if [ "${os_name}" = "macOS" ] || [ "${os_name}" = "Darwin" ]; then
+    reports=${CEF4J_DIAGNOSTIC_REPORTS_DIR:-${HOME}/Library/Logs/DiagnosticReports}
+    macos_output="${output}/macos-diagnostic-reports"
+    report_count=0
+    if [ -d "${reports}" ]; then
+        mkdir -p "${macos_output}"
+        while IFS= read -r -d '' report; do
+            found=true
+            report_count=$((report_count + 1))
+            cp "${report}" "${macos_output}/${report_count}-$(basename "${report}")"
+        done < <(find "${reports}" -type f \( -name 'java*.ips' -o -name 'java*.crash' \) -mmin -360 -print0)
+    fi
+    if [ "${report_count}" -eq 0 ]; then
+        mkdir -p "${macos_output}"
+        echo "No recent Java macOS diagnostic reports were found" > "${macos_output}/README.txt"
+    fi
+fi
 
 core_index=0
 while IFS= read -r -d '' core; do
