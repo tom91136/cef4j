@@ -47,65 +47,12 @@ public final class ZmqTransport implements CefTransport {
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
     private static final class SharedContext {
-        private static final Object LOCK = new Object();
-
-        @Nullable
-        private static ZContext context;
-
-        private static int references;
-        private static long generation;
+        // JeroMQ is designed around one context per process. In particular, terminating a context while its I/O
+        // thread is still draining monitor and socket termination commands can hit zeromq/jeromq#983. Keep the
+        // bounded daemon infrastructure alive instead of churning contexts whenever transports briefly quiesce.
+        private static final ZContext INSTANCE = new ZContext(1);
 
         private SharedContext() {}
-
-        private static Lease acquire() {
-            synchronized (LOCK) {
-                if (context == null) {
-                    context = new ZContext(1);
-                    generation++;
-                }
-                references++;
-                return new Lease(context);
-            }
-        }
-
-        private static long generation() {
-            synchronized (LOCK) {
-                return generation;
-            }
-        }
-
-        private static void release(ZContext acquired) {
-            synchronized (LOCK) {
-                if (context != acquired || references <= 0) {
-                    throw new IllegalStateException("JeroMQ context lease mismatch");
-                }
-                references--;
-                if (references == 0) {
-                    context = null;
-                    acquired.close();
-                }
-            }
-        }
-
-        private static final class Lease implements AutoCloseable {
-            private final ZContext context;
-            private boolean closed;
-
-            private Lease(ZContext context) {
-                this.context = context;
-            }
-
-            private ZContext context() {
-                return context;
-            }
-
-            @Override
-            public void close() {
-                if (closed) return;
-                closed = true;
-                release(context);
-            }
-        }
     }
 
     private volatile String endpoint;
@@ -183,8 +130,8 @@ public final class ZmqTransport implements CefTransport {
         return (int) millis;
     }
 
-    static long sharedContextGeneration() {
-        return SharedContext.generation();
+    static Object sharedContextIdentity() {
+        return SharedContext.INSTANCE;
     }
 
     /** Resolved endpoint (for {@link #bind} this is the OS-assigned port; for {@link #connect} it is the input). */
@@ -231,12 +178,11 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
-        SharedContext.Lease lease = SharedContext.acquire();
+        ZContext context = SharedContext.INSTANCE;
         ZMQ.Socket main = null;
         ZMQ.Poller poller = null;
         try {
-            ZContext ctx = lease.context();
-            main = ctx.createSocket(SocketType.DEALER);
+            main = context.createSocket(SocketType.DEALER);
             configureLiveness(main, handshakeTimeoutMs);
 
             int eventMask = ZMQ.EVENT_CONNECTED
@@ -255,7 +201,7 @@ public final class ZmqTransport implements CefTransport {
                 main.connect(requestedEndpoint);
             }
 
-            poller = ctx.createPoller(1);
+            poller = context.createPoller(1);
             poller.register(main, ZMQ.Poller.POLLIN);
             setup.complete(endpoint);
             LOG.debug("worker on {} started", endpoint);
@@ -291,8 +237,6 @@ public final class ZmqTransport implements CefTransport {
                     }
                 } catch (RuntimeException e) {
                     LOG.debug("socket close on {} threw {}", endpoint, e.toString());
-                } finally {
-                    lease.close();
                 }
             }
             LOG.debug(

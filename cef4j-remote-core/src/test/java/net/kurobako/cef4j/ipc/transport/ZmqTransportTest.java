@@ -87,18 +87,18 @@ final class ZmqTransportTest extends CefTransportContractTest {
     }
 
     @Test
-    void startsFreshJeroMqContextAfterQuiescence() {
-        long firstGeneration;
+    void reusesJeroMqContextAfterTransportQuiescence() {
+        Object contextIdentity;
         try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
                 ZmqTransport client = ZmqTransport.connect(server.endpoint())) {
             assertThat(client.endpoint()).isEqualTo(server.endpoint());
-            firstGeneration = ZmqTransport.sharedContextGeneration();
+            contextIdentity = ZmqTransport.sharedContextIdentity();
         }
 
         try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
                 ZmqTransport client = ZmqTransport.connect(server.endpoint())) {
             assertThat(client.endpoint()).isEqualTo(server.endpoint());
-            assertThat(ZmqTransport.sharedContextGeneration()).isGreaterThan(firstGeneration);
+            assertThat(ZmqTransport.sharedContextIdentity()).isSameAs(contextIdentity);
         }
     }
 

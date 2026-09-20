@@ -3,7 +3,9 @@ package net.kurobako.cef4j.ipc.frame;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -160,27 +162,65 @@ class MjpegHttpServerTest {
                 Socket socket = new Socket(
                         server.endpoint().getHost(), server.endpoint().getPort())) {
             server.attach(frames);
-            socket.setSoTimeout(2000);
+            socket.setSoTimeout(10_000);
             OutputStream out = socket.getOutputStream();
             out.write(("GET " + server.endpoint().getPath() + " HTTP/1.1\r\nHost: "
                             + server.endpoint().getHost() + "\r\nConnection: close\r\n\r\n")
                     .getBytes(StandardCharsets.UTF_8));
             out.flush();
-            assertThat(new java.util.concurrent.CountDownLatch(1).await(300, TimeUnit.MILLISECONDS))
-                    .isFalse();
-            frames.emit(new byte[] {0, 0, 0, (byte) 255});
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-            assertThat(reader.readLine()).contains("200");
+            frames.emit(1, new byte[] {0, 0, 0, (byte) 255});
+            InputStream input = socket.getInputStream();
+            assertThat(readAsciiLine(input)).contains("200");
             String header;
             do {
-                header = reader.readLine();
-                assertThat(header).isNotNull();
+                header = readAsciiLine(input);
             } while (!header.isEmpty());
-            String firstBodyLine = reader.readLine();
-            if (firstBodyLine.matches("[0-9a-fA-F]+")) firstBodyLine = reader.readLine();
-            assertThat(firstBodyLine).isEqualTo("--cef4j-frame");
+            assertMjpegPart(input, 1);
+
+            // The first frame proves that the viewer is registered before it remains idle for longer than the
+            // configured stall timeout. An idle viewer has no write in progress and must remain connected.
+            assertThat(new java.util.concurrent.CountDownLatch(1).await(300, TimeUnit.MILLISECONDS))
+                    .isFalse();
+            frames.emit(2, new byte[] {0, 0, 0, (byte) 255});
+            assertMjpegPart(input, 2);
         }
+    }
+
+    private static void assertMjpegPart(InputStream input, long expectedSequence) throws IOException {
+        String line;
+        do {
+            line = readAsciiLine(input);
+        } while (line.isEmpty());
+        if (line.matches("[0-9a-fA-F]+")) line = readAsciiLine(input);
+        assertThat(line).isEqualTo("--cef4j-frame");
+
+        int contentLength = -1;
+        String sequence = null;
+        while (true) {
+            line = readAsciiLine(input);
+            if (line.isEmpty()) break;
+            if (line.startsWith("Content-Length: ")) {
+                contentLength = Integer.parseInt(line.substring("Content-Length: ".length()));
+            } else if (line.startsWith("X-Cef4j-Sequence: ")) {
+                sequence = line.substring("X-Cef4j-Sequence: ".length());
+            }
+        }
+        assertThat(contentLength).isPositive();
+        assertThat(sequence).isEqualTo(Long.toString(expectedSequence));
+        assertThat(input.readNBytes(contentLength)).hasSize(contentLength);
+        assertThat(input.read()).isEqualTo('\r');
+        assertThat(input.read()).isEqualTo('\n');
+    }
+
+    private static String readAsciiLine(InputStream input) throws IOException {
+        ByteArrayOutputStream line = new ByteArrayOutputStream();
+        while (true) {
+            int value = input.read();
+            if (value < 0) throw new IOException("unexpected end of MJPEG response");
+            if (value == '\n') break;
+            if (value != '\r') line.write(value);
+        }
+        return line.toString(StandardCharsets.US_ASCII);
     }
 
     private static int statusCode(URI uri, @Nullable String token) throws IOException {
