@@ -34,8 +34,11 @@ class WebViewRuntimeInputCompatTest extends WebViewRuntimeCompatTestBase {
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
         assertThat(waitUntilOnFx(() -> "0|".equals(title(view)), 3_000)).isTrue();
-        assertThat(waitForRenderedColor(view, 120, 120, INPUT_BACKGROUND, 10_000))
-                .as("the input surface should be rendered before clicking")
+        boolean rendered = waitForRenderedColor(view, 120, 120, INPUT_BACKGROUND, 10_000);
+        assertThat(rendered)
+                .as(
+                        "the input surface should be rendered before clicking: %s",
+                        rendered ? "" : renderedColorFailure(view, 120, 120, INPUT_BACKGROUND))
                 .isTrue();
 
         for (int i = 1; i <= 4; i++) {

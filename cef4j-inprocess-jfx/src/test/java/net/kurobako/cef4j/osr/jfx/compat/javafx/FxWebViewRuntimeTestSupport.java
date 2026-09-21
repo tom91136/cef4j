@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -54,6 +55,7 @@ import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefThreadId;
+import net.kurobako.cef4j.osr.jfx.CefWebViewTestDiagnostics;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.UncaughtExceptionTracker;
 import org.junit.jupiter.api.Assumptions;
@@ -67,6 +69,7 @@ final class FxWebViewRuntimeTestSupport {
 
     private static final CopyOnWriteArrayList<Stage> STAGES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<WebView> VIEWS = new CopyOnWriteArrayList<>();
+    private static final ArrayDeque<String> STAGE_EVENTS = new ArrayDeque<>();
     private static final UncaughtExceptionTracker JAVA_FX_FAILURES = new UncaughtExceptionTracker();
 
     private FxWebViewRuntimeTestSupport() {}
@@ -82,7 +85,10 @@ final class FxWebViewRuntimeTestSupport {
         try {
             Platform.startup(() -> {
                 try {
-                    Thread.currentThread().setUncaughtExceptionHandler(JAVA_FX_FAILURES);
+                    Thread.currentThread().setUncaughtExceptionHandler((thread, failure) -> {
+                        failure.addSuppressed(new AssertionError("Recent JavaFX stage events: " + stageEvents()));
+                        JAVA_FX_FAILURES.uncaughtException(thread, failure);
+                    });
                     Platform.setImplicitExit(false);
                     started = true;
                 } catch (Throwable t) {
@@ -244,8 +250,13 @@ final class FxWebViewRuntimeTestSupport {
                     WebView view = trackWebView(new WebView());
                     Stage stage = new Stage();
                     stage.setScene(new Scene(new StackPane(view), 800, 600));
-                    stage.setOnHidden(event -> STAGES.remove(stage));
+                    recordStageEvent("created", stage);
+                    stage.setOnHidden(event -> {
+                        recordStageEvent("hidden", stage);
+                        STAGES.remove(stage);
+                    });
                     stage.show();
+                    recordStageEvent("shown", stage);
                     stage.toFront();
                     stage.requestFocus();
                     view.requestFocus();
@@ -288,6 +299,7 @@ final class FxWebViewRuntimeTestSupport {
             List<Window> windows = new ArrayList<>(Window.getWindows());
             for (Window window : windows) {
                 if (window.isShowing()) {
+                    if (window instanceof Stage) recordStageEvent("hiding", (Stage) window);
                     window.hide();
                 }
             }
@@ -297,6 +309,20 @@ final class FxWebViewRuntimeTestSupport {
             STAGES.clear();
             VIEWS.clear();
         });
+    }
+
+    private static void recordStageEvent(String action, Stage stage) {
+        synchronized (STAGE_EVENTS) {
+            if (STAGE_EVENTS.size() == 12) STAGE_EVENTS.removeFirst();
+            STAGE_EVENTS.addLast(action + " stage@" + System.identityHashCode(stage) + " showing=" + stage.isShowing()
+                    + " focused=" + stage.isFocused());
+        }
+    }
+
+    private static String stageEvents() {
+        synchronized (STAGE_EVENTS) {
+            return String.join(" -> ", STAGE_EVENTS);
+        }
     }
 
     static WebView trackWebView(WebView view) {
@@ -334,6 +360,19 @@ final class FxWebViewRuntimeTestSupport {
                 () -> expected.equals(
                         view.snapshot(parameters, null).getPixelReader().getColor(0, 0)),
                 timeoutMillis);
+    }
+
+    static String renderedColorFailure(WebView view, double x, double y, Color expected) throws Exception {
+        return Objects.requireNonNull(onFxThread(() -> {
+            SnapshotParameters parameters = new SnapshotParameters();
+            parameters.setViewport(new Rectangle2D(x, y, 1, 1));
+            Color actual = view.snapshot(parameters, null).getPixelReader().getColor(0, 0);
+            Window window = view.getScene() == null ? null : view.getScene().getWindow();
+            return "expected=" + expected + ", actual=" + actual + ", view=" + view.getWidth() + "x"
+                    + view.getHeight() + ", windowShowing=" + (window != null && window.isShowing())
+                    + ", loadState=" + view.getEngine().getLoadWorker().getState() + ", title="
+                    + view.getEngine().getTitle() + ", " + CefWebViewTestDiagnostics.describe(view);
+        }));
     }
 
     static boolean waitForWorkerState(WebEngine engine, Worker.State state, long timeoutMillis) throws Exception {
