@@ -53,6 +53,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
     }
 
     @Test
+    @SuppressWarnings("try") // This test must close the server before the client drains its first frame.
     void detectsDisconnectQueuedBeforeFirstFrameIsDrained() throws Exception {
         TestGate beforeFirstReceive = new TestGate();
         CountDownLatch requestReceived = new CountDownLatch(1);

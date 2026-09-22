@@ -13,6 +13,17 @@ import org.w3c.dom.NodeList;
 
 final class BuildConfigurationConsistencyTest {
     @Test
+    void junitTimeoutsCaptureThreadDumps() throws Exception {
+        Element reactor = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(repositoryRoot().resolve("pom.xml").toFile())
+                .getDocumentElement();
+        assertThat(firstText(reactor, "junit.jupiter.execution.timeout.threaddump.enabled"))
+                .as("a timed-out CEF startup must leave a JVM thread dump in the test log")
+                .isEqualTo("true");
+    }
+
+    @Test
     void javaModulesUsingSharedCompilerDeclareCodePolicyDependency() throws Exception {
         Path root = repositoryRoot();
         Element reactor = DocumentBuilderFactory.newInstance()
