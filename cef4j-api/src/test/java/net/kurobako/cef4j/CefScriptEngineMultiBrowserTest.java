@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.TestDeadline;
@@ -45,14 +44,13 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
         engineA = new CefScriptEngine(
                 () -> browserA != null ? browserA.getMainFrame().orElse(null) : null);
-        AtomicInteger loadCountA = new AtomicInteger();
+        String dataUrlA = dataUrl("<html><body>A</body></html>");
         CountDownLatch createdA = new CountDownLatch(1);
         CountDownLatch loadedA = new CountDownLatch(1);
-        CefClient clientA = makeClient(engineA, createdA, loadCountA, loadedA, closedA, 2);
+        CefClient clientA = makeClient(engineA, createdA, loadedA, closedA, dataUrlA);
         browserA = createWindowlessBrowser(clientA, "about:blank");
         assertThat(pumpUntil(createdA, 10_000)).as("browser A created").isTrue();
 
-        String dataUrlA = dataUrl("<html><body>A</body></html>");
         try (CefFrame frame = browserA.getMainFrame().orElseThrow()) {
             frame.loadUrl(dataUrlA);
         }
@@ -60,14 +58,13 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
         engineB = new CefScriptEngine(
                 () -> browserB != null ? browserB.getMainFrame().orElse(null) : null);
-        AtomicInteger loadCountB = new AtomicInteger();
+        String dataUrlB = dataUrl("<html><body>B</body></html>");
         CountDownLatch createdB = new CountDownLatch(1);
         CountDownLatch loadedB = new CountDownLatch(1);
-        CefClient clientB = makeClient(engineB, createdB, loadCountB, loadedB, closedB, 2);
+        CefClient clientB = makeClient(engineB, createdB, loadedB, closedB, dataUrlB);
         browserB = createWindowlessBrowser(clientB, "about:blank");
         assertThat(pumpUntil(createdB, 10_000)).as("browser B created").isTrue();
 
-        String dataUrlB = dataUrl("<html><body>B</body></html>");
         try (CefFrame frame = browserB.getMainFrame().orElseThrow()) {
             frame.loadUrl(dataUrlB);
         }
@@ -180,10 +177,9 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     private static CefClient makeClient(
             CefScriptEngine engine,
             CountDownLatch created,
-            AtomicInteger loadCount,
             CountDownLatch loaded,
             CountDownLatch closed,
-            int targetLoadCount) {
+            String expectedUrl) {
         return new CefClient() {
             @Override
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
@@ -205,7 +201,10 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
                 return Optional.of(new CefLoadHandler() {
                     @Override
                     public void onLoadEnd(@Nullable CefBrowser b, @Nullable CefFrame frame, int httpStatusCode) {
-                        if (loadCount.incrementAndGet() >= targetLoadCount) {
+                        // The initial about:blank load is not guaranteed to produce a separate callback.
+                        if (frame != null
+                                && frame.isMain()
+                                && expectedUrl.equals(frame.getUrl().orElse(null))) {
                             loaded.countDown();
                         }
                     }

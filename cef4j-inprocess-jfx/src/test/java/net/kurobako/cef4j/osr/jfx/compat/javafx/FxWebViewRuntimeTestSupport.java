@@ -159,8 +159,21 @@ final class FxWebViewRuntimeTestSupport {
         }
         Thread applicationThread = javaFxApplicationThread();
         if (applicationThread != null && applicationThread.isAlive()) {
-            throw new IllegalStateException("JavaFX application thread did not stop after Platform.exit()");
+            throw new IllegalStateException("JavaFX application thread did not stop after Platform.exit(); CEF="
+                    + Cef.INSTANCE.state() + ", interrupted="
+                    + Thread.currentThread().isInterrupted() + ", "
+                    + describeJavaFxThread());
         }
+    }
+
+    private static String describeJavaFxThread() {
+        Thread thread = javaFxApplicationThread();
+        if (thread == null) return "JavaFX thread absent";
+        StringBuilder description = new StringBuilder("JavaFX thread state=").append(thread.getState());
+        for (StackTraceElement frame : thread.getStackTrace()) {
+            description.append("\n\tat ").append(frame);
+        }
+        return description.toString();
     }
 
     @Nullable
@@ -228,7 +241,7 @@ final class FxWebViewRuntimeTestSupport {
             }
         });
         if (!latch.await(10, TimeUnit.SECONDS)) {
-            throw new TimeoutException("Timed out waiting for JavaFX task");
+            throw new TimeoutException("Timed out waiting for JavaFX task; " + describeJavaFxThread());
         }
         if (error.get() != null) {
             throw new RuntimeException(error.get());
@@ -297,6 +310,12 @@ final class FxWebViewRuntimeTestSupport {
         }
         onFxThread(() -> {
             List<Window> windows = new ArrayList<>(Window.getWindows());
+            // JavaFX 13 may clear GlassScene.scenePaintListener during hide while an earlier render job
+            // still calls frameRendered(). A synchronous snapshot drains the renderer queue before disposal.
+            for (Window window : windows) {
+                if (window.isShowing() && window.getScene() != null)
+                    window.getScene().snapshot(null);
+            }
             for (Window window : windows) {
                 if (window.isShowing()) {
                     if (window instanceof Stage) recordStageEvent("hiding", (Stage) window);
@@ -371,7 +390,7 @@ final class FxWebViewRuntimeTestSupport {
             return "expected=" + expected + ", actual=" + actual + ", view=" + view.getWidth() + "x"
                     + view.getHeight() + ", windowShowing=" + (window != null && window.isShowing())
                     + ", loadState=" + view.getEngine().getLoadWorker().getState() + ", title="
-                    + view.getEngine().getTitle() + ", " + CefWebViewTestDiagnostics.describe(view);
+                    + view.getEngine().getTitle() + ", " + CefWebViewTestDiagnostics.describe(view, x, y);
         }));
     }
 
