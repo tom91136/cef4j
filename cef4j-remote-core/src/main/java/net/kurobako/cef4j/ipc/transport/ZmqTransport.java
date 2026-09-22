@@ -61,6 +61,10 @@ public final class ZmqTransport implements CefTransport {
     private final int handshakeTimeoutMs;
     private final long handshakeTimeoutNanos;
     private final long reconnectTimeoutNanos;
+
+    @Nullable
+    private final WorkerProbe workerProbe;
+
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>(MAX_QUEUED_FRAMES);
     private final PendingFrames pending = new PendingFrames();
@@ -77,6 +81,7 @@ public final class ZmqTransport implements CefTransport {
     private boolean tcpConnected = false;
     private boolean zmtpHandshaken = false;
     private boolean peerEstablished = false;
+    private boolean disconnectBeforeFirstFrame = false;
     private long handshakeDeadlineNanos = 0;
     private long reconnectDeadlineNanos = 0;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
@@ -112,6 +117,23 @@ public final class ZmqTransport implements CefTransport {
                 false, endpoint, HANDSHAKE_TIMEOUT_MS, timeoutMillis(reconnectTimeout), reconnectContinuity);
     }
 
+    static ZmqTransport connect(
+            String endpoint, BooleanSupplier reconnectContinuity, Duration reconnectTimeout, WorkerProbe workerProbe) {
+        return new ZmqTransport(
+                false,
+                endpoint,
+                HANDSHAKE_TIMEOUT_MS,
+                timeoutMillis(reconnectTimeout),
+                reconnectContinuity,
+                workerProbe);
+    }
+
+    interface WorkerProbe {
+        void beforeFirstReceive();
+
+        void onMonitorEvent(ZMonitor.Event event);
+    }
+
     static ZmqTransport connect(String endpoint, int handshakeTimeoutMs) {
         return new ZmqTransport(false, endpoint, handshakeTimeoutMs, handshakeTimeoutMs, () -> false);
     }
@@ -145,11 +167,22 @@ public final class ZmqTransport implements CefTransport {
             int handshakeTimeoutMs,
             int reconnectTimeoutMs,
             BooleanSupplier reconnectContinuity) {
+        this(isBind, requestedEndpoint, handshakeTimeoutMs, reconnectTimeoutMs, reconnectContinuity, null);
+    }
+
+    private ZmqTransport(
+            boolean isBind,
+            String requestedEndpoint,
+            int handshakeTimeoutMs,
+            int reconnectTimeoutMs,
+            BooleanSupplier reconnectContinuity,
+            @Nullable WorkerProbe workerProbe) {
         this.runtimeServerClient = !isBind;
         this.reconnectContinuity = java.util.Objects.requireNonNull(reconnectContinuity, "reconnectContinuity");
         this.handshakeTimeoutMs = handshakeTimeoutMs;
         this.handshakeTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(handshakeTimeoutMs);
         this.reconnectTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(reconnectTimeoutMs);
+        this.workerProbe = workerProbe;
         this.endpoint = requestedEndpoint;
         int id = INSTANCE.incrementAndGet();
         CompletableFuture<String> setup = new CompletableFuture<>();
@@ -190,7 +223,13 @@ public final class ZmqTransport implements CefTransport {
                     | ZMQ.EVENT_DISCONNECTED
                     | ZMQ.EVENT_HANDSHAKE_PROTOCOL
                     | ZMQ.HANDSHAKE_SUCCEEDED;
-            if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
+            if (!main.setEventHook(
+                    event -> {
+                        ZMonitor.Event monitored = event.getEvent();
+                        monitorEvents.add(monitored);
+                        if (workerProbe != null) workerProbe.onMonitorEvent(monitored);
+                    },
+                    eventMask)) {
                 throw new IllegalStateException("Unable to monitor ZeroMQ transport " + requestedEndpoint);
             }
 
@@ -205,14 +244,23 @@ public final class ZmqTransport implements CefTransport {
             poller.register(main, ZMQ.Poller.POLLIN);
             setup.complete(endpoint);
             LOG.debug("worker on {} started", endpoint);
+            boolean probedFirstReceive = false;
             while (!closed) {
                 int n = poller.poll(POLL_TIMEOUT_MS);
                 if (n < 0) break;
+                if (!probedFirstReceive && workerProbe != null && runtimeServerClient && poller.pollin(0)) {
+                    probedFirstReceive = true;
+                    workerProbe.beforeFirstReceive();
+                }
                 if (drainMonitor()) break;
                 if (poller.pollin(0) && drainIncoming(main)) break;
                 restartStalledHandshake(main);
                 if (!outbound.isEmpty()) drainOutbound(main);
                 dispatchPendingIfReady();
+                if (disconnectBeforeFirstFrame && peerEstablished) {
+                    disconnectBeforeFirstFrame = false;
+                    beginReconnectGrace();
+                }
             }
         } catch (ZMQException e) {
             if (!setup.completeExceptionally(e)) {
@@ -306,6 +354,7 @@ public final class ZmqTransport implements CefTransport {
             LOG.debug("monitor on {} received {}", endpoint, event);
             if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
                 tcpConnected = true;
+                disconnectBeforeFirstFrame = false;
                 if (!zmtpHandshaken && handshakeDeadlineNanos == 0) {
                     handshakeDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
                 }
@@ -313,6 +362,7 @@ public final class ZmqTransport implements CefTransport {
                 if (!acceptReconnection()) continue;
                 zmtpHandshaken = true;
                 peerEstablished = true;
+                disconnectBeforeFirstFrame = false;
                 reconnectDeadlineNanos = 0;
                 handshakeDeadlineNanos = 0;
             } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL) {
@@ -323,6 +373,9 @@ public final class ZmqTransport implements CefTransport {
                 zmtpHandshaken = false;
                 handshakeDeadlineNanos = 0;
                 if (runtimeServerClient && !peerEstablished) {
+                    // A queued ready frame may belong to the pipe that just closed. If it does, start the
+                    // reconnect deadline once that frame establishes the peer instead of losing the disconnect.
+                    disconnectBeforeFirstFrame = true;
                     continue;
                 }
                 beginReconnectGrace();

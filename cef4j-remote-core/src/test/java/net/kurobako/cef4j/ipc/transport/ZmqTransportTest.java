@@ -18,10 +18,12 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
+import net.kurobako.cef4j.test.TestGate;
 import org.junit.jupiter.api.Test;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMonitor;
 
 final class ZmqTransportTest extends CefTransportContractTest {
     @Override
@@ -47,6 +49,50 @@ final class ZmqTransportTest extends CefTransportContractTest {
             assertThat(socket.getHandshakeIvl())
                     .as("an unestablished pipe must recover before the five-minute SessionReady deadline")
                     .isLessThan(300_000);
+        }
+    }
+
+    @Test
+    void detectsDisconnectQueuedBeforeFirstFrameIsDrained() throws Exception {
+        TestGate beforeFirstReceive = new TestGate();
+        CountDownLatch requestReceived = new CountDownLatch(1);
+        CountDownLatch firstFrameReceived = new CountDownLatch(1);
+        CountDownLatch disconnectQueued = new CountDownLatch(1);
+        CountDownLatch disconnected = new CountDownLatch(1);
+        try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
+                ZmqTransport client = ZmqTransport.connect(
+                        server.endpoint(), () -> true, Duration.ofMillis(250), new ZmqTransport.WorkerProbe() {
+                            @Override
+                            public void beforeFirstReceive() {
+                                beforeFirstReceive.enter();
+                            }
+
+                            @Override
+                            public void onMonitorEvent(ZMonitor.Event event) {
+                                if (event == ZMonitor.Event.DISCONNECTED) disconnectQueued.countDown();
+                            }
+                        })) {
+            try {
+                server.onReceive(frame -> requestReceived.countDown());
+                client.onReceive(frame -> firstFrameReceived.countDown());
+                client.onDisconnect(disconnected::countDown);
+                client.send(ByteBuffer.wrap(new byte[] {1}));
+                assertThat(requestReceived.await(5, TimeUnit.SECONDS)).isTrue();
+                server.send(ByteBuffer.wrap(new byte[] {2}));
+                beforeFirstReceive.awaitEntered(
+                        TestDeadline.after(Duration.ofSeconds(5)), "first reply waiting in the ZeroMQ poller");
+                server.close();
+                assertThat(disconnectQueued.await(5, TimeUnit.SECONDS))
+                        .as("peer disconnect must be queued before the first reply is drained")
+                        .isTrue();
+                beforeFirstReceive.release();
+                assertThat(firstFrameReceived.await(5, TimeUnit.SECONDS)).isTrue();
+                assertThat(disconnected.await(5, TimeUnit.SECONDS))
+                        .as("an early disconnect must start the reconnect deadline after first frame")
+                        .isTrue();
+            } finally {
+                beforeFirstReceive.release();
+            }
         }
     }
 
