@@ -132,6 +132,8 @@ public final class ZmqTransport implements CefTransport {
         void beforeFirstReceive();
 
         void onMonitorEvent(ZMonitor.Event event);
+
+        default void afterMonitorStopped() {}
     }
 
     static ZmqTransport connect(String endpoint, int handshakeTimeoutMs) {
@@ -274,6 +276,14 @@ public final class ZmqTransport implements CefTransport {
             if (setup.isDone() && !setup.isCompletedExceptionally() && !closed) {
                 disconnected = true;
                 fireDisconnectIfReady();
+            }
+            if (main != null) {
+                try {
+                    // Stop monitor callbacks before poller/socket teardown starts JeroMQ's asynchronous termination.
+                    if (main.setEventHook(null, 0) && workerProbe != null) workerProbe.afterMonitorStopped();
+                } catch (RuntimeException e) {
+                    LOG.debug("monitor close on {} threw {}", endpoint, e.toString());
+                }
             }
             try {
                 if (poller != null) poller.close();

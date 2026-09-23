@@ -134,6 +134,34 @@ final class ZmqTransportTest extends CefTransportContractTest {
     }
 
     @Test
+    void unregistersMonitorBeforeSocketClose() throws Exception {
+        CountDownLatch monitorStopped = new CountDownLatch(1);
+        try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*")) {
+            ZmqTransport client = ZmqTransport.connect(
+                    server.endpoint(), () -> false, Duration.ofSeconds(1), new ZmqTransport.WorkerProbe() {
+                        @Override
+                        public void beforeFirstReceive() {}
+
+                        @Override
+                        public void onMonitorEvent(ZMonitor.Event event) {}
+
+                        @Override
+                        public void afterMonitorStopped() {
+                            monitorStopped.countDown();
+                        }
+                    });
+            try {
+                client.close();
+                assertThat(monitorStopped.await(1, TimeUnit.SECONDS))
+                        .as("the event hook must be detached before JeroMQ starts asynchronous socket termination")
+                        .isTrue();
+            } finally {
+                client.close();
+            }
+        }
+    }
+
+    @Test
     void reusesJeroMqContextAfterTransportQuiescence() {
         Object contextIdentity;
         try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");

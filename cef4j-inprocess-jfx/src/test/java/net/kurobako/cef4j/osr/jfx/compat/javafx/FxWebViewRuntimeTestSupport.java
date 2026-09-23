@@ -289,7 +289,7 @@ final class FxWebViewRuntimeTestSupport {
         });
         if (isCefCompatHarness()) {
             int cefApi = SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE);
-            if (VIEWS.size() > 1 && (cefApi == 130 || cefApi == 135)) drainPopupCreationQueue();
+            if (VIEWS.size() > 1 && requiresPopupCreationDrain(cefApi)) drainPopupCreationQueue();
             // XXX: CEF 144-150 can destroy an opener while its appended popup is still in CreateBrowser; remove reverse
             // closure when the minimum CEF is above 150 and the multi-popup teardown regression passes in creation
             // order.
@@ -687,7 +687,7 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     private static void drainPopupCreationQueue() throws Exception {
-        // CEF 130/135 can publish popup resize state before Alloy's AddNewContents has adopted the popup. Closing
+        // CEF 125/130/135 can publish popup resize state before Alloy's AddNewContents has adopted the popup. Closing
         // immediately in teardown then clears its platform delegate underneath AddNewContents. CEF exposes no
         // completion callback for that internal handoff, so leave one UI-loop grace period before releasing views.
         CompletableFuture<Void> drained = new CompletableFuture<>();
@@ -702,6 +702,10 @@ final class FxWebViewRuntimeTestSupport {
                 1_000);
         if (!posted) throw new IllegalStateException("CEF UI queue rejected popup creation barrier");
         TestDeadline.after(java.time.Duration.ofSeconds(5)).await(drained, "drain CEF popup creation queue");
+    }
+
+    static boolean requiresPopupCreationDrain(int cefApi) {
+        return cefApi == 125 || cefApi == 130 || cefApi == 135;
     }
 
     @Nullable
