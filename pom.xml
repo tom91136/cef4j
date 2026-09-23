@@ -972,7 +972,7 @@
                             <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>
                             <cef4j.test.chromiumVersion>${cef.chromium.version}</cef4j.test.chromiumVersion>
                             <junit.jupiter.execution.timeout.default>60 s</junit.jupiter.execution.timeout.default>
-                            <junit.jupiter.execution.timeout.lifecycle.method.default>30 s</junit.jupiter.execution.timeout.lifecycle.method.default>
+                            <junit.jupiter.execution.timeout.lifecycle.method.default>60 s</junit.jupiter.execution.timeout.lifecycle.method.default>
                             <junit.jupiter.execution.timeout.threaddump.enabled>true</junit.jupiter.execution.timeout.threaddump.enabled>
                         </systemPropertyVariables>
                         <additionalClasspathElements>

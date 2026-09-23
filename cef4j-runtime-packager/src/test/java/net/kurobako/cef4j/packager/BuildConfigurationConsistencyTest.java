@@ -24,6 +24,22 @@ final class BuildConfigurationConsistencyTest {
     }
 
     @Test
+    void cefLifecycleTimeoutAllowsForConstrainedRunnerWarmup() throws Exception {
+        Path root = repositoryRoot();
+        Element reactor = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(root.resolve("pom.xml").toFile())
+                .getDocumentElement();
+        assertThat(firstText(reactor, "junit.jupiter.execution.timeout.lifecycle.method.default"))
+                .as("CEF startup and the first browser creation must share a realistic lifecycle budget")
+                .isEqualTo("60 s");
+
+        String javaFxTimeout =
+                Files.readString(root.resolve("cef4j-inprocess-jfx/src/test/resources/junit-platform.properties"));
+        assertThat(javaFxTimeout).contains("junit.jupiter.execution.timeout.lifecycle.method.default = 60 s");
+    }
+
+    @Test
     void javaModulesUsingSharedCompilerDeclareCodePolicyDependency() throws Exception {
         Path root = repositoryRoot();
         Element reactor = DocumentBuilderFactory.newInstance()
