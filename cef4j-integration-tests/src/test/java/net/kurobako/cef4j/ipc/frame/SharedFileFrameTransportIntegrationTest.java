@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(600)
-class MmapFrameTransportIntegrationTest {
+class SharedFileFrameTransportIntegrationTest {
 
     private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 

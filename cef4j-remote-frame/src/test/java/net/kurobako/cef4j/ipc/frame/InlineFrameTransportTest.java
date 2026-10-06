@@ -17,7 +17,7 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
 import org.junit.jupiter.api.Test;
 
-final class WebSocketFrameTransportTest {
+final class InlineFrameTransportTest {
     @Test
     void deliversInlineBgraFrame() throws Exception {
         LoopbackTransport.Pair pair = LoopbackTransport.create();

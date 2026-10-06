@@ -25,19 +25,19 @@ class RuntimeServerHandshakeTest {
     void rejectsUnsupportedProtocolAndApi() {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> RuntimeServerHandshake.parse(
-                        "CEF4J_RUNTIME_SERVER protocol=2 api=remote-cef cef-api=14600 transport=zmq frame=mmap "
+                        "CEF4J_RUNTIME_SERVER protocol=2 api=remote-cef cef-api=14600 transport=zmq frame=shared-file "
                                 + "endpoint=tcp://127.0.0.1:1 capabilities=remote-cef-api"));
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> RuntimeServerHandshake.parse(
-                        "CEF4J_RUNTIME_SERVER protocol=1 api=webdriver cef-api=14600 transport=zmq frame=mmap "
+                        "CEF4J_RUNTIME_SERVER protocol=1 api=webdriver cef-api=14600 transport=zmq frame=shared-file "
                                 + "endpoint=tcp://127.0.0.1:1 capabilities=remote-cef-api"));
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> RuntimeServerHandshake.parse(
-                        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=0 transport=zmq frame=mmap "
+                        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=0 transport=zmq frame=shared-file "
                                 + "endpoint=tcp://127.0.0.1:1 capabilities=remote-cef-api"));
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> RuntimeServerHandshake.parse(
-                        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=14600 transport=zmq frame=mmap "
+                        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=14600 transport=zmq frame=shared-file "
                                 + "endpoint=tcp://127.0.0.1:1 capabilities=devtools,osr,input"));
     }
 }

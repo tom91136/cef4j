@@ -18,7 +18,7 @@ public final class StubRuntimeServerMain {
     public static void main(String[] args) {
         String bind = parseBindArg(args);
         String transport = parseOption(args, "--transport", "zmq");
-        String frameTransport = parseOption(args, "--frame-transport", "mmap");
+        String frameTransport = parseOption(args, "--frame-transport", "shared-file");
         AtomicBoolean running = new AtomicBoolean(true);
         Thread control = new Thread(() -> awaitShutdownCommand(running), "stub-runtime-control");
         control.setDaemon(true);

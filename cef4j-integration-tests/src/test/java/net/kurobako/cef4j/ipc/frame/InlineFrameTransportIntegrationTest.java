@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(600)
-final class WebSocketFrameTransportIntegrationTest {
+final class InlineFrameTransportIntegrationTest {
     private static final RuntimeServerTestEnvironment RUNTIME = RuntimeServerTestEnvironment.require();
 
     @Test

@@ -42,7 +42,7 @@ class RuntimeServerWebDriverIntegrationTest {
 
     @Test
     void servesM1CommandsOverZmq() throws Exception {
-        verifyTransport("zmq", "tcp://127.0.0.1:0", "mmap");
+        verifyTransport("zmq", "tcp://127.0.0.1:0", "shared-file");
     }
 
     @Test
@@ -68,7 +68,7 @@ class RuntimeServerWebDriverIntegrationTest {
     @Test
     void acceptsAnUnmodifiedSeleniumRemoteWebDriver() throws Exception {
         if (!CefTestCompatibility.supportsDevTools()) {
-            RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory("zmq", "tcp://127.0.0.1:0", "mmap");
+            RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory("zmq", "tcp://127.0.0.1:0", "shared-file");
             try (WebDriverServer webdriver = webdriver(runtimes)) {
                 assertThatThrownBy(() -> new RemoteWebDriver(
                                 webdriver.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j")))
@@ -84,7 +84,7 @@ class RuntimeServerWebDriverIntegrationTest {
                 .getBytes(StandardCharsets.UTF_8);
         HttpServer fixture = startFixture(page);
         URI pageUri = URI.create("http://127.0.0.1:" + fixture.getAddress().getPort() + "/page");
-        RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory("zmq", "tcp://127.0.0.1:0", "mmap");
+        RuntimeServerBrowserRuntimeFactory runtimes = runtimeFactory("zmq", "tcp://127.0.0.1:0", "shared-file");
         try (WebDriverServer webdriver = webdriver(runtimes)) {
             RemoteWebDriver driver = new RemoteWebDriver(
                     webdriver.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j"));

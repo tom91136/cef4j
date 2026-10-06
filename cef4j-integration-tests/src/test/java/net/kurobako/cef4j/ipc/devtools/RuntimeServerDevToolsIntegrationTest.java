@@ -61,7 +61,7 @@ class RuntimeServerDevToolsIntegrationTest {
 
     static List<RuntimeCase> transports() {
         return List.of(
-                new RuntimeCase("zmq + mmap", "zmq", "tcp://127.0.0.1:0", "mmap"),
+                new RuntimeCase("zmq + shared-file", "zmq", "tcp://127.0.0.1:0", "shared-file"),
                 new RuntimeCase("websocket + inline", "websocket", "ws://127.0.0.1:0/cef4j", "inline"),
                 new RuntimeCase("platform-local + inline", "local", localEndpoint(), "inline"));
     }

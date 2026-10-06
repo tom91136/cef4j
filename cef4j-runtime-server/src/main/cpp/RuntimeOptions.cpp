@@ -52,7 +52,7 @@ RuntimeOptions RuntimeOptions::parse(int argc, char* argv[], int processId) {
     std::string capacity = environmentOr("CEF4J_INTERCEPT_QUEUE_CAPACITY", "4096");
     std::string transport = option(argc, argv, "--transport", "zmq");
     std::string frameTransport = option(argc, argv, "--frame-transport", "shared-file");
-    if (frameTransport != "shared-file" && frameTransport != "mmap" && frameTransport != "inline") {
+    if (frameTransport != "shared-file" && frameTransport != "inline") {
         throw std::invalid_argument("unknown frame transport: " + frameTransport);
     }
 #ifdef _WIN32
