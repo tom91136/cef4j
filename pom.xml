@@ -96,7 +96,6 @@
     </properties>
 
     <modules>
-        <module>cef4j-cef-dist</module>
         <module>cef4j-codegen</module>
         <module>cef4j-code-policy</module>
         <module>cef4j-platform</module>
@@ -277,12 +276,6 @@
             </dependency>
             <dependency>
                 <groupId>net.kurobako.cef4j</groupId>
-                <artifactId>cef4j-cef-dist</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>net.kurobako.cef4j</groupId>
                 <artifactId>cef4j-codecs-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -455,7 +448,6 @@
                             <!-- Thin native bridges are assembled into one companion Central deployment.
                                  Build-only, aggregator, and test-only reactor modules are excluded here. -->
                             <excludeArtifacts>
-                                <excludeArtifact>cef4j-cef-dist</excludeArtifact>
                                 <excludeArtifact>cef4j-code-policy</excludeArtifact>
                                 <excludeArtifact>cef4j-codegen</excludeArtifact>
                                 <excludeArtifact>cef4j-platform</excludeArtifact>

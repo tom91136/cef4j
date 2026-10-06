@@ -238,13 +238,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-cef-dist</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
 </project>

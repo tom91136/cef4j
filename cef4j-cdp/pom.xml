@@ -32,12 +32,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-cef-dist</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>

@@ -37,12 +37,6 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-cef-dist</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-code-policy</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -98,6 +92,104 @@
                         <arg>-Xkind-projector</arg>
                     </args>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <!-- Single owner of CEF archive download, SHA-1 verification, and extraction. -->
+                    <execution>
+                        <id>provision-cef</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <mkdir dir="${cef.dist.cache}"/>
+                                <macrodef name="provision-cef">
+                                    <attribute name="url"/>
+                                    <attribute name="archive"/>
+                                    <attribute name="distdir"/>
+                                    <sequential>
+                                        <local name="cef.expected.sha1"/>
+                                        <local name="cef.actual.sha1"/>
+                                        <local name="cef.sha.ok"/>
+                                        <local name="cef.actual.sha1.2"/>
+                                        <local name="cef.sha.ok2"/>
+                                        <local name="cef.extracted"/>
+                                        <local name="cef.complete.marker"/>
+                                        <local name="cef.extract.tmp"/>
+                                        <local name="cef.dist.name"/>
+                                        <get src="@{url}.sha1" dest="@{archive}.sha1" skipexisting="true"/>
+                                        <loadfile property="cef.expected.sha1" srcFile="@{archive}.sha1">
+                                            <filterchain>
+                                                <tokenfilter><deletecharacters chars="\r\n"/></tokenfilter>
+                                            </filterchain>
+                                        </loadfile>
+                                        <get src="@{url}" dest="@{archive}" skipexisting="true"/>
+                                        <checksum file="@{archive}" algorithm="SHA-1" property="cef.actual.sha1"/>
+                                        <condition property="cef.sha.ok">
+                                            <equals arg1="${cef.actual.sha1}" arg2="${cef.expected.sha1}"/>
+                                        </condition>
+                                        <get src="@{url}" dest="@{archive}" unless:set="cef.sha.ok"/>
+                                        <checksum file="@{archive}" algorithm="SHA-1" property="cef.actual.sha1.2"/>
+                                        <condition property="cef.sha.ok2">
+                                            <equals arg1="${cef.actual.sha1.2}" arg2="${cef.expected.sha1}"/>
+                                        </condition>
+                                        <delete file="@{archive}" unless:set="cef.sha.ok2"/>
+                                        <fail unless:set="cef.sha.ok2" message="CEF archive SHA-1 mismatch: @{archive}"/>
+                                        <property name="cef.complete.marker" value="@{distdir}/.cef4j-complete-${cef.expected.sha1}"/>
+                                        <condition property="cef.extracted">
+                                            <and>
+                                                <available file="${cef.complete.marker}"/>
+                                                <available file="@{distdir}/include/cef_version.h"/>
+                                                <available file="@{distdir}/Release" type="dir"/>
+                                            </and>
+                                        </condition>
+                                        <sequential unless:set="cef.extracted">
+                                            <tempfile property="cef.extract.tmp" destdir="${cef.dist.cache}" prefix=".cef-extract-"/>
+                                            <mkdir dir="${cef.extract.tmp}"/>
+                                            <untar src="@{archive}" dest="${cef.extract.tmp}" compression="bzip2"/>
+                                            <basename property="cef.dist.name" file="@{distdir}"/>
+                                            <fail message="Incomplete CEF extraction: @{archive}">
+                                                <condition>
+                                                    <not>
+                                                        <and>
+                                                            <available file="${cef.extract.tmp}/${cef.dist.name}/include/cef_version.h"/>
+                                                            <available file="${cef.extract.tmp}/${cef.dist.name}/Release" type="dir"/>
+                                                        </and>
+                                                    </not>
+                                                </condition>
+                                            </fail>
+                                            <touch file="${cef.extract.tmp}/${cef.dist.name}/.cef4j-complete-${cef.expected.sha1}"/>
+                                            <java classname="net.kurobako.cef4j.codegen.CefCachePublisher"
+                                                  fork="true" failonerror="true">
+                                                <classpath refid="maven.runtime.classpath"/>
+                                                <arg value="${cef.extract.tmp}/${cef.dist.name}"/>
+                                                <arg value="@{distdir}"/>
+                                                <arg value=".cef4j-complete-${cef.expected.sha1}"/>
+                                            </java>
+                                            <delete dir="${cef.extract.tmp}"/>
+                                        </sequential>
+                                    </sequential>
+                                </macrodef>
+                                <provision-cef url="${cef.dist.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2"
+                                               distdir="${cef.dist.dir}"/>
+                                <provision-cef url="${cef.codegen.linux.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal.tar.bz2"
+                                               distdir="${cef.codegen.linux.dir}"/>
+                                <provision-cef url="${cef.codegen.macos.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal.tar.bz2"
+                                               distdir="${cef.codegen.macos.dir}"/>
+                                <provision-cef url="${cef.codegen.windows.url}"
+                                               archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2"
+                                               distdir="${cef.codegen.windows.dir}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -164,7 +256,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Integration tests (run against real CEF headers, provisioned by cef4j-cef-dist) -->
+            <!-- Integration tests (run against the CEF headers provisioned above) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
