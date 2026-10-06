@@ -1963,20 +1963,26 @@ struct App : cef_app_t {
             base->add_ref(base);
             return a->renderProcessHandler;
         };
-#if CEF_VERSION_MAJOR >= 151
         on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
+            [[maybe_unused]] auto appendSwitch = [commandLine](const char* name) {
+                ScopedCefString value(name);
+                commandLine->append_switch(commandLine, value.get());
+            };
+#if CEF_VERSION_MAJOR >= 151
             // Chrome 151+ may otherwise block cef_initialize behind an interactive first-run EULA. The runtime
             // server has no interactive browser chrome, so first-run UI is neither visible nor actionable.
-            ScopedCefString noFirstRun("no-first-run");
-            commandLine->append_switch(commandLine, noFirstRun.get());
-        };
+            appendSwitch("no-first-run");
+#endif
+#if CEF_VERSION_MAJOR < 142
+            // XXX: Before CEF 142 (chromiumembedded/cef#4001), the frame swap that the back-forward cache forces on
+            // same-site navigation can lose CEF's browser-info handshake, leaving the new document with no V8
+            // context; remove when the minimum CEF is 142.
+            appendSwitch("disable-back-forward-cache");
 #endif
 #if defined(__APPLE__) && CEF_VERSION_MAJOR <= 109
-        on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
-            ScopedCefString disableGpu("disable-gpu");
-            commandLine->append_switch(commandLine, disableGpu.get());
-        };
+            appendSwitch("disable-gpu");
 #endif
+        };
     }
 };
 

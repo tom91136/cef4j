@@ -416,7 +416,8 @@ public enum Cef implements AutoCloseable {
     static List<String> processArguments(List<String> extraArgs) {
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
         argv.add("cef4j");
-        if (OS.isLinux() && SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) == 75) {
+        int cefApi = SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE);
+        if (OS.isLinux() && cefApi == 75) {
             // CEF 75's GPU process races NetworkContext startup under Xvfb, and its out-of-process NetworkService
             // can dereference a destroyed PrefService while an AWT embedding is starting. Keep both workarounds
             // version-scoped; adjacent supported CEF releases do not need them.
@@ -424,8 +425,14 @@ public enum Cef implements AutoCloseable {
             addArgIfMissing(argv, "--disable-features=NetworkService");
         }
         // Chromium 151+ can otherwise block startup on its first-run terms dialog when using a fresh cache.
-        if (SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) >= 151) {
+        if (cefApi >= 151) {
             addArgIfMissing(argv, "--no-first-run");
+        }
+        // XXX: Before CEF 142 (chromiumembedded/cef#4001), the frame swap that the back-forward cache forces on
+        // same-site navigation can lose CEF's browser-info handshake, leaving the new document with no V8 context or
+        // process-message route; remove when the minimum CEF is 142.
+        if (cefApi < 142) {
+            addArgIfMissing(argv, "--disable-back-forward-cache");
         }
         argv.addAll(extraArgs);
         if (!OS.isWindows()) {

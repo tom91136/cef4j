@@ -12,19 +12,8 @@ public final class CefTestCompatibility {
         return Integer.parseInt((separator < 0 ? value : value.substring(0, separator)).trim());
     }
 
-    /** CEF's native browser-info handshake can stall under contention before the upstream fix shipped in CEF 142. */
-    public static boolean hasReliableNativeBrowserInfoHandshake(int apiVersion) {
-        return apiVersion >= 142;
-    }
-
     /** CEF first exposed raw DevTools messaging and observer registration in release 81. */
     public static boolean supportsDevTools() {
         return cefApiVersion() >= 81;
-    }
-
-    public static boolean supports(BrowserBackend backend) {
-        boolean nativeBackend =
-                BrowserBackend.NATIVE_NAME.equals(backend.name()) || "native-swing".equals(backend.name());
-        return !nativeBackend || hasReliableNativeBrowserInfoHandshake(cefApiVersion());
     }
 }
