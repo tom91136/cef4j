@@ -26,11 +26,11 @@ do
     grep -F "$cef_version" "$build" >/dev/null
 done
 
-grep -F 'cef4j-platform:${cef4jVersion}:${runtimePlatform}' \
+grep -F '${platformArtifact}:${cef4jVersion}:${platformClassifier}' \
     "$examples_dir/gradle-groovy/build.gradle" >/dev/null
 grep -F '"--platform=${runtimePlatform}"' "$examples_dir/gradle-groovy/build.gradle" >/dev/null
-grep -F 'cef4j-platform:$cef4jVersion:$runtimePlatform' \
+grep -F '$platformArtifact:$cef4jVersion:$platformClassifier' \
     "$examples_dir/gradle-kotlin/build.gradle.kts" >/dev/null
 grep -F '"--platform=$runtimePlatform"' "$examples_dir/gradle-kotlin/build.gradle.kts" >/dev/null
-grep -F '<classifier>${cef4j.runtime.platform}</classifier>' "$examples_dir/maven/pom.xml" >/dev/null
+grep -F '<classifier>${cef4j.platform.classifier}</classifier>' "$examples_dir/maven/pom.xml" >/dev/null
 grep -F '<argument>--platform=${cef4j.runtime.platform}</argument>' "$examples_dir/maven/pom.xml" >/dev/null

@@ -57,10 +57,10 @@ supported sandbox, so `noSandbox=1` is a required, explicit acceptance of unsand
 CefSettings.Mutable settings = new CefSettings.Mutable();
 settings.noSandbox = 1;
 settings.cachePath = Files.createTempDirectory("cef4j-").toAbsolutePath().toString();
-CefWebView.initialise(settings, List.of(), null);
+CefWebView.initialise(settings, List.of(), Optional.empty());
 
 CefWebView view = new CefWebView();
-view.engine().load("https://example.com");
+view.getEngine().load("https://example.com");
 stage.setScene(new Scene(new StackPane(view), 1280, 800));
 stage.show();
 ```

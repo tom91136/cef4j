@@ -445,6 +445,8 @@
                             <!-- Thin native bridges are assembled into one companion Central deployment.
                                  Build-only, aggregator, and test-only reactor modules are excluded here. -->
                             <excludeArtifacts>
+                                <excludeArtifact>cef4j-cef-dist</excludeArtifact>
+                                <excludeArtifact>cef4j-code-policy</excludeArtifact>
                                 <excludeArtifact>cef4j-codegen</excludeArtifact>
                                 <excludeArtifact>cef4j-platform</excludeArtifact>
                                 <excludeArtifact>cef4j-runtime-server</excludeArtifact>

@@ -62,7 +62,7 @@ reproducer. Compare hashes before debugging stale behavior:
 ```bash
 md5sum cef4j-platform/target/cmake-build/libcef4j.so \
   cef4j-platform/target/reactor-runtime/native/linux64/libcef4j.so \
-  /tmp/cef4j-cache/linux64/*/libcef4j.so
+  ~/.cache/cef4j/native/linux64/*/libcef4j.so
 nm -D cef4j-platform/target/cmake-build/libcef4j.so | rg 'JNI_OnLoad|cef_api'
 ```
 
@@ -261,7 +261,9 @@ profile/cache, an orphaned Unix socket, or generation-specific shared-frame file
 recoverable because it is re-extracted on next use:
 
 ```bash
-rm -rf /tmp/cef4j-cache
+rm -rf ~/.cache/cef4j/native
 ```
+
+`-Dcef4j.native.cache=<dir>` relocates the extraction cache.
 
 Do not recursively remove broad temp, workspace, or user-home paths. Preserve logs until the failure is understood.

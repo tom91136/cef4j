@@ -90,6 +90,7 @@ public class CefWebView extends Region implements AutoCloseable {
         CefBrowser b = getBrowser();
         return b != null ? b.getMainFrame().orElse(null) : null;
     });
+    private volatile String scrollbarScript = ScrollbarTheme.injectScript(ScrollbarTheme.generateCss(null));
     private final CefClient client = new CefWebViewClient(this);
     private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
     private final CompletableFuture<Void> browserReleased = new CompletableFuture<>();
@@ -172,7 +173,7 @@ public class CefWebView extends Region implements AutoCloseable {
      *
      * @param settings caller-provided settings; OSR fields will be overwritten
      * @param extraArgs additional CEF command-line args; OSR defaults are prepended
-     * @param appHandler optional {@link CefApp} handler; if non-null it is registered via
+     * @param appHandler optional {@link CefApp} handler; if present it is registered via
      *     {@link Cef#addAppHandler(CefApp)} before initialisation
      * @throws IllegalStateException if CEF has been terminated
      */
@@ -304,6 +305,7 @@ public class CefWebView extends Region implements AutoCloseable {
                 newScene.windowProperty().addListener(sceneWindowListener);
                 onWindowChanged(newScene.getWindow());
             }
+            scrollbarScript = ScrollbarTheme.injectScript(ScrollbarTheme.generateCss(newScene));
             maybeCreateBrowser(false);
         });
         cleanable = CLEANER.register(this, browserCleanup);
@@ -601,8 +603,6 @@ public class CefWebView extends Region implements AutoCloseable {
 
     /** Creates the load handler that injects the custom scrollbar styling. */
     public CefLoadHandler createScrollbarLoadHandler() {
-        String scrollbarCss = ScrollbarTheme.generateCss(getScene());
-        String scrollbarScript = ScrollbarTheme.injectScript(scrollbarCss);
         return new CefLoadHandler() {
             @Override
             public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {

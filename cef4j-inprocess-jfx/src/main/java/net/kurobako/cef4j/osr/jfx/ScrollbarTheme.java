@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.osr.jfx;
 
 import javafx.scene.paint.Color;
+import javax.annotation.Nullable;
 
 /**
  * Extracts scrollbar appearance from the active JavaFX theme and generates equivalent {@code ::-webkit-scrollbar} CSS
@@ -23,7 +24,7 @@ final class ScrollbarTheme {
      * <p>Reads the scene's resolved {@code -fx-base} color to derive scrollbar colours. Falls back to Modena defaults
      * if no scene is available.
      */
-    static String generateCss(javafx.scene.Scene scene) {
+    static String generateCss(@Nullable javafx.scene.Scene scene) {
         ScrollbarPalette palette = ScrollbarPalette.from(resolveBase(scene));
 
         return String.join(
@@ -77,7 +78,7 @@ final class ScrollbarTheme {
                 + "})();";
     }
 
-    private static Color resolveBase(javafx.scene.Scene scene) {
+    private static Color resolveBase(@Nullable javafx.scene.Scene scene) {
         if (scene != null && scene.getRoot() != null) {
             try {
                 scene.getRoot().applyCss();

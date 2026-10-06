@@ -112,7 +112,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
      *
      * @param settings caller-provided settings; OSR fields will be overwritten
      * @param extraArgs additional CEF command-line args; OSR defaults are prepended
-     * @param appHandler optional {@link CefApp} handler; if non-null it is registered via
+     * @param appHandler optional {@link CefApp} handler; if present it is registered via
      *     {@link Cef#addAppHandler(CefApp)} before initialisation
      * @throws IllegalStateException if CEF has been terminated
      */

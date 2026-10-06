@@ -429,6 +429,8 @@ jobs:
           ./mvnw -B -f examples/maven/pom.xml clean verify
           "-Dcef4j.version=${CEF4J_VERSION}"
           -Dcef4j.runtime.platform=linux-x86_64
+          -Dcef4j.platform.artifact=cef4j-platform
+          -Dcef4j.platform.classifier=linux-x86_64
           "-Dcef4j.packager.version=${PACKAGER_VERSION}"
 
       - name: Test Gradle Groovy consumer
@@ -436,6 +438,8 @@ jobs:
           gradle --no-daemon -p examples/gradle-groovy clean build run
           "-Pcef4jVersion=${CEF4J_VERSION}"
           -Pcef4jRuntimePlatform=linux-x86_64
+          -Pcef4jPlatformArtifact=cef4j-platform
+          -Pcef4jPlatformClassifier=linux-x86_64
           "-Pcef4jPackagerVersion=${PACKAGER_VERSION}"
 
       - name: Test Gradle Kotlin consumer
@@ -443,6 +447,8 @@ jobs:
           gradle --no-daemon -p examples/gradle-kotlin clean build run
           "-Pcef4jVersion=${CEF4J_VERSION}"
           -Pcef4jRuntimePlatform=linux-x86_64
+          -Pcef4jPlatformArtifact=cef4j-platform
+          -Pcef4jPlatformClassifier=linux-x86_64
           "-Pcef4jPackagerVersion=${PACKAGER_VERSION}"
 
       - name: Test sbt consumer

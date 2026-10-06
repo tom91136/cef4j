@@ -11,6 +11,8 @@ repositories {
 val cef4jVersion = providers.gradleProperty("cef4jVersion").getOrElse("150.0.0")
 val packagerVersion = providers.gradleProperty("cef4jPackagerVersion").getOrElse("0.1.0")
 val runtimePlatform = providers.gradleProperty("cef4jRuntimePlatform").getOrElse("linux-x86_64")
+val platformArtifact = providers.gradleProperty("cef4jPlatformArtifact").getOrElse("cef4j-platform-linux")
+val platformClassifier = providers.gradleProperty("cef4jPlatformClassifier").getOrElse("x86_64")
 val cefVersion = providers.gradleProperty("cefVersion").getOrElse("150.0.18+gdb11278+chromium-150.0.7871.213")
 
 val cefPackager = configurations.create("cefPackager")
@@ -18,7 +20,7 @@ val cefPackager = configurations.create("cefPackager")
 dependencies {
     implementation("net.kurobako.cef4j:cef4j-inprocess-swing:$cef4jVersion")
     implementation("net.kurobako.cef4j:cef4j-cdp:$cef4jVersion")
-    implementation("net.kurobako.cef4j:cef4j-platform:$cef4jVersion:$runtimePlatform")
+    implementation("net.kurobako.cef4j:$platformArtifact:$cef4jVersion:$platformClassifier")
     cefPackager("net.kurobako.cef4j:cef4j-runtime-packager:$packagerVersion")
 }
 
