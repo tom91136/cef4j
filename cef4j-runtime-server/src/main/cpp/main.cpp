@@ -140,6 +140,18 @@ static void reportOsrStageOnce(std::atomic_flag& flag, const char* stage, int br
     }
 }
 
+template <typename T>
+void addRef(T* ref) {
+    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(ref);
+    base->add_ref(base);
+}
+
+template <typename T>
+void releaseRef(T* ref) {
+    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(ref);
+    base->release(base);
+}
+
 // CEF validates {@code base.size == sizeof(cef_*_t)} on every wrap. We must report the parent CEF struct size, not
 // our subclass size. T is our wrapper class (carries refCount); CefStruct is the cef_*_t we're implementing.
 template <typename T, typename CefStruct>
@@ -237,8 +249,7 @@ static void closeTrackedBrowsers() {
         auto* host = browser->get_host(browser);
         if (host) {
             host->close_browser(host, 1);
-            auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
-            hostBase->release(hostBase);
+            releaseRef(host);
         }
     }
 }
@@ -261,8 +272,7 @@ static void installLifeSpanHooks() {
             auto* host = browser ? browser->get_host(browser) : nullptr;
             if (host) {
                 host->close_browser(host, 1);
-                auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
-                hostBase->release(hostBase);
+                releaseRef(host);
             }
             return;
         }
@@ -385,15 +395,13 @@ struct DevToolsObserver : cef_dev_tools_message_observer_t {
 static void releaseDevToolsRegistration(std::int32_t browserHandle) {
     auto it = g_devToolsRegistrations.find(browserHandle);
     if (it == g_devToolsRegistrations.end()) return;
-    auto* registrationBase = reinterpret_cast<cef_base_ref_counted_t*>(it->second.registration);
-    registrationBase->release(registrationBase);
+    releaseRef(it->second.registration);
     g_devToolsRegistrations.erase(it);
 }
 
 static void releaseAllDevToolsRegistrations() {
     for (auto& entry : g_devToolsRegistrations) {
-        auto* registrationBase = reinterpret_cast<cef_base_ref_counted_t*>(entry.second.registration);
-        registrationBase->release(registrationBase);
+        releaseRef(entry.second.registration);
     }
     g_devToolsRegistrations.clear();
 }
@@ -416,8 +424,7 @@ static void releaseBrowserState(cef_browser_t* browser) {
             ++it;
             continue;
         }
-        auto* registrationBase = reinterpret_cast<cef_base_ref_counted_t*>(it->second.registration);
-        registrationBase->release(registrationBase);
+        releaseRef(it->second.registration);
         it = g_devToolsRegistrations.erase(it);
     }
 #endif
@@ -557,8 +564,7 @@ struct Client : cef_client_t {
         genhandlers::wireClient(this);
         get_render_handler = [](cef_client_t* self) -> cef_render_handler_t* {
             auto* c = reinterpret_cast<Client*>(self);
-            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(c->renderHandler);
-            base->add_ref(base);
+            addRef(c->renderHandler);
             return c->renderHandler;
         };
 #if CEF_VERSION_MAJOR >= 75
@@ -594,8 +600,7 @@ struct Client : cef_client_t {
                         cef_string_utf8_clear(&u);
                         cef_string_userfree_free(s);
                     }
-                    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                    ab->release(ab);
+                    releaseRef(args);
                 }
                 net_kurobako_cef4j_ipc_protocol_gen::V8ContextCreatedEvent ev;
                 ev.browser = handleId;
@@ -614,8 +619,7 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 9) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
@@ -649,8 +653,7 @@ struct Client : cef_client_t {
                     }
                 }
                 std::int32_t valueHandle = args->get_int(args, 8);
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
 
                 if (name == "v8_eval_resp") {
                     net_kurobako_cef4j_ipc_protocol_gen::EvaluateJavascriptResponse resp;
@@ -726,8 +729,7 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 2) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
@@ -744,8 +746,7 @@ struct Client : cef_client_t {
                         cef_string_userfree_free(s);
                     }
                 }
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 net_kurobako_cef4j_ipc_protocol_gen::V8SetPropertyResponse resp;
                 resp.ok = ok;
                 resp.errorMessage = std::move(errorMessage);
@@ -762,15 +763,13 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 2) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
                 std::int32_t corrId = args->get_int(args, 0);
                 bool has = args->get_bool(args, 1) != 0;
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 net_kurobako_cef4j_ipc_protocol_gen::V8HasPropertyResponse resp;
                 resp.has = has;
                 std::vector<std::uint8_t> wire(resp.encodedSize());
@@ -786,8 +785,7 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 3) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
@@ -808,8 +806,7 @@ struct Client : cef_client_t {
                     }
                     resp.keys.push_back(std::move(key));
                 }
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 std::vector<std::uint8_t> wire(resp.encodedSize());
                 resp.encodeInto(wire.data());
                 if (g_ipc) {
@@ -823,16 +820,14 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 3) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
                 std::int32_t corrId = args->get_int(args, 0);
                 bool ok = args->get_bool(args, 1) != 0;
                 std::int32_t length = args->get_int(args, 2);
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 net_kurobako_cef4j_ipc_protocol_gen::V8GetArrayLengthResponse resp;
                 resp.ok = ok;
                 resp.length = length;
@@ -849,8 +844,7 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 3) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
@@ -867,8 +861,7 @@ struct Client : cef_client_t {
                         cef_string_userfree_free(s);
                     }
                 }
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 net_kurobako_cef4j_ipc_protocol_gen::V8GetStringValueResponse resp;
                 resp.ok = ok != 0;
                 resp.stringValue = std::move(strVal);
@@ -885,14 +878,12 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 1) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
                 std::int32_t corrId = args->get_int(args, 0);
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 if (g_ipc) {
                     g_ipc->send(Kind::Response, 0, corrId,
                                 net_kurobako_cef4j_ipc_protocol_gen::V8ReleaseHandleResponse::kMessageId,
@@ -905,8 +896,7 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 2) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
@@ -919,12 +909,10 @@ struct Client : cef_client_t {
                         std::size_t size = binary->get_size(binary);
                         payload.resize(size);
                         if (size > 0) binary->get_data(binary, payload.data(), size, 0);
-                        auto* bb = reinterpret_cast<cef_base_ref_counted_t*>(binary);
-                        bb->release(bb);
+                        releaseRef(binary);
                     }
                 }
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 if (g_ipc) {
                     g_ipc->send(kind, 0, corrId, messageId, payload.data(), payload.size());
                 }
@@ -934,14 +922,12 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 1) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
                 std::int32_t corrId = args->get_int(args, 0);
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 if (g_ipc) {
                     g_ipc->send(Kind::Response, 0, corrId,
                                 net_kurobako_cef4j_ipc_protocol_gen::RegisterJsFunctionResponse::kMessageId,
@@ -953,8 +939,7 @@ struct Client : cef_client_t {
                 auto* args = msg->get_argument_list(msg);
                 if (!args || args->get_size(args) < 2) {
                     if (args) {
-                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                        ab->release(ab);
+                        releaseRef(args);
                     }
                     return 1;
                 }
@@ -970,8 +955,7 @@ struct Client : cef_client_t {
                         cef_string_userfree_free(s);
                     }
                 }
-                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                ab->release(ab);
+                releaseRef(args);
                 net_kurobako_cef4j_ipc_protocol_gen::JsFunctionCallEvent ev;
                 ev.callbackId = callbackId;
                 ev.argsJson = std::move(argsJson);
@@ -1108,8 +1092,7 @@ static bool sendProcessMessage(cef_frame_t* frame, cef_process_id_t target, cef_
     cef_browser_t* browser = frame->get_browser(frame);
     if (!browser) return false;
     bool sent = browser->send_process_message(browser, target, message) != 0;
-    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
-    base->release(base);
+    releaseRef(browser);
     return sent;
 #endif
 }
@@ -1124,12 +1107,10 @@ static void sendV8Response(cef_frame_t* frame, const char* name, std::size_t nam
     auto* respArgs = respMsg->get_argument_list(respMsg);
     if (respArgs) {
         fillArgs(respArgs);
-        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(respArgs);
-        ab->release(ab);
+        releaseRef(respArgs);
     }
     if (!sendProcessMessage(frame, PID_BROWSER, respMsg)) {
-        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(respMsg);
-        base->release(base);
+        releaseRef(respMsg);
     }
 }
 
@@ -1137,16 +1118,14 @@ static void handleV8EvalReq(cef_frame_t* frame, cef_process_message_t* msg) {
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::string code = readListString(args, 1);
     bool retainHandle = args->get_bool(args, 2) != 0;
-    auto* argsBase = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    argsBase->release(argsBase);
+    releaseRef(args);
 
     V8WireResult r;
     std::string errorMessage;
@@ -1157,8 +1136,7 @@ static void handleV8EvalReq(cef_frame_t* frame, cef_process_message_t* msg) {
     } else if (!ctx->enter(ctx)) {
         r.valueKind = 5;
         errorMessage = "enter v8 context failed";
-        auto* cb = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
-        cb->release(cb);
+        releaseRef(ctx);
         ctx = nullptr;
     } else {
         std::string wrappedCode;
@@ -1190,21 +1168,18 @@ static void handleV8EvalReq(cef_frame_t* frame, cef_process_message_t* msg) {
                     cef_string_utf8_clear(&u);
                     cef_string_userfree_free(msgUf);
                 }
-                auto* eb = reinterpret_cast<cef_base_ref_counted_t*>(exc);
-                eb->release(eb);
+                releaseRef(exc);
             } else {
                 errorMessage = "eval failed";
             }
         } else {
             r = packV8Retval(retval, retainHandle);
             if (retval) {
-                auto* rb = reinterpret_cast<cef_base_ref_counted_t*>(retval);
-                rb->release(rb);
+                releaseRef(retval);
             }
         }
         ctx->exit(ctx);
-        auto* cb = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
-        cb->release(cb);
+        releaseRef(ctx);
     }
 
     sendV8Response(frame, "v8_eval_resp", 12, [&](cef_list_value_t* a) {
@@ -1216,15 +1191,13 @@ static void handleV8GetStringReq(cef_frame_t* frame, cef_process_message_t* msg)
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 2) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     bool ok = false;
     std::string strVal;
@@ -1246,8 +1219,7 @@ static void handleV8GetStringReq(cef_frame_t* frame, cef_process_message_t* msg)
             ctx->exit(ctx);
         }
         if (ctx) {
-            auto* cb = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
-            cb->release(cb);
+            releaseRef(ctx);
         }
     }
 
@@ -1262,16 +1234,14 @@ static void handleV8GetPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
     std::string propertyName = readListString(args, 2);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     V8WireResult r;
     std::string errorMessage;
@@ -1285,8 +1255,7 @@ static void handleV8GetPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
             r.valueKind = 5;
             errorMessage = "no v8 context";
             if (ctx) {
-                auto* cb = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
-                cb->release(cb);
+                releaseRef(ctx);
             }
         } else {
             cef_string_t propKey{};
@@ -1299,12 +1268,10 @@ static void handleV8GetPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
                 errorMessage = "no such property";
             } else {
                 r = packV8Retval(prop, /*retainHandle=*/true);
-                auto* pb = reinterpret_cast<cef_base_ref_counted_t*>(prop);
-                pb->release(pb);
+                releaseRef(prop);
             }
             ctx->exit(ctx);
-            auto* cb = reinterpret_cast<cef_base_ref_counted_t*>(ctx);
-            cb->release(cb);
+            releaseRef(ctx);
         }
     }
 
@@ -1317,16 +1284,14 @@ static void handleV8ExecuteFunctionReq(cef_frame_t* frame, cef_process_message_t
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
     std::string argsJson = readListString(args, 2);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     V8WireResult r;
     std::string errorMessage;
@@ -1424,8 +1389,7 @@ static void handleV8SetPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 10) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
@@ -1440,8 +1404,7 @@ static void handleV8SetPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
     std::int64_t doubleBits = (dblHigh << 32) | (dblLow & 0xFFFFFFFFLL);
     std::string stringValue = readListString(args, 8);
     std::int32_t srcHandle = args->get_int(args, 9);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     bool ok = false;
     std::string errorMessage;
@@ -1481,16 +1444,14 @@ static void handleV8HasPropertyReq(cef_frame_t* frame, cef_process_message_t* ms
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
     std::string propertyName = readListString(args, 2);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     bool has = false;
     cef_v8_value_t* v = gendisp::tables::v8Value.find(v8Handle);
@@ -1515,15 +1476,13 @@ static void handleV8GetKeysReq(cef_frame_t* frame, cef_process_message_t* msg) {
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 2) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     bool ok = false;
     std::vector<std::string> keys;
@@ -1565,15 +1524,13 @@ static void handleV8GetArrayLengthReq(cef_frame_t* frame, cef_process_message_t*
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 2) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     bool ok = false;
     std::int32_t length = 0;
@@ -1599,16 +1556,14 @@ static void handleV8GetValueByIndexReq(cef_frame_t* frame, cef_process_message_t
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
     std::int32_t index = args->get_int(args, 2);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
 
     V8WireResult r;
     std::string errorMessage;
@@ -1641,15 +1596,13 @@ static void handleV8ReleaseHandleReq(cef_frame_t* frame, cef_process_message_t* 
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 2) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::int32_t v8Handle = args->get_int(args, 1);
-    auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    ab->release(ab);
+    releaseRef(args);
     gendisp::tables::v8Value.release(v8Handle);
     sendV8Response(frame, "v8_release_handle_resp", 22,
                    [&](cef_list_value_t* a) { a->set_int(a, 0, corrId); });
@@ -1737,12 +1690,10 @@ struct JvmJsHandler : cef_v8_handler_t {
                                 cef_string_utf8_to_utf16(argsJson.data(), argsJson.size(), &jsonStr);
                             a->set_string(a, 1, &jsonStr);
                             cef_string_clear(&jsonStr);
-                            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(a);
-                            ab->release(ab);
+                            releaseRef(a);
                         }
                         if (!sendProcessMessage(frame, PID_BROWSER, m)) {
-                            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(m);
-                            base->release(base);
+                            releaseRef(m);
                         }
                     }
                 }
@@ -1757,16 +1708,14 @@ static void handleJsRegisterFuncReq(cef_frame_t* frame, cef_process_message_t* m
     auto* args = msg->get_argument_list(msg);
     if (!args || args->get_size(args) < 3) {
         if (args) {
-            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-            ab->release(ab);
+            releaseRef(args);
         }
         return;
     }
     std::int32_t corrId = args->get_int(args, 0);
     std::string fnName = readListString(args, 1);
     std::int32_t callbackId = args->get_int(args, 2);
-    auto* argsBase = reinterpret_cast<cef_base_ref_counted_t*>(args);
-    argsBase->release(argsBase);
+    releaseRef(args);
 
     auto* ctx = frame->get_v8_context(frame);
     if (ctx && ctx->enter(ctx)) {
@@ -1810,16 +1759,14 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                     cef_string_t empty{};
                     args->set_string(args, 0, &empty);
                 }
-                auto* argsBase = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                argsBase->release(argsBase);
+                releaseRef(args);
             }
             // CEF doc on send_process_message: "Ownership of the message contents will be transferred and
             // the |message| reference will be invalidated." So send_process_message ADOPTS our +1 from
             // cef_process_message_create — we must NOT release it afterward, that would double-decrement
             // and corrupt the IPC bus.
             if (!sendProcessMessage(frame, PID_BROWSER, msg)) {
-                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(msg);
-                base->release(base);
+                releaseRef(msg);
             }
         };
 #if CEF_VERSION_MAJOR >= 75
@@ -1883,8 +1830,7 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                   auto* args = msg->get_argument_list(msg);
                   if (!args || args->get_size(args) < 3) {
                       if (args) {
-                          auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                          ab->release(ab);
+                          releaseRef(args);
                       }
                       return 1;
                   }
@@ -1896,11 +1842,9 @@ struct RenderProcessHandler : cef_render_process_handler_t {
                       std::size_t size = binary->get_size(binary);
                       payload.resize(size);
                       if (size > 0) binary->get_data(binary, payload.data(), size, 0);
-                      auto* bb = reinterpret_cast<cef_base_ref_counted_t*>(binary);
-                      bb->release(bb);
+                      releaseRef(binary);
                   }
-                  auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                  ab->release(ab);
+                  releaseRef(args);
                   if (messageId == net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::kMessageId) {
                       auto req = net_kurobako_cef4j_ipc_protocol_gen::RendererReleaseHandleRequest::decode(
                               payload.data(), payload.size());
@@ -1917,8 +1861,7 @@ struct RenderProcessHandler : cef_render_process_handler_t {
             }();
 #if CEF_VERSION_MAJOR < 75
             if (frame) {
-              auto* fb = reinterpret_cast<cef_base_ref_counted_t*>(frame);
-              fb->release(fb);
+              releaseRef(frame);
             }
 #endif
             return result;
@@ -1953,14 +1896,12 @@ struct App : cef_app_t {
         initRef<App, cef_app_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         get_browser_process_handler = [](cef_app_t* self) -> cef_browser_process_handler_t* {
             auto* a = reinterpret_cast<App*>(self);
-            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(a->browserProcessHandler);
-            base->add_ref(base);
+            addRef(a->browserProcessHandler);
             return a->browserProcessHandler;
         };
         get_render_process_handler = [](cef_app_t* self) -> cef_render_process_handler_t* {
             auto* a = reinterpret_cast<App*>(self);
-            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(a->renderProcessHandler);
-            base->add_ref(base);
+            addRef(a->renderProcessHandler);
             return a->renderProcessHandler;
         };
         on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
@@ -2080,8 +2021,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     settings.windowlessFrameRate = 30;
                     auto* create = new CreateBrowserTask("about:blank", std::move(settings));
                     bool accepted = create->createBrowser();
-                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(create);
-                    base->release(base);
+                    releaseRef(create);
                     if (!accepted) {
                         bootstrapStarted.store(false);
                         gendisp::sendTaskRejected(g_ipc, corrId, messageId);
@@ -2161,16 +2101,13 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     host->notify_screen_info_changed(host);
                     host->was_resized(host);
                     host->invalidate(host, PET_VIEW);
-                    auto* hb = reinterpret_cast<cef_base_ref_counted_t*>(host);
-                    hb->release(hb);
+                    releaseRef(host);
                 }
-                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
-                base->release(base);
+                releaseRef(browser);
                 if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
             });
             if (!gendisp::postUiTask(task)) {
-                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
-                base->release(base);
+                releaseRef(browser);
                 gendisp::sendTaskRejected(g_ipc, corrId, msgId);
             }
             return;
@@ -2196,11 +2133,9 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 if (host) {
                     auto* observer = new DevToolsObserver(browserHandle);
                     registration = host->add_dev_tools_message_observer(host, observer);
-                    auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
-                    hostBase->release(hostBase);
+                    releaseRef(host);
                 }
-                auto* browserBase = reinterpret_cast<cef_base_ref_counted_t*>(browser);
-                browserBase->release(browserBase);
+                releaseRef(browser);
 
                 if (!registration) {
                     static const std::uint8_t kReceiverGonePayload[8] = {
@@ -2215,8 +2150,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
             });
             if (!gendisp::postUiTask(task)) {
-                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(browser);
-                base->release(base);
+                releaseRef(browser);
                 gendisp::sendTaskRejected(g_ipc, corrId, msgId);
             }
             return;
@@ -2281,20 +2215,16 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                             args->set_string(args, 1, &cs);
                             cef_string_clear(&cs);
                             args->set_bool(args, 2, retainHandle);
-                            auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
-                            ab->release(ab);
+                            releaseRef(args);
                         }
                         if (!sendProcessMessage(receiver, PID_RENDERER, m)) {
-                            auto* base = reinterpret_cast<cef_base_ref_counted_t*>(m);
-                            base->release(base);
+                            releaseRef(m);
                         }
                     }
-                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
-                    base->release(base);
+                    releaseRef(receiver);
                 });
                 if (!gendisp::postUiTask(task)) {
-                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
-                    base->release(base);
+                    releaseRef(receiver);
                     gendisp::sendTaskRejected(g_ipc, corrId, msgId);
                 }
                 return;
@@ -2330,8 +2260,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                                                           ab->release(ab);
                                                       }
                                                       if (!sendProcessMessage(receiver, PID_RENDERER, m)) {
-                                                          auto* base = reinterpret_cast<cef_base_ref_counted_t*>(m);
-                                                          base->release(base);
+                                                          releaseRef(m);
                                                       }
                                                   }
                                                   auto* base =
@@ -2339,8 +2268,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                                                   base->release(base);
                                               });
                 if (!gendisp::postUiTask(task)) {
-                    auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
-                    base->release(base);
+                    releaseRef(receiver);
                     gendisp::sendTaskRejected(g_ipc, corrId, msgId);
                 }
             };
