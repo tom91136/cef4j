@@ -237,8 +237,7 @@ public class CefWebView extends Region implements AutoCloseable {
             throw new IllegalStateException(
                     "CEF must be initialised for off-screen rendering before creating a CefWebView.\n"
                             + "Call this from Application.start(...) before creating the view:\n\n"
-                            + "    Cef.LaunchArgs launch = Cef.osrLaunchArgs();\n"
-                            + "    Cef.INSTANCE.initialise(launch.settings(), launch.args());\n");
+                            + "    CefWebView.initialise(settings, List.of(), Optional.empty());\n");
         }
         Cef.INSTANCE
                 .activeSettings()
@@ -246,7 +245,7 @@ public class CefWebView extends Region implements AutoCloseable {
                 .ifPresent(s -> {
                     throw new IllegalStateException(
                             "CEF was initialised without windowlessRenderingEnabled=1. CefWebView requires OSR mode.\n"
-                                    + "Use Cef.osrLaunchArgs() when calling Cef.INSTANCE.initialise().\n");
+                                    + "Use CefWebView.initialise() instead.\n");
                 });
     }
 

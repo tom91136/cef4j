@@ -42,6 +42,7 @@ import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
+import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -144,9 +145,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private static void initialiseAwtPeer() {
-        if (System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("mac")) {
-            return;
-        }
+        if (OS.isMacOS()) return;
         Runnable initialise = () -> {
             JFrame frame = new JFrame();
             frame.setUndecorated(true);
@@ -220,7 +219,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
                 .ifPresent(s -> {
                     throw new IllegalStateException(
                             "CEF was initialised without windowlessRenderingEnabled=1. CefBrowserPanel requires OSR mode.\n"
-                                    + "Use Cef.osrLaunchArgs() or CefBrowserPanel.initialise() instead.\n");
+                                    + "Use CefBrowserPanel.initialise() instead.\n");
                 });
     }
 
