@@ -159,9 +159,9 @@ jobs:
           modules=(
             cef4j-api cef4j-inprocess-jfx cef4j-inprocess-swing
             cef4j-inprocess-webdriver cef4j-http cef4j-cdp
-            cef4j-codecs-gson cef4j-codecs-jackson cef4j-remote-api
-            cef4j-remote-core cef4j-remote-frame cef4j-remote-jfx
-            cef4j-remote-swing cef4j-remote-webdriver cef4j-webdriver
+            cef4j-codecs-gson cef4j-codecs-jackson cef4j-remote
+            cef4j-remote-frame cef4j-remote-jfx cef4j-remote-swing
+            cef4j-webdriver
           )
           for module in "${modules[@]}"; do
             find "${module}/target" -maxdepth 1 -type f -name "${module}-*.jar" \

@@ -194,7 +194,7 @@ Use the lowest test rung that demonstrates the problem:
 2. loopback HTTP with a fake `AutomationBackend`;
 3. Selenium `RemoteWebDriver` against the real endpoint;
 4. in-process CEF through `cef4j-inprocess-webdriver`;
-5. packaged CEF through `cef4j-remote-webdriver`;
+5. packaged CEF through `cef4j-remote`;
 6. pinned WPT/wdspec cases.
 
 The endpoint automates packaged CEF and does not use a system Chrome installation or ChromeDriver. A missing command

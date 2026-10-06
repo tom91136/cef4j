@@ -7,12 +7,11 @@
     <name>cef4j-remote-frame</name>
     <description>Transport-neutral raw/encoded frame API with shared-file, inline, codec, and MJPEG support</description>
     <properties>
-        <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
+        <java11.runtime.smoke.skip>${cef4j.cefIndependentTests.skip}</java11.runtime.smoke.skip>
         <cef4j.cefIndependent>true</cef4j.cefIndependent>
     </properties>
     <dependencies>
-        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-core</artifactId></dependency>
-        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-api</artifactId></dependency>
+        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote</artifactId></dependency>
         <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId></dependency>
         <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-code-policy</artifactId><scope>provided</scope></dependency>
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>

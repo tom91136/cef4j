@@ -18,9 +18,9 @@ Runtime baseline: Java 11. Building requires JDK 17+ and a platform C++ toolchai
 | Swing in-process OSR | `cef4j-inprocess-swing` (`CefBrowserPanel`) |
 | Crash-isolated JavaFX/Swing | `cef4j-remote-jfx` / `cef4j-remote-swing` |
 | Low-level in-process CEF API | `cef4j-api` |
-| Generated remote CEF API | `cef4j-remote-api` |
+| Remote CEF API, runtime server lifecycle | `cef4j-remote` |
 | Typed Chrome DevTools Protocol | `cef4j-cdp` plus a Gson or Jackson codec |
-| W3C WebDriver endpoint | `cef4j-inprocess-webdriver` / `cef4j-remote-webdriver` |
+| W3C WebDriver endpoint | `cef4j-inprocess-webdriver` / `cef4j-remote` |
 | `java.net.URL` over Chromium's network stack | `cef4j-http` (`CefHttp`) |
 
 Both hosting modes support Linux, Windows, and macOS on x86-64 and ARM64. Remote mode runs CEF in
@@ -191,13 +191,13 @@ factory.
 | `cef4j-codegen`, `cef4j-platform` | binding generation and the native bridge build |
 | `cef4j-api`, `cef4j-platform-*` | in-process API and published platform bridges |
 | `cef4j-inprocess-{jfx,swing}` | toolkit-specific in-process OSR |
-| `cef4j-remote-core`, `cef4j-remote-api` | transports, sessions, supervision, and generated remote API |
+| `cef4j-remote` | transports, sessions, supervision, generated remote API, and remote WebDriver adapter |
 | `cef4j-runtime-server-*` | thin native runtime server distributions |
 | `cef4j-remote-frame`, `cef4j-remote-{jfx,swing}` | frame providers, codecs, MJPEG, and remote UI surfaces |
 | `cef4j-cdp` | typed CDP API and in-process/remote adapters |
 | `cef4j-http` | opt-in `java.net.URL` handlers over CEF's network stack |
 | `cef4j-codecs-{gson,jackson}` | CDP, recording/replay, and WebDriver codecs |
-| `cef4j-webdriver`, `cef4j-{inprocess,remote}-webdriver` | W3C endpoint and hosting adapters |
+| `cef4j-webdriver`, `cef4j-inprocess-webdriver` | W3C endpoint and in-process hosting adapter |
 | `cef4j-runtime-packager` | independently versioned CEF acquisition and packaging CLI |
 | `cef4j-test-support`, `cef4j-test-shared`, `cef4j-integration-tests` | reusable test infrastructure and cross-backend contracts |
 | `cef4j-sample` | Swing and JavaFX examples |

@@ -26,12 +26,7 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-core</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-api</artifactId>
+            <artifactId>cef4j-remote</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

@@ -343,7 +343,7 @@ jobs:
             cef4j-cdp/src/main/java/net/kurobako/cef4j/cdp/generated \
             cef4j-cdp/src/main/resources/META-INF/cef4j/cdp \
             cef4j-platform/native/gen \
-            cef4j-remote-api/src/main/java/net/kurobako/cef4j/ipc/protocol/gen \
+            cef4j-remote/src/main/java/net/kurobako/cef4j/ipc/protocol/gen \
             cef4j-runtime-server/src/main/cpp/gen)
           if [ -n "${generated_status}" ]; then
             echo "Generated sources differ from the checked-in tree:" >&2
@@ -353,7 +353,7 @@ jobs:
               cef4j-cdp/src/main/java/net/kurobako/cef4j/cdp/generated \
               cef4j-cdp/src/main/resources/META-INF/cef4j/cdp \
               cef4j-platform/native/gen \
-              cef4j-remote-api/src/main/java/net/kurobako/cef4j/ipc/protocol/gen \
+              cef4j-remote/src/main/java/net/kurobako/cef4j/ipc/protocol/gen \
               cef4j-runtime-server/src/main/cpp/gen
             exit 1
           fi

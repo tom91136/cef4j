@@ -37,11 +37,6 @@
 
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-frame</artifactId>
             <scope>test</scope>
         </dependency>
@@ -53,11 +48,6 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-swing</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -77,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-webdriver</artifactId>
+            <artifactId>cef4j-remote</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

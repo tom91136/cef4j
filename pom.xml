@@ -76,6 +76,7 @@
         <java11.runtime.smoke.skip>true</java11.runtime.smoke.skip>
         <!-- Modules whose tests never load CEF set this so CI can run them once per OS/JDK instead of per CEF. -->
         <cef4j.cefIndependent>false</cef4j.cefIndependent>
+        <cef4j.cefIndependentTests.skip>false</cef4j.cefIndependentTests.skip>
 
         <exec.skip>false</exec.skip>
 
@@ -105,14 +106,12 @@
         <module>cef4j-cdp</module>
         <module>cef4j-codecs-jackson</module>
         <module>cef4j-codecs-gson</module>
-        <module>cef4j-remote-core</module>
         <module>cef4j-runtime-server</module>
         <module>cef4j-runtime-packager</module>
-        <module>cef4j-remote-api</module>
+        <module>cef4j-remote</module>
         <module>cef4j-remote-frame</module>
         <module>cef4j-remote-swing</module>
         <module>cef4j-webdriver</module>
-        <module>cef4j-remote-webdriver</module>
         <module>cef4j-inprocess-webdriver</module>
         <module>cef4j-test-support</module>
         <module>cef4j-test-shared</module>
@@ -323,12 +322,7 @@
             </dependency>
             <dependency>
                 <groupId>net.kurobako.cef4j</groupId>
-                <artifactId>cef4j-remote-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kurobako.cef4j</groupId>
-                <artifactId>cef4j-remote-core</artifactId>
+                <artifactId>cef4j-remote</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -344,11 +338,6 @@
             <dependency>
                 <groupId>net.kurobako.cef4j</groupId>
                 <artifactId>cef4j-remote-swing</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kurobako.cef4j</groupId>
-                <artifactId>cef4j-remote-webdriver</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

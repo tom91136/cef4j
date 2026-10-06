@@ -17,15 +17,11 @@
     <dependencies>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-frame</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-core</artifactId>
+            <artifactId>cef4j-remote</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
