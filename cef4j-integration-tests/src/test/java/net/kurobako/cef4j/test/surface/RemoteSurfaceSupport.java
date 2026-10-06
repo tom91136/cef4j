@@ -20,6 +20,7 @@ import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.TestDeadline;
+import net.kurobako.cef4j.test.TestResources;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
 final class RemoteSurfaceSupport {
@@ -43,20 +44,8 @@ final class RemoteSurfaceSupport {
             CefSession session = new CefSessionImpl(transport, timeout);
             return new RuntimeFixture(server, transport, session);
         } catch (Exception failure) {
-            if (transport != null) {
-                try {
-                    transport.close();
-                } catch (RuntimeException cleanupFailure) {
-                    failure.addSuppressed(cleanupFailure);
-                }
-            }
-            if (server != null) {
-                try {
-                    server.close();
-                } catch (RuntimeException cleanupFailure) {
-                    failure.addSuppressed(cleanupFailure);
-                }
-            }
+            TestResources.closeAfterFailure(transport, failure);
+            TestResources.closeAfterFailure(server, failure);
             throw failure;
         }
     }

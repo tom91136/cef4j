@@ -1,5 +1,8 @@
 package net.kurobako.cef4j.test.surface;
 
+import static net.kurobako.cef4j.test.TestResources.closeAfterFailure;
+import static net.kurobako.cef4j.test.TestResources.merge;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.time.Duration;
@@ -184,19 +187,5 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
                 original.addSuppressed(cleanupFailure);
             }
         }
-    }
-
-    private static void closeAfterFailure(AutoCloseable resource, Exception original) {
-        try {
-            resource.close();
-        } catch (Exception cleanupFailure) {
-            original.addSuppressed(cleanupFailure);
-        }
-    }
-
-    private static RuntimeException merge(@javax.annotation.Nullable RuntimeException failure, RuntimeException next) {
-        if (failure == null) return next;
-        failure.addSuppressed(next);
-        return failure;
     }
 }

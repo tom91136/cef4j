@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.ipc.frame;
 
+import static net.kurobako.cef4j.test.TestResources.closeAfterFailure;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -200,15 +202,6 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
             failure = RemoteCefBrowserBackend.close(failure, transport);
             failure = RemoteCefBrowserBackend.close(failure, server);
             if (failure != null) throw failure;
-        }
-    }
-
-    private static void closeAfterFailure(@javax.annotation.Nullable AutoCloseable resource, Exception original) {
-        if (resource == null) return;
-        try {
-            resource.close();
-        } catch (Exception cleanupFailure) {
-            original.addSuppressed(cleanupFailure);
         }
     }
 
