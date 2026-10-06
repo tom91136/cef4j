@@ -21,6 +21,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -36,6 +39,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Test;
 
 public abstract class WebDriverServerContract {
@@ -51,7 +55,7 @@ public abstract class WebDriverServerContract {
             try (WebDriverServer server = WebDriverServer.start(
                     new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
                     capabilities -> CompletableFuture.completedFuture(new Backend()),
-                    java.time.Duration.ofSeconds(5),
+                    Duration.ofSeconds(5),
                     codec(),
                     executor)) {
                 assertThat(statusReady(server)).isTrue();
@@ -221,6 +225,229 @@ public abstract class WebDriverServerContract {
         assertThat(new String(codec().encode(decoded), StandardCharsets.UTF_8)).isEqualTo(json);
     }
 
+    @Test
+    final void ownsOneSessionAndReportsW3cCapabilities() throws Exception {
+        assertThat(WebDriverJsonCodec.installed().cdpCodec().getClass())
+                .isEqualTo(codec().cdpCodec().getClass());
+        AtomicReference<JsonObject> requested = new AtomicReference<>();
+        ScriptedBackend backend = new ScriptedBackend();
+        try (WebDriverServer server = WebDriverServer.start(capabilities -> {
+            requested.set(capabilities.deepCopy());
+            return CompletableFuture.completedFuture(backend);
+        })) {
+            Reply initial = exchange(server, "GET", "/status", null);
+            assertThat(initial.status).isEqualTo(200);
+            assertThat(initial.value().asObject().get("ready").booleanValue()).isTrue();
+
+            String capabilities = "{\"capabilities\":{\"alwaysMatch\":{"
+                    + "\"browserName\":\"cef4j\",\"pageLoadStrategy\":\"normal\"},"
+                    + "\"firstMatch\":[{\"cef4j:options\":{\"transport\":\"uds\"}}]}}";
+            Reply created = exchange(server, "POST", "/session", capabilities);
+
+            assertThat(created.status).isEqualTo(200);
+            JsonObject sessionValue = created.value().asObject();
+            String sessionId = sessionValue.get("sessionId").string();
+            assertThat(sessionId).isNotBlank();
+            assertThat(sessionValue.object("capabilities").get("browserName").string())
+                    .isEqualTo("cef4j");
+            assertThat(java.util.Objects.requireNonNull(requested.get())
+                            .object("cef4j:options")
+                            .get("transport")
+                            .string())
+                    .isEqualTo("uds");
+
+            Reply second = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
+            assertError(second, 500, "session not created");
+
+            Reply deleted = exchange(server, "DELETE", "/session/" + sessionId, null);
+            assertThat(deleted.status).isEqualTo(200);
+            assertThat(deleted.value().isNull()).isTrue();
+            assertThat(backend.closed).isTrue();
+            assertThat(exchange(server, "GET", "/status", null)
+                            .value()
+                            .asObject()
+                            .get("ready")
+                            .booleanValue())
+                    .isTrue();
+        }
+    }
+
+    @Test
+    final void routesInitialBrowserCommandSlice() throws Exception {
+        ScriptedBackend backend = new ScriptedBackend();
+        try (WebDriverServer server =
+                WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
+            String prefix = "/session/" + createSession(server);
+
+            assertThat(exchange(server, "POST", prefix + "/url", "{\"url\":\"https://example.test/page\"}")
+                            .value()
+                            .isNull())
+                    .isTrue();
+            assertThat(backend.url).isEqualTo("https://example.test/page");
+            assertThat(exchange(server, "GET", prefix + "/url", null).value().string())
+                    .isEqualTo("https://example.test/page");
+            assertThat(exchange(server, "GET", prefix + "/title", null).value().string())
+                    .isEqualTo("Fake title");
+            assertThat(exchange(server, "GET", prefix + "/source", null).value().string())
+                    .isEqualTo("<html>fake</html>");
+
+            Reply script = exchange(
+                    server,
+                    "POST",
+                    prefix + "/execute/sync",
+                    "{\"script\":\"return arguments[0]\",\"args\":[{\"answer\":42}]}");
+            assertThat(script.value().asObject().get("answer").intValue()).isEqualTo(42);
+            assertThat(backend.lastScript).isEqualTo("return arguments[0]");
+
+            assertThat(exchange(server, "GET", prefix + "/screenshot", null)
+                            .value()
+                            .string())
+                    .isEqualTo("iVBORw0KGgo=");
+        }
+    }
+
+    @Test
+    final void returnsStandardErrorsForBadRequests() throws Exception {
+        ScriptedBackend backend = new ScriptedBackend();
+        try (WebDriverServer server =
+                WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
+            assertError(exchange(server, "POST", "/session", "not-json"), 400, "invalid argument");
+            assertError(
+                    exchange(server, "POST", "/session", "{\"capabilities\":{\"alwaysMatch\":{\"unexpected\":true}}}"),
+                    400,
+                    "invalid argument");
+            assertError(exchange(server, "GET", "/session/missing/url", null), 404, "invalid session id");
+
+            String sessionId = createSession(server);
+            assertError(
+                    exchange(server, "POST", "/session/" + sessionId + "/execute/sync", "{\"script\":7,\"args\":[]}"),
+                    400,
+                    "invalid argument");
+            assertError(
+                    exchange(server, "GET", "/session/" + sessionId + "/not-a-command", null), 404, "unknown command");
+        }
+    }
+
+    @Test
+    final void mapsBackendTimeoutAndPreservesLoopbackDefault() throws Exception {
+        ScriptedBackend backend = new ScriptedBackend();
+        backend.hangNavigation = true;
+        try (WebDriverServer server = WebDriverServer.start(
+                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
+                ignored -> CompletableFuture.completedFuture(backend),
+                Duration.ofMillis(50),
+                codec())) {
+            assertThat(server.endpoint().getHost()).isIn("127.0.0.1", "0:0:0:0:0:0:0:1", "::1");
+            String sessionId = createSession(server);
+            exchange(server, "POST", "/session/" + sessionId + "/timeouts", "{\"pageLoad\":50}");
+            Reply response =
+                    exchange(server, "POST", "/session/" + sessionId + "/url", "{\"url\":\"https://slow.test\"}");
+            assertError(response, 500, "timeout");
+            assertThat(backend.cancelledCommands).hasValue(1);
+            assertThat(backend.closed).isFalse();
+            assertThat(exchange(server, "GET", "/session/" + sessionId + "/timeouts", null).status)
+                    .isEqualTo(200);
+        }
+    }
+
+    @Test
+    final void appliesTimeoutsRequestedAtSessionCreation() throws Exception {
+        try (WebDriverServer server =
+                WebDriverServer.start(ignored -> CompletableFuture.completedFuture(new ScriptedBackend()), codec())) {
+            Reply created = exchange(
+                    server,
+                    "POST",
+                    "/session",
+                    "{\"capabilities\":{\"alwaysMatch\":{\"timeouts\":{\"implicit\":123}}}}");
+            String sessionId = created.value().asObject().get("sessionId").string();
+
+            JsonObject timeouts = exchange(server, "GET", "/session/" + sessionId + "/timeouts", null)
+                    .value()
+                    .asObject();
+            assertThat(timeouts.get("implicit").longValue()).isEqualTo(123L);
+        }
+    }
+
+    @Test
+    final void closesBackendThatArrivesAfterSessionCreationTimeout() throws Exception {
+        CompletableFuture<AutomationBackend> creation = new CompletableFuture<>();
+        ScriptedBackend backend = new ScriptedBackend();
+        try (WebDriverServer server = WebDriverServer.start(
+                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
+                ignored -> creation,
+                Duration.ofMillis(25),
+                codec())) {
+            Reply response = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
+            assertError(response, 500, "timeout");
+            creation.complete(backend);
+            TestDeadline.after(Duration.ofSeconds(1))
+                    .until(backend.closed::get, Duration.ofMillis(2), "late backend cleanup");
+            assertThat(backend.closed).isTrue();
+        }
+    }
+
+    @Test
+    final void implicitWaitRetriesElementSearch() throws Exception {
+        ScriptedBackend backend = new ScriptedBackend();
+        backend.emptySearches.set(2);
+        try (WebDriverServer server =
+                WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
+            String sessionId = createSession(server);
+            exchange(server, "POST", "/session/" + sessionId + "/timeouts", "{\"implicit\":500}");
+            Reply found = exchange(
+                    server,
+                    "POST",
+                    "/session/" + sessionId + "/element",
+                    "{\"using\":\"css selector\",\"value\":\"#eventual\"}");
+            assertThat(found.status).isEqualTo(200);
+            assertThat(backend.searches).hasValue(3);
+        }
+    }
+
+    @Test
+    final void maximumImplicitWaitDoesNotOverflowDeadline() throws Exception {
+        ScriptedBackend backend = new ScriptedBackend();
+        backend.emptySearches.set(1);
+        try (WebDriverServer server =
+                WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
+            String sessionId = createSession(server);
+            exchange(server, "POST", "/session/" + sessionId + "/timeouts", "{\"implicit\":9223372036854775807}");
+            Reply found = exchange(
+                    server,
+                    "POST",
+                    "/session/" + sessionId + "/element",
+                    "{\"using\":\"css selector\",\"value\":\"#eventual\"}");
+            assertThat(found.status).isEqualTo(200);
+            assertThat(backend.searches).hasValue(2);
+        }
+    }
+
+    private String createSession(WebDriverServer server) throws IOException, InterruptedException {
+        Reply response = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
+        assertThat(response.status).isEqualTo(200);
+        return response.value().asObject().get("sessionId").string();
+    }
+
+    private Reply exchange(WebDriverServer server, String method, String path, @Nullable String body)
+            throws IOException, InterruptedException {
+        HttpRequest.BodyPublisher publisher =
+                body == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body);
+        HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve(path))
+                .method(method, publisher)
+                .header("Content-Type", "application/json; charset=utf-8")
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return new Reply(response.statusCode(), codec().decode(response.body()).asObject());
+    }
+
+    private static void assertError(Reply response, int status, String error) {
+        assertThat(response.status).isEqualTo(status);
+        JsonObject value = response.value().asObject();
+        assertThat(value.get("error").string()).isEqualTo(error);
+        assertThat(value.get("message").string()).isNotBlank();
+        assertThat(value.get("stacktrace").string()).isEmpty();
+    }
+
     private void assertCookieFailure(String json, String message) {
         JsonObject cookie = codec().decode(json).asObject();
         assertThatThrownBy(() -> CdpAutomationBackend.validateCookie(cookie))
@@ -353,6 +580,20 @@ public abstract class WebDriverServerContract {
 
         private JsonObject value() {
             return value;
+        }
+    }
+
+    private static final class Reply {
+        private final int status;
+        private final JsonObject body;
+
+        private Reply(int status, JsonObject body) {
+            this.status = status;
+            this.body = body;
+        }
+
+        private JsonElement value() {
+            return body.get("value");
         }
     }
 
@@ -496,6 +737,70 @@ public abstract class WebDriverServerContract {
         @Override
         public CompletableFuture<byte[]> screenshot() {
             return CompletableFuture.completedFuture(new byte[0]);
+        }
+
+        @Override
+        public void close() {
+            closed.set(true);
+        }
+    }
+
+    private static final class ScriptedBackend extends Backend {
+        private final AtomicBoolean closed = new AtomicBoolean();
+        private final AtomicInteger cancelledCommands = new AtomicInteger();
+        private final AtomicInteger searches = new AtomicInteger();
+        private final AtomicInteger emptySearches = new AtomicInteger();
+        private volatile String url = "about:blank";
+        private volatile String lastScript = "";
+        private volatile boolean hangNavigation;
+
+        @Override
+        public CompletableFuture<Void> navigate(String url) {
+            this.url = url;
+            return hangNavigation ? new CompletableFuture<>() : CompletableFuture.completedFuture(null);
+        }
+
+        @Override
+        public CompletableFuture<String> currentUrl() {
+            return CompletableFuture.completedFuture(url);
+        }
+
+        @Override
+        public CompletableFuture<String> title() {
+            return CompletableFuture.completedFuture("Fake title");
+        }
+
+        @Override
+        public CompletableFuture<String> pageSource() {
+            return CompletableFuture.completedFuture("<html>fake</html>");
+        }
+
+        @Override
+        public CompletableFuture<JsonElement> executeScript(String script, JsonArray arguments) {
+            lastScript = script;
+            JsonElement result = arguments.size() == 0
+                    ? new JsonPrimitive("no arguments")
+                    : arguments.get(0).deepCopy();
+            return CompletableFuture.completedFuture(result);
+        }
+
+        @Override
+        public CompletableFuture<byte[]> screenshot() {
+            return CompletableFuture.completedFuture(
+                    new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A});
+        }
+
+        @Override
+        public CompletableFuture<List<String>> findElements(
+                String using, String value, Optional<String> parentElement) {
+            searches.incrementAndGet();
+            if (emptySearches.getAndDecrement() > 0) return CompletableFuture.completedFuture(List.of());
+            return CompletableFuture.completedFuture(List.of("element-1"));
+        }
+
+        @Override
+        public void cancelPendingCommands(Throwable failure) {
+            cancelledCommands.incrementAndGet();
         }
 
         @Override

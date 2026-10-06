@@ -1,10 +1,8 @@
-package net.kurobako.cef4j.ipc.devtools.gson;
+package net.kurobako.cef4j.ipc.devtools;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -16,11 +14,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpException;
-import net.kurobako.cef4j.cdp.gson.GsonCdpCodec;
-import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAgentDetachedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
@@ -37,7 +35,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class DevToolsSessionTest {
+public abstract class DevToolsSessionContract {
 
     private static boolean hasSendDevToolsMessage;
 
@@ -51,8 +49,11 @@ class DevToolsSessionTest {
         }
     }
 
+    @Nonnull
+    protected abstract CdpCodec codec();
+
     @Test
-    void correlatesCommandsAndEventsOverTransportNeutralSession() throws Exception {
+    final void correlatesCommandsAndEventsOverTransportNeutralSession() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
@@ -60,7 +61,7 @@ class DevToolsSessionTest {
             RemoteHandle browser = new RemoteHandle(11);
             BrowserHost host = new BrowserHost(session, new RemoteHandle(22));
 
-            var attaching = DevToolsSession.attach(session, browser, host, new GsonCdpCodec());
+            var attaching = DevToolsSession.attach(session, browser, host, codec());
             Frame attach = peer.receive();
             assertThat(attach.messageId).isEqualTo(27);
             peer.respond(attach, null);
@@ -70,12 +71,11 @@ class DevToolsSessionTest {
             var command = devTools.send("Runtime.evaluate", params);
             Frame send = peer.receive();
             assertThat(send.messageId).isEqualTo(sendDevToolsMessageId());
-            JsonObject wireJson = JsonParser.parseString(new String(requestMessage(send), StandardCharsets.UTF_8))
-                    .getAsJsonObject();
-            assertThat(wireJson.get("method").getAsString()).isEqualTo("Runtime.evaluate");
-            assertThat(wireJson.getAsJsonObject("params").get("expression").getAsString())
+            Map<?, ?> wireJson = (Map<?, ?>) Objects.requireNonNull(codec().decode(requestMessage(send)));
+            assertThat(wireJson.get("method")).isEqualTo("Runtime.evaluate");
+            assertThat(((Map<?, ?>) Objects.requireNonNull(wireJson.get("params"))).get("expression"))
                     .isEqualTo("6 * 7");
-            int commandId = wireJson.get("id").getAsInt();
+            int commandId = ((Number) Objects.requireNonNull(wireJson.get("id"))).intValue();
             peer.respond(send, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
@@ -84,7 +84,7 @@ class DevToolsSessionTest {
             assertThat(((Number) Objects.requireNonNull(response.get("answer"))).intValue())
                     .isEqualTo(42);
 
-            CdpClient typed = new CdpClient(devTools, new GsonCdpCodec());
+            CdpClient typed = new CdpClient(devTools, codec());
             var typedCommand = typed.domains().runtime().evaluate("document.title");
             Frame typedSend = peer.receive();
             int typedId = commandId(typedSend);
@@ -118,14 +118,14 @@ class DevToolsSessionTest {
     }
 
     @Test
-    void reportsCdpErrorsAndFailsPendingCallsWhenAgentDetaches() throws Exception {
+    final void reportsCdpErrorsAndFailsPendingCallsWhenAgentDetaches() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
             RemoteHandle browser = new RemoteHandle(31);
-            var attaching = DevToolsSession.attach(
-                    session, browser, new BrowserHost(session, new RemoteHandle(32)), new GsonCdpCodec());
+            var attaching =
+                    DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(32)), codec());
             peer.respond(peer.receive(), null);
             DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 
@@ -153,14 +153,14 @@ class DevToolsSessionTest {
 
     @Test
     @SuppressWarnings("try")
-    void transportDisconnectFailsPendingCdpCalls() throws Exception {
+    final void transportDisconnectFailsPendingCdpCalls() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
             RemoteHandle browser = new RemoteHandle(41);
-            var attaching = DevToolsSession.attach(
-                    session, browser, new BrowserHost(session, new RemoteHandle(42)), new GsonCdpCodec());
+            var attaching =
+                    DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(42)), codec());
             peer.respond(peer.receive(), null);
             DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
             var pending = devTools.send("Page.captureScreenshot", null);
@@ -175,14 +175,14 @@ class DevToolsSessionTest {
     }
 
     @Test
-    void cancelledCommandDoesNotConsumeALaterResponse() throws Exception {
+    final void cancelledCommandDoesNotConsumeALaterResponse() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
             RemoteHandle browser = new RemoteHandle(51);
-            var attaching = DevToolsSession.attach(
-                    session, browser, new BrowserHost(session, new RemoteHandle(52)), new GsonCdpCodec());
+            var attaching =
+                    DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(52)), codec());
             peer.respond(peer.receive(), null);
             DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 
@@ -203,15 +203,16 @@ class DevToolsSessionTest {
                     browser, ("{\"id\":" + nextId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
 
             assertThat(cancelled).isCancelled();
-            assertThat(next.get(2, TimeUnit.SECONDS)).containsEntry("answer", 42.0);
+            assertThat(((Number) Objects.requireNonNull(
+                                    next.get(2, TimeUnit.SECONDS).get("answer")))
+                            .intValue())
+                    .isEqualTo(42);
         }
     }
 
-    private static int commandId(Frame frame) throws Exception {
-        return JsonParser.parseString(new String(requestMessage(frame), StandardCharsets.UTF_8))
-                .getAsJsonObject()
-                .get("id")
-                .getAsInt();
+    private int commandId(Frame frame) throws ReflectiveOperationException {
+        Map<?, ?> message = (Map<?, ?>) Objects.requireNonNull(codec().decode(requestMessage(frame)));
+        return ((Number) Objects.requireNonNull(message.get("id"))).intValue();
     }
 
     private static int sendDevToolsMessageId() throws ReflectiveOperationException {
@@ -246,7 +247,7 @@ class DevToolsSessionTest {
                 Envelope.Header header = Envelope.readHeader(copy);
                 byte[] payload = new byte[copy.remaining()];
                 copy.get(payload);
-                frames.offer(new Frame(header.corrId, header.messageId, payload));
+                frames.add(new Frame(header.corrId, header.messageId, payload));
             });
         }
 
