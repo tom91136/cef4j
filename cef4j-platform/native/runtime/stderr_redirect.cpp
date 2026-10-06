@@ -95,6 +95,28 @@ static bool setCloseOnExec(int fd) {
     return flags >= 0 && fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == 0;
 }
 
+// CEF's LOG(FATAL) uses __builtin_trap() (SIGTRAP) on Linux; SIGABRT covers abort().
+static void installCrashHandler(int stderrFd) {
+    origStderrFd = stderrFd;
+    struct sigaction sa = {};
+    sa.sa_handler = crashHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESETHAND; // one-shot: avoid re-entry loops
+    sigaction(SIGABRT, &sa, nullptr);
+    sigaction(SIGTRAP, &sa, nullptr);
+}
+
+CEF4J_JNI_EXPORT_RT(void, NativeStderr, installCrashHandler0)(JNIEnv*, jclass) {
+    if (origStderrFd >= 0) return;
+    int fd = dup(STDERR_FILENO);
+    if (fd < 0) return;
+    if (!setCloseOnExec(fd)) {
+        close(fd);
+        return;
+    }
+    installCrashHandler(fd);
+}
+
 CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jclass) {
     // Save original stderr before redirect
     int savedStderr = dup(STDERR_FILENO);
@@ -126,16 +148,8 @@ CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jc
     }
     close(fds[1]);
 
-    // Install crash handler for fatal signals. CEF's LOG(FATAL) uses
-    // __builtin_trap() (SIGTRAP) on Linux. Also handle SIGABRT for abort().
-    origStderrFd = savedStderr;
     stderrReadFd = fds[0];
-    struct sigaction sa = {};
-    sa.sa_handler = crashHandler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_RESETHAND; // one-shot: avoid re-entry loops
-    sigaction(SIGABRT, &sa, nullptr);
-    sigaction(SIGTRAP, &sa, nullptr);
+    installCrashHandler(savedStderr);
 
     // FileInputStream wrapping the pipe read end
     jobject readFd = makeFdObject(env, fds[0]);
@@ -210,6 +224,20 @@ static void crashSignalHandler(int sig) {
     raise(sig);
 }
 
+// SEH catches __debugbreak() (CEF's LOG(FATAL) on Windows); signal() catches abort().
+static void installCrashHandler(HANDLE stderrHandle) {
+    origStderrHandle = stderrHandle;
+    SetUnhandledExceptionFilter(crashExceptionFilter);
+    signal(SIGABRT, crashSignalHandler);
+}
+
+CEF4J_JNI_EXPORT_RT(void, NativeStderr, installCrashHandler0)(JNIEnv*, jclass) {
+    if (origStderrHandle != INVALID_HANDLE_VALUE) return;
+    HANDLE handle = GetStdHandle(STD_ERROR_HANDLE);
+    if (handle == INVALID_HANDLE_VALUE || handle == NULL) return;
+    installCrashHandler(handle);
+}
+
 CEF4J_JNI_EXPORT_RT(void, NativeStderr, setCrashLogPath0)(JNIEnv* env, jclass, jstring jpath) {
     const char* path = env->GetStringUTFChars(jpath, nullptr);
     if (path) {
@@ -248,11 +276,7 @@ CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jc
     _dup2(fds[1], _fileno(stderr));
     _close(fds[1]);
 
-    // Install crash handlers. SEH catches __debugbreak() (CEF's LOG(FATAL) on
-    // Windows). signal() catches abort().
-    origStderrHandle = reinterpret_cast<HANDLE>(_get_osfhandle(savedStderr));
-    SetUnhandledExceptionFilter(crashExceptionFilter);
-    signal(SIGABRT, crashSignalHandler);
+    installCrashHandler(reinterpret_cast<HANDLE>(_get_osfhandle(savedStderr)));
 
     // FileInputStream wrapping the pipe read end
     jobject readFd = makeFdObject(env, fds[0]);

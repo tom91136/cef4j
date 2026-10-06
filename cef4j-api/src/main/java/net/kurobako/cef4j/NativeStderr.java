@@ -24,21 +24,25 @@ final class NativeStderr {
     private NativeStderr() {}
 
     /**
-     * Redirect native stderr to a pipe and start a daemon thread that reads lines and logs them via SLF4J.
+     * Install the native crash handler, redirect native stderr to a pipe, and start a daemon thread that reads lines
+     * and logs them via SLF4J.
      *
      * <p>Java's {@code System.err} is reassigned to the original stderr fd, so only native (CEF) output goes through
-     * the SLF4J pipe.
+     * the SLF4J pipe. The crash handler is installed even when the redirect is disabled or fails.
      */
     static synchronized void install() {
         if (installed) return;
+        installed = true;
         if (Boolean.getBoolean("cef4j.disableStderrRedirect")) {
             log.debug("Stderr redirect disabled via -Dcef4j.disableStderrRedirect=true");
+            installCrashHandler0();
             return;
         }
 
         Object[] result = redirectStderr0();
         if (result == null) {
             log.warn("Failed to redirect native stderr - CEF logs will go to stderr");
+            installCrashHandler0();
             return;
         }
 
@@ -65,8 +69,6 @@ final class NativeStderr {
                 "cef4j-stderr-reader");
         reader.setDaemon(true);
         reader.start();
-
-        installed = true;
     }
 
     static boolean isActionable(String line) {
@@ -91,6 +93,8 @@ final class NativeStderr {
     }
 
     private static native Object[] redirectStderr0();
+
+    private static native void installCrashHandler0();
 
     private static native void setCrashLogPath0(String path);
 
