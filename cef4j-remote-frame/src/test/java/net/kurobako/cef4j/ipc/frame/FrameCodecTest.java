@@ -6,56 +6,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
-import net.kurobako.cef4j.test.ServiceLoaderFixture;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 final class FrameCodecTest {
-    @Test
-    void rejectsDuplicateProviderIds(@TempDir Path temporaryDirectory) throws Exception {
-        try (ServiceLoaderFixture fixture = new ServiceLoaderFixture(
-                temporaryDirectory, FrameCodecProvider.class, FirstProvider.class, SecondProvider.class)) {
-            assertThat(fixture.isActive()).isTrue();
-            assertThatThrownBy(FrameCodecs::providers)
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Duplicate frame codec id 'duplicate'");
-        }
-    }
-
-    public static final class FirstProvider extends DuplicateProvider {}
-
-    public static final class SecondProvider extends DuplicateProvider {}
-
-    public abstract static class DuplicateProvider implements FrameCodecProvider {
-        @Override
-        public CodecDescriptor descriptor() {
-            return new CodecDescriptor("duplicate", "application/octet-stream", false);
-        }
-
-        @Override
-        public FrameCodec newEncoder(Map<String, String> configuration) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public FrameDecoder newDecoder(Map<String, String> configuration) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     @Test
     void pipelineCloseIsBoundedWhenCodecDoesNotReturn() throws Exception {
         CountDownLatch encodeEntered = new CountDownLatch(1);
@@ -122,14 +84,6 @@ final class FrameCodecTest {
     }
 
     @Test
-    void rawDecoderRejectsPayloadShorterThanItsEnvelope() {
-        FrameDecoder decoder = new RawFrameCodecProvider().newDecoder(Map.of());
-        EncodedFrame encoded = new EncodedFrame(
-                decoder.descriptor(), 1, EncodedFrame.NO_BASE_SEQUENCE, true, 2, 2, ByteBuffer.allocate(15));
-        assertThatThrownBy(() -> decoder.decode(encoded)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     void pipelineSerializesKeyFrameRequestsAndCloseWithEncode() throws Exception {
         CountDownLatch encodeEntered = new CountDownLatch(1);
         CountDownLatch releaseEncode = new CountDownLatch(1);
@@ -193,63 +147,21 @@ final class FrameCodecTest {
     }
 
     @Test
-    void negotiatesExactCodecAndRequestsKeyFrameAfterDeltaGap() throws Exception {
-        CodecDescriptor delta = new CodecDescriptor("test-delta", "application/x-test", true);
-        assertThat(FrameCodecNegotiation.select(
-                                java.util.List.of(delta, new CodecDescriptor("jpeg", "image/jpeg", false)),
-                                java.util.List.of(new CodecDescriptor("test-delta", "application/x-test", true)))
-                        .orElseThrow())
-                .isSameAs(delta);
-        assertThat(FrameCodecNegotiation.select(
-                        java.util.List.of(delta),
-                        java.util.List.of(new CodecDescriptor("test-delta", "application/x-test", false))))
-                .isEmpty();
-
-        AtomicInteger keyFrameRequests = new AtomicInteger();
-        FrameDecoder decoder = new FrameDecoder() {
-            @Override
-            public CodecDescriptor descriptor() {
-                return delta;
-            }
-
-            @Override
-            public RawFrame decode(EncodedFrame encoded) {
-                return frame(
-                        encoded.sequence(),
-                        encoded.width(),
-                        encoded.height(),
-                        new byte[encoded.width() * encoded.height() * 4]);
-            }
-        };
-        try (EncodedFrameReceiver receiver = new EncodedFrameReceiver(decoder, keyFrameRequests::incrementAndGet)) {
-            assertThat(receiver.accept(encoded(delta, 10, EncodedFrame.NO_BASE_SEQUENCE, true)))
-                    .isPresent();
-            assertThat(receiver.accept(encoded(delta, 12, 11, false))).isEqualTo(Optional.empty());
-            assertThat(keyFrameRequests).hasValue(1);
-            assertThat(receiver.accept(encoded(delta, 13, EncodedFrame.NO_BASE_SEQUENCE, true)))
-                    .isPresent();
-            receiver.restart();
-            assertThat(keyFrameRequests).hasValue(2);
-        }
-    }
-
-    @Test
-    void discoversAndRoundTripsJpeg() throws Exception {
-        assertThat(FrameCodecs.available()).contains("jpeg", "raw-bgra");
-        FrameCodecProvider provider = FrameCodecs.find("jpeg");
+    void encodesIndependentlyDecodableJpeg() throws Exception {
         RawFrame source = frame(17L, 2, 1, new byte[] {0, 0, (byte) 255, (byte) 255, (byte) 255, 0, 0, (byte) 255});
-        try (FrameCodec encoder = provider.newEncoder(Map.of("quality", "0.95"));
-                FrameDecoder decoder = provider.newDecoder(Map.of())) {
+        try (FrameCodec encoder = new JpegFrameCodec(0.95f)) {
             EncodedFrame encoded = encoder.encode(source);
             assertThat(encoded.codec().mediaType()).isEqualTo("image/jpeg");
             assertThat(encoded.sequence()).isEqualTo(17L);
             assertThat(encoded.keyFrame()).isTrue();
             assertThat(encoded.baseSequence()).isEqualTo(EncodedFrame.NO_BASE_SEQUENCE);
 
-            RawFrame decoded = decoder.decode(encoded);
-            assertThat(decoded.width()).isEqualTo(2);
-            assertThat(decoded.height()).isEqualTo(1);
-            assertThat(decoded.pixels().remaining()).isEqualTo(8);
+            ByteBuffer payload = encoded.payload();
+            byte[] bytes = new byte[payload.remaining()];
+            payload.get(bytes);
+            java.awt.image.BufferedImage decoded = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(bytes));
+            assertThat(decoded.getWidth()).isEqualTo(2);
+            assertThat(decoded.getHeight()).isEqualTo(1);
         }
     }
 

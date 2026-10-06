@@ -39,7 +39,8 @@ BiDi waits until Classic has a stable conformance baseline.
 - Load-test WebSocket fragmentation, reconnects, slow readers, and bounded queues.
 - Harden Windows pipe cancellation and mapped-file cleanup.
 - Compare explicit UDS with local ZMQ on Linux and macOS.
-- Publish a stateful custom-codec example. Keep MJPEG as the built-in browser-compatible stream.
+- Publish a stateful custom `FrameCodec` example for `EncodedFramePipeline`. Keep MJPEG as the built-in
+  browser-compatible stream.
 
 ## Remote security
 

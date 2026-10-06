@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -320,7 +319,7 @@ public final class MjpegHttpServer implements AutoCloseable {
     }
 
     private static Supplier<FrameCodec> codecFactory(Configuration configuration) {
-        return () -> new JpegFrameCodecProvider().newEncoder(Map.of("quality", Float.toString(configuration.quality)));
+        return () -> new JpegFrameCodec(configuration.quality);
     }
 
     private static ExecutorService newHttpExecutor() {
