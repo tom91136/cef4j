@@ -164,40 +164,7 @@ static void initRef(cef_base_ref_counted_t* base) {
     };
 }
 
-class ScopedCefString {
-public:
-    ScopedCefString() : s_{} {}
-    explicit ScopedCefString(const std::string& utf8) : s_{} {
-        cef_string_utf8_to_utf16(utf8.data(), utf8.size(), &s_);
-    }
-    static ScopedCefString take(cef_string_userfree_t uf) {
-        ScopedCefString s;
-        if (uf) {
-            s.s_ = *uf;
-            uf->str = nullptr;
-            uf->length = 0;
-            cef_string_userfree_free(uf);
-        }
-        return s;
-    }
-    ~ScopedCefString() { cef_string_clear(&s_); }
-    ScopedCefString(const ScopedCefString&) = delete;
-    ScopedCefString& operator=(const ScopedCefString&) = delete;
-    ScopedCefString(ScopedCefString&& o) noexcept : s_(o.s_) { o.s_ = {}; }
-    cef_string_t* get() { return &s_; }
-    const cef_string_t* get() const { return &s_; }
-    std::string toUtf8() const {
-        if (s_.length == 0) return {};
-        cef_string_utf8_t utf8{};
-        cef_string_utf16_to_utf8(s_.str, s_.length, &utf8);
-        std::string r(utf8.str, utf8.length);
-        cef_string_utf8_clear(&utf8);
-        return r;
-    }
-
-private:
-    cef_string_t s_;
-};
+using gendisp::ScopedCefString;
 
 static IpcServer* g_ipc       = nullptr;
 static cef_client_t* g_client = nullptr;

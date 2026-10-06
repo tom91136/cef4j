@@ -1764,8 +1764,7 @@ namespace net_kurobako_cef4j_ipc_protocol_gen_dispatcher {
 
 namespace genvisitors = net_kurobako_cef4j_ipc_protocol_gen_visitors;
 
-/** RAII shim around `cef_string_t` for params and `cef_string_userfree_t` for returns; mirrors the runtime server's
-  * own ScopedCefString. Lives in the dispatcher namespace to avoid clashing with the runtime server's copy. */
+/** RAII shim around `cef_string_t` for params and `cef_string_userfree_t` for returns. */
 class ScopedCefString {
 public:
     ScopedCefString() : s_{} {}

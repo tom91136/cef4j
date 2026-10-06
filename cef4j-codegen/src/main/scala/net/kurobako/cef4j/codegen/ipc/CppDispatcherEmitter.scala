@@ -113,8 +113,7 @@ object CppDispatcherEmitter {
        |
        |namespace genvisitors = ${ns}_visitors;
        |
-       |/** RAII shim around `cef_string_t` for params and `cef_string_userfree_t` for returns; mirrors the runtime server's
-       |  * own ScopedCefString. Lives in the dispatcher namespace to avoid clashing with the runtime server's copy. */
+       |/** RAII shim around `cef_string_t` for params and `cef_string_userfree_t` for returns. */
        |class ScopedCefString {
        |public:
        |    ScopedCefString() : s_{} {}
