@@ -76,7 +76,7 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
             return backend;
         } catch (RuntimeException failure) {
             adapter.close();
-            return failed(failure);
+            return CompletableFuture.failedFuture(failure);
         }
     }
 
@@ -175,11 +175,5 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
         } finally {
             runtime.close();
         }
-    }
-
-    private static <T> CompletableFuture<T> failed(Throwable failure) {
-        CompletableFuture<T> result = new CompletableFuture<>();
-        result.completeExceptionally(failure);
-        return result;
     }
 }

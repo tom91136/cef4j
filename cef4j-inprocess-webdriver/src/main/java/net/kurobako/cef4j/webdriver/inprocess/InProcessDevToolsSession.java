@@ -61,10 +61,12 @@ public final class InProcessDevToolsSession implements CdpTransport {
         try {
             observerType = Class.forName("net.kurobako.cef4j.gen.CefDevToolsMessageObserver");
         } catch (ClassNotFoundException unavailableInOlderCef) {
-            return failed(new UnsupportedOperationException("DevTools requires CEF 81 or newer"));
+            return CompletableFuture.failedFuture(
+                    new UnsupportedOperationException("DevTools requires CEF 81 or newer"));
         }
         CefBrowserHost host = browser.getHost().orElse(null);
-        if (host == null) return failed(new IllegalStateException("in-process browser has no host"));
+        if (host == null)
+            return CompletableFuture.failedFuture(new IllegalStateException("in-process browser has no host"));
         InProcessDevToolsSession session = new InProcessDevToolsSession(host, jsonCodec);
         return onUiThread(() -> {
                     session.observer = createObserver(observerType, session);
@@ -87,7 +89,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
     public CompletableFuture<byte[]> execute(@Nonnull String method, @Nullable byte[] params) {
         Objects.requireNonNull(method, "method");
         if (!method.matches("[A-Za-z0-9_.-]+")) throw new IllegalArgumentException("invalid CDP method name");
-        if (!open.get()) return failed(new IllegalStateException("DevTools session is closed"));
+        if (!open.get()) return CompletableFuture.failedFuture(new IllegalStateException("DevTools session is closed"));
         CdpRequestTracker.Request<byte[]> request = requests.register();
         int id = request.id();
         if (!open.get()) {
@@ -260,7 +262,8 @@ public final class InProcessDevToolsSession implements CdpTransport {
     static <T> CompletableFuture<T> onUiThread(UiCallable<T> action) {
         CefTaskRunner runner =
                 CefTaskRunner.getForThread(CefThreadId.of(CefThreadId.Kind.UI)).orElse(null);
-        if (runner == null) return failed(new IllegalStateException("CEF UI thread is unavailable"));
+        if (runner == null)
+            return CompletableFuture.failedFuture(new IllegalStateException("CEF UI thread is unavailable"));
         CompletableFuture<T> result = new CompletableFuture<>();
         Runnable invoke = () -> {
             try {
@@ -277,12 +280,6 @@ public final class InProcessDevToolsSession implements CdpTransport {
             }
         })) result.completeExceptionally(new IllegalStateException("Failed to post CEF UI task"));
         runner.close();
-        return result;
-    }
-
-    private static <T> CompletableFuture<T> failed(Throwable failure) {
-        CompletableFuture<T> result = new CompletableFuture<>();
-        result.completeExceptionally(failure);
         return result;
     }
 

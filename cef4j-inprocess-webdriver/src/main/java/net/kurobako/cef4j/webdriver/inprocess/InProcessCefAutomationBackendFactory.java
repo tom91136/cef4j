@@ -111,7 +111,7 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
                 return attached;
             } catch (RuntimeException failure) {
                 runtime.close();
-                return failed(failure);
+                return CompletableFuture.failedFuture(failure);
             }
         }
 
@@ -174,12 +174,6 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
             devTools.close();
             runtime.close();
         }
-    }
-
-    private static <T> CompletableFuture<T> failed(Throwable failure) {
-        CompletableFuture<T> result = new CompletableFuture<>();
-        result.completeExceptionally(failure);
-        return result;
     }
 
     @SuppressWarnings("serial")

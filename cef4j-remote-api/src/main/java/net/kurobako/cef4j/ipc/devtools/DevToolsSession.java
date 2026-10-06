@@ -108,7 +108,7 @@ public final class DevToolsSession implements CdpTransport {
     @NullableBoundary("null parameters omit the CDP request body")
     public CompletableFuture<Map<String, Object>> send(@Nonnull String method, @Nullable Map<String, Object> params) {
         Objects.requireNonNull(method, "method");
-        if (!open.get()) return failedFuture(new IllegalStateException("DevTools session is closed"));
+        if (!open.get()) return CompletableFuture.failedFuture(new IllegalStateException("DevTools session is closed"));
 
         CdpRequestTracker.Request<Map<String, Object>> request = requests.register();
         int id = request.id();
@@ -298,12 +298,6 @@ public final class DevToolsSession implements CdpTransport {
         CefSession.HandlerRegistration current = closeRegistration;
         closeRegistration = null;
         if (current != null) current.unregister();
-    }
-
-    private static <T> CompletableFuture<T> failedFuture(Throwable failure) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        future.completeExceptionally(failure);
-        return future;
     }
 
     @FunctionalInterface

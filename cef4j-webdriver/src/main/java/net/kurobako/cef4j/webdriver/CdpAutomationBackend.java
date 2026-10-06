@@ -351,7 +351,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         Objects.requireNonNull(text, "text");
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) >= '\ue000' && text.charAt(i) <= '\ue05d') {
-                return failed(failure(
+                return CompletableFuture.failedFuture(failure(
                         WebDriverError.UNSUPPORTED_OPERATION,
                         "special WebDriver keys are not implemented by this endpoint yet"));
             }
@@ -631,7 +631,8 @@ public final class CdpAutomationBackend implements AutomationBackend {
     private CompletableFuture<String> resolveElement(String id) {
         DOM.BackendNodeId backendNodeId = elements.get(id);
         if (backendNodeId == null) {
-            return failed(failure(WebDriverError.STALE_ELEMENT_REFERENCE, "unknown element: " + id));
+            return CompletableFuture.failedFuture(
+                    failure(WebDriverError.STALE_ELEMENT_REFERENCE, "unknown element: " + id));
         }
         CompletableFuture<String> result = new CompletableFuture<>();
         dom.resolveNode(Optional.empty(), Optional.of(backendNodeId), Optional.empty(), Optional.empty())
@@ -699,11 +700,12 @@ public final class CdpAutomationBackend implements AutomationBackend {
     private static CompletableFuture<String> remoteObjectId(
             Runtime.RemoteObject result, Optional<Runtime.ExceptionDetails> exceptionDetails) {
         if (exceptionDetails.isPresent()) {
-            return failed(failure(
+            return CompletableFuture.failedFuture(failure(
                     WebDriverError.INVALID_SELECTOR, exceptionDetails.get().text()));
         }
         if (result.objectId().isEmpty()) {
-            return failed(failure(WebDriverError.NO_SUCH_ELEMENT, "locator did not produce a DOM node"));
+            return CompletableFuture.failedFuture(
+                    failure(WebDriverError.NO_SUCH_ELEMENT, "locator did not produce a DOM node"));
         }
         return CompletableFuture.completedFuture(result.objectId().get().value());
     }
@@ -727,12 +729,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
                 && !"xpath".equals(using)) {
             throw failure(WebDriverError.INVALID_ARGUMENT, "unsupported locator strategy: " + using);
         }
-    }
-
-    private static <T> CompletableFuture<T> failed(Throwable failure) {
-        CompletableFuture<T> result = new CompletableFuture<>();
-        result.completeExceptionally(failure);
-        return result;
     }
 
     private static WebDriverException failure(WebDriverError error, String message) {

@@ -128,7 +128,7 @@ public final class ReplayCefSession implements CefSession {
                 continuePlaybackLocked();
                 return result;
             } catch (RuntimeException failure) {
-                return failed(failure);
+                return CompletableFuture.failedFuture(failure);
             }
         }
     }
@@ -426,12 +426,6 @@ public final class ReplayCefSession implements CefSession {
                     + payload.position() + " bytes, expected " + encoder.encodedSize());
         }
         return payload.array();
-    }
-
-    private static <T> CompletableFuture<T> failed(Throwable failure) {
-        CompletableFuture<T> result = new CompletableFuture<>();
-        result.completeExceptionally(failure);
-        return result;
     }
 
     private static final class Pending<R extends CefMessageView> {
