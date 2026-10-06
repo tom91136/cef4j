@@ -92,6 +92,8 @@
 
         <!-- Extra JVM args for Surefire; empty by default. Override via -Dsurefire.argLine=... if needed. -->
         <surefire.argLine/>
+        <!-- Third-party asserts (JavaFX, JeroMQ) are disabled in production and must not fail tests. -->
+        <surefire.assertions>-ea:net.kurobako.cef4j...</surefire.assertions>
         <jacoco.argLine/>
     </properties>
 
@@ -965,7 +967,8 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.6</version>
                     <configuration>
-                        <argLine>@{jacoco.argLine} ${surefire.argLine}</argLine>
+                        <enableAssertions>false</enableAssertions>
+                        <argLine>@{jacoco.argLine} ${surefire.assertions} ${surefire.argLine}</argLine>
                         <!-- Must exceed the longest class-level timeout. A constrained runner can spend
                              several minutes establishing CEF before the test itself makes progress. -->
                         <forkedProcessTimeoutInSeconds>1200</forkedProcessTimeoutInSeconds>
@@ -1027,7 +1030,8 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.5.6</version>
                     <configuration>
-                        <argLine>@{jacoco.argLine} ${surefire.argLine}</argLine>
+                        <enableAssertions>false</enableAssertions>
+                        <argLine>@{jacoco.argLine} ${surefire.assertions} ${surefire.argLine}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>

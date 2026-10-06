@@ -99,7 +99,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <reuseForks>false</reuseForks>
-                    <argLine>@{jacoco.argLine} ${surefire.argLine} -Djava.awt.headless=false</argLine>
+                    <argLine>@{jacoco.argLine} ${surefire.assertions} ${surefire.argLine} -Djava.awt.headless=false</argLine>
                 </configuration>
             </plugin>
             <plugin>
