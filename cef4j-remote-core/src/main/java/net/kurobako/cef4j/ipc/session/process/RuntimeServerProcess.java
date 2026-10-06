@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLContext;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.CefTransports;
@@ -355,14 +354,13 @@ public final class RuntimeServerProcess implements Closeable {
         return supervise(CefTransports.connect(transport, endpoint, process::isAlive, transportReconnectTimeout));
     }
 
-    /** Connects an authenticated WebSocket generation, optionally trusting a caller-supplied TLS context. */
+    /** Connects a WebSocket generation, authenticating with the bearer token when present. */
     @Nonnull
-    public CefTransport connectWebSocket(Optional<String> bearerToken, Optional<SSLContext> sslContext)
-            throws CefTransportException {
+    public CefTransport connectWebSocket(Optional<String> bearerToken) throws CefTransportException {
         if (!"websocket".equals(transport)) {
             throw new CefTransportException("runtime server selected " + transport + ", not websocket");
         }
-        return supervise(WebSocketTransport.connect(endpoint, bearerToken, sslContext));
+        return supervise(WebSocketTransport.connect(endpoint, bearerToken, Optional.empty()));
     }
 
     private CefTransport supervise(CefTransport delegate) {

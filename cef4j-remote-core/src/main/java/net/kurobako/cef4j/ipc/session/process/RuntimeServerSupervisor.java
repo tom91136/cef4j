@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLContext;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.middleware.CefSessionMiddleware;
@@ -127,7 +126,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     configuration.bootstrapTimeout,
                     configuration.environment);
             connectedTransport = "websocket".equals(spawned.transport())
-                    ? spawned.connectWebSocket(configuration.bearerToken, configuration.sslContext)
+                    ? spawned.connectWebSocket(configuration.bearerToken)
                     : spawned.connect();
             CefSession undecorated = new CefSessionImpl(connectedTransport, configuration.requestTimeout);
             connectedTransport = null;
@@ -342,8 +341,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
 
         private final Optional<String> bearerToken;
 
-        private final Optional<SSLContext> sslContext;
-
         public Configuration(
                 @Nonnull Path binary,
                 @Nonnull String transport,
@@ -366,7 +363,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     maxRestartDelay,
                     maxConsecutiveFailures,
                     environment,
-                    Optional.empty(),
                     Optional.empty());
         }
 
@@ -381,8 +377,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                 @Nonnull Duration maxRestartDelay,
                 int maxConsecutiveFailures,
                 @Nonnull Map<String, String> environment,
-                Optional<String> bearerToken,
-                Optional<SSLContext> sslContext) {
+                Optional<String> bearerToken) {
             this(
                     binary,
                     transport,
@@ -395,7 +390,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     maxConsecutiveFailures,
                     environment,
                     bearerToken,
-                    sslContext,
                     CefSessionMiddleware.identity());
         }
 
@@ -411,7 +405,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                 int maxConsecutiveFailures,
                 Map<String, String> environment,
                 Optional<String> bearerToken,
-                Optional<SSLContext> sslContext,
                 CefSessionMiddleware sessionMiddleware) {
             this.binary = Objects.requireNonNull(binary, "binary");
             this.transport = Objects.requireNonNull(transport, "transport");
@@ -439,7 +432,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
             this.maxConsecutiveFailures = maxConsecutiveFailures;
             this.environment = Map.copyOf(serverEnvironment);
             this.bearerToken = bearerToken;
-            this.sslContext = sslContext;
             this.sessionMiddleware = Objects.requireNonNull(sessionMiddleware, "sessionMiddleware");
         }
 
@@ -458,7 +450,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     maxConsecutiveFailures,
                     environment,
                     bearerToken,
-                    sslContext,
                     middleware);
         }
 
