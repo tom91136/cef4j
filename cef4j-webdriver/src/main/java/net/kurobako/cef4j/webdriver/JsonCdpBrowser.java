@@ -5,11 +5,36 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
-/** JSON-tree view over the raw, codec-neutral {@link CdpBrowser} channel. */
+/** Browser lifecycle and JSON-tree Chrome DevTools channel consumed by the shared WebDriver implementation. */
 @NullableBoundary("CDP commands use null to omit parameters")
-public interface JsonCdpBrowser extends CdpBrowser {
+public interface JsonCdpBrowser extends CdpTransport {
+
+    /** Navigates the main frame using the hosting CEF API. */
+    @Nonnull
+    CompletableFuture<Void> loadUrl(@Nonnull String url);
+
+    @Nonnull
+    CompletableFuture<Boolean> canGoBack();
+
+    @Nonnull
+    CompletableFuture<Void> goBack();
+
+    @Nonnull
+    CompletableFuture<Boolean> canGoForward();
+
+    @Nonnull
+    CompletableFuture<Void> goForward();
+
+    /** Returns CEF's current main-frame loading state. */
+    @Nonnull
+    CompletableFuture<Boolean> loading();
+
+    @Override
+    void close();
+
     @Nonnull
     WebDriverJsonCodec jsonCodec();
 
