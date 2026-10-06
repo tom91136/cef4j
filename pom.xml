@@ -100,7 +100,6 @@
         <module>cef4j-codegen</module>
         <module>cef4j-code-policy</module>
         <module>cef4j-platform</module>
-        <module>cef4j-platform-all</module>
         <module>cef4j-api</module>
         <module>cef4j-inprocess-swing</module>
         <module>cef4j-http</module>
@@ -109,7 +108,6 @@
         <module>cef4j-codecs-gson</module>
         <module>cef4j-remote-core</module>
         <module>cef4j-runtime-server</module>
-        <module>cef4j-runtime-server-all</module>
         <module>cef4j-runtime-packager</module>
         <module>cef4j-remote-api</module>
         <module>cef4j-remote-frame</module>

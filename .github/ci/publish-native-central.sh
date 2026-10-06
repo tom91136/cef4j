@@ -67,12 +67,61 @@ stage_component() {
 
 }
 
+stage_aggregate() {
+  local public_artifact=$1
+  local component=$2
+  local type=$3
+  local description=$4
+  local component_path=${repository_path}/${public_artifact}/${version}
+  local family arch
+
+  mkdir -p "${component_path}"
+  {
+    cat <<POM
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>${version}</version>
+    </parent>
+    <artifactId>${public_artifact}</artifactId>
+    <packaging>pom</packaging>
+    <name>${public_artifact}</name>
+    <description>${description}</description>
+    <dependencies>
+POM
+    for family in linux windows macos; do
+      for arch in x86_64 arm64; do
+        cat <<POM
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>${component}-${family}</artifactId>
+            <version>${version}</version>
+            <type>${type}</type>
+            <classifier>${arch}</classifier>
+        </dependency>
+POM
+      done
+    done
+    cat <<POM
+    </dependencies>
+</project>
+POM
+  } > "${component_path}/${public_artifact}-${version}.pom"
+}
+
 stage_component cef4j-platform cef4j-platform-linux jar linux-x86_64 linux-arm64
 stage_component cef4j-platform cef4j-platform-windows jar windows-x86_64 windows-arm64
 stage_component cef4j-platform cef4j-platform-macos jar macosx-x86_64 macosx-arm64
 stage_component cef4j-runtime-server cef4j-runtime-server-linux zip linux-x86_64 linux-arm64
 stage_component cef4j-runtime-server cef4j-runtime-server-windows zip windows-x86_64 windows-arm64
 stage_component cef4j-runtime-server cef4j-runtime-server-macos zip macosx-x86_64 macosx-arm64
+stage_aggregate cef4j-platform-all cef4j-platform jar 'Every supported in-process JNI bridge'
+stage_aggregate cef4j-runtime-server-all cef4j-runtime-server zip 'Every supported packaged CEF runtime server'
 
 while IFS= read -r -d '' file; do
   sign_and_checksum "${file}"
