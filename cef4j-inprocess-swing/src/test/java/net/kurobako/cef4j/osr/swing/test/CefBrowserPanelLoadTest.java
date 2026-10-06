@@ -1,11 +1,15 @@
 package net.kurobako.cef4j.osr.swing.test;
 
 import static net.kurobako.cef4j.osr.swing.test.SwingBrowserPanelTestSupport.*;
+import static net.kurobako.cef4j.test.LocalTestServer.startServer;
+import static net.kurobako.cef4j.test.LocalTestServer.startServerWithResponses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import java.util.Objects;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
+import net.kurobako.cef4j.test.LocalTestServer;
+import net.kurobako.cef4j.test.LocalTestServer.ResponseSpec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 

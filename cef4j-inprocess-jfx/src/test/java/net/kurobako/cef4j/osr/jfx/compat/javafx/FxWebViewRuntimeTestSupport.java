@@ -1,19 +1,12 @@
 package net.kurobako.cef4j.osr.jfx.compat.javafx;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -58,6 +51,7 @@ import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.osr.jfx.CefWebViewTestDiagnostics;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.UncaughtExceptionTracker;
+import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -416,25 +410,9 @@ final class FxWebViewRuntimeTestSupport {
         return FxWebViewRuntimeTestSupport.class.getPackageName().endsWith(".compat.cef");
     }
 
-    static int cefApiVersion() {
-        String apiVersion = System.getProperty("cef.api.version");
-        if (apiVersion != null && !apiVersion.isBlank()) {
-            return Integer.parseInt(apiVersion.trim());
-        }
-        String cefVersion = System.getProperty("cef.version");
-        if (cefVersion != null && !cefVersion.isBlank()) {
-            int plus = cefVersion.indexOf('+');
-            String major = plus >= 0 ? cefVersion.substring(0, plus) : cefVersion;
-            int dot = major.indexOf('.');
-            if (dot >= 0) major = major.substring(0, dot);
-            return Integer.parseInt(major);
-        }
-        return 146;
-    }
-
     static void assumeCefCompatStressSuiteSupported(String suiteName) {
         Assumptions.assumeTrue(
-                !isCefCompatHarness() || cefApiVersion() > 116,
+                !isCefCompatHarness() || CefTestCompatibility.cefApiVersion() > 116,
                 suiteName + " crashes the native runtime on CEF <= 116");
     }
 
@@ -552,98 +530,6 @@ final class FxWebViewRuntimeTestSupport {
             }
         }
         return false;
-    }
-
-    static LocalTestServer startServer(Map<String, String> routes) throws IOException {
-        Map<String, ResponseSpec> specs = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : routes.entrySet()) {
-            specs.put(entry.getKey(), ResponseSpec.html(entry.getValue()));
-        }
-        return startServerWithResponses(specs);
-    }
-
-    static LocalTestServer startServerWithResponses(Map<String, ResponseSpec> routes) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(java.net.InetAddress.getLoopbackAddress(), 0), 0);
-        for (Map.Entry<String, ResponseSpec> entry : routes.entrySet()) {
-            server.createContext(entry.getKey(), exchange -> respond(exchange, entry.getValue()));
-        }
-        server.start();
-        return new LocalTestServer(server);
-    }
-
-    private static void respond(HttpExchange exchange, ResponseSpec response) throws IOException {
-        if (response.requestStarted != null) response.requestStarted.countDown();
-        if (response.delayMillis > 0) {
-            try {
-                new java.util.concurrent.CountDownLatch(1).await(response.delayMillis, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IOException("Interrupted while delaying response", e);
-            }
-        }
-        for (Map.Entry<String, String> header : response.headers.entrySet()) {
-            exchange.getResponseHeaders().set(header.getKey(), header.getValue());
-        }
-        byte[] bytes = response.body.getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(response.statusCode, bytes.length);
-        try (OutputStream out = exchange.getResponseBody()) {
-            out.write(bytes);
-        }
-    }
-
-    static final class ResponseSpec {
-        private final int statusCode;
-        private final Map<String, String> headers;
-        private final String body;
-        private final long delayMillis;
-        private final @Nullable CountDownLatch requestStarted;
-
-        private ResponseSpec(
-                int statusCode,
-                Map<String, String> headers,
-                String body,
-                long delayMillis,
-                @Nullable CountDownLatch requestStarted) {
-            this.statusCode = statusCode;
-            this.headers = headers;
-            this.body = body;
-            this.delayMillis = delayMillis;
-            this.requestStarted = requestStarted;
-        }
-
-        static ResponseSpec html(String body) {
-            return new ResponseSpec(200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, 0, null);
-        }
-
-        static ResponseSpec html(String body, long delayMillis) {
-            return new ResponseSpec(200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, delayMillis, null);
-        }
-
-        static ResponseSpec html(String body, long delayMillis, CountDownLatch requestStarted) {
-            return new ResponseSpec(
-                    200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, delayMillis, requestStarted);
-        }
-
-        static ResponseSpec redirect(String location) {
-            return new ResponseSpec(302, Map.of("Location", location), "", 0, null);
-        }
-    }
-
-    static final class LocalTestServer implements AutoCloseable {
-        private final HttpServer server;
-
-        LocalTestServer(HttpServer server) {
-            this.server = server;
-        }
-
-        String url(String path) {
-            return "http://127.0.0.1:" + server.getAddress().getPort() + path;
-        }
-
-        @Override
-        public void close() {
-            server.stop(0);
-        }
     }
 
     private static void click(WebView view, double x, double y, MouseButton button) throws Exception {

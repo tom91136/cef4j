@@ -1,6 +1,8 @@
 package net.kurobako.cef4j.osr.jfx.compat.javafx;
 
 import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSupport.*;
+import static net.kurobako.cef4j.test.LocalTestServer.startServer;
+import static net.kurobako.cef4j.test.LocalTestServer.startServerWithResponses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import net.kurobako.cef4j.test.LocalTestServer;
+import net.kurobako.cef4j.test.LocalTestServer.ResponseSpec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 

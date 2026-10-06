@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.osr.jfx.compat.javafx;
 
 import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSupport.*;
+import static net.kurobako.cef4j.test.LocalTestServer.startServer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import net.kurobako.cef4j.test.LocalTestServer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
