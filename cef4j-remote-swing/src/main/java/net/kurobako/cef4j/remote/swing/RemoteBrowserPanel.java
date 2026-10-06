@@ -15,29 +15,18 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import net.kurobako.cef4j.ipc.frame.FrameTransport;
+import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.LatestOnlyDispatcher;
+import net.kurobako.cef4j.ipc.frame.RemoteBrowserBinding;
 import net.kurobako.cef4j.ipc.frame.SharedFileFrameTransport;
-import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
-import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
-import net.kurobako.cef4j.remote.RemoteViewportConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,162 +38,63 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     private static final int KEYEVENT_KEYUP = 2;
     private static final int KEYEVENT_CHAR = 3;
 
-    private volatile CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-    private final AtomicReference<BrowserHost> hostRef = new AtomicReference<>();
-    private final AtomicLong desiredSize = new AtomicLong(packSize(1, 1));
-    private final AtomicLong reportedSize = new AtomicLong(-1);
-    private final FrameTransportFactory frameTransportFactory;
+    private final RemoteBrowserBinding binding;
     private final LatestOnlyDispatcher<FrameSnapshot> frameDispatcher =
             new LatestOnlyDispatcher<>(SwingUtilities::invokeLater, this::presentFrame);
 
     @Nullable
-    private volatile CefSession session;
-
-    @Nullable
-    private volatile RemoteHandle readyBrowser;
-
-    @Nullable
-    private FrameTransport frameTransport;
-
-    @Nullable
-    private HandlerRegistration lifecycleRegistration;
-
-    @Nullable
-    private RuntimeException setupFailure;
-
-    @Nullable
     private BufferedImage image;
-
-    private boolean attachedOnce;
 
     public RemoteBrowserPanel() {
         this(SharedFileFrameTransport::bind);
     }
 
-    public RemoteBrowserPanel(@Nonnull FrameTransportFactory frameTransportFactory) {
-        this.frameTransportFactory = frameTransportFactory;
+    public RemoteBrowserPanel(@Nonnull RemoteBrowserBinding.FrameTransportFactory frameTransportFactory) {
+        binding = new RemoteBrowserBinding(
+                "RemoteBrowserPanel", SwingUtilities::invokeLater, frameTransportFactory, this::onFrame);
         setFocusable(true);
         setPreferredSize(new Dimension(800, 600));
         wireInputForwarding();
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent event) {
-                reportViewportSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
+                binding.reportViewportSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
             }
         });
     }
 
-    public synchronized void attach(@Nonnull CefSession session) {
-        if (attachedOnce) {
-            if (this.session == session) return;
-            throw new IllegalStateException("RemoteBrowserPanel instances cannot be attached to more than one session");
-        }
-        Objects.requireNonNull(session, "session");
-        if (browserHandle.isCompletedExceptionally()) browserHandle = new CompletableFuture<>();
-        this.session = session;
-        setupFailure = null;
-        desiredSize.set(packSize(Math.max(1, getWidth()), Math.max(1, getHeight())));
-        HandlerRegistration registration;
-        try {
-            registration = session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
-                    event -> installBrowser(session, event.browser()));
-        } catch (RuntimeException failure) {
-            this.session = null;
-            throw failure;
-        }
-        if (setupFailure != null || this.session != session) {
-            registration.unregister();
-            RuntimeException failure = setupFailure;
-            setupFailure = null;
-            this.session = null;
-            throw Objects.requireNonNull(failure, "frame transport setup failure");
-        }
-        lifecycleRegistration = registration;
-        attachedOnce = true;
-        observe(
-                browserHandle
-                        .thenCompose(handle -> new Browser(session, handle).getHost())
-                        .thenAccept(host -> {
-                            if (this.session == session) hostRef.set(host);
-                        }),
-                "resolve BrowserHost for input forwarding");
-        observe(browserHandle.thenCompose(handle -> flushViewportSize(session, handle)), "flush initial viewport size");
-    }
-
-    private synchronized void installBrowser(CefSession expectedSession, RemoteHandle browser) {
-        CompletableFuture<RemoteHandle> pendingBrowser = browserHandle;
-        if (session != expectedSession || pendingBrowser.isDone()) return;
-        FrameTransport created = null;
-        try {
-            created = frameTransportFactory.bind(expectedSession, browser);
-            created.onFrame(this::onFrame);
-            frameTransport = created;
-            readyBrowser = browser;
-            pendingBrowser.complete(browser);
-        } catch (RuntimeException failure) {
-            if (created != null) {
-                try {
-                    created.close();
-                } catch (RuntimeException closeFailure) {
-                    failure.addSuppressed(closeFailure);
-                }
-            }
-            frameTransport = null;
-            readyBrowser = null;
-            setupFailure = failure;
-            HandlerRegistration registration = lifecycleRegistration;
-            lifecycleRegistration = null;
-            session = null;
-            attachedOnce = false;
-            if (registration != null) registration.unregister();
-            pendingBrowser.completeExceptionally(failure);
-        }
+    public void attach(@Nonnull CefSession session) {
+        binding.reportViewportSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
+        binding.attach(session);
     }
 
     @Nonnull
     public CompletableFuture<RemoteHandle> browserReady() {
-        return browserHandle.copy();
+        return binding.browserReady();
     }
 
     @Nonnull
     public RemoteHandle awaitBrowserHandle(@Nonnull Duration timeout) throws Exception {
-        return browserHandle.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        return binding.awaitBrowserHandle(timeout);
     }
 
     @Nonnull
     public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-        return browserHandle.thenCompose(handle ->
-                new Browser(requireSession(), handle).getMainFrame().thenCompose(frame -> frame.loadUrl(url)));
+        return binding.loadUrl(url);
     }
 
     @Nonnull
     public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
-        return browserHandle.thenCompose(handle -> {
-            CefSession current = requireSession();
-            return new Browser(current, handle)
-                    .getMainFrame()
-                    .thenCompose(frame -> current.request(
-                            new EvaluateJavascriptRequest(frame.handle(), script, false),
-                            EvaluateJavascriptResponse.DECODER))
-                    .thenApply(RemoteBrowserPanel::stringify);
-        });
+        return binding.evaluateJavascript(script);
     }
 
     /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
     @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
-        RemoteViewportConstraints.validate(width, height);
-        long desired = packSize(width, height);
-        desiredSize.set(desired);
-        CompletableFuture<Void> pendingComponentEvents = new CompletableFuture<>();
-        SwingUtilities.invokeLater(() -> pendingComponentEvents.complete(null));
-        return pendingComponentEvents.thenCompose(
-                ignored -> browserHandle.thenCompose(handle -> requestViewportSize(requireSession(), handle, desired)));
+        return binding.resizeViewport(width, height);
     }
 
-    private void onFrame(int width, int height, ByteBuffer pixels, net.kurobako.cef4j.ipc.frame.FrameMetadata meta) {
+    private void onFrame(int width, int height, ByteBuffer pixels, FrameMetadata meta) {
         long expected = (long) width * height * 4L;
         if (width <= 0 || height <= 0 || expected > Integer.MAX_VALUE || pixels.remaining() != expected) {
             LOG.warn("dropping malformed frame {}x{} with {} bytes", width, height, pixels.remaining());
@@ -216,7 +106,7 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private void presentFrame(FrameSnapshot frame) {
-        if (session == null) return;
+        if (!binding.isAttached()) return;
         BufferedImage next = new BufferedImage(frame.width, frame.height, BufferedImage.TYPE_INT_ARGB_PRE);
         next.setRGB(0, 0, frame.width, frame.height, frame.pixels, 0, frame.width);
         image = next;
@@ -292,31 +182,32 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private void forwardMouseClick(MouseEvent event, boolean mouseUp) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         int button = swingButtonToCef(event.getButton());
         if (host == null || button < 0) return;
-        observe(
+        binding.observe(
                 host.sendMouseClickEvent(mouseEvent(event), button, mouseUp ? 1 : 0, event.getClickCount()),
                 "forward mouse click");
     }
 
     private void forwardMouseMove(MouseEvent event, boolean mouseLeave) {
-        BrowserHost host = hostRef.get();
-        if (host != null) observe(host.sendMouseMoveEvent(mouseEvent(event), mouseLeave ? 1 : 0), "forward mouse move");
+        BrowserHost host = binding.host().orElse(null);
+        if (host != null)
+            binding.observe(host.sendMouseMoveEvent(mouseEvent(event), mouseLeave ? 1 : 0), "forward mouse move");
     }
 
     private void forwardMouseWheel(MouseWheelEvent event) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         if (host != null) {
             int deltaY = (int) Math.round(-event.getPreciseWheelRotation() * 40.0);
-            observe(host.sendMouseWheelEvent(mouseEvent(event), 0, deltaY), "forward mouse wheel");
+            binding.observe(host.sendMouseWheelEvent(mouseEvent(event), 0, deltaY), "forward mouse wheel");
         }
     }
 
     private void sendKey(int type, KeyEvent event, int keyCode, int character) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        observe(
+        binding.observe(
                 host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
                         .type(type)
                         .modifiers(modifiers(event))
@@ -354,114 +245,17 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
         return -1;
     }
 
-    private void reportViewportSize(int width, int height) {
-        desiredSize.set(packSize(width, height));
-        CefSession current = session;
-        RemoteHandle handle = readyBrowser;
-        if (current != null && handle != null) {
-            observe(flushViewportSize(current, handle), "resize viewport");
-        }
-    }
-
-    private CompletableFuture<Void> flushViewportSize(CefSession expectedSession, RemoteHandle handle) {
-        if (session != expectedSession) return CompletableFuture.completedFuture(null);
-        long desired = desiredSize.get();
-        long previous = reportedSize.getAndSet(desired);
-        if (previous == desired) return CompletableFuture.completedFuture(null);
-        return requestViewportSize(expectedSession, handle, desired);
-    }
-
-    private CompletableFuture<Void> requestViewportSize(CefSession expectedSession, RemoteHandle handle, long desired) {
-        if (session != expectedSession) return CompletableFuture.completedFuture(null);
-        int width = (int) (desired >>> 32);
-        int height = (int) desired;
+    public void release() {
         try {
-            RemoteViewportConstraints.validate(width, height);
-        } catch (IllegalArgumentException invalidSize) {
-            CompletableFuture<Void> failure = new CompletableFuture<>();
-            failure.completeExceptionally(invalidSize);
-            return failure;
+            binding.release();
+        } finally {
+            image = null;
+            repaint();
         }
-        reportedSize.set(desired);
-        return expectedSession
-                .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
-                .thenApply(ignored -> (Void) null)
-                .whenComplete((ignored, failure) -> {
-                    if (failure != null) {
-                        reportedSize.compareAndSet(desired, -1);
-                        LOG.debug("viewport resize to {}x{} failed: {}", width, height, failure.toString());
-                    }
-                });
-    }
-
-    public synchronized void release() {
-        if (!attachedOnce) return;
-        RuntimeException failure = null;
-        FrameTransport transport = frameTransport;
-        frameTransport = null;
-        if (transport != null) {
-            try {
-                transport.close();
-            } catch (RuntimeException closeFailure) {
-                failure = closeFailure;
-            }
-        }
-        if (lifecycleRegistration != null) {
-            try {
-                lifecycleRegistration.unregister();
-            } catch (RuntimeException closeFailure) {
-                if (failure == null) failure = closeFailure;
-                else failure.addSuppressed(closeFailure);
-            }
-            lifecycleRegistration = null;
-        }
-        hostRef.set(null);
-        session = null;
-        image = null;
-        if (!browserHandle.isDone()) {
-            browserHandle.completeExceptionally(
-                    new IllegalStateException("RemoteBrowserPanel released before browser ready"));
-        }
-        repaint();
-        if (failure != null) throw failure;
     }
 
     @Override
     public void close() {
         release();
-    }
-
-    private CefSession requireSession() {
-        CefSession current = session;
-        if (current == null) throw new IllegalStateException("RemoteBrowserPanel has not been attach()ed to a session");
-        return current;
-    }
-
-    @SuppressWarnings("FutureReturnValueIgnored")
-    private void observe(CompletableFuture<?> future, String action) {
-        future.whenComplete((ignored, failure) -> {
-            if (failure != null && session != null) LOG.warn("failed to {}: {}", action, failure.toString());
-        });
-    }
-
-    private static long packSize(int width, int height) {
-        return ((long) width << 32) | (height & 0xFFFFFFFFL);
-    }
-
-    private static String stringify(EvaluateJavascriptResponse response) {
-        return net.kurobako.cef4j.ipc.session.JsResult.fromWire(
-                        response.valueKind(),
-                        response.boolValue(),
-                        response.intValue(),
-                        response.doubleValue(),
-                        response.stringValue(),
-                        response.errorMessage())
-                .coerceToString();
-    }
-
-    @FunctionalInterface
-    public interface FrameTransportFactory {
-        @Nonnull
-        FrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser);
     }
 }

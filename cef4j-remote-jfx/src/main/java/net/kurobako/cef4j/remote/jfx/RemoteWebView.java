@@ -2,10 +2,7 @@ package net.kurobako.cef4j.remote.jfx;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelBuffer;
@@ -17,21 +14,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import net.kurobako.cef4j.ipc.frame.FrameTransport;
+import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.LatestOnlyDispatcher;
+import net.kurobako.cef4j.ipc.frame.RemoteBrowserBinding;
 import net.kurobako.cef4j.ipc.frame.SharedFileFrameTransport;
-import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
-import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
-import net.kurobako.cef4j.remote.RemoteViewportConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +30,10 @@ import org.slf4j.LoggerFactory;
  * all browser state lives in the server, not the JVM, so the JFX side just routes pixel frames + control commands over
  * the configured Remote CEF transports.
  *
- * <p>Construction is asynchronous: {@link #attach(CefSession)} binds the configured {@link FrameTransport} eagerly
- * (before the browser handle is known, so the server's first paint never gets dropped) and resolves
- * {@link #browserReady()} once {@code LifeSpanHandlerOnAfterCreatedEvent} arrives. Until that point {@link #loadUrl} /
- * {@link #evaluateJavascript} chain off the same future and execute lazily.
+ * <p>Construction is asynchronous: {@link #attach(CefSession)} subscribes to the server's browser-created event, binds
+ * the configured frame transport as soon as the browser handle is known, and resolves {@link #browserReady()} once
+ * {@code LifeSpanHandlerOnAfterCreatedEvent} arrives. Until that point {@link #loadUrl} / {@link #evaluateJavascript}
+ * chain off the same future and execute lazily.
  *
  * <p>Input: mouse press/release/move/exit/scroll and key press/release/typed events are forwarded through the codegen
  * {@code BrowserHost.sendMouse{Click,Move,Wheel}Event} / {@code sendKeyEvent} wires. The view captures focus on click.
@@ -62,52 +51,17 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteWebView.class);
 
     private final ImageView imageView = new ImageView();
-    private volatile CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-    private final FrameTransportFactory frameTransportFactory;
+    private final RemoteBrowserBinding binding;
     private final LatestOnlyDispatcher<FrameSnapshot> frameDispatcher =
             new LatestOnlyDispatcher<>(Platform::runLater, this::presentFrameOnFxThread);
-
-    @Nullable
-    private volatile CefSession session;
-
-    @Nullable
-    private volatile RemoteHandle readyBrowser;
-
-    @Nullable
-    private FrameTransport frameTransport;
-
-    @Nullable
-    private HandlerRegistration lifecycleRegistration;
-
-    @Nullable
-    private RuntimeException setupFailure;
-
-    @Nullable
-    private WritableImage backingImage;
-
-    @Nullable
-    private PixelBuffer<ByteBuffer> backingPixelBuffer;
-
-    private boolean attachedOnce;
-
-    /**
-     * Last (width, height) we told the server about via SetViewportSizeRequest, packed into the high/low halves of a
-     * long so updates are atomic without an extra lock. -1 means "never reported".
-     */
-    private final AtomicLong desiredSize = new AtomicLong(packSize(1, 1));
-
-    private final AtomicLong reportedSize = new AtomicLong(-1);
-
-    /** Cached browser-host handle for input forwarding; resolved once {@link #browserReady()} fires. */
-    private final AtomicReference<BrowserHost> hostRef = new AtomicReference<>();
 
     public RemoteWebView() {
         this(SharedFileFrameTransport::bind);
     }
 
     /** Creates a view whose pixels are supplied by the given transport factory when {@link #attach} is called. */
-    public RemoteWebView(@Nonnull FrameTransportFactory frameTransportFactory) {
-        this.frameTransportFactory = frameTransportFactory;
+    public RemoteWebView(@Nonnull RemoteBrowserBinding.FrameTransportFactory frameTransportFactory) {
+        binding = new RemoteBrowserBinding("RemoteWebView", Platform::runLater, frameTransportFactory, this::onFrame);
         getChildren().add(imageView);
         imageView.setManaged(false);
         imageView.setFitWidth(0); // size from intrinsic until paint arrives
@@ -135,29 +89,30 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     }
 
     private void forwardMouseClick(MouseEvent e, boolean mouseUp) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         int button = jfxButtonToCef(e.getButton());
         if (button < 0) return; // unsupported (no-button event, etc.)
         net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
                 new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
-        observe(host.sendMouseClickEvent(ev, button, mouseUp ? 1 : 0, e.getClickCount()), "forward mouse click");
+        binding.observe(
+                host.sendMouseClickEvent(ev, button, mouseUp ? 1 : 0, e.getClickCount()), "forward mouse click");
     }
 
     private void forwardMouseMove(MouseEvent e, boolean mouseLeave) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
                 new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
-        observe(host.sendMouseMoveEvent(ev, mouseLeave ? 1 : 0), "forward mouse move");
+        binding.observe(host.sendMouseMoveEvent(ev, mouseLeave ? 1 : 0), "forward mouse move");
     }
 
     private void forwardMouseWheel(ScrollEvent e) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
                 new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), 0);
-        observe(host.sendMouseWheelEvent(ev, (int) e.getDeltaX(), (int) e.getDeltaY()), "forward mouse wheel");
+        binding.observe(host.sendMouseWheelEvent(ev, (int) e.getDeltaX(), (int) e.getDeltaY()), "forward mouse wheel");
     }
 
     /**
@@ -232,9 +187,9 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * don't have OS-specific scancodes from JFX); {@code character} is non-zero only for KEYEVENT_CHAR.
      */
     private void sendKey(int eventType, KeyEvent jfx, int keyCode, int character) {
-        BrowserHost host = hostRef.get();
+        BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        observe(
+        binding.observe(
                 host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
                         .type(eventType)
                         .modifiers(keyModifiers(jfx))
@@ -254,87 +209,20 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * handles and their completion future are session-scoped. The future returned by {@link #browserReady()} resolves
      * once the server publishes its auto-bootstrap browser handle.
      */
-    public synchronized void attach(@Nonnull CefSession session) {
-        if (attachedOnce) {
-            if (this.session == session) return;
-            throw new IllegalStateException("RemoteWebView instances cannot be attached to more than one session");
-        }
-        Objects.requireNonNull(session, "session");
-        if (browserHandle.isCompletedExceptionally()) browserHandle = new CompletableFuture<>();
-        this.session = session;
-        setupFailure = null;
-        HandlerRegistration registration;
-        try {
-            registration = session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
-                    event -> installBrowser(session, event.browser()));
-        } catch (RuntimeException failure) {
-            this.session = null;
-            throw failure;
-        }
-        if (setupFailure != null || this.session != session) {
-            registration.unregister();
-            RuntimeException failure = setupFailure;
-            setupFailure = null;
-            this.session = null;
-            throw Objects.requireNonNull(failure, "frame transport setup failure");
-        }
-        lifecycleRegistration = registration;
-        attachedOnce = true;
-        observe(
-                browserHandle
-                        .thenCompose(h -> new Browser(session, h).getHost())
-                        .thenAccept(host -> {
-                            if (this.session == session) hostRef.set(host);
-                        }),
-                "resolve BrowserHost for input forwarding");
-        observe(browserHandle.thenAccept(handle -> flushViewportSize(session, handle)), "flush initial viewport size");
-    }
-
-    private synchronized void installBrowser(CefSession expectedSession, RemoteHandle browser) {
-        CompletableFuture<RemoteHandle> pendingBrowser = browserHandle;
-        if (session != expectedSession || pendingBrowser.isDone()) return;
-        FrameTransport created = null;
-        try {
-            created = frameTransportFactory.bind(expectedSession, browser);
-            created.onFrame(this::onFrame);
-            frameTransport = created;
-            readyBrowser = browser;
-            pendingBrowser.complete(browser);
-        } catch (RuntimeException failure) {
-            if (created != null) {
-                try {
-                    created.close();
-                } catch (RuntimeException closeFailure) {
-                    failure.addSuppressed(closeFailure);
-                }
-            }
-            frameTransport = null;
-            readyBrowser = null;
-            setupFailure = failure;
-            HandlerRegistration registration = lifecycleRegistration;
-            lifecycleRegistration = null;
-            session = null;
-            attachedOnce = false;
-            if (registration != null) registration.unregister();
-            pendingBrowser.completeExceptionally(failure);
-        }
+    public void attach(@Nonnull CefSession session) {
+        binding.attach(session);
     }
 
     /** Future resolves with the browser handle once the server has reported its auto-created browser. */
     @Nonnull
     public CompletableFuture<RemoteHandle> browserReady() {
-        return browserHandle.copy();
+        return binding.browserReady();
     }
 
     /** Future resolves when the load is queued (server-side ack); does not wait for page rendering. */
     @Nonnull
     public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-        return browserHandle.thenCompose(h -> {
-            CefSession s = requireSession();
-            return new Browser(s, h).getMainFrame().thenCompose(frame -> frame.loadUrl(url));
-        });
+        return binding.loadUrl(url);
     }
 
     /**
@@ -343,51 +231,13 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      */
     @Nonnull
     public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
-        return browserHandle.thenCompose(h -> {
-            CefSession s = requireSession();
-            Browser browser = new Browser(s, h);
-            return browser.getMainFrame()
-                    .thenCompose(frame -> s.request(
-                                    new EvaluateJavascriptRequest(frame.handle(), script, /*retainHandle=*/ false),
-                                    EvaluateJavascriptResponse.DECODER)
-                            .thenApply(RemoteWebView::stringify));
-        });
+        return binding.evaluateJavascript(script);
     }
 
     /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
     @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
-        RemoteViewportConstraints.validate(width, height);
-        CompletableFuture<Void> pendingFxWork = new CompletableFuture<>();
-        try {
-            Platform.runLater(() -> pendingFxWork.complete(null));
-        } catch (RuntimeException failure) {
-            pendingFxWork.completeExceptionally(failure);
-        }
-        return pendingFxWork
-                .orTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
-                .thenCompose(ignored -> browserHandle.thenCompose(
-                        handle -> requestViewportSize(requireSession(), handle, width, height)));
-    }
-
-    private CompletableFuture<Void> requestViewportSize(
-            CefSession expectedSession, RemoteHandle handle, int width, int height) {
-        try {
-            RemoteViewportConstraints.validate(width, height);
-        } catch (IllegalArgumentException invalidSize) {
-            CompletableFuture<Void> failure = new CompletableFuture<>();
-            failure.completeExceptionally(invalidSize);
-            return failure;
-        }
-        long desired = packSize(width, height);
-        desiredSize.set(desired);
-        reportedSize.set(desired);
-        return expectedSession
-                .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
-                .thenApply(ignored -> (Void) null)
-                .whenComplete((ignored, failure) -> {
-                    if (failure != null) reportedSize.compareAndSet(desired, -1);
-                });
+        return binding.resizeViewport(width, height);
     }
 
     /**
@@ -395,7 +245,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * immutable snapshot, then transfers that snapshot to the JFX thread. A fresh PixelBuffer per delivered paint is
      * deliberate: JavaFX never reads a buffer that the IPC thread can concurrently overwrite.
      */
-    private void onFrame(int width, int height, ByteBuffer pixels, net.kurobako.cef4j.ipc.frame.FrameMetadata meta) {
+    private void onFrame(int width, int height, ByteBuffer pixels, FrameMetadata meta) {
         long expectedBytes = (long) width * height * 4L;
         if (width <= 0 || height <= 0 || expectedBytes > Integer.MAX_VALUE || pixels.remaining() != expectedBytes) {
             LOG.warn(
@@ -406,21 +256,18 @@ public final class RemoteWebView extends Region implements AutoCloseable {
                     expectedBytes);
             return;
         }
-        ByteBuffer src = pixels.duplicate();
         ByteBuffer snapshot = ByteBuffer.allocateDirect((int) expectedBytes);
-        snapshot.put(src).flip();
+        snapshot.put(pixels.duplicate()).flip();
         frameDispatcher.submit(new FrameSnapshot(width, height, snapshot));
     }
 
     private void presentFrameOnFxThread(FrameSnapshot frame) {
-        if (session == null) return;
-        int width = frame.width;
-        int height = frame.height;
-        this.backingPixelBuffer = new PixelBuffer<>(width, height, frame.pixels, PixelFormat.getByteBgraPreInstance());
-        this.backingImage = new WritableImage(backingPixelBuffer);
-        imageView.setImage(backingImage);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
+        if (!binding.isAttached()) return;
+        PixelBuffer<ByteBuffer> buffer =
+                new PixelBuffer<>(frame.width, frame.height, frame.pixels, PixelFormat.getByteBgraPreInstance());
+        imageView.setImage(new WritableImage(buffer));
+        imageView.setFitWidth(frame.width);
+        imageView.setFitHeight(frame.height);
     }
 
     private static final class FrameSnapshot {
@@ -438,7 +285,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     @Override
     public void resize(double width, double height) {
         super.resize(width, height);
-        reportViewportSize((int) Math.max(1, width), (int) Math.max(1, height));
+        binding.reportViewportSize((int) Math.max(1, width), (int) Math.max(1, height));
     }
 
     @Override
@@ -446,96 +293,12 @@ public final class RemoteWebView extends Region implements AutoCloseable {
         imageView.relocate(0, 0);
         imageView.setFitWidth(getWidth());
         imageView.setFitHeight(getHeight());
-        int w = (int) Math.max(1, getWidth());
-        int h = (int) Math.max(1, getHeight());
-        reportViewportSize(w, h);
+        binding.reportViewportSize((int) Math.max(1, getWidth()), (int) Math.max(1, getHeight()));
     }
 
-    private void reportViewportSize(int width, int height) {
-        try {
-            RemoteViewportConstraints.validate(width, height);
-        } catch (IllegalArgumentException invalidSize) {
-            LOG.debug("ignoring automatic viewport resize to {}x{}: {}", width, height, invalidSize.getMessage());
-            return;
-        }
-        desiredSize.set(packSize(width, height));
-        CefSession s = this.session;
-        if (s == null) return;
-        RemoteHandle handle = readyBrowser;
-        if (handle != null) flushViewportSize(s, handle);
-    }
-
-    private void flushViewportSize(CefSession expectedSession, RemoteHandle handle) {
-        if (session != expectedSession) return;
-        long desired = desiredSize.get();
-        long previous = reportedSize.getAndSet(desired);
-        if (previous == desired) return;
-        int width = (int) (desired >>> 32);
-        int height = (int) desired;
-        expectedSession
-                .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
-                .exceptionally(ex -> {
-                    reportedSize.compareAndSet(desired, -1);
-                    LOG.debug("viewport resize to {}x{} failed: {}", width, height, ex.toString());
-                    return null;
-                });
-    }
-
-    private static long packSize(int width, int height) {
-        return ((long) width << 32) | (height & 0xFFFFFFFFL);
-    }
-
-    /** Observes best-effort asynchronous UI work so transport failures are visible without blocking the JFX thread. */
-    @SuppressWarnings("FutureReturnValueIgnored")
-    private void observe(CompletableFuture<?> future, String action) {
-        future.whenComplete((ignored, failure) -> {
-            if (failure == null) return;
-            if (session == null) {
-                LOG.debug("{} stopped during release: {}", action, failure.toString());
-            } else {
-                LOG.warn("failed to {}: {}", action, failure.toString());
-            }
-        });
-    }
-
-    private CefSession requireSession() {
-        CefSession s = this.session;
-        if (s == null) throw new IllegalStateException("RemoteWebView has not been attach()ed to a session");
-        return s;
-    }
-
-    /**
-     * Disposes the frame transport subscription. Does not close the underlying session — callers own the session
-     * lifetime.
-     */
-    public synchronized void release() {
-        if (!attachedOnce) return;
-        RuntimeException failure = null;
-        FrameTransport transport = frameTransport;
-        frameTransport = null;
-        if (transport != null) {
-            try {
-                transport.close();
-            } catch (RuntimeException closeFailure) {
-                failure = closeFailure;
-            }
-        }
-        if (lifecycleRegistration != null) {
-            try {
-                lifecycleRegistration.unregister();
-            } catch (RuntimeException closeFailure) {
-                if (failure == null) failure = closeFailure;
-                else failure.addSuppressed(closeFailure);
-            }
-            lifecycleRegistration = null;
-        }
-        hostRef.set(null);
-        session = null;
-        if (!browserHandle.isDone()) {
-            browserHandle.completeExceptionally(
-                    new IllegalStateException("RemoteWebView released before browser ready"));
-        }
-        if (failure != null) throw failure;
+    /** Disposes the frame transport subscription. Does not close the session; callers own its lifetime. */
+    public void release() {
+        binding.release();
     }
 
     @Override
@@ -543,30 +306,9 @@ public final class RemoteWebView extends Region implements AutoCloseable {
         release();
     }
 
-    /**
-     * Convenience: blocking variant of {@link #browserReady()} for callers that want imperative startup. Throws if the
-     * server doesn't report a browser within {@code timeout}.
-     */
+    /** Blocking variant of {@link #browserReady()} that fails if no browser is reported within {@code timeout}. */
     @Nonnull
     public RemoteHandle awaitBrowserHandle(@Nonnull Duration timeout) throws Exception {
-        return browserHandle.get(timeout.toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS);
-    }
-
-    private static String stringify(EvaluateJavascriptResponse resp) {
-        return net.kurobako.cef4j.ipc.session.JsResult.fromWire(
-                        resp.valueKind(),
-                        resp.boolValue(),
-                        resp.intValue(),
-                        resp.doubleValue(),
-                        resp.stringValue(),
-                        resp.errorMessage())
-                .coerceToString();
-    }
-
-    /** Creates and eagerly subscribes a frame transport for an attached session. */
-    @FunctionalInterface
-    public interface FrameTransportFactory {
-        @Nonnull
-        FrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser);
+        return binding.awaitBrowserHandle(timeout);
     }
 }
