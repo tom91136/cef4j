@@ -13,7 +13,6 @@
     <description>Version-aligned, transport-neutral Chrome DevTools Protocol API</description>
 
     <properties>
-        <exec.skip>false</exec.skip>
         <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
     </properties>
 

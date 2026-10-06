@@ -16,7 +16,6 @@
 
     <properties>
         <!-- PixelBuffer requires JavaFX 13+; same baseline as cef4j-inprocess-jfx -->
-        <javafx.version>13.0.2</javafx.version>
         <javafx.test.version>13.0.2</javafx.test.version>
     </properties>
 

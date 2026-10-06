@@ -15,7 +15,6 @@
     <description>Generated Remote CEF API and transport-neutral Chrome DevTools client</description>
 
     <properties>
-        <exec.skip>false</exec.skip>
         <ipc.gen.package>net.kurobako.cef4j.ipc.protocol.gen</ipc.gen.package>
         <ipc.gen.dir>${project.basedir}/src/main/java</ipc.gen.dir>
     </properties>

@@ -17,7 +17,6 @@
     <properties>
         <javafx.version>19.0.2.1</javafx.version>
         <bytecode.check.skip>true</bytecode.check.skip>
-        <exec.skip>false</exec.skip>
         <exec.mainClass>net.kurobako.cef4j.sample.SwingBrowserApp</exec.mainClass>
     </properties>
 

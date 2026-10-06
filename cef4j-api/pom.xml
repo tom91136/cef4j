@@ -14,10 +14,6 @@
     <name>cef4j-api</name>
     <description>Java 11+ API for CEF OSR bindings</description>
 
-    <properties>
-        <exec.skip>false</exec.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

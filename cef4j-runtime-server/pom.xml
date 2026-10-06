@@ -16,7 +16,6 @@
     <description>Thin native runtime server exposing the Remote CEF API</description>
 
     <properties>
-        <exec.skip>false</exec.skip>
         <ipc.gen.cpp.dir>${project.basedir}/src/main/cpp/gen</ipc.gen.cpp.dir>
     </properties>
 
@@ -135,7 +134,6 @@
                                 <phase>package</phase>
                                 <goals><goal>single</goal></goals>
                                 <configuration>
-                                    <skipAssembly>${platform.assembly.skip}</skipAssembly>
                                     <descriptors>
                                         <descriptor>src/assembly/runtime-server.xml</descriptor>
                                     </descriptors>

@@ -15,7 +15,6 @@
     <description>In-process JavaFX browser pane for cef4j (requires JavaFX 13+)</description>
 
     <properties>
-        <javafx.version>13.0.2</javafx.version>
         <javafx.test.version>13.0.2</javafx.test.version>
     </properties>
 
@@ -227,28 +226,13 @@
     </build>
 
     <profiles>
-        <!-- XXX: JavaFX 13.0.2 has no macOS arm64 native artifact; remove this override when the minimum JavaFX
-             release publishes both classes and native libraries for macOS arm64 under the baseline version. -->
+        <!-- XXX: JavaFX 13.0.2 has no macOS arm64 native artifact, and macOS x86_64 tests on the same version; remove
+             this override when the minimum JavaFX release publishes macOS arm64 natives under the baseline version. -->
         <profile>
-            <id>javafx-macos-aarch64</id>
+            <id>javafx-macos</id>
             <activation>
                 <os>
                     <name>Mac OS X</name>
-                    <arch>aarch64</arch>
-                </os>
-            </activation>
-            <properties>
-                <javafx.version>23.0.2</javafx.version>
-                <javafx.test.version>23.0.2</javafx.test.version>
-            </properties>
-        </profile>
-        <!-- XXX: Keep macOS x86_64 on the arm64 test version; remove this override with the arm64 override above. -->
-        <profile>
-            <id>javafx-macos-x86_64</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <arch>x86_64</arch>
                 </os>
             </activation>
             <properties>

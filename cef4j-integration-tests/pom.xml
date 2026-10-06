@@ -20,7 +20,6 @@
         <!-- Test-only aggregation intentionally consumes the APIs exposed by its fixture dependencies. -->
         <dependency.analyze.skip>true</dependency.analyze.skip>
         <!-- Keep JavaFX artifacts aligned; mixed 11/13 binaries crash glassgtk3. -->
-        <javafx.version>13.0.2</javafx.version>
         <javafx.test.version>13.0.2</javafx.test.version>
     </properties>
 
