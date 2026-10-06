@@ -17,6 +17,7 @@ import net.kurobako.cef4j.ipc.session.middleware.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.RecordingCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
+import net.kurobako.cef4j.ipc.session.middleware.TracePayloadFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -25,8 +26,11 @@ class GeneratedApiRecordingReplayTest {
     void generatedFacadeRunsUnchangedAgainstReplay(@TempDir Path directory) throws Exception {
         Path trace = directory.resolve("browser-api.cef4japi.jsonl");
         Browser liveBrowser;
-        try (RecordingCefSession recording =
-                RecordingCefSession.toFile(new CanGoBackSession(), trace, JacksonNdjsonSessionTraceCodec.INSTANCE)) {
+        try (RecordingCefSession recording = RecordingCefSession.toFile(
+                new CanGoBackSession(),
+                trace,
+                JacksonNdjsonSessionTraceCodec.INSTANCE,
+                TracePayloadFilter.identity())) {
             liveBrowser = new Browser(recording, new RemoteHandle(42));
             assertThat(liveBrowser.canGoBack().get()).isEqualTo(1);
         }

@@ -42,16 +42,6 @@ public final class RecordingCefSession implements CefSession {
     }
 
     public static RecordingCefSession toFile(
-            @Nonnull CefSession delegate, @Nonnull Path file, @Nonnull TracePayloadFilter filter) throws IOException {
-        return toFile(delegate, file, SessionTrace.defaultCodec(), filter);
-    }
-
-    public static RecordingCefSession toFile(
-            @Nonnull CefSession delegate, @Nonnull Path file, @Nonnull SessionTraceCodec codec) throws IOException {
-        return toFile(delegate, file, codec, TracePayloadFilter.identity());
-    }
-
-    public static RecordingCefSession toFile(
             @Nonnull CefSession delegate,
             @Nonnull Path file,
             @Nonnull SessionTraceCodec codec,
@@ -63,17 +53,7 @@ public final class RecordingCefSession implements CefSession {
 
     /** Middleware factory for a single recorded session. Opening failures surface when the middleware is applied. */
     public static CefSessionMiddleware middleware(@Nonnull Path file) {
-        return middleware(file, TracePayloadFilter.identity());
-    }
-
-    /** Middleware factory for a single filtered recording. */
-    public static CefSessionMiddleware middleware(@Nonnull Path file, @Nonnull TracePayloadFilter filter) {
-        return middleware(file, SessionTrace.defaultCodec(), filter);
-    }
-
-    /** Middleware factory for a single recording written with the supplied codec. */
-    public static CefSessionMiddleware middleware(@Nonnull Path file, @Nonnull SessionTraceCodec codec) {
-        return middleware(file, codec, TracePayloadFilter.identity());
+        return middleware(file, SessionTrace.defaultCodec(), TracePayloadFilter.identity());
     }
 
     /** Middleware factory for a single filtered recording written with the supplied codec. */
@@ -93,19 +73,7 @@ public final class RecordingCefSession implements CefSession {
 
     /** Middleware factory that opens a distinct trace for every wrapped session, numbered from one. */
     public static CefSessionMiddleware rotatingMiddleware(@Nonnull LongFunction<Path> traceFile) {
-        return rotatingMiddleware(traceFile, TracePayloadFilter.identity());
-    }
-
-    /** Middleware factory that opens a distinct filtered trace for every wrapped session, numbered from one. */
-    public static CefSessionMiddleware rotatingMiddleware(
-            @Nonnull LongFunction<Path> traceFile, @Nonnull TracePayloadFilter filter) {
-        return rotatingMiddleware(traceFile, SessionTrace.defaultCodec(), filter);
-    }
-
-    /** Middleware factory that uses the supplied codec for every numbered session trace. */
-    public static CefSessionMiddleware rotatingMiddleware(
-            @Nonnull LongFunction<Path> traceFile, @Nonnull SessionTraceCodec codec) {
-        return rotatingMiddleware(traceFile, codec, TracePayloadFilter.identity());
+        return rotatingMiddleware(traceFile, SessionTrace.defaultCodec(), TracePayloadFilter.identity());
     }
 
     /** Middleware factory that uses the supplied codec and filter for every numbered session trace. */

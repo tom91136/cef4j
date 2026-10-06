@@ -77,45 +77,7 @@ public final class RuntimeServerProcess implements Closeable {
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public static RuntimeServerProcess spawn(@Nonnull Path binary, @Nonnull String bindEndpoint) throws IOException {
-        return spawn(binary, "zmq", bindEndpoint, "shared-file", DEFAULT_BOOTSTRAP_TIMEOUT);
-    }
-
-    public static RuntimeServerProcess spawn(
-            @Nonnull Path binary, @Nonnull String bindEndpoint, @Nonnull Duration bootstrapTimeout) throws IOException {
-        return spawn(binary, "zmq", bindEndpoint, "shared-file", bootstrapTimeout);
-    }
-
-    public static RuntimeServerProcess spawn(
-            @Nonnull Path binary, @Nonnull String transport, @Nonnull String bindEndpoint) throws IOException {
-        return spawn(binary, transport, bindEndpoint, "shared-file", DEFAULT_BOOTSTRAP_TIMEOUT);
-    }
-
-    public static RuntimeServerProcess spawn(
-            @Nonnull Path binary,
-            @Nonnull String transport,
-            @Nonnull String bindEndpoint,
-            @Nonnull String frameTransport)
-            throws IOException {
-        return spawn(binary, transport, bindEndpoint, frameTransport, DEFAULT_BOOTSTRAP_TIMEOUT);
-    }
-
-    public static RuntimeServerProcess spawn(
-            @Nonnull Path binary,
-            @Nonnull String transport,
-            @Nonnull String bindEndpoint,
-            @Nonnull Duration bootstrapTimeout)
-            throws IOException {
-        return spawn(binary, transport, bindEndpoint, "shared-file", bootstrapTimeout);
-    }
-
-    public static RuntimeServerProcess spawn(
-            @Nonnull Path binary,
-            @Nonnull String transport,
-            @Nonnull String bindEndpoint,
-            @Nonnull String frameTransport,
-            @Nonnull Duration bootstrapTimeout)
-            throws IOException {
-        return spawn(binary, transport, bindEndpoint, frameTransport, bootstrapTimeout, Map.of());
+        return spawn(binary, "zmq", bindEndpoint, "shared-file", DEFAULT_BOOTSTRAP_TIMEOUT, Map.of());
     }
 
     /** Spawns a runtime server with explicit environment additions, useful for portable CEF distributions. */

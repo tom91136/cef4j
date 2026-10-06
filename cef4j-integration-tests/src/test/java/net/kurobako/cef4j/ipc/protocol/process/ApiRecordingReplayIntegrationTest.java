@@ -17,6 +17,7 @@ import net.kurobako.cef4j.ipc.session.middleware.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.RecordingCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
+import net.kurobako.cef4j.ipc.session.middleware.TracePayloadFilter;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
@@ -39,7 +40,8 @@ class ApiRecordingReplayIntegrationTest {
                 RecordingCefSession recording = RecordingCefSession.toFile(
                         new CefSessionImpl(transport, Duration.ofSeconds(30)),
                         trace,
-                        JacksonNdjsonSessionTraceCodec.INSTANCE)) {
+                        JacksonNdjsonSessionTraceCodec.INSTANCE,
+                        TracePayloadFilter.identity())) {
             AtomicReference<RemoteHandle> browserHandle = new AtomicReference<>();
             CefSession.HandlerRegistration lifecycle = recording.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
