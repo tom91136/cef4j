@@ -138,6 +138,7 @@ properties+=(
 [ "${SPOTBUGS_SKIP}" != true ] || properties+=("-Dspotbugs.skip=true")
 [ "${SKIP_BUILD_EXEC}" != true ] || properties+=("-Dexec.skip=true")
 [ "${NATIVE_TEST_SANITIZERS:-false}" != true ] || properties+=("-Dnative.test.sanitizers=true")
+[ "${CEF_INDEPENDENT_TESTS:-true}" = true ] || properties+=("-Dcef4j.cefIndependentTests.skip=true")
 [ "${JAVAFX_TESTS}" = true ] || properties+=("-DskipJavafx=true")
 [ "${JAVA11_SMOKE:-false}" != true ] || properties+=("-Djava11.runtime.smoke=true")
 

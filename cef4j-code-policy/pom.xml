@@ -17,6 +17,7 @@
     <properties>
         <!-- Runs inside the build JVM (JDK 17+); the Error Prone jars it links are Java 17 bytecode. -->
         <bytecode.check.skip>true</bytecode.check.skip>
+        <cef4j.cefIndependent>true</cef4j.cefIndependent>
     </properties>
 
     <dependencies>

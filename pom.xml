@@ -75,6 +75,8 @@
         <!-- Java 17-only build tooling (currently cef4j-codegen) overrides this. -->
         <bytecode.check.skip>false</bytecode.check.skip>
         <java11.runtime.smoke.skip>true</java11.runtime.smoke.skip>
+        <!-- Modules whose tests never load CEF set this so CI can run them once per OS/JDK instead of per CEF. -->
+        <cef4j.cefIndependent>false</cef4j.cefIndependent>
 
         <!-- exec-maven-plugin: skip by default, override in modules that need it.
              Dummy mainClass required because Maven validates required params before checking skip. -->
@@ -387,6 +389,18 @@
     </dependencyManagement>
 
     <profiles>
+        <profile>
+            <id>skip-cef-independent-tests</id>
+            <activation>
+                <property>
+                    <name>cef4j.cefIndependentTests.skip</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <skipTests>${cef4j.cefIndependent}</skipTests>
+            </properties>
+        </profile>
         <profile>
             <id>javafx-modules</id>
             <activation>

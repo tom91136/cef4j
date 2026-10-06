@@ -96,6 +96,7 @@ jobs:
             ./mvnw -B -T1 --fail-at-end clean test \
             "-Dcef.version=${CEF_VERSION}" \
             "-Dcef.api.version=${{ matrix.cef.api }}" \
+            -Dcef4j.cefIndependentTests.skip=true \
             "-Dcef4j.test.extraArgs=${CEF_EXTRA_ARGS}" \
             "-Dcef4j.runtime.server.extraArgs=${CEF_EXTRA_ARGS}"
 

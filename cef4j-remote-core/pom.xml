@@ -16,6 +16,7 @@
 
     <properties>
         <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
+        <cef4j.cefIndependent>true</cef4j.cefIndependent>
     </properties>
 
     <dependencies>

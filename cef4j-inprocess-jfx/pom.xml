@@ -256,6 +256,28 @@
                 <javafx.test.version>23.0.2</javafx.test.version>
             </properties>
         </profile>
-
+        <!-- The compat/javafx reference suite exercises JavaFX's own WebView and never loads CEF. -->
+        <profile>
+            <id>skip-cef-independent-tests</id>
+            <activation>
+                <property>
+                    <name>cef4j.cefIndependentTests.skip</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes combine.children="append">
+                                <exclude>**/compat/javafx/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

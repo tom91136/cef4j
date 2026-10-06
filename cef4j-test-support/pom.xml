@@ -14,6 +14,10 @@
     <name>cef4j-test-support</name>
     <description>Dependency-light test lifecycle support</description>
 
+    <properties>
+        <cef4j.cefIndependent>true</cef4j.cefIndependent>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

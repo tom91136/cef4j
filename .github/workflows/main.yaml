@@ -223,6 +223,7 @@ jobs:
           JAVA_HOME: ${{ steps.jdk17.outputs.path }}
           JDK_VERSION: '17'
           JAVAFX_VERSION: ${{ matrix.os.javafx17 }}
+          CEF_INDEPENDENT_TESTS: ${{ matrix.cef.api == '150' }}
           SUREFIRE_PLATFORM_ARG: ''
           SPOTBUGS_SKIP: ${{ matrix.os.skip_spotbugs_jdk17 }}
           JAVA11_SMOKE: true
@@ -238,6 +239,7 @@ jobs:
           JAVA_HOME: ${{ steps.jdk21.outputs.path }}
           JDK_VERSION: '21'
           JAVAFX_VERSION: ${{ matrix.os.javafx21 }}
+          CEF_INDEPENDENT_TESTS: ${{ matrix.cef.api == '150' }}
           SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
           SPOTBUGS_SKIP: true
           MAVEN_GOALS: test
@@ -251,6 +253,7 @@ jobs:
           JAVA_HOME: ${{ steps.jdk25.outputs.path }}
           JDK_VERSION: '25'
           JAVAFX_VERSION: ${{ matrix.os.javafx25 }}
+          CEF_INDEPENDENT_TESTS: ${{ matrix.cef.api == '150' }}
           SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
           SPOTBUGS_SKIP: true
           MAVEN_GOALS: test
@@ -276,6 +279,7 @@ jobs:
           JAVA_HOME: ${{ steps.jdk17.outputs.path }}
           JDK_VERSION: '17'
           JAVAFX_VERSION: ${{ matrix.os.javafx17 }}
+          CEF_INDEPENDENT_TESTS: false
           SUREFIRE_PLATFORM_ARG: ${{ matrix.os.surefire_extra_arg }}
           SPOTBUGS_SKIP: true
           JAVA11_SMOKE: false
