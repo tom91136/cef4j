@@ -95,12 +95,10 @@ final class RuntimeServerSupervisorTest {
             assertThat(registration).isNotNull();
             RuntimeServerSupervisor.Connection first = deadline.await(supervisor.start(), "first generation startup");
             assertThat(poll(generations, deadline, "first generation delivery")).isSameAs(first);
-            // Allow the 5-second reconnect window plus replacement bootstrap on constrained runners. The stub stays
-            // alive for 30 seconds, so this still fails if recovery incorrectly waits for process exit.
-            RuntimeServerSupervisor.Connection second = poll(
-                    generations,
-                    TestDeadline.after(Duration.ofSeconds(20)),
-                    "replacement generation before the disconnected process exits");
+            // The dropped stub stays alive until the supervisor shuts it down, so waiting for process exit would
+            // never produce a replacement.
+            RuntimeServerSupervisor.Connection second =
+                    poll(generations, deadline, "replacement generation before the disconnected process exits");
             assertThat(second).isNotNull();
             assertThat(second.pid()).isNotEqualTo(first.pid());
         }
@@ -190,7 +188,7 @@ final class RuntimeServerSupervisorTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration)) {
             TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
             CompletableFuture<RuntimeServerSupervisor.Connection> started = supervisor.start();
-            installing.awaitEntered(deadline, "generation install entry");
+            installing.awaitEntered(deadline, started, "generation install entry");
             AutoCloseable registration = supervisor.onConnection(connection -> deliveries.incrementAndGet());
             try {
                 installing.close();
@@ -223,7 +221,7 @@ final class RuntimeServerSupervisorTest {
         TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
         try {
             CompletableFuture<RuntimeServerSupervisor.Connection> starting = supervisor.start();
-            installing.awaitEntered(deadline, "generation install entry");
+            installing.awaitEntered(deadline, starting, "generation install entry");
             supervisor.close();
             installing.close();
             assertThat(starting).isCompletedExceptionally();

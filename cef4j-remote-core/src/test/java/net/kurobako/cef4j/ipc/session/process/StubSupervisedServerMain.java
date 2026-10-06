@@ -40,7 +40,8 @@ public final class StubSupervisedServerMain {
                 new java.util.concurrent.CountDownLatch(1)
                         .await(Long.parseLong(drop), java.util.concurrent.TimeUnit.MILLISECONDS);
                 socket.close();
-                new java.util.concurrent.CountDownLatch(1).await(30, java.util.concurrent.TimeUnit.SECONDS);
+                // Stays alive until the supervisor sends its shutdown command or closes stdin.
+                System.in.read();
             } else {
                 while (!Thread.currentThread().isInterrupted()) socket.recv(0);
             }

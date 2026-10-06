@@ -79,7 +79,7 @@ public final class TestDeadline {
             return attempt.get(remaining, TimeUnit.NANOSECONDS);
         } catch (TimeoutException timedOut) {
             attempt.cancel(true);
-            throw timeout(phase);
+            throw remaining < remainingNanos() ? timeout(phase, attemptLimit) : timeout(phase);
         }
     }
 
@@ -160,5 +160,11 @@ public final class TestDeadline {
         long elapsedNanos = Math.max(0L, System.nanoTime() - startedNanos);
         return new TimeoutException(
                 phase + " did not complete within " + budget + " (elapsed " + Duration.ofNanos(elapsedNanos) + ")");
+    }
+
+    private TimeoutException timeout(String phase, Duration attemptLimit) {
+        long elapsedNanos = Math.max(0L, System.nanoTime() - startedNanos);
+        return new TimeoutException(phase + " attempt did not complete within " + attemptLimit + " (deadline " + budget
+                + ", elapsed " + Duration.ofNanos(elapsedNanos) + ")");
     }
 }
