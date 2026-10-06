@@ -45,7 +45,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
             ZmqTransport.configureLiveness(socket);
 
             assertThat(socket.getHeartbeatIvl()).isEqualTo(1_000);
-            assertThat(socket.getHeartbeatTimeout()).isEqualTo(360_000);
+            assertThat(socket.getHeartbeatTimeout()).isEqualTo(10_000);
             assertThat(socket.getHandshakeIvl())
                     .as("an unestablished pipe must recover before the five-minute SessionReady deadline")
                     .isLessThan(300_000);

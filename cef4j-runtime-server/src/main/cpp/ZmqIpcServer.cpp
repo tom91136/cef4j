@@ -12,7 +12,7 @@ namespace ipc {
 namespace {
 constexpr long kPollTimeoutMs = 10;
 constexpr int kHeartbeatIntervalMs = 1000;
-constexpr int kHeartbeatTimeoutMs = 360000;
+constexpr int kHeartbeatTimeoutMs = 10000;
 
 void setLingerZero(void* sock) {
     int linger = 0;
