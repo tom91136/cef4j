@@ -47,22 +47,6 @@ public final class CefWebHistory {
         return FXCollections.unmodifiableObservableList(entries);
     }
 
-    public int currentIndex() {
-        return getCurrentIndex();
-    }
-
-    public int maxSize() {
-        return getMaxSize();
-    }
-
-    public void maxSize(int value) {
-        setMaxSize(value);
-    }
-
-    public ObservableList<Entry> entries() {
-        return getEntries();
-    }
-
     public void go(int offset) {
         int target = getCurrentIndex() + offset;
         if (offset == 0) return;
@@ -143,18 +127,6 @@ public final class CefWebHistory {
 
         public Date getLastVisitedDate() {
             return lastVisitedDate.get();
-        }
-
-        public String url() {
-            return getUrl();
-        }
-
-        public String title() {
-            return getTitle();
-        }
-
-        public Date lastVisitedDate() {
-            return getLastVisitedDate();
         }
     }
 }

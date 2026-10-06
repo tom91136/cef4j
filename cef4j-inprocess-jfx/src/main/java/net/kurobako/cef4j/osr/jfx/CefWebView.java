@@ -348,39 +348,6 @@ public class CefWebView extends Region implements AutoCloseable {
         zoom.set(value);
     }
 
-    /** Fluent API; JavaFX bean accessors remain available for property and binding compatibility. */
-    public CefWebEngine engine() {
-        return getEngine();
-    }
-
-    public CefClient cefClient() {
-        return getCefClient();
-    }
-
-    public CefScriptEngine scriptEngine() {
-        return getScriptEngine();
-    }
-
-    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
-    @Nullable
-    public CefBrowser browser() {
-        return getBrowser();
-    }
-
-    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
-    @Nullable
-    public CefBrowserHost browserHost() {
-        return getBrowserHost();
-    }
-
-    public final double zoom() {
-        return getZoom();
-    }
-
-    public final void zoom(double value) {
-        setZoom(value);
-    }
-
     public final DoubleProperty zoomProperty() {
         return zoom;
     }
