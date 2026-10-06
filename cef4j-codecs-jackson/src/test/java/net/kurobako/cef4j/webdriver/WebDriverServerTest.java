@@ -12,12 +12,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
-import net.kurobako.cef4j.webdriver.jackson.JacksonWebDriverJsonCodec;
+import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import org.junit.jupiter.api.Test;
 
 final class WebDriverServerTest {
     private final HttpClient client = HttpClient.newHttpClient();
-    private final JacksonWebDriverJsonCodec codec = new JacksonWebDriverJsonCodec();
+    private final WebDriverJsonCodec codec = new WebDriverJsonCodec(new JacksonCdpCodec());
 
     @Test
     void ownsOneSessionAndReportsW3cCapabilities() throws Exception {

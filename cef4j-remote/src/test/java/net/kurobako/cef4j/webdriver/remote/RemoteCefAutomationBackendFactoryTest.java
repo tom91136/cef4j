@@ -6,11 +6,11 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntime;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntimeFactory;
-import net.kurobako.cef4j.webdriver.JsonElement;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import org.junit.jupiter.api.Test;
 
@@ -19,10 +19,8 @@ class RemoteCefAutomationBackendFactoryTest {
     void cancellationReachesRuntimeCreation() {
         CompletableFuture<RemoteBrowserRuntime> runtime = new CompletableFuture<>();
         RemoteBrowserRuntimeFactory runtimes = () -> runtime;
-        RemoteCefAutomationBackendFactory factory = new RemoteCefAutomationBackendFactory(
-                runtimes,
-                (session, browser, host) -> CompletableFuture.failedFuture(new AssertionError("unexpected attach")),
-                new UnusedJsonCodec());
+        RemoteCefAutomationBackendFactory factory =
+                new RemoteCefAutomationBackendFactory(runtimes, new WebDriverJsonCodec(new UnusedCodec()));
 
         factory.create(new net.kurobako.cef4j.webdriver.JsonObject()).cancel(true);
 
@@ -58,15 +56,15 @@ class RemoteCefAutomationBackendFactoryTest {
         }
     }
 
-    private static final class UnusedJsonCodec implements WebDriverJsonCodec {
+    private static final class UnusedCodec implements CdpCodec {
         @Override
-        public JsonElement decode(byte[] json) {
-            throw new AssertionError("unexpected decode");
+        public byte[] encode(Object value) {
+            throw new AssertionError("unexpected encode");
         }
 
         @Override
-        public byte[] encode(JsonElement value) {
-            throw new AssertionError("unexpected encode");
+        public Object decode(byte[] json) {
+            throw new AssertionError("unexpected decode");
         }
     }
 

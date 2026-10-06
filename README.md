@@ -196,7 +196,7 @@ factory.
 | `cef4j-remote-frame`, `cef4j-remote-{jfx,swing}` | frame providers, codecs, MJPEG, and remote UI surfaces |
 | `cef4j-cdp` | typed CDP API and in-process/remote adapters |
 | `cef4j-http` | opt-in `java.net.URL` handlers over CEF's network stack |
-| `cef4j-codecs-{gson,jackson}` | CDP, recording/replay, and WebDriver codecs |
+| `cef4j-codecs-{gson,jackson}` | CDP codecs (also used by WebDriver) and recording/replay codecs |
 | `cef4j-webdriver`, `cef4j-inprocess-webdriver` | W3C endpoint and in-process hosting adapter |
 | `cef4j-runtime-packager` | independently versioned CEF acquisition and packaging CLI |
 | `cef4j-test-support`, `cef4j-test-shared`, `cef4j-integration-tests` | reusable test infrastructure and cross-backend contracts |

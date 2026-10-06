@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
-import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
+import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntime;
@@ -31,19 +31,15 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
     private static final Logger LOG = LoggerFactory.getLogger(RemoteCefAutomationBackendFactory.class);
     private static final long DEVTOOLS_CLOSE_TIMEOUT_SECONDS = 5;
     private final RemoteBrowserRuntimeFactory runtimeFactory;
-    private final RemoteDevToolsSessionFactory devToolsFactory;
     private final WebDriverJsonCodec jsonCodec;
 
     public RemoteCefAutomationBackendFactory(@Nonnull RemoteBrowserRuntimeFactory runtimeFactory) {
-        this(runtimeFactory, RemoteDevToolsSessionFactory.installed(), WebDriverJsonCodec.installed());
+        this(runtimeFactory, WebDriverJsonCodec.installed());
     }
 
     public RemoteCefAutomationBackendFactory(
-            @Nonnull RemoteBrowserRuntimeFactory runtimeFactory,
-            @Nonnull RemoteDevToolsSessionFactory devToolsFactory,
-            @Nonnull WebDriverJsonCodec jsonCodec) {
+            @Nonnull RemoteBrowserRuntimeFactory runtimeFactory, @Nonnull WebDriverJsonCodec jsonCodec) {
         this.runtimeFactory = Objects.requireNonNull(runtimeFactory, "runtimeFactory");
-        this.devToolsFactory = Objects.requireNonNull(devToolsFactory, "devToolsFactory");
         this.jsonCodec = Objects.requireNonNull(jsonCodec, "jsonCodec");
     }
 
@@ -56,7 +52,7 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
             CompletableFuture<AutomationBackend> creation = CefFutures.flatMap(
                     browser.getHost(),
                     host -> CefFutures.flatMap(
-                            devToolsFactory.attach(runtime.session(), runtime.browser(), host),
+                            DevToolsSession.attach(runtime.session(), runtime.browser(), host, jsonCodec.cdpCodec()),
                             devTools -> createBackend(runtime, browser, devTools, adapterOwnsRuntime)));
             CefFutures.observeFailure(creation, failure -> {
                 if (!adapterOwnsRuntime.get()) runtime.close();

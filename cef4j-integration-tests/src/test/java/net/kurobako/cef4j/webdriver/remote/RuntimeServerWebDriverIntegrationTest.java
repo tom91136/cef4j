@@ -16,12 +16,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import javax.annotation.Nullable;
-import net.kurobako.cef4j.ipc.devtools.jackson.JacksonRemoteDevToolsSessionFactory;
+import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.remote.RuntimeServerBrowserRuntimeFactory;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.CefTestCompatibility;
+import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
-import net.kurobako.cef4j.webdriver.jackson.JacksonWebDriverJsonCodec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -203,10 +203,7 @@ class RuntimeServerWebDriverIntegrationTest {
 
     private static WebDriverServer webdriver(RuntimeServerBrowserRuntimeFactory runtimes) throws Exception {
         return RemoteWebDriverServer.start(
-                runtimes,
-                Duration.ofMinutes(4),
-                new JacksonRemoteDevToolsSessionFactory(),
-                new JacksonWebDriverJsonCodec());
+                runtimes, Duration.ofMinutes(4), new WebDriverJsonCodec(new JacksonCdpCodec()));
     }
 
     private static HttpServer startFixture(byte[] page) throws Exception {

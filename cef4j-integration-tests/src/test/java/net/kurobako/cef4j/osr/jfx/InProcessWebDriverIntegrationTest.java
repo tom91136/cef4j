@@ -25,6 +25,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
@@ -32,10 +33,10 @@ import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.CefTestCompatibility;
+import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessBrowserRuntime;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessWebDriverServer;
-import net.kurobako.cef4j.webdriver.jackson.JacksonWebDriverJsonCodec;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class InProcessWebDriverIntegrationTest {
     void acceptsSeleniumWithoutChromeOrChromeDriver() throws Exception {
         if (!CefTestCompatibility.supportsDevTools()) {
             try (WebDriverServer server = InProcessWebDriverServer.start(
-                    InProcessWebDriverIntegrationTest::createBrowser, new JacksonWebDriverJsonCodec())) {
+                    InProcessWebDriverIntegrationTest::createBrowser, new WebDriverJsonCodec(new JacksonCdpCodec()))) {
                 assertThatThrownBy(() -> new RemoteWebDriver(
                                 server.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j")))
                         .isInstanceOf(SessionNotCreatedException.class)
@@ -107,7 +108,7 @@ class InProcessWebDriverIntegrationTest {
         URI pageUri = URI.create("http://127.0.0.1:" + fixture.getAddress().getPort() + "/page");
 
         try (WebDriverServer server = InProcessWebDriverServer.start(
-                InProcessWebDriverIntegrationTest::createBrowser, new JacksonWebDriverJsonCodec())) {
+                InProcessWebDriverIntegrationTest::createBrowser, new WebDriverJsonCodec(new JacksonCdpCodec()))) {
             RemoteWebDriver driver =
                     new RemoteWebDriver(server.endpoint().toURL(), new ImmutableCapabilities("browserName", "cef4j"));
             try {

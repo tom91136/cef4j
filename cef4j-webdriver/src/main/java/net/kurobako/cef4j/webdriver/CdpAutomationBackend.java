@@ -86,7 +86,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
             @Nonnull JsonCdpBrowser cdp, @Nonnull Executor pollExecutor) {
         Objects.requireNonNull(cdp, "cdp");
         Objects.requireNonNull(pollExecutor, "pollExecutor");
-        CdpClient client = new CdpClient(cdp, new WebDriverCdpCodec(cdp.jsonCodec()));
+        CdpClient client = new CdpClient(cdp, cdp.jsonCodec().cdpCodec());
         return client.domains()
                 .browser()
                 .getVersion()
@@ -178,7 +178,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
             });
         }
         return CompletableFuture.completedFuture(
-                new Runtime.CallArgument().value(WebDriverCdpCodec.fromJsonElement(argument)));
+                new Runtime.CallArgument().value(WebDriverJsonCodec.fromJsonElement(argument)));
     }
 
     @Override
@@ -819,7 +819,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
             throw failure(WebDriverError.JAVASCRIPT_ERROR, text);
         }
         Optional<Object> value = result.value();
-        if (value.isPresent()) return WebDriverCdpCodec.toJsonElement(value.get());
+        if (value.isPresent()) return WebDriverJsonCodec.toJsonElement(value.get());
         if ("undefined".equals(result.type().value())) return JsonNull.INSTANCE;
         Optional<String> description = result.description();
         return description.isEmpty() ? JsonNull.INSTANCE : cdp.jsonCodec().decode(description.get());

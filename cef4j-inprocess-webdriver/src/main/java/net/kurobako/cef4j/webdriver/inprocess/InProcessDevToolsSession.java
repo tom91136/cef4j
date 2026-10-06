@@ -3,6 +3,7 @@ package net.kurobako.cef4j.webdriver.inprocess;
 import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.CdpRequestTracker;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -20,8 +22,6 @@ import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefTaskRunner;
 import net.kurobako.cef4j.gen.CefThreadId;
-import net.kurobako.cef4j.webdriver.JsonElement;
-import net.kurobako.cef4j.webdriver.JsonObject;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(InProcessDevToolsSession.class);
 
     private final CefBrowserHost host;
-    private final WebDriverJsonCodec jsonCodec;
+    private final CdpCodec codec;
     private final AtomicBoolean open = new AtomicBoolean(true);
     private final CdpRequestTracker<byte[]> requests = new CdpRequestTracker<>();
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<byte[]>>> handlers =
@@ -42,21 +42,21 @@ public final class InProcessDevToolsSession implements CdpTransport {
     @Nullable
     private volatile Object observer;
 
-    private InProcessDevToolsSession(CefBrowserHost host, WebDriverJsonCodec jsonCodec) {
+    private InProcessDevToolsSession(CefBrowserHost host, CdpCodec codec) {
         this.host = host;
-        this.jsonCodec = jsonCodec;
+        this.codec = codec;
     }
 
     @Nonnull
     public static CompletableFuture<InProcessDevToolsSession> attach(@Nonnull CefBrowser browser) {
-        return attach(browser, WebDriverJsonCodec.installed());
+        return attach(browser, WebDriverJsonCodec.installed().cdpCodec());
     }
 
     @Nonnull
     public static CompletableFuture<InProcessDevToolsSession> attach(
-            @Nonnull CefBrowser browser, @Nonnull WebDriverJsonCodec jsonCodec) {
+            @Nonnull CefBrowser browser, @Nonnull CdpCodec codec) {
         Objects.requireNonNull(browser, "browser");
-        Objects.requireNonNull(jsonCodec, "jsonCodec");
+        Objects.requireNonNull(codec, "codec");
         Class<?> observerType;
         try {
             observerType = Class.forName("net.kurobako.cef4j.gen.CefDevToolsMessageObserver");
@@ -67,7 +67,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
         CefBrowserHost host = browser.getHost().orElse(null);
         if (host == null)
             return CompletableFuture.failedFuture(new IllegalStateException("in-process browser has no host"));
-        InProcessDevToolsSession session = new InProcessDevToolsSession(host, jsonCodec);
+        InProcessDevToolsSession session = new InProcessDevToolsSession(host, codec);
         return onUiThread(() -> {
                     session.observer = createObserver(observerType, session);
                     @SuppressWarnings("unchecked")
@@ -193,11 +193,14 @@ public final class InProcessDevToolsSession implements CdpTransport {
 
     private CdpException decodeError(byte[] bytes) {
         try {
-            JsonObject error = jsonCodec.decode(bytes).asObject();
-            JsonElement code = error.get("code");
-            JsonElement message = error.get("message");
-            if (code != null && message != null) {
-                return new CdpException(code.intValue(), message.string(), error.get("data"));
+            Object decoded = codec.decode(bytes);
+            if (decoded instanceof Map) {
+                Map<?, ?> error = (Map<?, ?>) decoded;
+                Object code = error.get("code");
+                Object message = error.get("message");
+                if (code instanceof Number && message != null) {
+                    return new CdpException(((Number) code).intValue(), message.toString(), error.get("data"));
+                }
             }
         } catch (RuntimeException ignored) {
             return undecodedError(bytes);

@@ -14,13 +14,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.gson.GsonCdpCodecProvider;
 import net.kurobako.cef4j.test.TestDeadline;
-import net.kurobako.cef4j.webdriver.gson.GsonWebDriverJsonCodec;
 import org.junit.jupiter.api.Test;
 
 final class WebDriverServerTest {
     private final HttpClient client = HttpClient.newHttpClient();
-    private final GsonWebDriverJsonCodec codec = new GsonWebDriverJsonCodec();
+    private final WebDriverJsonCodec codec = new WebDriverJsonCodec(new GsonCdpCodecProvider());
 
     @Test
     void ownsOneSessionAndReportsW3cCapabilities() throws Exception {

@@ -12,12 +12,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -202,6 +205,20 @@ public abstract class WebDriverServerContract {
             assertThat(backend.closed).isTrue();
             assertThat(statusReady(server)).isTrue();
         }
+    }
+
+    @Test
+    final void codecKeepsExplicitNullsAndExactNumbers() {
+        String json = "{\"value\":null,\"items\":[1,null],\"int\":42,\"long\":9223372036854775807,"
+                + "\"big\":9223372036854775808,\"decimal\":1.50,\"text\":\"<a&b>\"}";
+        JsonObject decoded = codec().decode(json).asObject();
+        assertThat(decoded.get("value").isNull()).isTrue();
+        assertThat(decoded.array("items").get(1).isNull()).isTrue();
+        assertThat(decoded.get("int").asPrimitive().value()).isEqualTo(42);
+        assertThat(decoded.get("long").asPrimitive().value()).isEqualTo(Long.MAX_VALUE);
+        assertThat(decoded.get("big").asPrimitive().value()).isEqualTo(new BigInteger("9223372036854775808"));
+        assertThat(decoded.get("decimal").asPrimitive().value()).isEqualTo(new BigDecimal("1.50"));
+        assertThat(new String(codec().encode(decoded), StandardCharsets.UTF_8)).isEqualTo(json);
     }
 
     private void assertCookieFailure(String json, String message) {

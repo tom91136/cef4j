@@ -21,7 +21,6 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
-import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAgentDetachedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
@@ -50,11 +49,6 @@ class DevToolsSessionTest {
         } catch (ClassNotFoundException e) {
             hasSendDevToolsMessage = false;
         }
-    }
-
-    @Test
-    void installsRemoteFactoryProvider() {
-        assertThat(RemoteDevToolsSessionFactory.installed()).isInstanceOf(JacksonRemoteDevToolsSessionFactory.class);
     }
 
     @Test

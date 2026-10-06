@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,7 +21,6 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.gson.GsonCdpCodec;
 import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
-import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAgentDetachedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
@@ -51,12 +49,6 @@ class DevToolsSessionTest {
         } catch (ClassNotFoundException e) {
             hasSendDevToolsMessage = false;
         }
-    }
-
-    @Test
-    void installsRemoteFactoryProvider() {
-        assertThat(ServiceLoader.load(RemoteDevToolsSessionFactory.class))
-                .anyMatch(factory -> factory instanceof GsonRemoteDevToolsSessionFactory);
     }
 
     @Test

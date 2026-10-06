@@ -104,7 +104,7 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
             try {
                 CefBrowser browser = Objects.requireNonNull(runtime.browser(), "runtime.browser()");
                 CompletableFuture<InProcessCdpBrowser> attached = flatMap(
-                        InProcessDevToolsSession.attach(browser, jsonCodec),
+                        InProcessDevToolsSession.attach(browser, jsonCodec.cdpCodec()),
                         devTools -> CompletableFuture.completedFuture(
                                 new InProcessCdpBrowser(runtime, browser, devTools, jsonCodec)));
                 observeFailure(attached, failure -> runtime.close());
