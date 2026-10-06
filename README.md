@@ -21,6 +21,7 @@ Runtime baseline: Java 11. Building requires JDK 17+ and a platform C++ toolchai
 | Generated remote CEF API | `cef4j-remote-api` |
 | Typed Chrome DevTools Protocol | `cef4j-cdp` plus a Gson or Jackson codec |
 | W3C WebDriver endpoint | `cef4j-inprocess-webdriver` / `cef4j-remote-webdriver` |
+| `java.net.URL` over Chromium's network stack | `cef4j-http` (`CefHttp`) |
 
 Both hosting modes support Linux, Windows, and macOS on x86-64 and ARM64. Remote mode runs CEF in
 `cef4j-runtime-server`, isolating native crashes and allowing bounded restart. It does not require installed Chrome or
@@ -168,6 +169,21 @@ Runtime.EvaluateResult result = cdp.domains().runtime()
 
 The platform build caches the matching Chromium/V8 PDL sources beside CEF and regenerates the CDP bindings.
 
+## HTTP through CEF
+
+`cef4j-http` serves `http` and `https` `java.net.URL` connections with `CefURLRequest`, so requests use the global
+request context's network stack. CEF must be initialised in-process. Nothing is registered implicitly; route
+individual URLs with a handler:
+
+```java
+URL url = new URL(null, "https://example.com/", CefHttp.handler("https"));
+HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+```
+
+`CefHttp.install()` routes every `http`/`https` URL in the JVM. The JDK allows one stream handler factory per JVM and
+caches handlers on first use, so install it before opening any such URL, or compose `CefHttp.factory()` with an existing
+factory.
+
 ## Modules
 
 | Module family | Responsibility |
@@ -179,6 +195,7 @@ The platform build caches the matching Chromium/V8 PDL sources beside CEF and re
 | `cef4j-runtime-server-*` | thin native runtime server distributions |
 | `cef4j-remote-frame`, `cef4j-remote-{jfx,swing}` | frame providers, codecs, MJPEG, and remote UI surfaces |
 | `cef4j-cdp` | typed CDP API and in-process/remote adapters |
+| `cef4j-http` | opt-in `java.net.URL` handlers over CEF's network stack |
 | `cef4j-codecs-{gson,jackson}` | CDP, recording/replay, and WebDriver codecs |
 | `cef4j-webdriver`, `cef4j-{inprocess,remote}-webdriver` | W3C endpoint and hosting adapters |
 | `cef4j-runtime-packager` | independently versioned CEF acquisition and packaging CLI |
