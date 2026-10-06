@@ -114,4 +114,4 @@ jobs:
             **/hs_err_pid*.log
             target/native-crash-diagnostics/**
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 30

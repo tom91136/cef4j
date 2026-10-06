@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   ABI_RUNTIME_CEF_VERSION: '152.0.5+gb129680+chromium-152.0.7977.54'
 
@@ -369,7 +373,7 @@ jobs:
             **/hs_err_pid*.log
             target/native-crash-diagnostics/**
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 30
 
       - name: Upload handwritten-code coverage
         if: ${{ success() && matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}
