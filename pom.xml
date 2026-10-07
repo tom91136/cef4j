@@ -50,7 +50,7 @@
         <javafx.version>13.0.2</javafx.version>
         <flatlaf.version>3.7.2</flatlaf.version>
         <palantir.java.format.version>2.97.0</palantir.java.format.version>
-        <errorprone.version>2.50.0</errorprone.version>
+        <errorprone.version>2.42.0</errorprone.version><!-- XXX: 2.43.0+ is Java 21 bytecode; CI builds the annotation processors on JDK 17 -->
         <nullaway.version>0.14.2</nullaway.version>
         <checker.qual.version>3.55.1</checker.qual.version>
         <autoservice.version>1.1.1</autoservice.version>
