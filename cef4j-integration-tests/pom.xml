@@ -84,7 +84,6 @@
         <dependency>
             <groupId>com.kohlschutter.junixsocket</groupId>
             <artifactId>junixsocket-core</artifactId>
-            <version>${junixsocket.version}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>

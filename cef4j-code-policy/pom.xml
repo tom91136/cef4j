@@ -32,7 +32,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>33.4.0-jre</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -48,16 +47,13 @@
             <artifactId>auto-service-annotations</artifactId>
         </dependency>
         <dependency>
-            <!-- error_prone_check_api pins checker-qual 3.19.0 which has no local jar; 3.43.0 is the
-                 version already resolved on the annotation processor paths elsewhere. -->
+            <!-- error_prone_check_api pins an older checker-qual; use the current 3.x release. -->
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.43.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_test_helpers</artifactId>
-            <version>${errorprone.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
