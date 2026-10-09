@@ -19,5 +19,6 @@ __attribute__((used)) static FnPtr_ runtime_stubs_verify_[] = {
     reinterpret_cast<FnPtr_>(&Java_net_kurobako_cef4j_SystemBootstrap_initAndRunOnMainThread0),
     reinterpret_cast<FnPtr_>(&Java_net_kurobako_cef4j_SystemBootstrap_loadCefLibrary0),
     reinterpret_cast<FnPtr_>(&Java_net_kurobako_cef4j_SystemBootstrap_quitAndWaitMainThreadMessageLoop0),
+    reinterpret_cast<FnPtr_>(&Java_net_kurobako_cef4j_SystemBootstrap_runtimeCefMajor0),
     reinterpret_cast<FnPtr_>(&Java_net_kurobako_cef4j_SystemBootstrap_scheduleLinuxMessageLoopWork0),
 };

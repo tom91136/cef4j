@@ -1,6 +1,11 @@
 #include "jni_util.h"
 #include "runtime_stubs.gen.h"
 #include "cef_compat.h"
+#if __has_include("include/cef_version_info.h")
+#include "include/cef_version_info.h"
+#else
+#include "include/cef_version.h"
+#endif
 
 #ifndef _WIN32
 #include <array>
@@ -57,6 +62,18 @@ CEF4J_JNI_EXPORT_RT(void, NativeMemory, putBytes)(JNIEnv* env, jclass /*clz*/,
     env->GetByteArrayRegion(reinterpret_cast<jbyteArray>(src), offset, length, static_cast<jbyte*>(dest));
 }
 
+#ifdef __APPLE__
+// libcef exports are stubs until cef_load_library() binds the framework.
+static std::atomic<bool> g_cef_library_loaded{false};
+#endif
+
+CEF4J_JNI_EXPORT_RT(jint, SystemBootstrap, runtimeCefMajor0)(JNIEnv* /*env*/, jclass /*clz*/) {
+#ifdef __APPLE__
+    if (!g_cef_library_loaded) return 0;
+#endif
+    return cef_version_info(0);
+}
+
 CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv* env, jclass /*clz*/,
         jstring frameworkBinaryPath) {
 #ifdef __APPLE__
@@ -70,6 +87,7 @@ CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv* env, jcl
         cef_unload_library();
         return JNI_FALSE;
     }
+    g_cef_library_loaded = true;
     return JNI_TRUE;
 #else
     (void)env; (void)frameworkBinaryPath;
@@ -172,6 +190,7 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env,
         // XXX: CEF 109-150 leaves macOS CFRunLoop observers installed until cef_shutdown; keep shutdown before JVM
         // teardown until the minimum supported CEF exceeds 150.
         cef_shutdown();
+        g_cef_library_loaded = false;
         cef_unload_library();
         dispatch_semaphore_signal(loopDone);
     });

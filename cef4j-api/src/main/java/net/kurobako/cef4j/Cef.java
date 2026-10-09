@@ -416,7 +416,7 @@ public enum Cef implements AutoCloseable {
     static List<String> processArguments(List<String> extraArgs) {
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
         argv.add("cef4j");
-        int cefApi = SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE);
+        int cefApi = SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE);
         if (OS.isLinux() && cefApi == 75) {
             // CEF 75's GPU process races NetworkContext startup under Xvfb, and its out-of-process NetworkService
             // can dereference a destroyed PrefService while an AWT embedding is starting. Keep both workarounds

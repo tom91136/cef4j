@@ -34,6 +34,11 @@
 #include "include/capi/cef_render_handler_capi.h"
 #include "include/capi/cef_render_process_handler_capi.h"
 #include "include/capi/cef_task_capi.h"
+#if __has_include("include/cef_version_info.h")
+#include "include/cef_version_info.h"
+#else
+#include "include/cef_version.h"
+#endif
 #include "include/capi/cef_v8_capi.h"
 #include "include/capi/cef_values_capi.h"
 #include "include/cef_api_hash.h"
@@ -1905,23 +1910,21 @@ struct App : cef_app_t {
             return a->renderProcessHandler;
         };
         on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
-            [[maybe_unused]] auto appendSwitch = [commandLine](const char* name) {
+            auto appendSwitch = [commandLine](const char* name) {
                 ScopedCefString value(name);
                 commandLine->append_switch(commandLine, value.get());
             };
-#if CEF_VERSION_MAJOR >= 151
+            // Runtime workarounds follow the loaded libcef, which can be newer than the headers this was built with.
+            const int runtimeMajor = cef_version_info(0);
             // Chrome 151+ may otherwise block cef_initialize behind an interactive first-run EULA. The runtime
             // server has no interactive browser chrome, so first-run UI is neither visible nor actionable.
-            appendSwitch("no-first-run");
-#endif
-#if CEF_VERSION_MAJOR < 142
+            if (runtimeMajor >= 151) appendSwitch("no-first-run");
             // XXX: Before CEF 142 (chromiumembedded/cef#4001), the frame swap that the back-forward cache forces on
             // same-site navigation can lose CEF's browser-info handshake, leaving the new document with no V8
             // context; remove when the minimum CEF is 142.
-            appendSwitch("disable-back-forward-cache");
-#endif
-#if defined(__APPLE__) && CEF_VERSION_MAJOR <= 109
-            appendSwitch("disable-gpu");
+            if (runtimeMajor < 142) appendSwitch("disable-back-forward-cache");
+#if defined(__APPLE__)
+            if (runtimeMajor <= 109) appendSwitch("disable-gpu");
 #endif
         };
     }

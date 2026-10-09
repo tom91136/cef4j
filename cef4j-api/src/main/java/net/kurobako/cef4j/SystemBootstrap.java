@@ -221,6 +221,18 @@ public final class SystemBootstrap {
         }
     }
 
+    /**
+     * Return the major version of the loaded libcef, which may be newer than {@link #packagedCefApiMajor()} when a
+     * versioned-API build runs on a newer CEF. Falls back to the packaged major before libcef is loaded.
+     */
+    public static OptionalInt runtimeCefMajor() {
+        if (loaded) {
+            int major = runtimeCefMajor0();
+            if (major > 0) return OptionalInt.of(major);
+        }
+        return packagedCefApiMajor();
+    }
+
     /** Return the major CEF API version embedded in this cef4j build, if available. */
     public static OptionalInt packagedCefApiMajor() {
         String version = packagedCefApiVersion();
@@ -549,6 +561,8 @@ public final class SystemBootstrap {
     private static native void scheduleLinuxMessageLoopWork0(long delayMs);
 
     private static native void cancelLinuxMessageLoopWork0();
+
+    private static native int runtimeCefMajor0();
 
     /** Schedule one CEF message-loop iteration on Linux's default GLib context. */
     public static void scheduleLinuxMessageLoopWork(long delayMs) {

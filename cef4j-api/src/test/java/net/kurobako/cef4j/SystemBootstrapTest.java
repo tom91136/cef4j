@@ -23,6 +23,14 @@ class SystemBootstrapTest {
     }
 
     @Test
+    void runtimeCefMajorIsNeverOlderThanThePackagedApi() {
+        SystemBootstrap.load();
+
+        int packaged = SystemBootstrap.packagedCefApiMajor().orElseThrow();
+        assertThat(SystemBootstrap.runtimeCefMajor().orElseThrow()).isGreaterThanOrEqualTo(packaged);
+    }
+
+    @Test
     void autoDiscoverySelectsOnlyThePackagedCefMajor() throws Exception {
         String expectedMajor = java.util.Objects.requireNonNull(SystemBootstrap.packagedCefApiVersion());
         Path matching = createCefDistribution(expectedMajor);

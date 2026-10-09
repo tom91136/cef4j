@@ -82,10 +82,6 @@ public class CefWebView extends Region implements AutoCloseable {
     private static final CefPaintElementType PAINT_VIEW = CefPaintElementType.of(CefPaintElementType.Kind.VIEW);
     private static final CefThreadId CEF_UI_THREAD = CefThreadId.of(CefThreadId.Kind.UI);
     private static final long FX_CALLBACK_TIMEOUT_SECONDS = 10;
-    // XXX: CEF <= 75 software OSR skips onPaint for a compositor draw that lands after the renderer stops requesting
-    // begin frames, so the last frame of an update stays hidden until the next invalidate; remove with CEF 75 support.
-    private static final boolean REPAINT_PERIODICALLY =
-            SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) <= 75;
     private static final java.util.concurrent.Executor CREATED_BROWSER_CLOSER = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r, "cef4j-created-browser-closer");
         thread.setDaemon(true);
@@ -207,7 +203,7 @@ public class CefWebView extends Region implements AutoCloseable {
             settings.externalMessagePump = osrDefaults.externalMessagePump;
             settings.multiThreadedMessageLoop = osrDefaults.multiThreadedMessageLoop;
             if (net.kurobako.cef4j.OS.isLinux()
-                    && SystemBootstrap.packagedCefApiMajor().orElse(Integer.MAX_VALUE) <= 85) {
+                    && SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE) <= 85) {
                 if (!Platform.isFxApplicationThread()) {
                     throw new IllegalStateException("Legacy CEF JavaFX initialisation must run on the JavaFX thread");
                 }
@@ -1105,7 +1101,12 @@ public class CefWebView extends Region implements AutoCloseable {
             applyZoom(getZoom());
             engine.fireVisibilityChanged(true);
             requestViewRefresh(true);
-            if (REPAINT_PERIODICALLY && !releaseRequested) periodicRepaint.play();
+            // XXX: CEF <= 75 software OSR skips onPaint for a compositor draw that lands after the renderer stops
+            // requesting begin frames, so the last frame of an update stays hidden until the next invalidate; remove
+            // with CEF 75 support.
+            if (SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE) <= 75 && !releaseRequested) {
+                periodicRepaint.play();
+            }
         });
     }
 
