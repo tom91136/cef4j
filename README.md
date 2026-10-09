@@ -71,7 +71,8 @@ Use `Cef.osrLaunchArgs()` for direct lifecycle control and register `CefApp` han
 
 ## Supplying CEF
 
-CEF binaries are not published to Maven Central. Use a CEF build from the same major as cef4j:
+CEF binaries are not published to Maven Central. Use a CEF build compatible with the bridge (see
+[Compatibility](#compatibility)):
 
 | Option | Use |
 | --- | --- |
@@ -227,9 +228,14 @@ Windows uses `mvnw.cmd`. The build requires Ninja and downloads minimal CEF arch
 | 116 | `116.0.27+gd8c85ac+chromium-116.0.5845.190` | long-tail API |
 | 109 | `109.1.18+gf1c41e4+chromium-109.0.5414.120` | compatibility floor |
 
-Each row is one test representative, not support for every patch build. Applications own and should update the exact
-CEF patch they ship. cef4j targets one CEF API major per bridge release; compatible patch updates do not require a new
-bridge publication. Legacy lanes show compatibility, not security support.
+Each row is one test representative, not support for every patch build. Each cef4j release builds its bridges against
+one pinned CEF API major. From CEF 133, CEF versions its C API: a bridge built against API major N also loads on newer
+CEF releases that still support API N, so applications can update CEF for security and stability fixes without a new
+cef4j release. They keep the API surface of N; newer CEF APIs arrive with a cef4j release built against a newer major.
+Before 133 the runtime must match the bridge's API exactly, which in practice means the same major. Version-specific
+workarounds follow the loaded CEF, not the bridge. CI runs the 138 and 150 bridges against the newest CEF release on
+every platform. Applications own and should update the exact CEF patch they ship. Legacy lanes show compatibility, not
+security support.
 
 CI runs 30 native platform/CEF jobs. Each job builds and tests with JDK 17, then reuses the generated and native output
 for Java compatibility tests on JDK 21 and 25. Tests that never load CEF run once per platform and JDK, on the frontier
