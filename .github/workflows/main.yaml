@@ -265,7 +265,7 @@ jobs:
         run: .github/ci/build.sh
 
       - name: Prepare latest CEF runtime for stable ABI test
-        if: ${{ success() && matrix.cef.api == '138' }}
+        if: ${{ success() && (matrix.cef.api == '138' || matrix.cef.api == '150') }}
         uses: ./.github/actions/cef-archives
         with:
           version: ${{ env.ABI_RUNTIME_CEF_VERSION }}
@@ -273,13 +273,10 @@ jobs:
           include-codegen-archives: 'false'
           save-cache: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: CEF 138 stable ABI against latest runtime
-        if: ${{ success() && matrix.cef.api == '138' }}
+      - name: CEF ${{ matrix.cef.api }} stable ABI against latest runtime
+        if: ${{ success() && (matrix.cef.api == '138' || matrix.cef.api == '150') }}
         shell: bash
         env:
-          # The bindings still report API 138 after the runtime swap, so Cef.java cannot infer that
-          # the CEF 152 first-run UI must be disabled.
-          CEF_EXTRA_ARGS: '${{ matrix.os.cef_args }},--no-first-run'
           JAVA_HOME: ${{ steps.jdk17.outputs.path }}
           JDK_VERSION: '17'
           JAVAFX_VERSION: ${{ matrix.os.javafx17 }}
