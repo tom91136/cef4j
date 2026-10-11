@@ -40,7 +40,9 @@ class CefWebViewRenderTest {
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
         startJavaFx();
-        onFxThread(() -> CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty()));
+        onFxThread(
+                () -> CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty()),
+                CEF_STARTUP_TIMEOUT);
         try {
             CefWebView view = Objects.requireNonNull(
                     onFxThread(() -> {

@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.osr.jfx;
 
+import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.CEF_STARTUP_TIMEOUT;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.onFxThread;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 
@@ -69,8 +70,10 @@ public final class NativeBrowserBackend implements BrowserBackend {
         settings.cachePath = tmp.toAbsolutePath().toString();
         net.kurobako.cef4j.test.CefTestLaunch.setRootCachePath(
                 settings, tmp.toAbsolutePath().toString());
-        onFxThread(() ->
-                CefWebView.initialise(settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), Optional.empty()));
+        onFxThread(
+                () -> CefWebView.initialise(
+                        settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), Optional.empty()),
+                CEF_STARTUP_TIMEOUT);
         cefInitialised = true;
     }
 

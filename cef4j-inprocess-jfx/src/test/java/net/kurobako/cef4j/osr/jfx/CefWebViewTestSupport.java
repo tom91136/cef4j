@@ -2,6 +2,7 @@ package net.kurobako.cef4j.osr.jfx;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -23,6 +24,9 @@ import org.jspecify.annotations.Nullable;
 
 final class CefWebViewTestSupport {
     private static final UncaughtExceptionTracker JAVA_FX_FAILURES = new UncaughtExceptionTracker();
+    private static final Duration FX_TASK_TIMEOUT = Duration.ofSeconds(10);
+    // Matches the shared browser contract; cold CEF startup on hosted macOS Intel runners can exceed 20 seconds.
+    static final Duration CEF_STARTUP_TIMEOUT = Duration.ofSeconds(40);
 
     private CefWebViewTestSupport() {}
 
@@ -131,6 +135,11 @@ final class CefWebViewTestSupport {
 
     @Nullable
     static <T> T onFxThread(Callable<T> task) throws Exception {
+        return onFxThread(task, FX_TASK_TIMEOUT);
+    }
+
+    @Nullable
+    static <T> T onFxThread(Callable<T> task, Duration timeout) throws Exception {
         if (Platform.isFxApplicationThread()) {
             return task.call();
         }
@@ -146,7 +155,7 @@ final class CefWebViewTestSupport {
                 latch.countDown();
             }
         });
-        if (!latch.await(10, TimeUnit.SECONDS)) {
+        if (!latch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
             throw new TimeoutException("Timed out waiting for JavaFX task");
         }
         if (error.get() != null) {
@@ -157,10 +166,16 @@ final class CefWebViewTestSupport {
     }
 
     static void onFxThread(Runnable task) throws Exception {
-        onFxThread(() -> {
-            task.run();
-            return null;
-        });
+        onFxThread(task, FX_TASK_TIMEOUT);
+    }
+
+    static void onFxThread(Runnable task, Duration timeout) throws Exception {
+        onFxThread(
+                () -> {
+                    task.run();
+                    return null;
+                },
+                timeout);
     }
 
     @Nullable

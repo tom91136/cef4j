@@ -42,7 +42,8 @@ class CefWebViewV117PlusInputTest {
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();
-        onFxThread(() -> CefWebView.initialise(launch.settings(), args, java.util.Optional.empty()));
+        onFxThread(
+                () -> CefWebView.initialise(launch.settings(), args, java.util.Optional.empty()), CEF_STARTUP_TIMEOUT);
     }
 
     @AfterEach

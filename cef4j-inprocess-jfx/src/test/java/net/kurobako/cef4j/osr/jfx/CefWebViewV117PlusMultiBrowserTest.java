@@ -42,7 +42,8 @@ class CefWebViewV117PlusMultiBrowserTest {
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();
-        onFxThread(() -> CefWebView.initialise(launch.settings(), args, java.util.Optional.empty()));
+        onFxThread(
+                () -> CefWebView.initialise(launch.settings(), args, java.util.Optional.empty()), CEF_STARTUP_TIMEOUT);
     }
 
     @AfterAll
@@ -69,7 +70,7 @@ class CefWebViewV117PlusMultiBrowserTest {
                 ready.completeExceptionally(t);
             }
         });
-        return ready.get(10, TimeUnit.SECONDS);
+        return ready.get(CEF_STARTUP_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Test
