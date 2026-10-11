@@ -11,11 +11,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.cdp.generated.Runtime;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class JacksonCdpCodecTest {
@@ -61,7 +61,7 @@ final class JacksonCdpCodecTest {
         private boolean subscriptionClosed;
 
         @Override
-        public CompletionStage<byte[]> execute(String method, @Nullable byte[] params) {
+        public CompletionStage<byte[]> execute(String method, byte @Nullable [] params) {
             return CompletableFuture.completedFuture(new byte[0]);
         }
 

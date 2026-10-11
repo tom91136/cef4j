@@ -3,9 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class that creates CefResourceHandler instances for handling scheme requests. The methods of this class will always

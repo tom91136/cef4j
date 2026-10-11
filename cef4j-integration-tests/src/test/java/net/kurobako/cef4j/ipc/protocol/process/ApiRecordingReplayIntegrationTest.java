@@ -7,13 +7,13 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import net.kurobako.cef4j.codecs.jackson.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
-import net.kurobako.cef4j.ipc.session.middleware.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.RecordingCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
@@ -22,6 +22,7 @@ import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
@@ -42,7 +43,7 @@ class ApiRecordingReplayIntegrationTest {
                         trace,
                         JacksonNdjsonSessionTraceCodec.INSTANCE,
                         TracePayloadFilter.identity())) {
-            AtomicReference<RemoteHandle> browserHandle = new AtomicReference<>();
+            AtomicReference<@Nullable RemoteHandle> browserHandle = new AtomicReference<>();
             CefSession.HandlerRegistration lifecycle = recording.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
@@ -58,7 +59,7 @@ class ApiRecordingReplayIntegrationTest {
 
         ReplayCefSession replay =
                 ReplayCefSession.fromFile(trace, JacksonNdjsonSessionTraceCodec.INSTANCE, ReplayMode.IMMEDIATE);
-        AtomicReference<RemoteHandle> replayedHandle = new AtomicReference<>();
+        AtomicReference<@Nullable RemoteHandle> replayedHandle = new AtomicReference<>();
         CefSession.HandlerRegistration lifecycle = replay.onLatest(
                 LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                 LifeSpanHandlerOnAfterCreatedEvent.DECODER,

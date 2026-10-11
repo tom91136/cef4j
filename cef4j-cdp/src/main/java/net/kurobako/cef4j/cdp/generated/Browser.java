@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class Browser {
      */
     public static final class BrowserContextID implements CdpValue<String> {
         public final String value;
-        public BrowserContextID(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public BrowserContextID(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof BrowserContextID)) return false;
             return value.equals(((BrowserContextID) other).value);
@@ -46,8 +45,8 @@ public final class Browser {
     public static final class WindowID implements CdpValue<Long> {
         public final long value;
         public WindowID(long value) { this.value = value; }
-        @Nonnull public Long value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Long value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof WindowID)) return false;
             return value == ((WindowID) other).value;
@@ -66,8 +65,8 @@ public final class Browser {
         FULLSCREEN("fullscreen");
         public final String value;
         WindowState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static WindowState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static WindowState of(String value) {
             for (WindowState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -121,7 +120,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.WindowState> windowState() {
-            return Optional.ofNullable(raw("windowState") == null ? null : Browser.WindowState.of((String) raw("windowState")));
+            Object value = raw("windowState");
+            return Optional.ofNullable(value == null ? null : Browser.WindowState.of((String) value));
         }
         /**
          * The offset from the left edge of the screen to the window in pixels.
@@ -260,8 +260,8 @@ public final class Browser {
         WINDOWMANAGEMENT("windowManagement");
         public final String value;
         PermissionType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PermissionType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PermissionType of(String value) {
             for (PermissionType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -278,8 +278,8 @@ public final class Browser {
         PROMPT("prompt");
         public final String value;
         PermissionSetting(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PermissionSetting of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PermissionSetting of(String value) {
             for (PermissionSetting constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -308,35 +308,40 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> sysex() {
-            return Optional.ofNullable((Boolean) raw("sysex"));
+            Object value = raw("sysex");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * For &quot;push&quot; permission, may specify userVisibleOnly. Note that userVisibleOnly = true is the only currently supported type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> userVisibleOnly() {
-            return Optional.ofNullable((Boolean) raw("userVisibleOnly"));
+            Object value = raw("userVisibleOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * For &quot;clipboard&quot; permission, may specify allowWithoutSanitization.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowWithoutSanitization() {
-            return Optional.ofNullable((Boolean) raw("allowWithoutSanitization"));
+            Object value = raw("allowWithoutSanitization");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * For &quot;fullscreen&quot; permission, must specify allowWithoutGesture:true.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowWithoutGesture() {
-            return Optional.ofNullable((Boolean) raw("allowWithoutGesture"));
+            Object value = raw("allowWithoutGesture");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * For &quot;camera&quot; permission, may specify panTiltZoom.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> panTiltZoom() {
-            return Optional.ofNullable((Boolean) raw("panTiltZoom"));
+            Object value = raw("panTiltZoom");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Name of permission. See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
@@ -448,8 +453,8 @@ public final class Browser {
         OPENGLIC("openGlic");
         public final String value;
         BrowserCommandId(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static BrowserCommandId of(@Nonnull String value) {
+        public String value() { return value; }
+        public static BrowserCommandId of(String value) {
             for (BrowserCommandId constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -599,8 +604,8 @@ public final class Browser {
         TRUSTEDKEYVALUE("TrustedKeyValue");
         public final String value;
         PrivacySandboxAPI(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PrivacySandboxAPI of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PrivacySandboxAPI of(String value) {
             for (PrivacySandboxAPI constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -647,21 +652,24 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> origin() {
-            return Optional.ofNullable((String) raw("origin"));
+            Object value = raw("origin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> embeddedOrigin() {
-            return Optional.ofNullable((String) raw("embeddedOrigin"));
+            Object value = raw("embeddedOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Context to override. When omitted, default browser context is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Descriptor of permission to override.
@@ -771,14 +779,16 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> origin() {
-            return Optional.ofNullable((String) raw("origin"));
+            Object value = raw("origin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * BrowserContext to override permissions. When omitted, default browser context is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Sets the permissions field.
@@ -841,7 +851,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * BrowserContext to reset permissions. When omitted, default browser context is used.
@@ -893,21 +904,24 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> downloadPath() {
-            return Optional.ofNullable((String) raw("downloadPath"));
+            Object value = raw("downloadPath");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Whether to emit download events (defaults to false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> eventsEnabled() {
-            return Optional.ofNullable((Boolean) raw("eventsEnabled"));
+            Object value = raw("eventsEnabled");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their download guids.
@@ -1004,7 +1018,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Global unique identifier of the download.
@@ -1050,14 +1065,16 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> query() {
-            return Optional.ofNullable((String) raw("query"));
+            Object value = raw("query");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If true, retrieve delta since last delta call.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> delta() {
-            return Optional.ofNullable((Boolean) raw("delta"));
+            Object value = raw("delta");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
@@ -1127,7 +1144,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> delta() {
-            return Optional.ofNullable((Boolean) raw("delta"));
+            Object value = raw("delta");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Requested histogram name.
@@ -1209,7 +1227,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> targetId() {
-            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+            Object value = raw("targetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Devtools agent host id. If called as a part of the session, associated targetId is used.
@@ -1388,14 +1407,16 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> badgeLabel() {
-            return Optional.ofNullable((String) raw("badgeLabel"));
+            Object value = raw("badgeLabel");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Png encoded image. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> image() {
-            return Optional.ofNullable((String) raw("image"));
+            Object value = raw("image");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the badgeLabel field.
@@ -1551,7 +1572,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Sets the api field.
@@ -1826,8 +1848,8 @@ public final class Browser {
             CANCELED("canceled");
             public final String value;
             StateValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static StateValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static StateValues of(String value) {
                 for (StateValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -1868,7 +1890,8 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> filePath() {
-            return Optional.ofNullable((String) raw("filePath"));
+            Object value = raw("filePath");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Global unique identifier of the download.
@@ -1937,8 +1960,8 @@ public final class Browser {
         DEFAULT("default");
         public final String value;
         SetDownloadBehaviorBehaviorValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SetDownloadBehaviorBehaviorValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SetDownloadBehaviorBehaviorValues of(String value) {
             for (SetDownloadBehaviorBehaviorValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1965,7 +1988,7 @@ public final class Browser {
             origin.ifPresent(value_ -> params.put("origin", CdpObject.json(value_)));
             embeddedOrigin.ifPresent(value_ -> params.put("embeddedOrigin", CdpObject.json(value_)));
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Browser.setPermission", params, result_ -> null);
+            return client.call("Browser.setPermission", params);
         }
         /**
          * Set permission settings for given embedding and embedded origins.
@@ -1984,7 +2007,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPermission(SetPermissionRequest request) {
-            return client.call("Browser.setPermission", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.setPermission", request == null ? null : request.toMap());
         }
         /**
          * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
@@ -2001,7 +2024,7 @@ public final class Browser {
             params.put("permissions", CdpObject.json(permissions));
             origin.ifPresent(value_ -> params.put("origin", CdpObject.json(value_)));
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Browser.grantPermissions", params, result_ -> null);
+            return client.call("Browser.grantPermissions", params);
         }
         /**
          * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
@@ -2023,7 +2046,7 @@ public final class Browser {
          */
         @Deprecated
         public CompletionStage<Void> grantPermissions(GrantPermissionsRequest request) {
-            return client.call("Browser.grantPermissions", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.grantPermissions", request == null ? null : request.toMap());
         }
         /**
          * Reset all permission management for all origins.
@@ -2033,7 +2056,7 @@ public final class Browser {
         public CompletionStage<Void> resetPermissions(Optional<Browser.BrowserContextID> browserContextId) {
             Map<String, Object> params = new LinkedHashMap<>();
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Browser.resetPermissions", params, result_ -> null);
+            return client.call("Browser.resetPermissions", params);
         }
         /**
          * Reset all permission management for all origins.
@@ -2048,7 +2071,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetPermissions(ResetPermissionsRequest request) {
-            return client.call("Browser.resetPermissions", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.resetPermissions", request == null ? null : request.toMap());
         }
         /**
          * Set the behavior when downloading a file.
@@ -2065,7 +2088,7 @@ public final class Browser {
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
             downloadPath.ifPresent(value_ -> params.put("downloadPath", CdpObject.json(value_)));
             eventsEnabled.ifPresent(value_ -> params.put("eventsEnabled", value_));
-            return client.call("Browser.setDownloadBehavior", params, result_ -> null);
+            return client.call("Browser.setDownloadBehavior", params);
         }
         /**
          * Set the behavior when downloading a file.
@@ -2083,7 +2106,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorRequest request) {
-            return client.call("Browser.setDownloadBehavior", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.setDownloadBehavior", request == null ? null : request.toMap());
         }
         /**
          * Cancel a download if in progress
@@ -2096,7 +2119,7 @@ public final class Browser {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("guid", CdpObject.json(guid));
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Browser.cancelDownload", params, result_ -> null);
+            return client.call("Browser.cancelDownload", params);
         }
         /**
          * Cancel a download if in progress
@@ -2114,14 +2137,14 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelDownload(CancelDownloadRequest request) {
-            return client.call("Browser.cancelDownload", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.cancelDownload", request == null ? null : request.toMap());
         }
         /**
          * Close browser gracefully.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> close() {
-            return client.call("Browser.close", null, result_ -> null);
+            return client.call("Browser.close", null);
         }
         /**
          * Crashes browser on the main thread.
@@ -2129,7 +2152,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> crash() {
-            return client.call("Browser.crash", null, result_ -> null);
+            return client.call("Browser.crash", null);
         }
         /**
          * Crashes GPU process.
@@ -2137,7 +2160,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> crashGpuProcess() {
-            return client.call("Browser.crashGpuProcess", null, result_ -> null);
+            return client.call("Browser.crashGpuProcess", null);
         }
         /**
          * Returns version information.
@@ -2274,7 +2297,7 @@ public final class Browser {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("windowId", CdpObject.json(windowId));
             params.put("bounds", CdpObject.json(bounds));
-            return client.call("Browser.setWindowBounds", params, result_ -> null);
+            return client.call("Browser.setWindowBounds", params);
         }
         /**
          * Set position and/or size of the browser window.
@@ -2283,7 +2306,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setWindowBounds(SetWindowBoundsRequest request) {
-            return client.call("Browser.setWindowBounds", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.setWindowBounds", request == null ? null : request.toMap());
         }
         /**
          * Set size of the browser contents resizing browser window as necessary.
@@ -2298,7 +2321,7 @@ public final class Browser {
             params.put("windowId", CdpObject.json(windowId));
             width.ifPresent(value_ -> params.put("width", value_));
             height.ifPresent(value_ -> params.put("height", value_));
-            return client.call("Browser.setContentsSize", params, result_ -> null);
+            return client.call("Browser.setContentsSize", params);
         }
         /**
          * Set size of the browser contents resizing browser window as necessary.
@@ -2316,7 +2339,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setContentsSize(SetContentsSizeRequest request) {
-            return client.call("Browser.setContentsSize", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.setContentsSize", request == null ? null : request.toMap());
         }
         /**
          * Set dock tile details, platform-specific.
@@ -2329,7 +2352,7 @@ public final class Browser {
             Map<String, Object> params = new LinkedHashMap<>();
             badgeLabel.ifPresent(value_ -> params.put("badgeLabel", CdpObject.json(value_)));
             image.ifPresent(value_ -> params.put("image", CdpObject.json(value_)));
-            return client.call("Browser.setDockTile", params, result_ -> null);
+            return client.call("Browser.setDockTile", params);
         }
         /**
          * Set dock tile details, platform-specific.
@@ -2346,7 +2369,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDockTile(SetDockTileRequest request) {
-            return client.call("Browser.setDockTile", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.setDockTile", request == null ? null : request.toMap());
         }
         /**
          * Invoke custom browser commands used by telemetry.
@@ -2357,7 +2380,7 @@ public final class Browser {
         public CompletionStage<Void> executeBrowserCommand(Browser.BrowserCommandId commandId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("commandId", CdpObject.json(commandId));
-            return client.call("Browser.executeBrowserCommand", params, result_ -> null);
+            return client.call("Browser.executeBrowserCommand", params);
         }
         /**
          * Invoke custom browser commands used by telemetry.
@@ -2366,7 +2389,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> executeBrowserCommand(ExecuteBrowserCommandRequest request) {
-            return client.call("Browser.executeBrowserCommand", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.executeBrowserCommand", request == null ? null : request.toMap());
         }
         /**
          * Allows a site to use privacy sandbox features that require enrollment without the site actually being enrolled. Only supported on page targets.
@@ -2376,7 +2399,7 @@ public final class Browser {
         public CompletionStage<Void> addPrivacySandboxEnrollmentOverride(String url) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("url", CdpObject.json(url));
-            return client.call("Browser.addPrivacySandboxEnrollmentOverride", params, result_ -> null);
+            return client.call("Browser.addPrivacySandboxEnrollmentOverride", params);
         }
         /**
          * Allows a site to use privacy sandbox features that require enrollment without the site actually being enrolled. Only supported on page targets.
@@ -2384,7 +2407,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addPrivacySandboxEnrollmentOverride(AddPrivacySandboxEnrollmentOverrideRequest request) {
-            return client.call("Browser.addPrivacySandboxEnrollmentOverride", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.addPrivacySandboxEnrollmentOverride", request == null ? null : request.toMap());
         }
         /**
          * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.
@@ -2400,7 +2423,7 @@ public final class Browser {
             params.put("coordinatorOrigin", CdpObject.json(coordinatorOrigin));
             params.put("keyConfig", CdpObject.json(keyConfig));
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", params, result_ -> null);
+            return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", params);
         }
         /**
          * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.
@@ -2418,7 +2441,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addPrivacySandboxCoordinatorKeyConfig(AddPrivacySandboxCoordinatorKeyConfigRequest request) {
-            return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", request == null ? null : request.toMap());
         }
         /**
          * Fired when page is about to start a download.

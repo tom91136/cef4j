@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebView;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -15,7 +16,7 @@ class WebViewRuntimeDialogCompatTest extends WebViewRuntimeCompatTestBase {
     @Test
     void alertHandlerFires() throws Exception {
         WebView view = createAttachedWebView();
-        AtomicReference<String> alertText = new AtomicReference<>();
+        AtomicReference<@Nullable String> alertText = new AtomicReference<>();
 
         onFxThread(() -> view.getEngine().setOnAlert(event -> alertText.set(event.getData())));
         onFxThread(
@@ -28,7 +29,7 @@ class WebViewRuntimeDialogCompatTest extends WebViewRuntimeCompatTestBase {
     @Test
     void confirmHandlerReceivesMessageAndReturnsResult() throws Exception {
         WebView view = createAttachedWebView();
-        AtomicReference<String> receivedMessage = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedMessage = new AtomicReference<>();
 
         onFxThread(() -> view.getEngine().setConfirmHandler(message -> {
             receivedMessage.set(message);
@@ -66,8 +67,8 @@ class WebViewRuntimeDialogCompatTest extends WebViewRuntimeCompatTestBase {
     @Test
     void promptHandlerReceivesMessageAndDefaultValue() throws Exception {
         WebView view = createAttachedWebView();
-        AtomicReference<String> receivedMessage = new AtomicReference<>();
-        AtomicReference<String> receivedDefault = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedMessage = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedDefault = new AtomicReference<>();
 
         onFxThread(() -> view.getEngine().setPromptHandler(promptData -> {
             receivedMessage.set(promptData.getMessage());

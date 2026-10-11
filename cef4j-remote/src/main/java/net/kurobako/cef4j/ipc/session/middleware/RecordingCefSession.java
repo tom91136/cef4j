@@ -11,12 +11,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.LongFunction;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,28 +36,23 @@ public final class RecordingCefSession implements CefSession {
     private final AtomicBoolean closed = new AtomicBoolean();
     private final AtomicBoolean traceHealthy = new AtomicBoolean(true);
 
-    public static RecordingCefSession toFile(@Nonnull CefSession delegate, @Nonnull Path file) throws IOException {
+    public static RecordingCefSession toFile(CefSession delegate, Path file) throws IOException {
         return new RecordingCefSession(delegate, SessionTrace.writer(file), TracePayloadFilter.identity());
     }
 
     public static RecordingCefSession toFile(
-            @Nonnull CefSession delegate,
-            @Nonnull Path file,
-            @Nonnull SessionTraceCodec codec,
-            @Nonnull TracePayloadFilter filter)
-            throws IOException {
+            CefSession delegate, Path file, SessionTraceCodec codec, TracePayloadFilter filter) throws IOException {
         return new RecordingCefSession(
                 delegate, SessionTrace.writer(file, SessionTrace.defaultMetadata(), codec), filter);
     }
 
     /** Middleware factory for a single recorded session. Opening failures surface when the middleware is applied. */
-    public static CefSessionMiddleware middleware(@Nonnull Path file) {
+    public static CefSessionMiddleware middleware(Path file) {
         return middleware(file, SessionTrace.defaultCodec(), TracePayloadFilter.identity());
     }
 
     /** Middleware factory for a single filtered recording written with the supplied codec. */
-    public static CefSessionMiddleware middleware(
-            @Nonnull Path file, @Nonnull SessionTraceCodec codec, @Nonnull TracePayloadFilter filter) {
+    public static CefSessionMiddleware middleware(Path file, SessionTraceCodec codec, TracePayloadFilter filter) {
         Objects.requireNonNull(file, "file");
         Objects.requireNonNull(codec, "codec");
         Objects.requireNonNull(filter, "filter");
@@ -72,15 +66,13 @@ public final class RecordingCefSession implements CefSession {
     }
 
     /** Middleware factory that opens a distinct trace for every wrapped session, numbered from one. */
-    public static CefSessionMiddleware rotatingMiddleware(@Nonnull LongFunction<Path> traceFile) {
+    public static CefSessionMiddleware rotatingMiddleware(LongFunction<Path> traceFile) {
         return rotatingMiddleware(traceFile, SessionTrace.defaultCodec(), TracePayloadFilter.identity());
     }
 
     /** Middleware factory that uses the supplied codec and filter for every numbered session trace. */
     public static CefSessionMiddleware rotatingMiddleware(
-            @Nonnull LongFunction<Path> traceFile,
-            @Nonnull SessionTraceCodec codec,
-            @Nonnull TracePayloadFilter filter) {
+            LongFunction<Path> traceFile, SessionTraceCodec codec, TracePayloadFilter filter) {
         Objects.requireNonNull(traceFile, "traceFile");
         Objects.requireNonNull(codec, "codec");
         Objects.requireNonNull(filter, "filter");
@@ -96,21 +88,19 @@ public final class RecordingCefSession implements CefSession {
         };
     }
 
-    public RecordingCefSession(@Nonnull CefSession delegate, @Nonnull SessionTraceWriter trace) {
+    public RecordingCefSession(CefSession delegate, SessionTraceWriter trace) {
         this(delegate, trace, TracePayloadFilter.identity());
     }
 
-    public RecordingCefSession(
-            @Nonnull CefSession delegate, @Nonnull SessionTraceWriter trace, @Nonnull TracePayloadFilter filter) {
+    public RecordingCefSession(CefSession delegate, SessionTraceWriter trace, TracePayloadFilter filter) {
         this.delegate = Objects.requireNonNull(delegate, "delegate");
         this.trace = Objects.requireNonNull(trace, "trace");
         this.filter = Objects.requireNonNull(filter, "filter");
     }
 
     @Override
-    @Nonnull
     public <R extends CefMessageView> CompletableFuture<R> request(
-            @Nonnull CefMessageEncoder request, @Nonnull CefMessageDecoder<R> decoder) {
+            CefMessageEncoder request, CefMessageDecoder<R> decoder) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(decoder, "decoder");
         long operationId = nextOperationId.getAndIncrement();
@@ -135,16 +125,14 @@ public final class RecordingCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
     public <E extends CefMessageView> HandlerRegistration on(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
         return subscribe(SessionTrace.Kind.SUBSCRIBE, false, messageId, decoder, handler);
     }
 
     @Override
-    @Nonnull
     public <E extends CefMessageView> HandlerRegistration onLatest(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
         return subscribe(SessionTrace.Kind.SUBSCRIBE_LATEST, true, messageId, decoder, handler);
     }
 
@@ -168,9 +156,8 @@ public final class RecordingCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
     public <E extends CefMessageView> HandlerRegistration intercept(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
         long registrationId = nextOperationId.getAndIncrement();
         append(SessionTrace.Kind.INTERCEPT_REGISTER, registrationId, messageId, null, null, null);
         // Wrap the decoded view with its recorded call id; the delegate decodes and invokes the handler on the same
@@ -219,8 +206,7 @@ public final class RecordingCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
-    public HandlerRegistration onClose(@Nonnull Runnable handler) {
+    public HandlerRegistration onClose(Runnable handler) {
         return delegate.onClose(handler);
     }
 
@@ -254,7 +240,7 @@ public final class RecordingCefSession implements CefSession {
             SessionTrace.Kind kind,
             long operationId,
             int messageId,
-            @Nullable byte[] payload,
+            byte @Nullable [] payload,
             @Nullable String detailType,
             @Nullable String detailMessage) {
         if (!traceHealthy.get()) return;

@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -174,7 +173,8 @@ public final class FileSystem {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bucketName() {
-            return Optional.ofNullable((String) raw("bucketName"));
+            Object value = raw("bucketName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Path to the directory using each path component as an array item.

@@ -4,7 +4,6 @@ package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -231,7 +230,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
      */
-    boolean getDictionarySuggestions(@Nonnull List<String> suggestions);
+    boolean getDictionarySuggestions(List<String> suggestions);
 
     /**
      * Returns {@code true} if the context menu was invoked on an editable node.
@@ -419,7 +418,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
         }
 
         @Override
-        public boolean getDictionarySuggestions(@Nonnull List<String> suggestions) {
+        public boolean getDictionarySuggestions(List<String> suggestions) {
             checkNotClosed();
             return getDictionarySuggestions0(nativePtr, suggestions);
         }
@@ -478,7 +477,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
 
         static native String getMisspelledWord0(long self);
 
-        static native boolean getDictionarySuggestions0(long self, @Nonnull List<String> suggestions);
+        static native boolean getDictionarySuggestions0(long self, List<String> suggestions);
 
         static native boolean isEditable0(long self);
 
@@ -489,7 +488,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
         static native boolean isCustomMenu0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

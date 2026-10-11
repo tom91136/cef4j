@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefErrorCode;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefPostData;
@@ -22,6 +20,7 @@ import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefUrlRequest;
 import net.kurobako.cef4j.gen.CefUrlRequestClient;
 import net.kurobako.cef4j.gen.CefUrlRequestStatus;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Default {@link CefHttpEngine} that wraps {@link CefUrlRequest}.
@@ -40,10 +39,9 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
     private CefUrlRequestHttpEngine() {}
 
     @Override
-    @Nonnull
-    public Cancellation send(@Nonnull RequestSpec spec, @Nonnull ResponseSink sink) {
+    public Cancellation send(RequestSpec spec, ResponseSink sink) {
         if (CefGlobals.currentlyOn(UI) != 0) return sendOnUi(spec, sink);
-        AtomicReference<Cancellation> handle = new AtomicReference<>();
+        AtomicReference<@Nullable Cancellation> handle = new AtomicReference<>();
         AtomicBoolean cancelled = new AtomicBoolean(false);
         boolean posted = CefGlobals.postTask(UI, new CefTask() {
             @Override
@@ -65,8 +63,7 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
         };
     }
 
-    @Nonnull
-    private Cancellation sendOnUi(@Nonnull RequestSpec spec, @Nonnull ResponseSink sink) {
+    private Cancellation sendOnUi(RequestSpec spec, ResponseSink sink) {
         CefRequest req = CefRequest.create().orElse(null);
         if (req == null) {
             sink.onError(new IOException("CefRequest.create() returned empty - is CEF initialised?"));
@@ -89,7 +86,7 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
             }
 
             @Override
-            public void onDownloadData(@Nullable CefUrlRequest request, @Nonnull ByteBuffer data) {
+            public void onDownloadData(@Nullable CefUrlRequest request, ByteBuffer data) {
                 fireResponseIfReady(request);
                 int n = data.remaining();
                 if (n == 0) return;
@@ -140,7 +137,7 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
         return () -> cancelOnUi(handle);
     }
 
-    private static void cancelOnUi(@Nonnull CefUrlRequest handle) {
+    private static void cancelOnUi(CefUrlRequest handle) {
         if (CefGlobals.currentlyOn(UI) != 0) {
             handle.cancel();
         } else {
@@ -156,15 +153,15 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
     }
 
     @Nullable
-    private static CefPostData buildPostData(@Nonnull byte[] body) throws IOException {
+    private static CefPostData buildPostData(byte[] body) throws IOException {
         return buildPostData(body, CefPostDataElement::create, CefPostData::create);
     }
 
     @Nullable
     static CefPostData buildPostData(
-            @Nonnull byte[] body,
-            @Nonnull Supplier<Optional<CefPostDataElement>> elementFactory,
-            @Nonnull Supplier<Optional<CefPostData>> postDataFactory)
+            byte[] body,
+            Supplier<Optional<CefPostDataElement>> elementFactory,
+            Supplier<Optional<CefPostData>> postDataFactory)
             throws IOException {
         if (body.length == 0) return null;
         CefPostDataElement el = elementFactory

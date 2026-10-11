@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to browser requests. The methods of this class will be called on
@@ -209,7 +208,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
             @Nullable CefFrame frame,
             @Nullable CefRequest request,
             @Nullable CefResponse response,
-            @Nonnull CefUrlRequestStatus status,
+            CefUrlRequestStatus status,
             long receivedContentLength) {}
 
     /**
@@ -321,7 +320,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
                 @Nullable CefFrame frame,
                 @Nullable CefRequest request,
                 @Nullable CefResponse response,
-                @Nonnull CefUrlRequestStatus status,
+                CefUrlRequestStatus status,
                 long receivedContentLength) {
             for (CefResourceRequestHandler d : delegates)
                 d.onResourceLoadComplete(browser, frame, request, response, status, receivedContentLength);

@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -18,6 +16,7 @@ import net.kurobako.cef4j.gen.CefRequestContext;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A View hosting a CefBrowser instance. Methods must be called on the browser process UI thread unless otherwise
@@ -122,7 +121,7 @@ public interface CefBrowserView extends CefView {
     static Optional<CefBrowserView> create(
             @Nullable CefClient client,
             @Nullable String url,
-            @Nonnull CefBrowserSettings settings,
+            CefBrowserSettings settings,
             @Nullable CefDictionaryValue extraInfo,
             @Nullable CefRequestContext requestContext,
             @Nullable CefBrowserViewDelegate delegate) {
@@ -320,7 +319,7 @@ public interface CefBrowserView extends CefView {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -338,7 +337,7 @@ public interface CefBrowserView extends CefView {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -350,7 +349,7 @@ public interface CefBrowserView extends CefView {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -362,7 +361,7 @@ public interface CefBrowserView extends CefView {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -488,38 +487,38 @@ public interface CefBrowserView extends CefView {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -536,7 +535,7 @@ public interface CefBrowserView extends CefView {
         static native CefBrowserView create0(
                 @Nullable CefClient client,
                 @Nullable String url,
-                @Nonnull CefBrowserSettings settings,
+                CefBrowserSettings settings,
                 @Nullable CefDictionaryValue extraInfo,
                 @Nullable CefRequestContext requestContext,
                 @Nullable CefBrowserViewDelegate delegate);
@@ -544,7 +543,7 @@ public interface CefBrowserView extends CefView {
         static native CefBrowserView getForBrowser0(@Nullable CefBrowser browser);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

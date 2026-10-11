@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class Accessibility {
      */
     public static final class AXNodeId implements CdpValue<String> {
         public final String value;
-        public AXNodeId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public AXNodeId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof AXNodeId)) return false;
             return value.equals(((AXNodeId) other).value);
@@ -62,8 +61,8 @@ public final class Accessibility {
         VALUEUNDEFINED("valueUndefined");
         public final String value;
         AXValueType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AXValueType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AXValueType of(String value) {
             for (AXValueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -82,8 +81,8 @@ public final class Accessibility {
         RELATEDELEMENT("relatedElement");
         public final String value;
         AXValueSourceType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AXValueSourceType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AXValueSourceType of(String value) {
             for (AXValueSourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -106,8 +105,8 @@ public final class Accessibility {
         OTHER("other");
         public final String value;
         AXValueNativeSourceType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AXValueNativeSourceType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AXValueNativeSourceType of(String value) {
             for (AXValueNativeSourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -135,56 +134,64 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> value() {
-            return Optional.ofNullable(raw("value") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("value")))));
+            Object value = raw("value");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The name of the relevant attribute, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> attribute() {
-            return Optional.ofNullable((String) raw("attribute"));
+            Object value = raw("attribute");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The value of the relevant attribute, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> attributeValue() {
-            return Optional.ofNullable(raw("attributeValue") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("attributeValue")))));
+            Object value = raw("attributeValue");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether this source is superseded by a higher priority source.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> superseded() {
-            return Optional.ofNullable((Boolean) raw("superseded"));
+            Object value = raw("superseded");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The native markup source for this value, e.g. a {@code &lt;label&gt;} element.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValueNativeSourceType> nativeSource() {
-            return Optional.ofNullable(raw("nativeSource") == null ? null : Accessibility.AXValueNativeSourceType.of((String) raw("nativeSource")));
+            Object value = raw("nativeSource");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValueNativeSourceType.of((String) value));
         }
         /**
          * The value, such as a node or node list, of the native source.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> nativeSourceValue() {
-            return Optional.ofNullable(raw("nativeSourceValue") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("nativeSourceValue")))));
+            Object value = raw("nativeSourceValue");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether the value for this property is invalid.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> invalid() {
-            return Optional.ofNullable((Boolean) raw("invalid"));
+            Object value = raw("invalid");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Reason for the value being invalid, if it is.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> invalidReason() {
-            return Optional.ofNullable((String) raw("invalidReason"));
+            Object value = raw("invalidReason");
+            return Optional.ofNullable((String) value);
         }
         /**
          * What type of source this is.
@@ -360,14 +367,16 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> idref() {
-            return Optional.ofNullable((String) raw("idref"));
+            Object value = raw("idref");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The text alternative of this node in the current context.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            return Optional.ofNullable((String) raw("text"));
+            Object value = raw("text");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The BackendNodeId of the related DOM node.
@@ -477,21 +486,24 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> value() {
-            return Optional.ofNullable(raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable(value);
         }
         /**
          * One or more related nodes, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXRelatedNode>> relatedNodes() {
-            return Optional.ofNullable(list(raw("relatedNodes"), element0 -> java.util.Objects.requireNonNull(Accessibility.AXRelatedNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("relatedNodes");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXRelatedNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The sources which contributed to the computation of this property.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXValueSource>> sources() {
-            return Optional.ofNullable(list(raw("sources"), element0 -> java.util.Objects.requireNonNull(Accessibility.AXValueSource.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("sources");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXValueSource.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The type of this value.
@@ -621,8 +633,8 @@ public final class Accessibility {
         UNINTERESTING("uninteresting");
         public final String value;
         AXPropertyName(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AXPropertyName of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AXPropertyName of(String value) {
             for (AXPropertyName constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -657,77 +669,88 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXProperty>> ignoredReasons() {
-            return Optional.ofNullable(list(raw("ignoredReasons"), element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("ignoredReasons");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * This {@code Node}&#x27;s role, whether explicit or implicit.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> role() {
-            return Optional.ofNullable(raw("role") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("role")))));
+            Object value = raw("role");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * This {@code Node}&#x27;s Chrome raw role.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> chromeRole() {
-            return Optional.ofNullable(raw("chromeRole") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("chromeRole")))));
+            Object value = raw("chromeRole");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The accessible name for this {@code Node}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> name() {
-            return Optional.ofNullable(raw("name") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("name")))));
+            Object value = raw("name");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The accessible description for this {@code Node}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> description() {
-            return Optional.ofNullable(raw("description") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("description")))));
+            Object value = raw("description");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The value for this {@code Node}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> value() {
-            return Optional.ofNullable(raw("value") == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("value")))));
+            Object value = raw("value");
+            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * All other properties
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXProperty>> properties() {
-            return Optional.ofNullable(list(raw("properties"), element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("properties");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * ID for this node&#x27;s parent.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXNodeId> parentId() {
-            return Optional.ofNullable(raw("parentId") == null ? null : new Accessibility.AXNodeId((String) raw("parentId")));
+            Object value = raw("parentId");
+            return Optional.ofNullable(value == null ? null : new Accessibility.AXNodeId((String) value));
         }
         /**
          * IDs for each of this node&#x27;s child nodes.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXNodeId>> childIds() {
-            return Optional.ofNullable(list(raw("childIds"), element0 -> new Accessibility.AXNodeId((String) element0)));
+            Object value = raw("childIds");
+            return Optional.ofNullable(list(value, element0 -> new Accessibility.AXNodeId((String) element0)));
         }
         /**
          * The backend ID for the associated DOM node, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendDOMNodeId() {
-            return Optional.ofNullable(raw("backendDOMNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendDOMNodeId")).longValue()));
+            Object value = raw("backendDOMNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * The frame ID for the frame associated with this nodes document.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Unique identifier for this node.
@@ -962,28 +985,32 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to get the partial accessibility tree for.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper to get the partial accessibility tree for.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fetchRelatives() {
-            return Optional.ofNullable((Boolean) raw("fetchRelatives"));
+            Object value = raw("fetchRelatives");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the node to get the partial accessibility tree for.
@@ -1082,7 +1109,8 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
@@ -1137,7 +1165,8 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * The frame in whose document the node resides. If omitted, the root frame is used.
@@ -1174,21 +1203,24 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to get.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper to get.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node to get.
@@ -1276,7 +1308,8 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Sets the id field.
@@ -1322,35 +1355,40 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node for the root to query.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper for the root to query.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Find nodes with this computed name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> accessibleName() {
-            return Optional.ofNullable((String) raw("accessibleName"));
+            Object value = raw("accessibleName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Find nodes with this computed role.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> role() {
-            return Optional.ofNullable((String) raw("role"));
+            Object value = raw("role");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Identifier of the node for the root to query.
@@ -1505,14 +1543,14 @@ public final class Accessibility {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Accessibility.disable", null, result_ -> null);
+            return client.call("Accessibility.disable", null);
         }
         /**
          * Enables the accessibility domain which causes {@code AXNodeId}s to remain consistent between method calls. This turns on accessibility for the page, which can impact performance until accessibility is disabled.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Accessibility.enable", null, result_ -> null);
+            return client.call("Accessibility.enable", null);
         }
         /**
          * Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.

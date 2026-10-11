@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.generated.DOM;
@@ -50,6 +49,7 @@ import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.backend.CefTestCompatibility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -230,7 +230,7 @@ class RuntimeServerDevToolsIntegrationTest {
     private static void exerciseFetchInterception(
             Fetch.Client fetch, Runtime.Client runtime, FixtureSite site, String run) throws Exception {
         EventProbe<Fetch.RequestPausedEvent> paused = new EventProbe<>("Fetch.requestPaused");
-        AtomicReference<Throwable> callbackFailure = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> callbackFailure = new AtomicReference<>();
         List<CompletableFuture<?>> callbackActions = new CopyOnWriteArrayList<>();
         String continuedUrl = site.uri("/cdp/api/continued?run=" + run).toString();
         String mockUrl = site.uri("/cdp/api/mock?run=" + run).toString();

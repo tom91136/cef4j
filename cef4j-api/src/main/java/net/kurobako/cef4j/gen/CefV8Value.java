@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class representing a V8 value handle. V8 handles can only be accessed from the thread on which they are created.
@@ -427,7 +426,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @param key may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:852</a>
      */
-    int setValueBykey(@Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute);
+    int setValueBykey(@Nullable String key, @Nullable CefV8Value value, CefV8PropertyAttribute attribute);
 
     /**
      * Associates a value with the specified identifier and returns {@code true} on success. Returns {@code false} if
@@ -460,7 +459,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @param key may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:872</a>
      */
-    int setValueByaccessor(@Nullable String key, @Nonnull CefV8PropertyAttribute attribute);
+    int setValueByaccessor(@Nullable String key, CefV8PropertyAttribute attribute);
 
     /**
      * Read the keys for the object's values into the specified vector. Integer-based keys will also be returned as
@@ -472,7 +471,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:882</a>
      */
-    boolean getKeys(@Nonnull List<String> keys);
+    boolean getKeys(List<String> keys);
 
     /**
      * Sets the user data for this object and returns {@code true} on success. Returns {@code false} if this method is
@@ -607,7 +606,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:979</a>
      */
     Optional<CefV8Value> executeFunction(
-            @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments);
+            @Nullable CefV8Value object, long argumentsCount, CefV8Value @Nullable [] arguments);
 
     /**
      * Execute the function using the specified V8 context. {@code object} is the receiver ('this' object) of the
@@ -628,7 +627,7 @@ public interface CefV8Value extends CefLibraryObject {
             @Nullable CefV8Context context,
             @Nullable CefV8Value object,
             long argumentsCount,
-            @Nullable CefV8Value[] arguments);
+            CefV8Value @Nullable [] arguments);
 
     /**
      * Resolve the Promise using the current V8 context. This method should only be called from within the scope of a
@@ -1121,8 +1120,7 @@ public interface CefV8Value extends CefLibraryObject {
         }
 
         @Override
-        public int setValueBykey(
-                @Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute) {
+        public int setValueBykey(@Nullable String key, @Nullable CefV8Value value, CefV8PropertyAttribute attribute) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefV8Value");
             return setValueBykey0(nativePtr, key, value, attribute);
@@ -1136,13 +1134,13 @@ public interface CefV8Value extends CefLibraryObject {
         }
 
         @Override
-        public int setValueByaccessor(@Nullable String key, @Nonnull CefV8PropertyAttribute attribute) {
+        public int setValueByaccessor(@Nullable String key, CefV8PropertyAttribute attribute) {
             checkNotClosed();
             return setValueByaccessor0(nativePtr, key, attribute);
         }
 
         @Override
-        public boolean getKeys(@Nonnull List<String> keys) {
+        public boolean getKeys(List<String> keys) {
             checkNotClosed();
             return getKeys0(nativePtr, keys);
         }
@@ -1215,7 +1213,7 @@ public interface CefV8Value extends CefLibraryObject {
 
         @Override
         public Optional<CefV8Value> executeFunction(
-                @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments) {
+                @Nullable CefV8Value object, long argumentsCount, CefV8Value @Nullable [] arguments) {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
             return Optional.ofNullable(executeFunction0(nativePtr, object, argumentsCount, arguments));
@@ -1226,7 +1224,7 @@ public interface CefV8Value extends CefLibraryObject {
                 @Nullable CefV8Context context,
                 @Nullable CefV8Value object,
                 long argumentsCount,
-                @Nullable CefV8Value[] arguments) {
+                CefV8Value @Nullable [] arguments) {
             checkNotClosed();
             CefLibraryObject.requireOpen(context, "CefV8Context");
             CefLibraryObject.requireOpen(object, "CefV8Value");
@@ -1314,14 +1312,13 @@ public interface CefV8Value extends CefLibraryObject {
         static native CefV8Value getValueByindex0(long self, int index);
 
         static native int setValueBykey0(
-                long self, @Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute);
+                long self, @Nullable String key, @Nullable CefV8Value value, CefV8PropertyAttribute attribute);
 
         static native int setValueByindex0(long self, int index, @Nullable CefV8Value value);
 
-        static native int setValueByaccessor0(
-                long self, @Nullable String key, @Nonnull CefV8PropertyAttribute attribute);
+        static native int setValueByaccessor0(long self, @Nullable String key, CefV8PropertyAttribute attribute);
 
-        static native boolean getKeys0(long self, @Nonnull List<String> keys);
+        static native boolean getKeys0(long self, List<String> keys);
 
         static native boolean setUserData0(long self, @Nullable NativePointer userData);
 
@@ -1346,14 +1343,14 @@ public interface CefV8Value extends CefLibraryObject {
         static native CefV8Handler getFunctionHandler0(long self);
 
         static native CefV8Value executeFunction0(
-                long self, @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments);
+                long self, @Nullable CefV8Value object, long argumentsCount, CefV8Value @Nullable [] arguments);
 
         static native CefV8Value executeFunctionWithContext0(
                 long self,
                 @Nullable CefV8Context context,
                 @Nullable CefV8Value object,
                 long argumentsCount,
-                @Nullable CefV8Value[] arguments);
+                CefV8Value @Nullable [] arguments);
 
         static native boolean resolvePromise0(long self, @Nullable CefV8Value arg);
 
@@ -1392,7 +1389,7 @@ public interface CefV8Value extends CefLibraryObject {
         static native CefV8Value createPromise0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

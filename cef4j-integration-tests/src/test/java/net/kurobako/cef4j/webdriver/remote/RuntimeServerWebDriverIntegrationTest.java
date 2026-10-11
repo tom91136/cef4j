@@ -15,13 +15,13 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.remote.RuntimeServerBrowserRuntimeFactory;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.CefTestCompatibility;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -180,6 +180,13 @@ class RuntimeServerWebDriverIntegrationTest {
                                     "{\"script\":\"return arguments[0] * 2\",\"args\":[21]}"))
                             .getAsInt())
                     .isEqualTo(42);
+            assertThat(value(request(
+                                    client,
+                                    base.resolve("execute/sync"),
+                                    "POST",
+                                    "{\"script\":\"return arguments[0] === null\",\"args\":[null]}"))
+                            .getAsBoolean())
+                    .isTrue();
             byte[] png = java.util.Base64.getDecoder()
                     .decode(value(request(client, base.resolve("screenshot"), "GET", null))
                             .getAsString());

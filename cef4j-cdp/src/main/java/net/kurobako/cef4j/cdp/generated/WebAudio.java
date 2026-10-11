@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class WebAudio {
      */
     public static final class GraphObjectId implements CdpValue<String> {
         public final String value;
-        public GraphObjectId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public GraphObjectId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof GraphObjectId)) return false;
             return value.equals(((GraphObjectId) other).value);
@@ -47,8 +46,8 @@ public final class WebAudio {
         OFFLINE("offline");
         public final String value;
         ContextType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ContextType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ContextType of(String value) {
             for (ContextType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -65,8 +64,8 @@ public final class WebAudio {
         INTERRUPTED("interrupted");
         public final String value;
         ContextState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ContextState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ContextState of(String value) {
             for (ContextState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -78,9 +77,9 @@ public final class WebAudio {
      */
     public static final class NodeType implements CdpValue<String> {
         public final String value;
-        public NodeType(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public NodeType(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof NodeType)) return false;
             return value.equals(((NodeType) other).value);
@@ -97,8 +96,8 @@ public final class WebAudio {
         MAX("max");
         public final String value;
         ChannelCountMode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ChannelCountMode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ChannelCountMode of(String value) {
             for (ChannelCountMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -113,8 +112,8 @@ public final class WebAudio {
         SPEAKERS("speakers");
         public final String value;
         ChannelInterpretation(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ChannelInterpretation of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ChannelInterpretation of(String value) {
             for (ChannelInterpretation constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -126,9 +125,9 @@ public final class WebAudio {
      */
     public static final class ParamType implements CdpValue<String> {
         public final String value;
-        public ParamType(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public ParamType(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof ParamType)) return false;
             return value.equals(((ParamType) other).value);
@@ -144,8 +143,8 @@ public final class WebAudio {
         K_RATE("k-rate");
         public final String value;
         AutomationRate(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AutomationRate of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AutomationRate of(String value) {
             for (AutomationRate constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -261,7 +260,8 @@ public final class WebAudio {
          * @return the protocol field value, empty when absent
          */
         public Optional<WebAudio.ContextRealtimeData> realtimeData() {
-            return Optional.ofNullable(raw("realtimeData") == null ? null : WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("realtimeData")))));
+            Object value = raw("realtimeData");
+            return Optional.ofNullable(value == null ? null : WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Platform-dependent callback buffer size.
@@ -1403,14 +1403,14 @@ public final class WebAudio {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("WebAudio.enable", null, result_ -> null);
+            return client.call("WebAudio.enable", null);
         }
         /**
          * Disables the WebAudio domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("WebAudio.disable", null, result_ -> null);
+            return client.call("WebAudio.disable", null);
         }
         /**
          * Fetch the realtime data from the registered contexts.

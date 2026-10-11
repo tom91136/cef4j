@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +26,8 @@ public final class EncodedFramePipeline implements AutoCloseable {
     private final Consumer<EncodedFrame> consumer;
     private final ExecutorService worker;
     private final Object commandLock = new Object();
-    private final AtomicReference<RawFrame> latest = new AtomicReference<>();
-    private final AtomicReference<Thread> workerThread = new AtomicReference<>();
+    private final AtomicReference<@Nullable RawFrame> latest = new AtomicReference<>();
+    private final AtomicReference<@Nullable Thread> workerThread = new AtomicReference<>();
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean closed = new AtomicBoolean();
     private final AtomicBoolean codecCloseStarted = new AtomicBoolean();
@@ -35,20 +35,16 @@ public final class EncodedFramePipeline implements AutoCloseable {
     private final Duration closeTimeout;
     private final boolean warnOnCloseTimeout;
 
-    public EncodedFramePipeline(@Nonnull FrameCodec codec, @Nonnull Consumer<EncodedFrame> consumer) {
+    public EncodedFramePipeline(FrameCodec codec, Consumer<EncodedFrame> consumer) {
         this(codec, consumer, DEFAULT_CLOSE_TIMEOUT, true);
     }
 
-    EncodedFramePipeline(
-            @Nonnull FrameCodec codec, @Nonnull Consumer<EncodedFrame> consumer, @Nonnull Duration closeTimeout) {
+    EncodedFramePipeline(FrameCodec codec, Consumer<EncodedFrame> consumer, Duration closeTimeout) {
         this(codec, consumer, closeTimeout, true);
     }
 
     EncodedFramePipeline(
-            @Nonnull FrameCodec codec,
-            @Nonnull Consumer<EncodedFrame> consumer,
-            @Nonnull Duration closeTimeout,
-            boolean warnOnCloseTimeout) {
+            FrameCodec codec, Consumer<EncodedFrame> consumer, Duration closeTimeout, boolean warnOnCloseTimeout) {
         this.codec = Objects.requireNonNull(codec, "codec");
         this.consumer = Objects.requireNonNull(consumer, "consumer");
         this.closeTimeout = Objects.requireNonNull(closeTimeout, "closeTimeout");
@@ -66,7 +62,7 @@ public final class EncodedFramePipeline implements AutoCloseable {
     }
 
     /** Callback suitable for {@link FrameTransport#onRawFrame}. Copies because encoding is asynchronous. */
-    public void submit(@Nonnull RawFrame frame) {
+    public void submit(RawFrame frame) {
         RawFrame snapshot = frame.snapshot();
         synchronized (commandLock) {
             if (closed.get()) return;

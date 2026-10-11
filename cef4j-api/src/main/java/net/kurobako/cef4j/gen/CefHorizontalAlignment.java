@@ -104,7 +104,7 @@ public final class CefHorizontalAlignment implements CefEnum<CefHorizontalAlignm
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefHorizontalAlignment)) return false;
         return this.value == ((CefHorizontalAlignment) obj).value;

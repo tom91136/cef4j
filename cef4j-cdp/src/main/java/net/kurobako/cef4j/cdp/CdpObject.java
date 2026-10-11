@@ -6,9 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Mutable, codec-independent CDP value object. Setters store wire-form values. */
 @NullableBoundary("CDP wire objects use null for absent optional fields")
@@ -21,7 +20,6 @@ public abstract class CdpObject {
         this.values.putAll(values);
     }
 
-    @Nonnull
     public final Map<String, Object> toMap() {
         return values;
     }
@@ -36,7 +34,6 @@ public abstract class CdpObject {
         return values.get(name);
     }
 
-    @Nonnull
     protected final Object require(String name) {
         Object value = values.get(name);
         if (value == null) throw new IllegalStateException("Missing required protocol field: " + name);
@@ -58,16 +55,14 @@ public abstract class CdpObject {
         return Collections.unmodifiableList(result);
     }
 
-    @Nonnull
-    public static <T> List<T> requireList(@Nonnull Object value, Function<Object, T> mapper) {
+    public static <T> List<T> requireList(Object value, Function<Object, T> mapper) {
         List<?> source = (List<?>) value;
         List<T> result = new ArrayList<>(source.size());
         for (Object element : source) result.add(mapper.apply(element));
         return Collections.unmodifiableList(result);
     }
 
-    @Nonnull
-    public static Object json(@Nonnull Object value) {
+    public static Object json(Object value) {
         if (value instanceof CdpObject) return ((CdpObject) value).toMap();
         if (value instanceof CdpValue<?>) return ((CdpValue<?>) value).value();
         if (value instanceof List<?>) {
@@ -90,7 +85,7 @@ public abstract class CdpObject {
 
     @Override
     @SuppressWarnings("EqualsGetClass")
-    public final boolean equals(Object other) {
+    public final boolean equals(@Nullable Object other) {
         return this == other
                 || (other != null && getClass() == other.getClass() && values.equals(((CdpObject) other).values));
     }

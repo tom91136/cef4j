@@ -1,11 +1,10 @@
 package net.kurobako.cef4j.webdriver;
 
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
+import net.kurobako.cef4j.test.contract.WebDriverServerContract;
 
 final class JacksonWebDriverServerContractTest extends WebDriverServerContract {
     @Override
-    @Nonnull
     protected WebDriverJsonCodec codec() {
         return new WebDriverJsonCodec(new JacksonCdpCodec());
     }

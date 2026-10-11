@@ -1,1 +1,1 @@
-net.kurobako.cef4j.ipc.session.middleware.JacksonNdjsonSessionTraceCodec
+net.kurobako.cef4j.codecs.jackson.JacksonNdjsonSessionTraceCodec

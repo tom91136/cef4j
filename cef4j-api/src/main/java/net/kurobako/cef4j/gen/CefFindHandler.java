@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to find results. The methods of this class will be called on the UI
@@ -44,7 +43,7 @@ public interface CefFindHandler extends CefClientHandler {
             @Nullable CefBrowser browser,
             int identifier,
             int count,
-            @Nonnull CefRect selectionRect,
+            CefRect selectionRect,
             int activeMatchOrdinal,
             boolean finalUpdate) {}
     /**
@@ -65,7 +64,7 @@ public interface CefFindHandler extends CefClientHandler {
                 @Nullable CefBrowser browser,
                 int identifier,
                 int count,
-                @Nonnull CefRect selectionRect,
+                CefRect selectionRect,
                 int activeMatchOrdinal,
                 boolean finalUpdate) {
             for (CefFindHandler d : delegates)

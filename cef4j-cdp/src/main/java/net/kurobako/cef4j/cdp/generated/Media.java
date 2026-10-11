@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class Media {
      */
     public static final class PlayerId implements CdpValue<String> {
         public final String value;
-        public PlayerId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public PlayerId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof PlayerId)) return false;
             return value.equals(((PlayerId) other).value);
@@ -45,8 +44,8 @@ public final class Media {
     public static final class Timestamp implements CdpValue<Double> {
         public final double value;
         public Timestamp(double value) { this.value = value; }
-        @Nonnull public Double value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Double value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof Timestamp)) return false;
             return Double.compare(value, ((Timestamp) other).value) == 0;
@@ -73,8 +72,8 @@ public final class Media {
             DEBUG("debug");
             public final String value;
             LevelValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static LevelValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static LevelValues of(String value) {
                 for (LevelValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -350,7 +349,8 @@ public final class Media {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> domNodeId() {
-            return Optional.ofNullable(raw("domNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("domNodeId")).longValue()));
+            Object value = raw("domNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Sets the playerId field.
@@ -582,14 +582,14 @@ public final class Media {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Media.enable", null, result_ -> null);
+            return client.call("Media.enable", null);
         }
         /**
          * Disables the Media domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Media.disable", null, result_ -> null);
+            return client.call("Media.disable", null);
         }
         /**
          * This can be called multiple times, and can be used to set / override / remove player properties. A null propValue indicates removal.

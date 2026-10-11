@@ -7,13 +7,12 @@ import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
+import net.kurobako.cef4j.codecs.jackson.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
-import net.kurobako.cef4j.ipc.session.middleware.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.RecordingCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayCefSession;
 import net.kurobako.cef4j.ipc.session.middleware.ReplayMode;
@@ -46,9 +45,8 @@ class GeneratedApiRecordingReplayTest {
 
     private static final class CanGoBackSession implements CefSession {
         @Override
-        @Nonnull
         public <R extends CefMessageView> CompletableFuture<R> request(
-                @Nonnull CefMessageEncoder request, @Nonnull CefMessageDecoder<R> decoder) {
+                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             if (request.messageId() != BrowserCanGoBackRequest.MESSAGE_ID) {
                 CompletableFuture<R> failure = new CompletableFuture<>();
                 failure.completeExceptionally(new IllegalArgumentException("unexpected generated request"));
@@ -62,16 +60,14 @@ class GeneratedApiRecordingReplayTest {
         }
 
         @Override
-        @Nonnull
         public <E extends CefMessageView> HandlerRegistration on(
-                int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+                int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        @Nonnull
         public <E extends CefMessageView> HandlerRegistration intercept(
-                int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler) {
+                int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
             throw new UnsupportedOperationException();
         }
 

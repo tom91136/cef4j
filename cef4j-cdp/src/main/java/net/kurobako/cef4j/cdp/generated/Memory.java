@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -32,8 +31,8 @@ public final class Memory {
         CRITICAL("critical");
         public final String value;
         PressureLevel(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PressureLevel of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PressureLevel of(String value) {
             for (PressureLevel constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -347,7 +346,8 @@ public final class Memory {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> suppressRandomness() {
-            return Optional.ofNullable((Boolean) raw("suppressRandomness"));
+            Object value = raw("suppressRandomness");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Average number of bytes between samples.
@@ -466,14 +466,14 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> prepareForLeakDetection() {
-            return client.call("Memory.prepareForLeakDetection", null, result_ -> null);
+            return client.call("Memory.prepareForLeakDetection", null);
         }
         /**
          * Simulate OomIntervention by purging V8 memory.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forciblyPurgeJavaScriptMemory() {
-            return client.call("Memory.forciblyPurgeJavaScriptMemory", null, result_ -> null);
+            return client.call("Memory.forciblyPurgeJavaScriptMemory", null);
         }
         /**
          * Enable/disable suppressing memory pressure notifications in all processes.
@@ -483,7 +483,7 @@ public final class Memory {
         public CompletionStage<Void> setPressureNotificationsSuppressed(boolean suppressed) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("suppressed", CdpObject.json(suppressed));
-            return client.call("Memory.setPressureNotificationsSuppressed", params, result_ -> null);
+            return client.call("Memory.setPressureNotificationsSuppressed", params);
         }
         /**
          * Enable/disable suppressing memory pressure notifications in all processes.
@@ -491,7 +491,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPressureNotificationsSuppressed(SetPressureNotificationsSuppressedRequest request) {
-            return client.call("Memory.setPressureNotificationsSuppressed", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Memory.setPressureNotificationsSuppressed", request == null ? null : request.toMap());
         }
         /**
          * Simulate a memory pressure notification in all processes.
@@ -501,7 +501,7 @@ public final class Memory {
         public CompletionStage<Void> simulatePressureNotification(Memory.PressureLevel level) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("level", CdpObject.json(level));
-            return client.call("Memory.simulatePressureNotification", params, result_ -> null);
+            return client.call("Memory.simulatePressureNotification", params);
         }
         /**
          * Simulate a memory pressure notification in all processes.
@@ -509,7 +509,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulatePressureNotification(SimulatePressureNotificationRequest request) {
-            return client.call("Memory.simulatePressureNotification", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Memory.simulatePressureNotification", request == null ? null : request.toMap());
         }
         /**
          * Start collecting native memory profile.
@@ -521,7 +521,7 @@ public final class Memory {
             Map<String, Object> params = new LinkedHashMap<>();
             samplingInterval.ifPresent(value_ -> params.put("samplingInterval", value_));
             suppressRandomness.ifPresent(value_ -> params.put("suppressRandomness", value_));
-            return client.call("Memory.startSampling", params, result_ -> null);
+            return client.call("Memory.startSampling", params);
         }
         /**
          * Start collecting native memory profile.
@@ -536,14 +536,14 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling(StartSamplingRequest request) {
-            return client.call("Memory.startSampling", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Memory.startSampling", request == null ? null : request.toMap());
         }
         /**
          * Stop collecting native memory profile.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopSampling() {
-            return client.call("Memory.stopSampling", null, result_ -> null);
+            return client.call("Memory.stopSampling", null);
         }
         /**
          * Retrieve native memory allocations profile collected since renderer process startup.

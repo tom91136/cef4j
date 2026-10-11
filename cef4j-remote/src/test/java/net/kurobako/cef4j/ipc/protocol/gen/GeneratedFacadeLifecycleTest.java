@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
@@ -79,13 +78,13 @@ class GeneratedFacadeLifecycleTest {
 
             @Override
             public <E extends CefMessageView> HandlerRegistration on(
-                    int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+                    int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
             public <E extends CefMessageView> HandlerRegistration intercept(
-                    int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler) {
+                    int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
                 throw new UnsupportedOperationException();
             }
 
@@ -104,14 +103,14 @@ class GeneratedFacadeLifecycleTest {
 
             @Override
             public <E extends CefMessageView> HandlerRegistration on(
-                    int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+                    int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
                 registrations.incrementAndGet();
                 return closes::incrementAndGet;
             }
 
             @Override
             public <E extends CefMessageView> HandlerRegistration intercept(
-                    int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler) {
+                    int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
                 registrations.incrementAndGet();
                 return closes::incrementAndGet;
             }

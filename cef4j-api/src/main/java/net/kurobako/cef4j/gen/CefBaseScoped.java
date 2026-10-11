@@ -28,7 +28,7 @@ public final class CefBaseScoped {
     public CefBaseScoped() {}
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         return this == obj || obj instanceof CefBaseScoped;
     }
 

@@ -28,7 +28,7 @@ public final class CefBaseRefCounted {
     public CefBaseRefCounted() {}
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         return this == obj || obj instanceof CefBaseRefCounted;
     }
 

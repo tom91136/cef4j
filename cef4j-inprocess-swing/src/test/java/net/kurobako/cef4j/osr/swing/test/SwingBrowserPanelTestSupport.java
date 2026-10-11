@@ -20,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
-import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -44,6 +43,7 @@ import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -65,7 +65,7 @@ final class SwingBrowserPanelTestSupport {
         final CountDownLatch browserClosed = new CountDownLatch(1);
     }
 
-    static void ensureCefStarted(Path tempDir) throws Exception {
+    static void ensureCefStarted(Path tempDir) {
         if (started) return;
 
         Assumptions.assumeTrue(
@@ -95,8 +95,8 @@ final class SwingBrowserPanelTestSupport {
         if (SwingUtilities.isEventDispatchThread()) {
             return task.call();
         }
-        AtomicReference<T> result = new AtomicReference<>();
-        AtomicReference<Throwable> error = new AtomicReference<>();
+        AtomicReference<@Nullable T> result = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> error = new AtomicReference<>();
         CountDownLatch latch = new CountDownLatch(1);
         SwingUtilities.invokeLater(() -> {
             try {
@@ -128,8 +128,8 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static CefBrowserPanel createAttachedPanel() throws Exception {
-        AtomicReference<CefBrowserPanel> panelRef = new AtomicReference<>();
-        AtomicReference<PanelState> stateRef = new AtomicReference<>();
+        AtomicReference<@Nullable CefBrowserPanel> panelRef = new AtomicReference<>();
+        AtomicReference<@Nullable PanelState> stateRef = new AtomicReference<>();
 
         onSwingThread(() -> {
             PanelState state = new PanelState();
@@ -252,7 +252,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static CefBrowserPanel createAttachedPanelWithClient(CefClient client) throws Exception {
-        AtomicReference<CefBrowserPanel> panelRef = new AtomicReference<>();
+        AtomicReference<@Nullable CefBrowserPanel> panelRef = new AtomicReference<>();
         PanelState state = new PanelState();
 
         onSwingThread(() -> {

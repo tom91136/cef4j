@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -34,8 +33,8 @@ public final class CSS {
         REGULAR("regular");
         public final String value;
         StyleSheetOrigin(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StyleSheetOrigin of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StyleSheetOrigin of(String value) {
             for (StyleSheetOrigin constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -63,7 +62,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            return Optional.ofNullable((String) raw("pseudoIdentifier"));
+            Object value = raw("pseudoIdentifier");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Matches of CSS rules applicable to the pseudo style.
@@ -123,7 +123,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return Optional.ofNullable((String) raw("name"));
+            Object value = raw("name");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The style coming from the animation.
@@ -174,7 +175,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            return Optional.ofNullable(raw("inlineStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("inlineStyle")))));
+            Object value = raw("inlineStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Matches of CSS rules matching the ancestor node in the style inheritance chain.
@@ -225,14 +227,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles() {
-            return Optional.ofNullable(list(raw("animationStyles"), element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("animationStyles");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> transitionsStyle() {
-            return Optional.ofNullable(raw("transitionsStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("transitionsStyle")))));
+            Object value = raw("transitionsStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
@@ -360,7 +364,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Specificity of the selector.
@@ -368,7 +373,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Specificity> specificity() {
-            return Optional.ofNullable(raw("specificity") == null ? null : CSS.Specificity.fromMap(java.util.Objects.requireNonNull(objectMap(raw("specificity")))));
+            Object value = raw("specificity");
+            return Optional.ofNullable(value == null ? null : CSS.Specificity.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Value text.
@@ -554,7 +560,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceMapURL() {
-            return Optional.ofNullable((String) raw("sourceMapURL"));
+            Object value = raw("sourceMapURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Stylesheet origin.
@@ -575,7 +582,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> ownerNode() {
-            return Optional.ofNullable(raw("ownerNode") == null ? null : new DOM.BackendNodeId(((Number) raw("ownerNode")).longValue()));
+            Object value = raw("ownerNode");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Denotes whether the stylesheet is disabled.
@@ -589,7 +597,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasSourceURL() {
-            return Optional.ofNullable((Boolean) raw("hasSourceURL"));
+            Object value = raw("hasSourceURL");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
@@ -653,7 +662,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> loadingFailed() {
-            return Optional.ofNullable((Boolean) raw("loadingFailed"));
+            Object value = raw("loadingFailed");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The stylesheet identifier.
@@ -870,7 +880,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Rule selector data.
@@ -885,7 +896,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> nestingSelectors() {
-            return Optional.ofNullable(list(raw("nestingSelectors"), element0 -> (String) element0));
+            Object value = raw("nestingSelectors");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -907,14 +919,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> originTreeScopeNodeId() {
-            return Optional.ofNullable(raw("originTreeScopeNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("originTreeScopeNodeId")).longValue()));
+            Object value = raw("originTreeScopeNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSMedia>> media() {
-            return Optional.ofNullable(list(raw("media"), element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("media");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
@@ -922,7 +936,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSContainerQuery>> containerQueries() {
-            return Optional.ofNullable(list(raw("containerQueries"), element0 -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("containerQueries");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * &#64;supports CSS at-rule array. The array enumerates &#64;supports at-rules starting with the innermost one, going outwards.
@@ -930,7 +945,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSSupports>> supports() {
-            return Optional.ofNullable(list(raw("supports"), element0 -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("supports");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Cascade layer array. Contains the layer hierarchy that this rule belongs to starting with the innermost layer and going outwards.
@@ -938,7 +954,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSLayer>> layers() {
-            return Optional.ofNullable(list(raw("layers"), element0 -> java.util.Objects.requireNonNull(CSS.CSSLayer.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("layers");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayer.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * &#64;scope CSS at-rule array. The array enumerates &#64;scope at-rules starting with the innermost one, going outwards.
@@ -946,7 +963,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSScope>> scopes() {
-            return Optional.ofNullable(list(raw("scopes"), element0 -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("scopes");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The array keeps the types of ancestor CSSRules from the innermost going outwards.
@@ -954,7 +972,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSRuleType>> ruleTypes() {
-            return Optional.ofNullable(list(raw("ruleTypes"), element0 -> CSS.CSSRuleType.of((String) element0)));
+            Object value = raw("ruleTypes");
+            return Optional.ofNullable(list(value, element0 -> CSS.CSSRuleType.of((String) element0)));
         }
         /**
          * &#64;starting-style CSS at-rule array. The array enumerates &#64;starting-style at-rules starting with the innermost one, going outwards.
@@ -962,7 +981,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSStartingStyle>> startingStyles() {
-            return Optional.ofNullable(list(raw("startingStyles"), element0 -> java.util.Objects.requireNonNull(CSS.CSSStartingStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("startingStyles");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSStartingStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
@@ -970,7 +990,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSNavigation>> navigations() {
-            return Optional.ofNullable(list(raw("navigations"), element0 -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("navigations");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -1231,8 +1252,8 @@ public final class CSS {
         NAVIGATIONRULE("NavigationRule");
         public final String value;
         CSSRuleType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CSSRuleType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CSSRuleType of(String value) {
             for (CSSRuleType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1414,7 +1435,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> important() {
-            return Optional.ofNullable((Boolean) raw("important"));
+            Object value = raw("important");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Shorthand name.
@@ -1534,7 +1556,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * CSS properties in the style.
@@ -1555,14 +1578,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cssText() {
-            return Optional.ofNullable((String) raw("cssText"));
+            Object value = raw("cssText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Style declaration range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -1665,42 +1690,48 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> important() {
-            return Optional.ofNullable((Boolean) raw("important"));
+            Object value = raw("important");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the property is implicit (implies {@code false} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> implicit() {
-            return Optional.ofNullable((Boolean) raw("implicit"));
+            Object value = raw("implicit");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The full property text as specified in the style.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            return Optional.ofNullable((String) raw("text"));
+            Object value = raw("text");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Whether the property is understood by the browser (implies {@code true} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> parsedOk() {
-            return Optional.ofNullable((Boolean) raw("parsedOk"));
+            Object value = raw("parsedOk");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the property is disabled by the user (present for source-based properties only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disabled() {
-            return Optional.ofNullable((Boolean) raw("disabled"));
+            Object value = raw("disabled");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The entire property range in the enclosing style declaration (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Parsed longhand components of this property if it is a shorthand. This field will be empty if the given property is not a shorthand.
@@ -1708,7 +1739,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSProperty>> longhandProperties() {
-            return Optional.ofNullable(list(raw("longhandProperties"), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("longhandProperties");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The property name.
@@ -1876,8 +1908,8 @@ public final class CSS {
             INLINESHEET("inlineSheet");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SourceValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -1903,28 +1935,32 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceURL() {
-            return Optional.ofNullable((String) raw("sourceURL"));
+            Object value = raw("sourceURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The associated rule (&#64;media or &#64;import) header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Array of media queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.MediaQuery>> mediaList() {
-            return Optional.ofNullable(list(raw("mediaList"), element0 -> java.util.Objects.requireNonNull(CSS.MediaQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("mediaList");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.MediaQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Media query text.
@@ -2094,7 +2130,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> valueRange() {
-            return Optional.ofNullable(raw("valueRange") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("valueRange")))));
+            Object value = raw("valueRange");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Computed length of media query expression (if applicable).
@@ -2192,49 +2229,56 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Optional name for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return Optional.ofNullable((String) raw("name"));
+            Object value = raw("name");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Optional physical axes queried for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PhysicalAxes> physicalAxes() {
-            return Optional.ofNullable(raw("physicalAxes") == null ? null : DOM.PhysicalAxes.of((String) raw("physicalAxes")));
+            Object value = raw("physicalAxes");
+            return Optional.ofNullable(value == null ? null : DOM.PhysicalAxes.of((String) value));
         }
         /**
          * Optional logical axes queried for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.LogicalAxes> logicalAxes() {
-            return Optional.ofNullable(raw("logicalAxes") == null ? null : DOM.LogicalAxes.of((String) raw("logicalAxes")));
+            Object value = raw("logicalAxes");
+            return Optional.ofNullable(value == null ? null : DOM.LogicalAxes.of((String) value));
         }
         /**
          * true if the query contains scroll-state() queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesScrollState() {
-            return Optional.ofNullable((Boolean) raw("queriesScrollState"));
+            Object value = raw("queriesScrollState");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * true if the query contains anchored() queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesAnchored() {
-            return Optional.ofNullable((Boolean) raw("queriesAnchored"));
+            Object value = raw("queriesAnchored");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * CSSContainerRule.conditionText
@@ -2419,14 +2463,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Supports rule text.
@@ -2505,21 +2551,24 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> active() {
-            return Optional.ofNullable((Boolean) raw("active"));
+            Object value = raw("active");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Navigation rule text.
@@ -2607,14 +2656,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Scope rule text.
@@ -2684,14 +2735,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Layer name.
@@ -2754,14 +2807,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return Optional.ofNullable(raw("range") == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("range")))));
+            Object value = raw("range");
+            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
@@ -2822,7 +2877,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSLayerData>> subLayers() {
-            return Optional.ofNullable(list(raw("subLayers"), element0 -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("subLayers");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Layer order. The order determines the order of the layer in the cascade order. A higher number has higher priority in the cascade order.
@@ -3109,7 +3165,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.FontVariationAxis>> fontVariationAxes() {
-            return Optional.ofNullable(list(raw("fontVariationAxes"), element0 -> java.util.Objects.requireNonNull(CSS.FontVariationAxis.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("fontVariationAxes");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.FontVariationAxis.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The font-family.
@@ -3225,7 +3282,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3299,7 +3357,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3440,7 +3499,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Value> initialValue() {
-            return Optional.ofNullable(raw("initialValue") == null ? null : CSS.Value.fromMap(java.util.Objects.requireNonNull(objectMap(raw("initialValue")))));
+            Object value = raw("initialValue");
+            return Optional.ofNullable(value == null ? null : CSS.Value.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the inherits field.
@@ -3521,8 +3581,8 @@ public final class CSS {
             COUNTER_STYLE("counter-style");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -3541,8 +3601,8 @@ public final class CSS {
             CHARACTER_VARIANT("character-variant");
             public final String value;
             SubsectionValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SubsectionValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SubsectionValues of(String value) {
                 for (SubsectionValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -3561,21 +3621,24 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSSAtRule.SubsectionValues> subsection() {
-            return Optional.ofNullable(raw("subsection") == null ? null : CSSAtRule.SubsectionValues.of((String) raw("subsection")));
+            Object value = raw("subsection");
+            return Optional.ofNullable(value == null ? null : CSSAtRule.SubsectionValues.of((String) value));
         }
         /**
          * LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType) Associated name, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Value> name() {
-            return Optional.ofNullable(raw("name") == null ? null : CSS.Value.fromMap(java.util.Objects.requireNonNull(objectMap(raw("name")))));
+            Object value = raw("name");
+            return Optional.ofNullable(value == null ? null : CSS.Value.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3687,7 +3750,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3812,28 +3876,32 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSMedia> media() {
-            return Optional.ofNullable(raw("media") == null ? null : CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(objectMap(raw("media")))));
+            Object value = raw("media");
+            return Optional.ofNullable(value == null ? null : CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Container query for this conditional block. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSContainerQuery> containerQueries() {
-            return Optional.ofNullable(raw("containerQueries") == null ? null : CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerQueries")))));
+            Object value = raw("containerQueries");
+            return Optional.ofNullable(value == null ? null : CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * &#64;supports CSS at-rule condition. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSSupports> supports() {
-            return Optional.ofNullable(raw("supports") == null ? null : CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(objectMap(raw("supports")))));
+            Object value = raw("supports");
+            return Optional.ofNullable(value == null ? null : CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * &#64;navigation condition. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSNavigation> navigation() {
-            return Optional.ofNullable(raw("navigation") == null ? null : CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("navigation")))));
+            Object value = raw("navigation");
+            return Optional.ofNullable(value == null ? null : CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Block body.
@@ -3954,14 +4022,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSFunctionConditionNode> condition() {
-            return Optional.ofNullable(raw("condition") == null ? null : CSS.CSSFunctionConditionNode.fromMap(java.util.Objects.requireNonNull(objectMap(raw("condition")))));
+            Object value = raw("condition");
+            return Optional.ofNullable(value == null ? null : CSS.CSSFunctionConditionNode.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Values set by this node. If set, condition should not be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> style() {
-            return Optional.ofNullable(raw("style") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("style")))));
+            Object value = raw("style");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * A conditional block. If set, style should not be set.
@@ -4021,7 +4091,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -4050,7 +4121,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> originTreeScopeNodeId() {
-            return Optional.ofNullable(raw("originTreeScopeNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("originTreeScopeNodeId")).longValue()));
+            Object value = raw("originTreeScopeNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Name of the function.
@@ -4141,7 +4213,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return Optional.ofNullable(raw("styleSheetId") == null ? null : new DOM.StyleSheetId((String) raw("styleSheetId")));
+            Object value = raw("styleSheetId");
+            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -4316,7 +4389,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
-            return Optional.ofNullable(raw("nodeForPropertySyntaxValidation") == null ? null : new DOM.NodeId(((Number) raw("nodeForPropertySyntaxValidation")).longValue()));
+            Object value = raw("nodeForPropertySyntaxValidation");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * The css style sheet identifier where a new rule should be inserted.
@@ -4429,7 +4503,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> force() {
-            return Optional.ofNullable((Boolean) raw("force"));
+            Object value = raw("force");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the frame where &quot;via-inspector&quot; stylesheet should be created.
@@ -4671,21 +4746,24 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> propertyName() {
-            return Optional.ofNullable((String) raw("propertyName"));
+            Object value = raw("propertyName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            return Optional.ofNullable(raw("pseudoType") == null ? null : DOM.PseudoType.of((String) raw("pseudoType")));
+            Object value = raw("pseudoType");
+            return Optional.ofNullable(value == null ? null : DOM.PseudoType.of((String) value));
         }
         /**
          * Pseudo element custom ident.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            return Optional.ofNullable((String) raw("pseudoIdentifier"));
+            Object value = raw("pseudoIdentifier");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cascade-dependent keywords (revert/revert-layer) do not work.
@@ -5092,7 +5170,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Sets the nodeId field.
@@ -5945,7 +6024,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
-            return Optional.ofNullable(raw("nodeForPropertySyntaxValidation") == null ? null : new DOM.NodeId(((Number) raw("nodeForPropertySyntaxValidation")).longValue()));
+            Object value = raw("nodeForPropertySyntaxValidation");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Sets the edits field.
@@ -6027,21 +6107,24 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> backgroundColors() {
-            return Optional.ofNullable(list(raw("backgroundColors"), element0 -> (String) element0));
+            Object value = raw("backgroundColors");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * The computed font size for this node, as a CSS computed value string (e.g. &#x27;12px&#x27;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> computedFontSize() {
-            return Optional.ofNullable((String) raw("computedFontSize"));
+            Object value = raw("computedFontSize");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The computed font weight for this node, as a CSS computed value string (e.g. &#x27;normal&#x27; or &#x27;100&#x27;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> computedFontWeight() {
-            return Optional.ofNullable((String) raw("computedFontWeight"));
+            Object value = raw("computedFontWeight");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
@@ -6156,14 +6239,16 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            return Optional.ofNullable(raw("inlineStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("inlineStyle")))));
+            Object value = raw("inlineStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> attributesStyle() {
-            return Optional.ofNullable(raw("attributesStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("attributesStyle")))));
+            Object value = raw("attributesStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Inline style for the specified DOM node.
@@ -6217,21 +6302,24 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles() {
-            return Optional.ofNullable(list(raw("animationStyles"), element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("animationStyles");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Style coming from transitions.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> transitionsStyle() {
-            return Optional.ofNullable(raw("transitionsStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("transitionsStyle")))));
+            Object value = raw("transitionsStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Inherited style entries for animationsStyle and transitionsStyle from the inheritance chain of the element.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedAnimatedStyleEntry>> inherited() {
-            return Optional.ofNullable(list(raw("inherited"), element0 -> java.util.Objects.requireNonNull(CSS.InheritedAnimatedStyleEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("inherited");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedAnimatedStyleEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Styles coming from animations.
@@ -6302,56 +6390,64 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            return Optional.ofNullable(raw("inlineStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("inlineStyle")))));
+            Object value = raw("inlineStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> attributesStyle() {
-            return Optional.ofNullable(raw("attributesStyle") == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("attributesStyle")))));
+            Object value = raw("attributesStyle");
+            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * CSS rules matching this node, from all applicable stylesheets.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.RuleMatch>> matchedCSSRules() {
-            return Optional.ofNullable(list(raw("matchedCSSRules"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("matchedCSSRules");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Pseudo style matches for this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.PseudoElementMatches>> pseudoElements() {
-            return Optional.ofNullable(list(raw("pseudoElements"), element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("pseudoElements");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * A chain of inherited styles (from the immediate node parent up to the DOM tree root).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedStyleEntry>> inherited() {
-            return Optional.ofNullable(list(raw("inherited"), element0 -> java.util.Objects.requireNonNull(CSS.InheritedStyleEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("inherited");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedStyleEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedPseudoElementMatches>> inheritedPseudoElements() {
-            return Optional.ofNullable(list(raw("inheritedPseudoElements"), element0 -> java.util.Objects.requireNonNull(CSS.InheritedPseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("inheritedPseudoElements");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedPseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * A list of CSS keyframed animations matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSKeyframesRule>> cssKeyframesRules() {
-            return Optional.ofNullable(list(raw("cssKeyframesRules"), element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframesRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("cssKeyframesRules");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframesRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * A list of CSS &#64;position-try rules matching this node, based on the position-try-fallbacks property.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPositionTryRule>> cssPositionTryRules() {
-            return Optional.ofNullable(list(raw("cssPositionTryRules"), element0 -> java.util.Objects.requireNonNull(CSS.CSSPositionTryRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("cssPositionTryRules");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPositionTryRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Index of the active fallback in the applied position-try-fallback property, will not be set if there is no active position-try fallback.
@@ -6366,21 +6462,24 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPropertyRule>> cssPropertyRules() {
-            return Optional.ofNullable(list(raw("cssPropertyRules"), element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("cssPropertyRules");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * A list of CSS property registrations matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPropertyRegistration>> cssPropertyRegistrations() {
-            return Optional.ofNullable(list(raw("cssPropertyRegistrations"), element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRegistration.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("cssPropertyRegistrations");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRegistration.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * A list of simple &#64;rules matching this node or its pseudo-elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAtRule>> cssAtRules() {
-            return Optional.ofNullable(list(raw("cssAtRules"), element0 -> java.util.Objects.requireNonNull(CSS.CSSAtRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("cssAtRules");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAtRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Id of the first parent element that does not have display: contents.
@@ -6388,7 +6487,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> parentLayoutNodeId() {
-            return Optional.ofNullable(raw("parentLayoutNodeId") == null ? null : new DOM.NodeId(((Number) raw("parentLayoutNodeId")).longValue()));
+            Object value = raw("parentLayoutNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * A list of CSS at-function rules referenced by styles of this node.
@@ -6396,7 +6496,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSFunctionRule>> cssFunctionRules() {
-            return Optional.ofNullable(list(raw("cssFunctionRules"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("cssFunctionRules");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Inline style for the specified DOM node.
@@ -6711,7 +6812,8 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.FontFace> font() {
-            return Optional.ofNullable(raw("font") == null ? null : CSS.FontFace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("font")))));
+            Object value = raw("font");
+            return Optional.ofNullable(value == null ? null : CSS.FontFace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The web font that has loaded.
@@ -6935,14 +7037,14 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("CSS.disable", null, result_ -> null);
+            return client.call("CSS.disable", null);
         }
         /**
          * Enables the CSS agent for the given page. Clients should not assume that the CSS agent has been enabled until the result of this command is received.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("CSS.enable", null, result_ -> null);
+            return client.call("CSS.enable", null);
         }
         /**
          * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
@@ -6954,7 +7056,7 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("forcedPseudoClasses", CdpObject.json(forcedPseudoClasses));
-            return client.call("CSS.forcePseudoState", params, result_ -> null);
+            return client.call("CSS.forcePseudoState", params);
         }
         /**
          * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
@@ -6962,7 +7064,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forcePseudoState(ForcePseudoStateRequest request) {
-            return client.call("CSS.forcePseudoState", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CSS.forcePseudoState", request == null ? null : request.toMap());
         }
         /**
          * Ensures that the given node is in its starting-style state.
@@ -6974,7 +7076,7 @@ public final class CSS {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("forced", CdpObject.json(forced));
-            return client.call("CSS.forceStartingStyle", params, result_ -> null);
+            return client.call("CSS.forceStartingStyle", params);
         }
         /**
          * Ensures that the given node is in its starting-style state.
@@ -6982,7 +7084,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forceStartingStyle(ForceStartingStyleRequest request) {
-            return client.call("CSS.forceStartingStyle", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CSS.forceStartingStyle", request == null ? null : request.toMap());
         }
         /**
          * Invokes CSS.getBackgroundColors.
@@ -7238,7 +7340,7 @@ public final class CSS {
         public CompletionStage<Void> trackComputedStyleUpdatesForNode(Optional<DOM.NodeId> nodeId) {
             Map<String, Object> params = new LinkedHashMap<>();
             nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            return client.call("CSS.trackComputedStyleUpdatesForNode", params, result_ -> null);
+            return client.call("CSS.trackComputedStyleUpdatesForNode", params);
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -7255,7 +7357,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdatesForNode(TrackComputedStyleUpdatesForNodeRequest request) {
-            return client.call("CSS.trackComputedStyleUpdatesForNode", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CSS.trackComputedStyleUpdatesForNode", request == null ? null : request.toMap());
         }
         /**
          * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
@@ -7266,7 +7368,7 @@ public final class CSS {
         public CompletionStage<Void> trackComputedStyleUpdates(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("propertiesToTrack", CdpObject.json(propertiesToTrack));
-            return client.call("CSS.trackComputedStyleUpdates", params, result_ -> null);
+            return client.call("CSS.trackComputedStyleUpdates", params);
         }
         /**
          * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
@@ -7275,7 +7377,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdates(TrackComputedStyleUpdatesRequest request) {
-            return client.call("CSS.trackComputedStyleUpdates", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CSS.trackComputedStyleUpdates", request == null ? null : request.toMap());
         }
         /**
          * Polls the next batch of computed style updates.
@@ -7297,7 +7399,7 @@ public final class CSS {
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("propertyName", CdpObject.json(propertyName));
             params.put("value", CdpObject.json(value));
-            return client.call("CSS.setEffectivePropertyValueForNode", params, result_ -> null);
+            return client.call("CSS.setEffectivePropertyValueForNode", params);
         }
         /**
          * Find a rule with the given active property for the given node and set the new value for this property
@@ -7305,7 +7407,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEffectivePropertyValueForNode(SetEffectivePropertyValueForNodeRequest request) {
-            return client.call("CSS.setEffectivePropertyValueForNode", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CSS.setEffectivePropertyValueForNode", request == null ? null : request.toMap());
         }
         /**
          * Modifies the property rule property name.
@@ -7572,7 +7674,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startRuleUsageTracking() {
-            return client.call("CSS.startRuleUsageTracking", null, result_ -> null);
+            return client.call("CSS.startRuleUsageTracking", null);
         }
         /**
          * Stop tracking rule usage and return the list of rules that were used since last call to {@code takeCoverageDelta} (or since start of coverage instrumentation).
@@ -7597,7 +7699,7 @@ public final class CSS {
         public CompletionStage<Void> setLocalFontsEnabled(boolean enabled) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
-            return client.call("CSS.setLocalFontsEnabled", params, result_ -> null);
+            return client.call("CSS.setLocalFontsEnabled", params);
         }
         /**
          * Enables/disables rendering of local CSS fonts (enabled by default).
@@ -7606,7 +7708,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLocalFontsEnabled(SetLocalFontsEnabledRequest request) {
-            return client.call("CSS.setLocalFontsEnabled", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CSS.setLocalFontsEnabled", request == null ? null : request.toMap());
         }
         /**
          * Fires whenever a web font is updated. A non-empty font parameter indicates a successfully loaded web font.

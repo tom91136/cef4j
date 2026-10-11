@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -102,7 +101,7 @@ public final class DeviceOrientation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDeviceOrientationOverride() {
-            return client.call("DeviceOrientation.clearDeviceOrientationOverride", null, result_ -> null);
+            return client.call("DeviceOrientation.clearDeviceOrientationOverride", null);
         }
         /**
          * Overrides the Device Orientation.
@@ -116,7 +115,7 @@ public final class DeviceOrientation {
             params.put("alpha", CdpObject.json(alpha));
             params.put("beta", CdpObject.json(beta));
             params.put("gamma", CdpObject.json(gamma));
-            return client.call("DeviceOrientation.setDeviceOrientationOverride", params, result_ -> null);
+            return client.call("DeviceOrientation.setDeviceOrientationOverride", params);
         }
         /**
          * Overrides the Device Orientation.
@@ -124,7 +123,7 @@ public final class DeviceOrientation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDeviceOrientationOverride(SetDeviceOrientationOverrideRequest request) {
-            return client.call("DeviceOrientation.setDeviceOrientationOverride", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DeviceOrientation.setDeviceOrientationOverride", request == null ? null : request.toMap());
         }
     }
 }

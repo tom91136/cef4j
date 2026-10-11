@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class CacheStorage {
      */
     public static final class CacheId implements CdpValue<String> {
         public final String value;
-        public CacheId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public CacheId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof CacheId)) return false;
             return value.equals(((CacheId) other).value);
@@ -51,8 +50,8 @@ public final class CacheStorage {
         OPAQUEREDIRECT("opaqueRedirect");
         public final String value;
         CachedResponseType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CachedResponseType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CachedResponseType of(String value) {
             for (CachedResponseType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -232,7 +231,8 @@ public final class CacheStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The name of the cache.
@@ -464,21 +464,24 @@ public final class CacheStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * At least and at most one of securityOrigin, storageKey, storageBucket must be specified. Security origin.
@@ -650,7 +653,8 @@ public final class CacheStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pathFilter() {
-            return Optional.ofNullable((String) raw("pathFilter"));
+            Object value = raw("pathFilter");
+            return Optional.ofNullable((String) value);
         }
         /**
          * ID of cache to get entries from.
@@ -769,7 +773,7 @@ public final class CacheStorage {
         public CompletionStage<Void> deleteCache(CacheStorage.CacheId cacheId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheId", CdpObject.json(cacheId));
-            return client.call("CacheStorage.deleteCache", params, result_ -> null);
+            return client.call("CacheStorage.deleteCache", params);
         }
         /**
          * Deletes a cache.
@@ -777,7 +781,7 @@ public final class CacheStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteCache(DeleteCacheRequest request) {
-            return client.call("CacheStorage.deleteCache", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CacheStorage.deleteCache", request == null ? null : request.toMap());
         }
         /**
          * Deletes a cache entry.
@@ -789,7 +793,7 @@ public final class CacheStorage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheId", CdpObject.json(cacheId));
             params.put("request", CdpObject.json(request));
-            return client.call("CacheStorage.deleteEntry", params, result_ -> null);
+            return client.call("CacheStorage.deleteEntry", params);
         }
         /**
          * Deletes a cache entry.
@@ -797,7 +801,7 @@ public final class CacheStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteEntry(DeleteEntryRequest request) {
-            return client.call("CacheStorage.deleteEntry", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("CacheStorage.deleteEntry", request == null ? null : request.toMap());
         }
         /**
          * Requests cache names.

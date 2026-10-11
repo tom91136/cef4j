@@ -2,7 +2,7 @@ package net.kurobako.cef4j.ipc.session;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 
 final class TestMessages {
 
@@ -23,7 +23,7 @@ final class TestMessages {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (this == o) return true;
             if (!(o instanceof BytesView)) return false;
             BytesView that = (BytesView) o;
@@ -61,7 +61,7 @@ final class TestMessages {
         }
 
         @Override
-        public void encodeInto(@Nonnull ByteBuffer dst) {
+        public void encodeInto(ByteBuffer dst) {
             dst.put(bytes);
         }
     }

@@ -15,6 +15,9 @@
     <description>Error Prone checks enforcing the nullability policy on public API</description>
 
     <properties>
+
+        <japicmp.skip>true</japicmp.skip>
+        <dependency.hygiene.skip>true</dependency.hygiene.skip>
         <!-- Runs inside the build JVM (JDK 17+); the Error Prone jars it links are Java 17 bytecode. -->
         <bytecode.check.skip>true</bytecode.check.skip>
         <cef4j.cefIndependent>true</cef4j.cefIndependent>
@@ -34,8 +37,15 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <!-- LibraryModels is loaded by NullAway from the annotation processor path at compile time. -->
+            <groupId>com.uber.nullaway</groupId>
+            <artifactId>nullaway</artifactId>
+            <version>${nullaway.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -80,7 +90,9 @@
                         <arg>-Xlint:all</arg>
                         <arg>-Xlint:-options</arg>
                         <arg>-Xlint:-processing</arg>
+                        <arg>-Werror</arg>
                         <arg>-XDcompilePolicy=simple</arg>
+                        <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
                         <arg>-XDshould-stop.ifError=FLOW</arg>
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
@@ -94,7 +106,7 @@
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.types=ALL-UNNAMED</arg>
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-                        <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false</arg>
+                        <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=true</arg>
                     </compilerArgs>
                     <annotationProcessorPaths combine.self="override">
                         <path>

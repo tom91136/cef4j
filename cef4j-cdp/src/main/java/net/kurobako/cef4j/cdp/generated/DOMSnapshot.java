@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -59,28 +58,32 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> textValue() {
-            return Optional.ofNullable((String) raw("textValue"));
+            Object value = raw("textValue");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Only set for input elements, contains the input&#x27;s associated text value.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> inputValue() {
-            return Optional.ofNullable((String) raw("inputValue"));
+            Object value = raw("inputValue");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Only set for radio and checkbox input elements, indicates if the element has been checked
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> inputChecked() {
-            return Optional.ofNullable((Boolean) raw("inputChecked"));
+            Object value = raw("inputChecked");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Only set for option elements, indicates if the element has been selected
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> optionSelected() {
-            return Optional.ofNullable((Boolean) raw("optionSelected"));
+            Object value = raw("optionSelected");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * {@code Node}&#x27;s id, corresponds to DOM.Node.backendNodeId.
@@ -94,21 +97,24 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> childNodeIndexes() {
-            return Optional.ofNullable(list(raw("childNodeIndexes"), element0 -> ((Number) element0).longValue()));
+            Object value = raw("childNodeIndexes");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * Attributes of an {@code Element} node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.NameValue>> attributes() {
-            return Optional.ofNullable(list(raw("attributes"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.NameValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("attributes");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOMSnapshot.NameValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Indexes of pseudo elements associated with this node in the {@code domNodes} array returned by {@code getSnapshot}, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> pseudoElementIndexes() {
-            return Optional.ofNullable(list(raw("pseudoElementIndexes"), element0 -> ((Number) element0).longValue()));
+            Object value = raw("pseudoElementIndexes");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * The index of the node&#x27;s related layout tree node in the {@code layoutTreeNodes} array returned by {@code getSnapshot}, if any.
@@ -123,49 +129,56 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentURL() {
-            return Optional.ofNullable((String) raw("documentURL"));
+            Object value = raw("documentURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            return Optional.ofNullable((String) raw("baseURL"));
+            Object value = raw("baseURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Only set for documents, contains the document&#x27;s content language.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> contentLanguage() {
-            return Optional.ofNullable((String) raw("contentLanguage"));
+            Object value = raw("contentLanguage");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Only set for documents, contains the document&#x27;s character set encoding.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentEncoding() {
-            return Optional.ofNullable((String) raw("documentEncoding"));
+            Object value = raw("documentEncoding");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code DocumentType} node&#x27;s publicId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> publicId() {
-            return Optional.ofNullable((String) raw("publicId"));
+            Object value = raw("publicId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code DocumentType} node&#x27;s systemId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> systemId() {
-            return Optional.ofNullable((String) raw("systemId"));
+            Object value = raw("systemId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Frame ID for frame owner elements and also for the document node.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * The index of a frame owner element&#x27;s content document in the {@code domNodes} array returned by {@code getSnapshot}, if any.
@@ -180,42 +193,48 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            return Optional.ofNullable(raw("pseudoType") == null ? null : DOM.PseudoType.of((String) raw("pseudoType")));
+            Object value = raw("pseudoType");
+            return Optional.ofNullable(value == null ? null : DOM.PseudoType.of((String) value));
         }
         /**
          * Shadow root type.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShadowRootType> shadowRootType() {
-            return Optional.ofNullable(raw("shadowRootType") == null ? null : DOM.ShadowRootType.of((String) raw("shadowRootType")));
+            Object value = raw("shadowRootType");
+            return Optional.ofNullable(value == null ? null : DOM.ShadowRootType.of((String) value));
         }
         /**
          * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isClickable() {
-            return Optional.ofNullable((Boolean) raw("isClickable"));
+            Object value = raw("isClickable");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Details of the node&#x27;s event listeners, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMDebugger.EventListener>> eventListeners() {
-            return Optional.ofNullable(list(raw("eventListeners"), element0 -> java.util.Objects.requireNonNull(DOMDebugger.EventListener.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("eventListeners");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOMDebugger.EventListener.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The selected url for nodes with a srcset attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> currentSourceURL() {
-            return Optional.ofNullable((String) raw("currentSourceURL"));
+            Object value = raw("currentSourceURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The url of the script (if any) that generates this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> originURL() {
-            return Optional.ofNullable((String) raw("originURL"));
+            Object value = raw("originURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Scroll offsets, set when this node is a Document.
@@ -788,14 +807,16 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> layoutText() {
-            return Optional.ofNullable((String) raw("layoutText"));
+            Object value = raw("layoutText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The post-layout inline text nodes, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.InlineTextBox>> inlineTextNodes() {
-            return Optional.ofNullable(list(raw("inlineTextNodes"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.InlineTextBox.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("inlineTextNodes");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOMSnapshot.InlineTextBox.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Index into the {@code computedStyles} array returned by {@code getSnapshot}.
@@ -818,7 +839,8 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isStackingContext() {
-            return Optional.ofNullable((Boolean) raw("isStackingContext"));
+            Object value = raw("isStackingContext");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The index of the related DOM node in the {@code domNodes} array returned by {@code getSnapshot}.
@@ -1003,8 +1025,8 @@ public final class DOMSnapshot {
     public static final class StringIndex implements CdpValue<Long> {
         public final long value;
         public StringIndex(long value) { this.value = value; }
-        @Nonnull public Long value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Long value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof StringIndex)) return false;
             return value == ((StringIndex) other).value;
@@ -1424,119 +1446,136 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> parentIndex() {
-            return Optional.ofNullable(list(raw("parentIndex"), element0 -> ((Number) element0).longValue()));
+            Object value = raw("parentIndex");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * {@code Node}&#x27;s nodeType.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> nodeType() {
-            return Optional.ofNullable(list(raw("nodeType"), element0 -> ((Number) element0).longValue()));
+            Object value = raw("nodeType");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * Type of the shadow root the {@code Node} is in. String values are equal to the {@code ShadowRootType} enum.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> shadowRootType() {
-            return Optional.ofNullable(raw("shadowRootType") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shadowRootType")))));
+            Object value = raw("shadowRootType");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * {@code Node}&#x27;s nodeName.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.StringIndex>> nodeName() {
-            return Optional.ofNullable(list(raw("nodeName"), element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
+            Object value = raw("nodeName");
+            return Optional.ofNullable(list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
         }
         /**
          * {@code Node}&#x27;s nodeValue.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.StringIndex>> nodeValue() {
-            return Optional.ofNullable(list(raw("nodeValue"), element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
+            Object value = raw("nodeValue");
+            return Optional.ofNullable(list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
         }
         /**
          * {@code Node}&#x27;s id, corresponds to DOM.Node.backendNodeId.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.BackendNodeId>> backendNodeId() {
-            return Optional.ofNullable(list(raw("backendNodeId"), element0 -> new DOM.BackendNodeId(((Number) element0).longValue())));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(list(value, element0 -> new DOM.BackendNodeId(((Number) element0).longValue())));
         }
         /**
          * Attributes of an {@code Element} node. Flatten name, value pairs.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<DOMSnapshot.StringIndex>>> attributes() {
-            return Optional.ofNullable(list(raw("attributes"), element0 -> CdpObject.requireList(element0, element1 -> new DOMSnapshot.StringIndex(((Number) element1).longValue()))));
+            Object value = raw("attributes");
+            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> new DOMSnapshot.StringIndex(((Number) element1).longValue()))));
         }
         /**
          * Only set for textarea elements, contains the text value.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> textValue() {
-            return Optional.ofNullable(raw("textValue") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("textValue")))));
+            Object value = raw("textValue");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Only set for input elements, contains the input&#x27;s associated text value.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> inputValue() {
-            return Optional.ofNullable(raw("inputValue") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("inputValue")))));
+            Object value = raw("inputValue");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Only set for radio and checkbox input elements, indicates if the element has been checked
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareBooleanData> inputChecked() {
-            return Optional.ofNullable(raw("inputChecked") == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("inputChecked")))));
+            Object value = raw("inputChecked");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Only set for option elements, indicates if the element has been selected
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareBooleanData> optionSelected() {
-            return Optional.ofNullable(raw("optionSelected") == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("optionSelected")))));
+            Object value = raw("optionSelected");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The index of the document in the list of the snapshot documents.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareIntegerData> contentDocumentIndex() {
-            return Optional.ofNullable(raw("contentDocumentIndex") == null ? null : DOMSnapshot.RareIntegerData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentDocumentIndex")))));
+            Object value = raw("contentDocumentIndex");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareIntegerData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Type of a pseudo element node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> pseudoType() {
-            return Optional.ofNullable(raw("pseudoType") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("pseudoType")))));
+            Object value = raw("pseudoType");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> pseudoIdentifier() {
-            return Optional.ofNullable(raw("pseudoIdentifier") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("pseudoIdentifier")))));
+            Object value = raw("pseudoIdentifier");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareBooleanData> isClickable() {
-            return Optional.ofNullable(raw("isClickable") == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("isClickable")))));
+            Object value = raw("isClickable");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The selected url for nodes with a srcset attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> currentSourceURL() {
-            return Optional.ofNullable(raw("currentSourceURL") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("currentSourceURL")))));
+            Object value = raw("currentSourceURL");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The url of the script (if any) that generates this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> originURL() {
-            return Optional.ofNullable(raw("originURL") == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(raw("originURL")))));
+            Object value = raw("originURL");
+            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Parent node index.
@@ -1894,28 +1933,32 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> paintOrders() {
-            return Optional.ofNullable(list(raw("paintOrders"), element0 -> ((Number) element0).longValue()));
+            Object value = raw("paintOrders");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * The offset rect of nodes. Only available when includeDOMRects is set to true
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<Double>>> offsetRects() {
-            return Optional.ofNullable(list(raw("offsetRects"), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            Object value = raw("offsetRects");
+            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * The scroll rect of nodes. Only available when includeDOMRects is set to true
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<Double>>> scrollRects() {
-            return Optional.ofNullable(list(raw("scrollRects"), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            Object value = raw("scrollRects");
+            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * The client rect of nodes. Only available when includeDOMRects is set to true
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<Double>>> clientRects() {
-            return Optional.ofNullable(list(raw("clientRects"), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            Object value = raw("clientRects");
+            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * The list of background colors that are blended with colors of overlapping elements.
@@ -1923,7 +1966,8 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.StringIndex>> blendedBackgroundColors() {
-            return Optional.ofNullable(list(raw("blendedBackgroundColors"), element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
+            Object value = raw("blendedBackgroundColors");
+            return Optional.ofNullable(list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
         }
         /**
          * The list of computed text opacities.
@@ -1931,7 +1975,8 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Double>> textColorOpacities() {
-            return Optional.ofNullable(list(raw("textColorOpacities"), element0 -> ((Number) element0).doubleValue()));
+            Object value = raw("textColorOpacities");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).doubleValue()));
         }
         /**
          * Index of the corresponding node in the {@code NodeTreeSnapshot} array returned by {@code captureSnapshot}.
@@ -2198,21 +2243,24 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeEventListeners() {
-            return Optional.ofNullable((Boolean) raw("includeEventListeners"));
+            Object value = raw("includeEventListeners");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includePaintOrder() {
-            return Optional.ofNullable((Boolean) raw("includePaintOrder"));
+            Object value = raw("includePaintOrder");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to include UA shadow tree in the snapshot (default false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowTree() {
-            return Optional.ofNullable((Boolean) raw("includeUserAgentShadowTree"));
+            Object value = raw("includeUserAgentShadowTree");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whitelist of computed styles to return.
@@ -2307,14 +2355,16 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includePaintOrder() {
-            return Optional.ofNullable((Boolean) raw("includePaintOrder"));
+            Object value = raw("includePaintOrder");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeDOMRects() {
-            return Optional.ofNullable((Boolean) raw("includeDOMRects"));
+            Object value = raw("includeDOMRects");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
@@ -2322,7 +2372,8 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeBlendedBackgroundColors() {
-            return Optional.ofNullable((Boolean) raw("includeBlendedBackgroundColors"));
+            Object value = raw("includeBlendedBackgroundColors");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
@@ -2330,7 +2381,8 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeTextColorOpacities() {
-            return Optional.ofNullable((Boolean) raw("includeTextColorOpacities"));
+            Object value = raw("includeTextColorOpacities");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whitelist of computed styles to return.
@@ -2528,14 +2580,14 @@ public final class DOMSnapshot {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("DOMSnapshot.disable", null, result_ -> null);
+            return client.call("DOMSnapshot.disable", null);
         }
         /**
          * Enables DOM snapshot agent for the given page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("DOMSnapshot.enable", null, result_ -> null);
+            return client.call("DOMSnapshot.enable", null);
         }
         /**
          * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.

@@ -13,8 +13,14 @@ import com.google.errorprone.bugpatterns.BugChecker.AnnotationTreeMatcher;
 import com.google.errorprone.matchers.Description;
 import com.google.errorprone.util.ASTHelpers;
 import com.sun.source.tree.AnnotationTree;
+import com.sun.source.tree.AssignmentTree;
+import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.LambdaExpressionTree;
+import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewArrayTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
@@ -22,7 +28,6 @@ import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -32,11 +37,15 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import org.jspecify.annotations.Nullable;
 
 /**
- * Bans {@code javax.annotation.Nullable} from public/protected API. The policy is that absence is modelled with
+ * Bans JSpecify's {@code @Nullable} from public/protected API. The policy is that absence is modelled with
  * {@code Optional<T>}, so a null-able public signature is either a design bug or a member that should be
  * package-private. Private and package-private members may keep null-able signatures.
+ * {@code @SuppressWarnings("NullAway")} on public/protected API is treated the same way, since it hides a nullable
+ * contract behind a non-null signature.
  *
  * <p>Packages still under migration are exempted via {@code -XepOpt:NullableForbidden:AllowedPackages} (comma-separated
  * exact package names); the list shrinks as each package is cleaned up.
@@ -48,9 +57,11 @@ import javax.lang.model.element.VariableElement;
 public final class NullableForbidden extends BugChecker implements AnnotationTreeMatcher {
     private static final long serialVersionUID = 1L;
 
-    private static final String NULLABLE = "javax.annotation.Nullable";
+    private static final String NULLABLE = "org.jspecify.annotations.Nullable";
     private static final String NULL_UNMARKED = "com.uber.nullaway.annotations.NullUnmarked";
     private static final String NULLABLE_BOUNDARY = "net.kurobako.cef4j.policy.NullableBoundary";
+    private static final String SUPPRESS_WARNINGS = "java.lang.SuppressWarnings";
+    private static final String NULL_AWAY = "NullAway";
     private static final String ALLOWED_PACKAGES = "NullableForbidden:AllowedPackages";
 
     private final ImmutableSet<String> allowedPackages;
@@ -66,7 +77,8 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
 
     @Override
     public Description matchAnnotation(AnnotationTree tree, VisitorState state) {
-        if (!isNullable(tree)) {
+        boolean suppression = isNullAwaySuppression(tree);
+        if (!suppression && !isNullable(tree)) {
             return NO_MATCH;
         }
         Tree member = enclosingMember(state.getPath());
@@ -80,12 +92,50 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
         if (allowedPackages.contains(packageOf(symbol))) {
             return NO_MATCH;
         }
-        if (isInheritedNullable(member, symbol, state)) {
+        if (suppression) {
+            return buildDescription(tree)
+                    .setMessage("@SuppressWarnings(\"NullAway\") on public/protected API hides a nullable contract; "
+                            + "declare it with @NullableBoundary or use Optional<T>")
+                    .build();
+        }
+        if (isInheritedNullable(member, symbol, state) || isEqualsParameter(member, state)) {
             return NO_MATCH;
         }
         return buildDescription(tree)
                 .setMessage("@Nullable is banned on public/protected API; use Optional<T> for absence")
                 .build();
+    }
+
+    private static boolean isNullAwaySuppression(AnnotationTree tree) {
+        Element symbol = ASTHelpers.getSymbol(tree);
+        if (!(symbol instanceof TypeElement typeElement)
+                || !SUPPRESS_WARNINGS.contentEquals(typeElement.getQualifiedName())) {
+            return false;
+        }
+        for (ExpressionTree argument : tree.getArguments()) {
+            ExpressionTree value =
+                    argument instanceof AssignmentTree assignment ? assignment.getExpression() : argument;
+            List<? extends ExpressionTree> values =
+                    value instanceof NewArrayTree array ? array.getInitializers() : List.of(value);
+            for (ExpressionTree item : values) {
+                if (item instanceof LiteralTree literal && NULL_AWAY.equals(literal.getValue())) return true;
+            }
+        }
+        return false;
+    }
+
+    // equals(Object) must accept null by contract, whatever the overridden declaration says
+    private static boolean isEqualsParameter(Tree member, VisitorState state) {
+        if (!(member instanceof MethodTree method)) return false;
+        TreePath up = state.getPath().getParentPath();
+        while (up != null && !(up.getLeaf() instanceof VariableTree) && up.getLeaf() != member) {
+            up = up.getParentPath();
+        }
+        if (up == null || up.getLeaf() == member) return false;
+        return method.getName().contentEquals("equals")
+                && method.getParameters().size() == 1
+                && method.getParameters().get(0) == up.getLeaf()
+                && ASTHelpers.isSameType(ASTHelpers.getType(up.getLeaf()), state.getSymtab().objectType, state);
     }
 
     private static boolean isNullable(AnnotationTree tree) {
@@ -97,6 +147,9 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
         TreePath parent = path.getParentPath();
         while (parent != null) {
             Tree leaf = parent.getLeaf();
+            if (leaf instanceof BlockTree || leaf instanceof LambdaExpressionTree) {
+                return null;
+            }
             if (leaf instanceof MethodTree || leaf instanceof ClassTree) {
                 return leaf;
             }
@@ -220,8 +273,15 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
         return false;
     }
 
+    // Type-use @Nullable attaches to the return or parameter type rather than the declaration.
     private static boolean isNullableElement(Element element) {
-        for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
+        TypeMirror type =
+                element instanceof ExecutableElement executable ? executable.getReturnType() : element.asType();
+        return hasNullable(element.getAnnotationMirrors()) || hasNullable(type.getAnnotationMirrors());
+    }
+
+    private static boolean hasNullable(List<? extends AnnotationMirror> annotations) {
+        for (AnnotationMirror annotation : annotations) {
             if (NULLABLE.contentEquals(annotation.getAnnotationType().toString())) {
                 return true;
             }

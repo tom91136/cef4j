@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to implement render process callbacks. The methods of this class will be called on the render process main
@@ -179,7 +178,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
     default boolean onProcessMessageReceived(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefProcessId sourceProcess,
+            CefProcessId sourceProcess,
             @Nullable CefProcessMessage message) {
         return false;
     }
@@ -251,7 +250,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
         public boolean onProcessMessageReceived(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
-                @Nonnull CefProcessId sourceProcess,
+                CefProcessId sourceProcess,
                 @Nullable CefProcessMessage message) {
             for (CefRenderProcessHandler d : delegates) {
                 if (d.onProcessMessageReceived(browser, frame, sourceProcess, message)) return true;

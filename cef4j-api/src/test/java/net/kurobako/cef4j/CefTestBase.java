@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -25,6 +24,7 @@ import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
@@ -82,7 +82,7 @@ abstract class CefTestBase {
         browserSettings.windowlessFrameRate = 60;
         CountDownLatch created = new CountDownLatch(1);
         CountDownLatch closed = new CountDownLatch(1);
-        AtomicReference<CefBrowser> ref = new AtomicReference<>();
+        AtomicReference<@Nullable CefBrowser> ref = new AtomicReference<>();
         CefClient interceptor = new CefClient() {
             @Override
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
@@ -208,7 +208,7 @@ abstract class CefTestBase {
             else
                 deadline.until(
                         () -> latch.getCount() == 0,
-                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Cef.INSTANCE::doMessageLoopWork,
                         Duration.ofMillis(5),
                         "CEF callback");
             return true;

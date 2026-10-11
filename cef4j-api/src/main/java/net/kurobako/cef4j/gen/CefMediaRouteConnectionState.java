@@ -109,7 +109,7 @@ public final class CefMediaRouteConnectionState implements CefEnum<CefMediaRoute
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMediaRouteConnectionState)) return false;
         return this.value == ((CefMediaRouteConnectionState) obj).value;

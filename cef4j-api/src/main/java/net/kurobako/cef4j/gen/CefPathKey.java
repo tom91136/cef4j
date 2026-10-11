@@ -125,7 +125,7 @@ public final class CefPathKey implements CefEnum<CefPathKey> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefPathKey)) return false;
         return this.value == ((CefPathKey) obj).value;

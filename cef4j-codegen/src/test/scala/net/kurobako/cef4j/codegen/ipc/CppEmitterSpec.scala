@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
 import java.nio.file.Files
+import java.nio.file.Paths
 import scala.concurrent.duration.*
 
 import net.kurobako.cef4j.codegen.TempDirectorySuite
@@ -33,13 +34,13 @@ class CppEmitterSpec extends TempDirectorySuite {
   test("emitted header has the required structural elements") {
     val src = CppEmitter.emit(sampleSpec)
     assert(src.contains("struct LoadUrlRequest"), s"missing struct LoadUrlRequest in:\n$src")
-    assert(src.contains("kMessageId = 1"))
+    assert(src.contains("MessageId = 1"))
     assert(src.contains("std::string url"))
-    assert(src.contains("std::size_t encodedSize() const noexcept"))
-    assert(src.contains("void encodeInto(std::uint8_t* dst) const noexcept"))
-    assert(src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len)"))
-    assert(!src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len) noexcept"))
-    assert(src.contains("if (pos != len)"))
+    assert(src.contains("size_t encodedSize() const noexcept"))
+    assert(src.contains("void encodeInto(uint8_t* dst) const noexcept"))
+    assert(src.contains("static LoadUrlRequest decode(const uint8_t* src, size_t len)"))
+    assert(!src.contains("static LoadUrlRequest decode(const uint8_t* src, size_t len) noexcept"))
+    assert(src.contains("reader.finish();"))
   }
 
   test("message and nested-data decoders have distinct exhaustion contracts") {
@@ -51,9 +52,9 @@ class CppEmitterSpec extends TempDirectorySuite {
     )
     val exact  = CppEmitter.emit(data)
     val nested = CppEmitter.emit(data, exactPayload = false)
-    assert(exact.contains("if (pos != len)"))
-    assert(!nested.contains("if (pos != len)"))
-    assert(exact.contains("kMaxFieldBytes"))
+    assert(exact.contains("reader.finish();"))
+    assert(!nested.contains("reader.finish();"))
+    assert(exact.contains("""reader.string("text")"""))
   }
 
   test("encodedSize for fixed+variable mix sums fixed bytes plus variable .size() expressions") {
@@ -64,9 +65,9 @@ class CppEmitterSpec extends TempDirectorySuite {
     )
   }
 
-  test("emitted header includes a unique guard macro and namespace") {
+  test("emitted header uses pragma once and a package namespace") {
     val src = CppEmitter.emit(sampleSpec)
-    assert(src.contains("#ifndef NET_KUROBAKO_CEF4J_IPC_PROTOCOL_GEN_LOAD_URL_REQUEST_H_"))
+    assert(src.contains("#pragma once"))
     assert(src.contains("namespace net_kurobako_cef4j_ipc_protocol_gen"))
   }
 
@@ -88,7 +89,7 @@ class CppEmitterSpec extends TempDirectorySuite {
       val java = JavaEmitter.emit(s)
       assert(cpp.nonEmpty)
       assert(java.nonEmpty)
-      assert(cpp.contains(s"kMessageId = ${s.messageId}"), s"C++ output missing messageId for ${s.className}")
+      assert(cpp.contains(s"MessageId = ${s.messageId}"), s"C++ output missing messageId for ${s.className}")
       assert(java.contains(s"MESSAGE_ID = ${s.messageId}"), s"Java output missing MESSAGE_ID for ${s.className}")
     }
   }
@@ -111,7 +112,7 @@ class CppEmitterSpec extends TempDirectorySuite {
          |    using namespace net_kurobako_cef4j_ipc_protocol_gen;
          |    LoadUrlRequest req;
          |    req.url = "https://example.com";
-         |    std::vector<std::uint8_t> buf(req.encodedSize());
+         |    std::vector<uint8_t> buf(req.encodedSize());
          |    req.encodeInto(buf.data());
          |    LoadUrlRequest decoded = LoadUrlRequest::decode(buf.data(), buf.size());
          |    return decoded.url == req.url ? 0 : 1;
@@ -119,7 +120,18 @@ class CppEmitterSpec extends TempDirectorySuite {
          |""".stripMargin
     )
 
-    val pb = new ProcessBuilder(cxx, "-std=c++17", "-Wall", "-Werror", "-o", outBin.toString, source.toString)
+    val wireDir = Paths.get(sys.props.getOrElse("cef4j.wire.dir", fail("cef4j.wire.dir is not set")))
+    val pb      = new ProcessBuilder(
+      cxx,
+      "-std=c++17",
+      "-Wall",
+      "-Werror",
+      s"-I$wireDir",
+      "-o",
+      outBin.toString,
+      source.toString,
+      wireDir.resolve("Wire.cpp").toString
+    )
     pb.directory(tmp.toFile)
     pb.redirectErrorStream(true)
     val proc      = pb.start()

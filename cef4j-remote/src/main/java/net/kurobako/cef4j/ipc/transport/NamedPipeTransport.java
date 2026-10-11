@@ -22,8 +22,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,14 +57,11 @@ public final class NamedPipeTransport implements CefTransport {
     private volatile boolean closed;
     private volatile boolean disconnected;
 
-    @Nonnull
-    public static NamedPipeTransport connect(@Nonnull String endpoint) throws CefTransportException {
+    public static NamedPipeTransport connect(String endpoint) throws CefTransportException {
         return connect(endpoint, CLOSE_EXECUTOR);
     }
 
-    @Nonnull
-    public static NamedPipeTransport connect(@Nonnull String endpoint, @Nonnull Executor closeExecutor)
-            throws CefTransportException {
+    public static NamedPipeTransport connect(String endpoint, Executor closeExecutor) throws CefTransportException {
         Objects.requireNonNull(closeExecutor, "closeExecutor");
         if (!System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) {
             throw new CefTransportException("Windows named pipes are unavailable on " + System.getProperty("os.name"));
@@ -104,7 +100,7 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         if (closed || disconnected) throw new CefTransportException(endpoint + ": pipe is disconnected");
         byte[] bytes = new byte[frame.remaining()];
         frame.get(bytes);
@@ -122,7 +118,7 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+    public void onReceive(Consumer<ByteBuffer> handler) {
         synchronized (receiveLock) {
             receiveHandler = handler;
             byte[] frame;
@@ -131,7 +127,7 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable handler) {
+    public void onDisconnect(Runnable handler) {
         disconnectHandler = handler;
         fireDisconnectIfReady();
     }

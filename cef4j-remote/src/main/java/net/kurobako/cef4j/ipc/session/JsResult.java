@@ -1,7 +1,7 @@
 package net.kurobako.cef4j.ipc.session;
 
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Polymorphic JavaScript evaluation result. Mirrors the {@code valueKind} discriminator from the V8 eval wire response:
@@ -179,8 +179,6 @@ public final class JsResult {
      */
     public String coerceToString() {
         switch (kind) {
-            case NULL_OR_UNDEFINED:
-                return "";
             case BOOL:
                 return boolValue ? "true" : "false";
             case INT:
@@ -191,6 +189,7 @@ public final class JsResult {
                 return stringValue == null ? "" : stringValue;
             case ERROR:
                 throw new RuntimeException("JS error: " + errorMessage);
+            case NULL_OR_UNDEFINED:
             default:
                 return "";
         }

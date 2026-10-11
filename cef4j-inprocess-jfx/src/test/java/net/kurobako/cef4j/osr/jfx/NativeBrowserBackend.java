@@ -6,6 +6,7 @@ import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +20,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
@@ -28,13 +28,13 @@ import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.jspecify.annotations.Nullable;
 
 public final class NativeBrowserBackend implements BrowserBackend {
 
     private static volatile boolean cefInitialised;
 
     @Override
-    @Nonnull
     public String name() {
         return BrowserBackend.NATIVE_NAME;
     }
@@ -45,14 +45,12 @@ public final class NativeBrowserBackend implements BrowserBackend {
     }
 
     @Override
-    @Nonnull
     public Set<Capability> capabilities() {
         return java.util.Collections.singleton(Capability.VIEWPORT_RESIZE);
     }
 
     @Override
-    @Nonnull
-    public BrowserSession openSession(@Nonnull SessionConfig config) {
+    public BrowserSession openSession(SessionConfig config) {
         try {
             startJavaFx();
             ensureCefInitialised();
@@ -83,7 +81,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
         private final Duration navigationTimeout;
         private final NativePaintProbe paints = new NativePaintProbe();
         private final TestExecutor navigationWaiter = TestExecutor.single("cef4j-native-jfx-navigation");
-        private final AtomicReference<PendingNavigation> pendingNavigation = new AtomicReference<>();
+        private final AtomicReference<@Nullable PendingNavigation> pendingNavigation = new AtomicReference<>();
         private volatile int width;
         private volatile int height;
 
@@ -129,9 +127,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
         @SuppressWarnings("FutureReturnValueIgnored")
-        public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+        public CompletableFuture<Void> loadUrl(String url) {
             PendingNavigation next = new PendingNavigation();
             if (!pendingNavigation.compareAndSet(null, next)) {
                 return CompletableFuture.failedFuture(new IllegalStateException("a navigation is already pending"));
@@ -234,19 +231,16 @@ public final class NativeBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
-            return webView.getEngine().evaluateScriptAsync(script);
+        public CompletableFuture<String> evaluateJavascript(String script) {
+            return webView.getEngine().evaluateScriptAsync(script).thenApply(Objects::requireNonNull);
         }
 
         @Override
-        @Nonnull
-        public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+        public PaintInfo awaitNextPaint(Duration timeout) throws InterruptedException, TimeoutException {
             return paints.await(width, height, timeout);
         }
 
         @Override
-        @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
             CompletableFuture<Void> resized = new CompletableFuture<>();
             try {
@@ -268,7 +262,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
             PendingNavigation navigation = pendingNavigation.getAndSet(null);
             if (navigation != null) navigation.result.cancel(true);
             try {
-                AtomicReference<CompletableFuture<Void>> released = new AtomicReference<>();
+                AtomicReference<@Nullable CompletableFuture<Void>> released = new AtomicReference<>();
                 onFxThread(() -> {
                     if (stage.isShowing()) stage.close();
                     released.set(webView.releaseAsync());
@@ -284,8 +278,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
         private static final class PendingNavigation {
             private final CompletableFuture<Void> result = new CompletableFuture<>();
             private volatile long paintBaseline;
-            private volatile @javax.annotation.Nullable Worker<Void> worker;
-            private volatile @javax.annotation.Nullable ChangeListener<Worker.State> listener;
+            private volatile @Nullable Worker<Void> worker;
+            private volatile @Nullable ChangeListener<Worker.State> listener;
         }
     }
 }

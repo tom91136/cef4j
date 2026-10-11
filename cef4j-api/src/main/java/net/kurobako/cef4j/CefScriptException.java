@@ -1,7 +1,7 @@
 package net.kurobako.cef4j;
 
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Thrown when a JavaScript evaluation or handle operation fails in the renderer process. */
 @SuppressWarnings("unused")

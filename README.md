@@ -215,6 +215,10 @@ Build against another CEF release with `-Dcef.version=<version> -Dcef.api.versio
 `./mvnw exec:exec -pl cef4j-sample`, or the JavaFX one by adding
 `-Dexec.mainClass=net.kurobako.cef4j.sample.JfxBrowserApp`.
 
+C++ is formatted with a pinned clang-format 20.1.0 that the build downloads into `.cache/`; `.github/ci/clang-tidy.sh`
+checks native naming. Check API compatibility against a release with `-Djapicmp.baseline=<version>`, adding
+`-Djapicmp.break=true` to fail on incompatible changes.
+
 [DEBUG.md](DEBUG.md) covers native crashes, the runtime server, IPC, and test isolation; [PLAN.md](PLAN.md) tracks
 open work.
 

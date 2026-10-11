@@ -3,7 +3,6 @@ package net.kurobako.cef4j.test.backend;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.test.TestDeadline;
 
 /**
@@ -17,25 +16,21 @@ import net.kurobako.cef4j.test.TestDeadline;
 public interface BrowserSession extends AutoCloseable {
 
     /** Navigate the main frame to {@code url}; completion means the backend observed navigation and rendering. */
-    @Nonnull
-    CompletableFuture<Void> loadUrl(@Nonnull String url);
+    CompletableFuture<Void> loadUrl(String url);
 
     /**
      * Run JavaScript in the main frame and return the result as a string. {@code null} for a void result.
      * Implementations may serialise complex values (objects, arrays) as JSON.
      */
-    @Nonnull
-    CompletableFuture<String> evaluateJavascript(@Nonnull String script);
+    CompletableFuture<String> evaluateJavascript(String script);
 
     /**
      * Wait for the next observed paint. Returns dimensions and byte count reported by the paint pipeline, never
      * dimensions inferred from toolkit state. Backends without a paint pipeline should fail synchronously.
      */
-    @Nonnull
-    PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException;
+    PaintInfo awaitNextPaint(Duration timeout) throws InterruptedException, TimeoutException;
 
     /** Resize the browser's CSS viewport. Only valid when the backend advertises VIEWPORT_RESIZE. */
-    @Nonnull
     default CompletableFuture<Void> resizeViewport(int width, int height) {
         CompletableFuture<Void> failure = new CompletableFuture<>();
         failure.completeExceptionally(new UnsupportedOperationException("viewport resize is not supported"));
@@ -43,8 +38,7 @@ public interface BrowserSession extends AutoCloseable {
     }
 
     /** Wait until a paint with the requested dimensions arrives. */
-    @Nonnull
-    default PaintInfo awaitPaint(int width, int height, @Nonnull Duration timeout)
+    default PaintInfo awaitPaint(int width, int height, Duration timeout)
             throws InterruptedException, TimeoutException {
         TestDeadline deadline = TestDeadline.after(timeout);
         PaintInfo last = null;

@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent a web request. The methods of this class may be called on any thread.
@@ -95,7 +94,7 @@ public interface CefRequest extends CefLibraryObject {
      * @param referrerUrl may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:98</a>
      */
-    void setReferrer(@Nullable String referrerUrl, @Nonnull CefReferrerPolicy policy);
+    void setReferrer(@Nullable String referrerUrl, CefReferrerPolicy policy);
 
     /**
      * Get the referrer URL.
@@ -151,7 +150,7 @@ public interface CefRequest extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:131</a>
      */
-    void getHeaderMap(@Nonnull Map<String, List<String>> headerMap);
+    void getHeaderMap(Map<String, List<String>> headerMap);
 
     /**
      * Set the header values. If a Referer value exists in the header map it will be removed and ignored.
@@ -162,7 +161,7 @@ public interface CefRequest extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:137</a>
      */
-    void setHeaderMap(@Nonnull Map<String, List<String>> headerMap);
+    void setHeaderMap(Map<String, List<String>> headerMap);
 
     /**
      * Returns the first header value for {@code name} or an empty string if not found. Will not return the Referer
@@ -210,7 +209,7 @@ public interface CefRequest extends CefLibraryObject {
             @Nullable String url,
             @Nullable String method,
             @Nullable CefPostData postData,
-            @Nonnull Map<String, List<String>> headerMap);
+            Map<String, List<String>> headerMap);
 
     /**
      * Get the flags used in combination with CefURLRequest. See cef_urlrequest_flags_t for supported values.
@@ -383,7 +382,7 @@ public interface CefRequest extends CefLibraryObject {
         }
 
         @Override
-        public void setReferrer(@Nullable String referrerUrl, @Nonnull CefReferrerPolicy policy) {
+        public void setReferrer(@Nullable String referrerUrl, CefReferrerPolicy policy) {
             checkNotClosed();
             setReferrer0(nativePtr, referrerUrl, policy);
         }
@@ -414,13 +413,13 @@ public interface CefRequest extends CefLibraryObject {
         }
 
         @Override
-        public void getHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+        public void getHeaderMap(Map<String, List<String>> headerMap) {
             checkNotClosed();
             getHeaderMap0(nativePtr, headerMap);
         }
 
         @Override
-        public void setHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+        public void setHeaderMap(Map<String, List<String>> headerMap) {
             checkNotClosed();
             setHeaderMap0(nativePtr, headerMap);
         }
@@ -442,7 +441,7 @@ public interface CefRequest extends CefLibraryObject {
                 @Nullable String url,
                 @Nullable String method,
                 @Nullable CefPostData postData,
-                @Nonnull Map<String, List<String>> headerMap) {
+                Map<String, List<String>> headerMap) {
             checkNotClosed();
             CefLibraryObject.requireOpen(postData, "CefPostData");
             set0(nativePtr, url, method, postData, headerMap);
@@ -500,7 +499,7 @@ public interface CefRequest extends CefLibraryObject {
 
         static native void setMethod0(long self, @Nullable String method);
 
-        static native void setReferrer0(long self, @Nullable String referrerUrl, @Nonnull CefReferrerPolicy policy);
+        static native void setReferrer0(long self, @Nullable String referrerUrl, CefReferrerPolicy policy);
 
         static native String getReferrerUrl0(long self);
 
@@ -510,9 +509,9 @@ public interface CefRequest extends CefLibraryObject {
 
         static native void setPostData0(long self, @Nullable CefPostData postData);
 
-        static native void getHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
+        static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
 
-        static native void setHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
+        static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
 
         static native String getHeaderByName0(long self, @Nullable String name);
 
@@ -524,7 +523,7 @@ public interface CefRequest extends CefLibraryObject {
                 @Nullable String url,
                 @Nullable String method,
                 @Nullable CefPostData postData,
-                @Nonnull Map<String, List<String>> headerMap);
+                Map<String, List<String>> headerMap);
 
         static native int getFlags0(long self);
 
@@ -543,7 +542,7 @@ public interface CefRequest extends CefLibraryObject {
         static native CefRequest create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

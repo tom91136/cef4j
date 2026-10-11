@@ -1158,13 +1158,14 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     assert(java.contains("@Nullable String userInput"), s"Missing @Nullable on String param in:\n$java")
   }
 
-  test("NativePeer emits @Nonnull on strict-null-check params (enums, by-value structs)") {
+  test("NativePeer leaves strict-null-check params unannotated (enums, by-value structs)") {
     val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
       "cef_test_t",
       List(FnPtr("set_mode", CType.Void, List(Param("mode", CType.Enum("cef_mode_t")))))
     )
     val java = JavaNativeCodeGen.renderInnerClass(decl)
-    assert(java.contains("@Nonnull"), s"Missing @Nonnull on enum param in:\n$java")
+    assert(!java.contains("@Nullable CefMode"), s"Unexpected @Nullable on enum param in:\n$java")
+    assert(!java.contains("Nonnull"), s"Unexpected @Nonnull in:\n$java")
   }
 
   test("NativePeer emits @Nullable on optional reference params") {

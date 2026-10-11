@@ -94,7 +94,7 @@ public final class CefContentSettingValues implements CefEnum<CefContentSettingV
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefContentSettingValues)) return false;
         return this.value == ((CefContentSettingValues) obj).value;

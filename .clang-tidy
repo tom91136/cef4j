@@ -1,0 +1,9 @@
+---
+Checks: '-*,readability-identifier-naming'
+WarningsAsErrors: '*'
+HeaderFilterRegex: '(cef4j-runtime-server/src|cef4j-platform/native/runtime)/'
+CheckOptions:
+  readability-identifier-naming.GlobalConstantCase: CamelCase
+  readability-identifier-naming.StaticConstantCase: CamelCase
+  readability-identifier-naming.ClassConstantCase: CamelCase
+...

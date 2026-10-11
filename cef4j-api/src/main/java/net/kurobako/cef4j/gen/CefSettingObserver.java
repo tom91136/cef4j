@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implemented by the client to observe content and website setting changes and registered via
@@ -44,9 +43,7 @@ public interface CefSettingObserver extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:79</a>
      */
     default void onSettingChanged(
-            @Nullable String requestingUrl,
-            @Nullable String topLevelUrl,
-            @Nonnull CefContentSettingTypes contentType) {}
+            @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -62,9 +59,7 @@ public interface CefSettingObserver extends CefClientHandler {
 
         @Override
         public void onSettingChanged(
-                @Nullable String requestingUrl,
-                @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType) {
+                @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType) {
             for (CefSettingObserver d : delegates) d.onSettingChanged(requestingUrl, topLevelUrl, contentType);
         }
     }

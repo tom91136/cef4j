@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -103,7 +102,7 @@ public final class EventBreakpoints {
         public CompletionStage<Void> setInstrumentationBreakpoint(String eventName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventName", CdpObject.json(eventName));
-            return client.call("EventBreakpoints.setInstrumentationBreakpoint", params, result_ -> null);
+            return client.call("EventBreakpoints.setInstrumentationBreakpoint", params);
         }
         /**
          * Sets breakpoint on particular native event.
@@ -111,7 +110,7 @@ public final class EventBreakpoints {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInstrumentationBreakpoint(SetInstrumentationBreakpointRequest request) {
-            return client.call("EventBreakpoints.setInstrumentationBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("EventBreakpoints.setInstrumentationBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Removes breakpoint on particular native event.
@@ -121,7 +120,7 @@ public final class EventBreakpoints {
         public CompletionStage<Void> removeInstrumentationBreakpoint(String eventName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventName", CdpObject.json(eventName));
-            return client.call("EventBreakpoints.removeInstrumentationBreakpoint", params, result_ -> null);
+            return client.call("EventBreakpoints.removeInstrumentationBreakpoint", params);
         }
         /**
          * Removes breakpoint on particular native event.
@@ -129,14 +128,14 @@ public final class EventBreakpoints {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeInstrumentationBreakpoint(RemoveInstrumentationBreakpointRequest request) {
-            return client.call("EventBreakpoints.removeInstrumentationBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("EventBreakpoints.removeInstrumentationBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Removes all breakpoints
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("EventBreakpoints.disable", null, result_ -> null);
+            return client.call("EventBreakpoints.disable", null);
         }
     }
 }

@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -34,8 +33,8 @@ public final class Extensions {
         MANAGED("managed");
         public final String value;
         StorageArea(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StorageArea of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StorageArea of(String value) {
             for (StorageArea constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -213,7 +212,8 @@ public final class Extensions {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableInIncognito() {
-            return Optional.ofNullable((Boolean) raw("enableInIncognito"));
+            Object value = raw("enableInIncognito");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Absolute file path.
@@ -315,7 +315,8 @@ public final class Extensions {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> keys() {
-            return Optional.ofNullable(list(raw("keys"), element0 -> (String) element0));
+            Object value = raw("keys");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * ID of extension.
@@ -559,7 +560,7 @@ public final class Extensions {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             params.put("targetId", CdpObject.json(targetId));
-            return client.call("Extensions.triggerAction", params, result_ -> null);
+            return client.call("Extensions.triggerAction", params);
         }
         /**
          * Runs an extension default action.
@@ -567,7 +568,7 @@ public final class Extensions {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> triggerAction(TriggerActionRequest request) {
-            return client.call("Extensions.triggerAction", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Extensions.triggerAction", request == null ? null : request.toMap());
         }
         /**
          * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed.
@@ -612,7 +613,7 @@ public final class Extensions {
         public CompletionStage<Void> uninstall(String id) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
-            return client.call("Extensions.uninstall", params, result_ -> null);
+            return client.call("Extensions.uninstall", params);
         }
         /**
          * Uninstalls an unpacked extension (others not supported) from the profile.
@@ -620,7 +621,7 @@ public final class Extensions {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> uninstall(UninstallRequest request) {
-            return client.call("Extensions.uninstall", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Extensions.uninstall", request == null ? null : request.toMap());
         }
         /**
          * Gets data from extension storage in the given {@code storageArea}. If {@code keys} is specified, these are used to filter the result.
@@ -665,7 +666,7 @@ public final class Extensions {
             params.put("id", CdpObject.json(id));
             params.put("storageArea", CdpObject.json(storageArea));
             params.put("keys", CdpObject.json(keys));
-            return client.call("Extensions.removeStorageItems", params, result_ -> null);
+            return client.call("Extensions.removeStorageItems", params);
         }
         /**
          * Removes {@code keys} from extension storage in the given {@code storageArea}.
@@ -673,7 +674,7 @@ public final class Extensions {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeStorageItems(RemoveStorageItemsRequest request) {
-            return client.call("Extensions.removeStorageItems", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Extensions.removeStorageItems", request == null ? null : request.toMap());
         }
         /**
          * Clears extension storage in the given {@code storageArea}.
@@ -685,7 +686,7 @@ public final class Extensions {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             params.put("storageArea", CdpObject.json(storageArea));
-            return client.call("Extensions.clearStorageItems", params, result_ -> null);
+            return client.call("Extensions.clearStorageItems", params);
         }
         /**
          * Clears extension storage in the given {@code storageArea}.
@@ -693,7 +694,7 @@ public final class Extensions {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearStorageItems(ClearStorageItemsRequest request) {
-            return client.call("Extensions.clearStorageItems", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Extensions.clearStorageItems", request == null ? null : request.toMap());
         }
         /**
          * Sets {@code values} in extension storage in the given {@code storageArea}. The provided {@code values} will be merged with existing values in the storage area.
@@ -707,7 +708,7 @@ public final class Extensions {
             params.put("id", CdpObject.json(id));
             params.put("storageArea", CdpObject.json(storageArea));
             params.put("values", CdpObject.json(values));
-            return client.call("Extensions.setStorageItems", params, result_ -> null);
+            return client.call("Extensions.setStorageItems", params);
         }
         /**
          * Sets {@code values} in extension storage in the given {@code storageArea}. The provided {@code values} will be merged with existing values in the storage area.
@@ -715,7 +716,7 @@ public final class Extensions {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setStorageItems(SetStorageItemsRequest request) {
-            return client.call("Extensions.setStorageItems", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Extensions.setStorageItems", request == null ? null : request.toMap());
         }
     }
 }

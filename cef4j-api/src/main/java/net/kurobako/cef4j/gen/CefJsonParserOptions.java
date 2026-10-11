@@ -104,7 +104,7 @@ public final class CefJsonParserOptions implements CefEnum<CefJsonParserOptions>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefJsonParserOptions)) return false;
         return this.value == ((CefJsonParserOptions) obj).value;

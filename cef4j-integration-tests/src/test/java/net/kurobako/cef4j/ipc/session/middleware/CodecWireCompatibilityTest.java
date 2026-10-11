@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
 import java.util.Map;
+import net.kurobako.cef4j.codecs.gson.GsonNdjsonSessionTraceCodec;
+import net.kurobako.cef4j.codecs.jackson.JacksonNdjsonSessionTraceCodec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

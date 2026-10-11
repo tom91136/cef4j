@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -51,8 +50,8 @@ public final class Log {
             OTHER("other");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SourceValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -69,8 +68,8 @@ public final class Log {
             ERROR("error");
             public final String value;
             LevelValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static LevelValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static LevelValues of(String value) {
                 for (LevelValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -84,8 +83,8 @@ public final class Log {
             CORS("cors");
             public final String value;
             CategoryValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static CategoryValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static CategoryValues of(String value) {
                 for (CategoryValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -118,7 +117,8 @@ public final class Log {
          * @return the protocol field value, empty when absent
          */
         public Optional<LogEntry.CategoryValues> category() {
-            return Optional.ofNullable(raw("category") == null ? null : LogEntry.CategoryValues.of((String) raw("category")));
+            Object value = raw("category");
+            return Optional.ofNullable(value == null ? null : LogEntry.CategoryValues.of((String) value));
         }
         /**
          * Timestamp when this entry was added.
@@ -132,7 +132,8 @@ public final class Log {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Line number in the resource.
@@ -147,28 +148,32 @@ public final class Log {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
+            Object value = raw("stackTrace");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the network request associated with this entry.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> networkRequestId() {
-            return Optional.ofNullable(raw("networkRequestId") == null ? null : new Network.RequestId((String) raw("networkRequestId")));
+            Object value = raw("networkRequestId");
+            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
         }
         /**
          * Identifier of the worker associated with this entry.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> workerId() {
-            return Optional.ofNullable((String) raw("workerId"));
+            Object value = raw("workerId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Call arguments.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.RemoteObject>> args() {
-            return Optional.ofNullable(list(raw("args"), element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("args");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Log entry source.
@@ -355,8 +360,8 @@ public final class Log {
             RECURRINGHANDLER("recurringHandler");
             public final String value;
             NameValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static NameValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static NameValues of(String value) {
                 for (NameValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -464,21 +469,21 @@ public final class Log {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clear() {
-            return client.call("Log.clear", null, result_ -> null);
+            return client.call("Log.clear", null);
         }
         /**
          * Disables log domain, prevents further log entries from being reported to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Log.disable", null, result_ -> null);
+            return client.call("Log.disable", null);
         }
         /**
          * Enables log domain, sends the entries collected so far to the client by means of the {@code entryAdded} notification.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Log.enable", null, result_ -> null);
+            return client.call("Log.enable", null);
         }
         /**
          * start violation reporting.
@@ -488,7 +493,7 @@ public final class Log {
         public CompletionStage<Void> startViolationsReport(java.util.List<Log.ViolationSetting> config) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("config", CdpObject.json(config));
-            return client.call("Log.startViolationsReport", params, result_ -> null);
+            return client.call("Log.startViolationsReport", params);
         }
         /**
          * start violation reporting.
@@ -496,14 +501,14 @@ public final class Log {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startViolationsReport(StartViolationsReportRequest request) {
-            return client.call("Log.startViolationsReport", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Log.startViolationsReport", request == null ? null : request.toMap());
         }
         /**
          * Stop violation reporting.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopViolationsReport() {
-            return client.call("Log.stopViolationsReport", null, result_ -> null);
+            return client.call("Log.stopViolationsReport", null);
         }
         /**
          * Issued when new message was logged.

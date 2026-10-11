@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class CefBrowserPanelCompileTest {
@@ -16,7 +17,7 @@ class CefBrowserPanelCompileTest {
     void panelApiSurfaceCompilesCorrectly() {
         Supplier<CefBrowserPanel> ctor = CefBrowserPanel::new;
         Function<CefBrowserPanel, CefRenderHandler> createRenderHandler = CefBrowserPanel::createRenderHandler;
-        Function<CefBrowserPanel, CefBrowser> browser = CefBrowserPanel::browser;
+        Function<CefBrowserPanel, @Nullable CefBrowser> browser = CefBrowserPanel::browser;
         Consumer<CefBrowserPanel> dispose = CefBrowserPanel::release;
         Consumer<CefBrowserPanel> close = CefBrowserPanel::close;
 

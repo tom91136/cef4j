@@ -192,17 +192,17 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
       )
     )
     val source = CppEmitter.emit(spec)
-    assert(source.contains("requireAvailable"))
-    assert(source.contains("negative length for name"))
-    assert(source.contains("negative length for payload"))
-    assert(source.contains("negative count for items"))
-    assert(source.contains("negative string length for items"))
+    assert(source.contains("""out.name = reader.string("name");"""))
+    assert(source.contains("""out.payload = reader.bytes("payload");"""))
+    assert(source.contains("""out.items = reader.strings("items");"""))
+    assert(source.contains("""out.tail = reader.i64("tail");"""))
     assert(!source.contains("(void)len"))
-    assert(!source.contains("decode(const std::uint8_t* src, std::size_t len) noexcept"))
+    assert(!source.contains("decode(const uint8_t* src, size_t len) noexcept"))
   }
 
   private val stubSources: Map[String, String] = Map(
-    "javax.annotation.Nonnull"                    -> "package javax.annotation; public @interface Nonnull {}",
+    "org.jspecify.annotations.Nullable" ->
+      "package org.jspecify.annotations; @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE_USE) public @interface Nullable {}",
     "net.kurobako.cef4j.ipc.session.RemoteHandle" ->
       """package net.kurobako.cef4j.ipc.session;
         |public final class RemoteHandle {

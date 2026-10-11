@@ -184,7 +184,7 @@ public final class CefResultCode implements CefEnum<CefResultCode> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefResultCode)) return false;
         return this.value == ((CefResultCode) obj).value;

@@ -6,6 +6,7 @@ import java.lang.reflect.Proxy;
 import java.util.Optional;
 import net.kurobako.cef4j.gen.CefPostData;
 import net.kurobako.cef4j.gen.CefPostDataElement;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class CefUrlRequestHttpEngineTest {
@@ -37,8 +38,7 @@ class CefUrlRequestHttpEngineTest {
                 (proxy, method, arguments) -> defaultValue(method.getReturnType())));
     }
 
-    @SuppressWarnings("NullAway")
-    private static Object defaultValue(Class<?> type) {
+    private static @Nullable Object defaultValue(Class<?> type) {
         if (!type.isPrimitive()) return null;
         if (type == boolean.class) return false;
         if (type == char.class) return '\0';

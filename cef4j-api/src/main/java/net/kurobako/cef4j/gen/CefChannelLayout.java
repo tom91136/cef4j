@@ -200,7 +200,7 @@ public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefChannelLayout)) return false;
         return this.value == ((CefChannelLayout) obj).value;

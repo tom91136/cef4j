@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(cef4j-runtime-server LANGUAGES CXX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -53,6 +54,7 @@ endif()
 set(CEF4J_RUNTIME_SERVER_SOURCES
     src/main/cpp/main.cpp
     src/main/cpp/Envelope.cpp
+    src/main/cpp/Wire.cpp
     src/main/cpp/InterceptExecutor.cpp
     src/main/cpp/RuntimeOptions.cpp
     src/main/cpp/ShutdownCommandMonitor.cpp

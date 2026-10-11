@@ -2,7 +2,6 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -36,7 +35,7 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:75</a>
      */
-    void cont(@Nonnull CefPermissionRequestResult result);
+    void cont(CefPermissionRequestResult result);
 
     final class NativePeer implements CefPermissionPromptCallback, AutoCloseable {
         private final long nativePtr;
@@ -84,15 +83,15 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public void cont(@Nonnull CefPermissionRequestResult result) {
+        public void cont(CefPermissionRequestResult result) {
             checkNotClosed();
             cont0(nativePtr, result);
         }
 
-        static native void cont0(long self, @Nonnull CefPermissionRequestResult result);
+        static native void cont0(long self, CefPermissionRequestResult result);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

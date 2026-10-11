@@ -8,8 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
@@ -23,6 +21,7 @@ import net.kurobako.cef4j.webdriver.CdpAutomationBackend;
 import net.kurobako.cef4j.webdriver.JsonCdpBrowser;
 import net.kurobako.cef4j.webdriver.JsonObject;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,19 +32,17 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
     private final RemoteBrowserRuntimeFactory runtimeFactory;
     private final WebDriverJsonCodec jsonCodec;
 
-    public RemoteCefAutomationBackendFactory(@Nonnull RemoteBrowserRuntimeFactory runtimeFactory) {
+    public RemoteCefAutomationBackendFactory(RemoteBrowserRuntimeFactory runtimeFactory) {
         this(runtimeFactory, WebDriverJsonCodec.installed());
     }
 
-    public RemoteCefAutomationBackendFactory(
-            @Nonnull RemoteBrowserRuntimeFactory runtimeFactory, @Nonnull WebDriverJsonCodec jsonCodec) {
+    public RemoteCefAutomationBackendFactory(RemoteBrowserRuntimeFactory runtimeFactory, WebDriverJsonCodec jsonCodec) {
         this.runtimeFactory = Objects.requireNonNull(runtimeFactory, "runtimeFactory");
         this.jsonCodec = Objects.requireNonNull(jsonCodec, "jsonCodec");
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<? extends AutomationBackend> create(@Nonnull JsonObject requestedCapabilities) {
+    public CompletableFuture<? extends AutomationBackend> create(JsonObject requestedCapabilities) {
         return CefFutures.flatMap(runtimeFactory.create(), runtime -> {
             Browser browser = new Browser(runtime.session(), runtime.browser());
             AtomicBoolean adapterOwnsRuntime = new AtomicBoolean();
@@ -97,7 +94,7 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
         }
 
         @Override
-        public java.util.concurrent.CompletionStage<byte[]> execute(String method, @Nullable byte[] params) {
+        public java.util.concurrent.CompletionStage<byte[]> execute(String method, byte @Nullable [] params) {
             return devTools.execute(method, params);
         }
 

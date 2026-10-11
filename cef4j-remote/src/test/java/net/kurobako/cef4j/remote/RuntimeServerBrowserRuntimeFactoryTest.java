@@ -9,12 +9,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.ipc.session.middleware.CefSessionMiddleware;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class RuntimeServerBrowserRuntimeFactoryTest {
     @Test
     void submitsStartupToSuppliedExecutor() {
-        AtomicReference<Runnable> submitted = new AtomicReference<>();
+        AtomicReference<@Nullable Runnable> submitted = new AtomicReference<>();
         RuntimeServerBrowserRuntimeFactory factory = new RuntimeServerBrowserRuntimeFactory(
                 Path.of("missing-runtime-server"),
                 "local",

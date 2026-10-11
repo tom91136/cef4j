@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -38,21 +37,24 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> readOnly() {
-            return Optional.ofNullable((Boolean) raw("readOnly"));
+            Object value = raw("readOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> untrustedContent() {
-            return Optional.ofNullable((Boolean) raw("untrustedContent"));
+            Object value = raw("untrustedContent");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If the declarative tool was declared with the autosubmit attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> autosubmit() {
-            return Optional.ofNullable((Boolean) raw("autosubmit"));
+            Object value = raw("autosubmit");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * A hint indicating that the tool does not modify any state.
@@ -118,8 +120,8 @@ public final class WebMCP {
         ERROR("Error");
         public final String value;
         InvocationStatus(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InvocationStatus of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InvocationStatus of(String value) {
             for (InvocationStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -154,14 +156,16 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> inputSchema() {
-            return Optional.ofNullable(objectMap(raw("inputSchema")));
+            Object value = raw("inputSchema");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Optional annotations for the tool.
          * @return the protocol field value, empty when absent
          */
         public Optional<WebMCP.Annotation> annotations() {
-            return Optional.ofNullable(raw("annotations") == null ? null : WebMCP.Annotation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("annotations")))));
+            Object value = raw("annotations");
+            return Optional.ofNullable(value == null ? null : WebMCP.Annotation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Frame identifier associated with the tool registration.
@@ -175,14 +179,16 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * The stack trace at the time of the registration.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
+            Object value = raw("stackTrace");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Tool name.
@@ -584,21 +590,24 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> output() {
-            return Optional.ofNullable(raw("output"));
+            Object value = raw("output");
+            return Optional.ofNullable(value);
         }
         /**
          * Error text for protocol users.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> errorText() {
-            return Optional.ofNullable((String) raw("errorText"));
+            Object value = raw("errorText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The exception object, if the javascript tool threw an error&gt;
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> exception() {
-            return Optional.ofNullable(raw("exception") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exception")))));
+            Object value = raw("exception");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Invocation identifier.
@@ -681,14 +690,14 @@ public final class WebMCP {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("WebMCP.enable", null, result_ -> null);
+            return client.call("WebMCP.enable", null);
         }
         /**
          * Disables the WebMCP domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("WebMCP.disable", null, result_ -> null);
+            return client.call("WebMCP.disable", null);
         }
         /**
          * Invokes a registered tool.
@@ -720,7 +729,7 @@ public final class WebMCP {
         public CompletionStage<Void> cancelInvocation(String invocationId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("invocationId", CdpObject.json(invocationId));
-            return client.call("WebMCP.cancelInvocation", params, result_ -> null);
+            return client.call("WebMCP.cancelInvocation", params);
         }
         /**
          * Cancels a pending tool invocation.
@@ -728,7 +737,7 @@ public final class WebMCP {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelInvocation(CancelInvocationRequest request) {
-            return client.call("WebMCP.cancelInvocation", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("WebMCP.cancelInvocation", request == null ? null : request.toMap());
         }
         /**
          * Event fired when new tools are added.

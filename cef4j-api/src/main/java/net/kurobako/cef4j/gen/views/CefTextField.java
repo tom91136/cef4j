@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefInsets;
 import net.kurobako.cef4j.gen.CefLibraryObject;
@@ -15,6 +13,7 @@ import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.gen.CefTextFieldCommands;
 import net.kurobako.cef4j.gen.CefTextStyle;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A Textfield supports editing of text. This control is custom rendered with no platform-specific code. Methods must be
@@ -188,7 +187,7 @@ public interface CefTextField extends CefView {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:141</a>
      */
-    void selectRange(@Nonnull CefRange range);
+    void selectRange(CefRange range);
 
     /**
      * Returns the current cursor position.
@@ -242,7 +241,7 @@ public interface CefTextField extends CefView {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:206</a>
      */
-    void applyTextColor(int color, @Nonnull CefRange range);
+    void applyTextColor(int color, CefRange range);
 
     /**
      * Applies {@code style} to the specified {@code range} without changing the default style. If {@code add} is
@@ -257,7 +256,7 @@ public interface CefTextField extends CefView {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:214</a>
      */
-    void applyTextStyle(@Nonnull CefTextStyle style, boolean add, @Nonnull CefRange range);
+    void applyTextStyle(CefTextStyle style, boolean add, CefRange range);
 
     /**
      * Returns {@code true} if the action associated with the specified command id is enabled. See additional comments
@@ -270,7 +269,7 @@ public interface CefTextField extends CefView {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:225</a>
      */
-    boolean isCommandEnabled(@Nonnull CefTextFieldCommands commandId);
+    boolean isCommandEnabled(CefTextFieldCommands commandId);
 
     /**
      * Performs the action associated with the specified command id.
@@ -282,7 +281,7 @@ public interface CefTextField extends CefView {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:232</a>
      */
-    void executeCommand(@Nonnull CefTextFieldCommands commandId);
+    void executeCommand(CefTextFieldCommands commandId);
 
     /**
      * Clears Edit history.
@@ -462,7 +461,7 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public void selectRange(@Nonnull CefRange range) {
+        public void selectRange(CefRange range) {
             checkNotClosed();
             selectRange0(nativePtr, range);
         }
@@ -480,25 +479,25 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public void applyTextColor(int color, @Nonnull CefRange range) {
+        public void applyTextColor(int color, CefRange range) {
             checkNotClosed();
             applyTextColor0(nativePtr, color, range);
         }
 
         @Override
-        public void applyTextStyle(@Nonnull CefTextStyle style, boolean add, @Nonnull CefRange range) {
+        public void applyTextStyle(CefTextStyle style, boolean add, CefRange range) {
             checkNotClosed();
             applyTextStyle0(nativePtr, style, add, range);
         }
 
         @Override
-        public boolean isCommandEnabled(@Nonnull CefTextFieldCommands commandId) {
+        public boolean isCommandEnabled(CefTextFieldCommands commandId) {
             checkNotClosed();
             return isCommandEnabled0(nativePtr, commandId);
         }
 
         @Override
-        public void executeCommand(@Nonnull CefTextFieldCommands commandId) {
+        public void executeCommand(CefTextFieldCommands commandId) {
             checkNotClosed();
             executeCommand0(nativePtr, commandId);
         }
@@ -637,7 +636,7 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -655,7 +654,7 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -667,7 +666,7 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -679,7 +678,7 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -805,38 +804,38 @@ public interface CefTextField extends CefView {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -868,20 +867,19 @@ public interface CefTextField extends CefView {
 
         static native CefRange getSelectedRange0(long self);
 
-        static native void selectRange0(long self, @Nonnull CefRange range);
+        static native void selectRange0(long self, CefRange range);
 
         static native long getCursorPosition0(long self);
 
         static native void setFontList0(long self, @Nullable String fontList);
 
-        static native void applyTextColor0(long self, int color, @Nonnull CefRange range);
+        static native void applyTextColor0(long self, int color, CefRange range);
 
-        static native void applyTextStyle0(
-                long self, @Nonnull CefTextStyle style, boolean add, @Nonnull CefRange range);
+        static native void applyTextStyle0(long self, CefTextStyle style, boolean add, CefRange range);
 
-        static native boolean isCommandEnabled0(long self, @Nonnull CefTextFieldCommands commandId);
+        static native boolean isCommandEnabled0(long self, CefTextFieldCommands commandId);
 
-        static native void executeCommand0(long self, @Nonnull CefTextFieldCommands commandId);
+        static native void executeCommand0(long self, CefTextFieldCommands commandId);
 
         static native void clearEditHistory0(long self);
 
@@ -894,7 +892,7 @@ public interface CefTextField extends CefView {
         static native CefTextField create0(@Nullable CefTextFieldDelegate delegate);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

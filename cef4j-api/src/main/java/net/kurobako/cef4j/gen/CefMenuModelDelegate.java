@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle menu model events. The methods of this class will be called on the browser process
@@ -38,7 +37,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
-    default void executeCommand(@Nullable CefMenuModel menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {}
+    default void executeCommand(@Nullable CefMenuModel menuModel, int commandId, CefEventFlags eventFlags) {}
 
     /**
      * Called when the user moves the mouse outside the menu and over the owning window.
@@ -52,7 +51,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
      */
-    default void mouseOutsideMenu(@Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint) {}
+    default void mouseOutsideMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint) {}
 
     /**
      * Called on unhandled open submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying
@@ -141,12 +140,12 @@ public interface CefMenuModelDelegate extends CefClientHandler {
         }
 
         @Override
-        public void executeCommand(@Nullable CefMenuModel menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {
+        public void executeCommand(@Nullable CefMenuModel menuModel, int commandId, CefEventFlags eventFlags) {
             for (CefMenuModelDelegate d : delegates) d.executeCommand(menuModel, commandId, eventFlags);
         }
 
         @Override
-        public void mouseOutsideMenu(@Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint) {
+        public void mouseOutsideMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint) {
             for (CefMenuModelDelegate d : delegates) d.mouseOutsideMenu(menuModel, screenPoint);
         }
 

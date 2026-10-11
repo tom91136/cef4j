@@ -13,8 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.SocketType;
@@ -90,7 +89,7 @@ public final class ZmqTransport implements CefTransport {
     private boolean sendBlocked = false;
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
-    public static ZmqTransport bind(@Nonnull String endpoint) {
+    public static ZmqTransport bind(String endpoint) {
         return new ZmqTransport(true, endpoint, HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TIMEOUT_MS, () -> false);
     }
 
@@ -99,20 +98,16 @@ public final class ZmqTransport implements CefTransport {
     }
 
     /** Connect to a previously bound endpoint. */
-    public static ZmqTransport connect(@Nonnull String endpoint) {
+    public static ZmqTransport connect(String endpoint) {
         return connect(endpoint, HANDSHAKE_TIMEOUT_MS);
     }
 
-    @Nonnull
-    public static ZmqTransport connect(@Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity) {
+    public static ZmqTransport connect(String endpoint, BooleanSupplier reconnectContinuity) {
         return new ZmqTransport(false, endpoint, HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TIMEOUT_MS, reconnectContinuity);
     }
 
-    @Nonnull
     public static ZmqTransport connect(
-            @Nonnull String endpoint,
-            @Nonnull BooleanSupplier reconnectContinuity,
-            @Nonnull Duration reconnectTimeout) {
+            String endpoint, BooleanSupplier reconnectContinuity, Duration reconnectTimeout) {
         return new ZmqTransport(
                 false, endpoint, HANDSHAKE_TIMEOUT_MS, timeoutMillis(reconnectTimeout), reconnectContinuity);
     }
@@ -320,7 +315,7 @@ public final class ZmqTransport implements CefTransport {
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(endpoint + ": send on closed transport");
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
         byte[] copy = new byte[frame.remaining()];
@@ -331,12 +326,12 @@ public final class ZmqTransport implements CefTransport {
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+    public void onReceive(Consumer<ByteBuffer> handler) {
         this.receiveHandler = handler;
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable handler) {
+    public void onDisconnect(Runnable handler) {
         this.disconnectHandler = handler;
         fireDisconnectIfReady();
     }

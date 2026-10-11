@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A request context provides request handling for a set of related browser or URL request objects. A request context
@@ -252,7 +251,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:260</a>
      */
     Optional<CefValue> getWebsiteSetting(
-            @Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType);
+            @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType);
 
     /**
      * Sets the current value for {@code content_type} for the specified URLs in the default scope. If both URLs are
@@ -281,7 +280,7 @@ public interface CefRequestContext extends CefPreferenceManager {
     void setWebsiteSetting(
             @Nullable String requestingUrl,
             @Nullable String topLevelUrl,
-            @Nonnull CefContentSettingTypes contentType,
+            CefContentSettingTypes contentType,
             @Nullable CefValue value);
 
     /**
@@ -302,7 +301,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:293</a>
      */
     CefContentSettingValues getContentSetting(
-            @Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType);
+            @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType);
 
     /**
      * Sets the current value for {@code content_type} for the specified URLs in the default scope. If both URLs are
@@ -331,8 +330,8 @@ public interface CefRequestContext extends CefPreferenceManager {
     void setContentSetting(
             @Nullable String requestingUrl,
             @Nullable String topLevelUrl,
-            @Nonnull CefContentSettingTypes contentType,
-            @Nonnull CefContentSettingValues value);
+            CefContentSettingTypes contentType,
+            CefContentSettingValues value);
 
     /**
      * Sets the Chrome color scheme for all browsers that share this request context. {@code variant} values of SYSTEM,
@@ -349,7 +348,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:337</a>
      */
-    void setChromeColorScheme(@Nonnull CefColorVariant variant, int userColor);
+    void setChromeColorScheme(CefColorVariant variant, int userColor);
 
     /**
      * Returns the current Chrome color scheme mode (SYSTEM, LIGHT or DARK). Must be called on the browser process UI
@@ -454,7 +453,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:125</a>
      */
     static Optional<CefRequestContext> createContext(
-            @Nonnull CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler) {
+            CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler) {
         return Optional.ofNullable(NativePeer.createContext0(settings, handler));
     }
 
@@ -589,9 +588,7 @@ public interface CefRequestContext extends CefPreferenceManager {
 
         @Override
         public Optional<CefValue> getWebsiteSetting(
-                @Nullable String requestingUrl,
-                @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType) {
+                @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType) {
             checkNotClosed();
             return Optional.ofNullable(getWebsiteSetting0(nativePtr, requestingUrl, topLevelUrl, contentType));
         }
@@ -600,7 +597,7 @@ public interface CefRequestContext extends CefPreferenceManager {
         public void setWebsiteSetting(
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType,
+                CefContentSettingTypes contentType,
                 @Nullable CefValue value) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefValue");
@@ -609,9 +606,7 @@ public interface CefRequestContext extends CefPreferenceManager {
 
         @Override
         public CefContentSettingValues getContentSetting(
-                @Nullable String requestingUrl,
-                @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType) {
+                @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType) {
             checkNotClosed();
             return getContentSetting0(nativePtr, requestingUrl, topLevelUrl, contentType);
         }
@@ -620,14 +615,14 @@ public interface CefRequestContext extends CefPreferenceManager {
         public void setContentSetting(
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType,
-                @Nonnull CefContentSettingValues value) {
+                CefContentSettingTypes contentType,
+                CefContentSettingValues value) {
             checkNotClosed();
             setContentSetting0(nativePtr, requestingUrl, topLevelUrl, contentType, value);
         }
 
         @Override
-        public void setChromeColorScheme(@Nonnull CefColorVariant variant, int userColor) {
+        public void setChromeColorScheme(CefColorVariant variant, int userColor) {
             checkNotClosed();
             setChromeColorScheme0(nativePtr, variant, userColor);
         }
@@ -735,29 +730,29 @@ public interface CefRequestContext extends CefPreferenceManager {
                 long self,
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType);
+                CefContentSettingTypes contentType);
 
         static native void setWebsiteSetting0(
                 long self,
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType,
+                CefContentSettingTypes contentType,
                 @Nullable CefValue value);
 
         static native CefContentSettingValues getContentSetting0(
                 long self,
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType);
+                CefContentSettingTypes contentType);
 
         static native void setContentSetting0(
                 long self,
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
-                @Nonnull CefContentSettingTypes contentType,
-                @Nonnull CefContentSettingValues value);
+                CefContentSettingTypes contentType,
+                CefContentSettingValues value);
 
-        static native void setChromeColorScheme0(long self, @Nonnull CefColorVariant variant, int userColor);
+        static native void setChromeColorScheme0(long self, CefColorVariant variant, int userColor);
 
         static native CefColorVariant getChromeColorSchemeMode0(long self);
 
@@ -772,13 +767,13 @@ public interface CefRequestContext extends CefPreferenceManager {
         static native CefRequestContext getGlobalContext0();
 
         static native CefRequestContext createContext0(
-                @Nonnull CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler);
+                CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler);
 
         static native CefRequestContext cefCreateContextShared0(
                 @Nullable CefRequestContext other, @Nullable CefRequestContextHandler handler);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

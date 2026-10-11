@@ -112,7 +112,7 @@ public final class CefMediaSinkIconType implements CefEnum<CefMediaSinkIconType>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMediaSinkIconType)) return false;
         return this.value == ((CefMediaSinkIconType) obj).value;

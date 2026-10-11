@@ -3,9 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface that should be implemented to handle V8 interceptor calls. The methods of this class will be called on the

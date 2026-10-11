@@ -4,34 +4,35 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Mutable insertion-ordered JSON object independent of a concrete JSON library. */
+@NullableBoundary("mirrors Gson: absent members read as null and null values are stored as JsonNull")
 public final class JsonObject extends JsonElement {
     private final Map<String, JsonElement> values = new LinkedHashMap<>();
 
-    public void add(String name, JsonElement value) {
+    public void add(String name, @Nullable JsonElement value) {
         values.put(name, value == null ? JsonNull.INSTANCE : value);
     }
 
-    public void addProperty(String name, String value) {
+    public void addProperty(String name, @Nullable String value) {
         add(name, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));
     }
 
-    public void addProperty(String name, Number value) {
+    public void addProperty(String name, @Nullable Number value) {
         add(name, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));
     }
 
-    public void addProperty(String name, Boolean value) {
+    public void addProperty(String name, @Nullable Boolean value) {
         add(name, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));
     }
 
-    @SuppressWarnings("NullAway")
-    public JsonElement get(String name) {
+    public @Nullable JsonElement get(String name) {
         return values.get(name);
     }
 
-    @SuppressWarnings("NullAway")
-    public JsonElement remove(String name) {
+    public @Nullable JsonElement remove(String name) {
         return values.remove(name);
     }
 

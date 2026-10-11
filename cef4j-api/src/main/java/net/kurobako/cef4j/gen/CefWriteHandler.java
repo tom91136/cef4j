@@ -3,7 +3,6 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -44,7 +43,7 @@ public interface CefWriteHandler extends CefClientHandler {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:152</a>
      */
-    default long write(@Nonnull ByteBuffer ptr, long n) {
+    default long write(ByteBuffer ptr, long n) {
         return 0L;
     }
 
@@ -115,7 +114,7 @@ public interface CefWriteHandler extends CefClientHandler {
         }
 
         @Override
-        public long write(@Nonnull ByteBuffer ptr, long n) {
+        public long write(ByteBuffer ptr, long n) {
             if (!delegates.isEmpty()) return delegates.get(0).write(ptr, n);
             return 0L;
         }

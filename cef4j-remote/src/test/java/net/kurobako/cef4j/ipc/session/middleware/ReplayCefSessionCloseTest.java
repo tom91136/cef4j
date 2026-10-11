@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
@@ -77,7 +76,7 @@ final class ReplayCefSessionCloseTest {
         }
 
         @Override
-        public void encodeInto(@Nonnull ByteBuffer destination) {
+        public void encodeInto(ByteBuffer destination) {
             destination.put(bytes);
         }
     }

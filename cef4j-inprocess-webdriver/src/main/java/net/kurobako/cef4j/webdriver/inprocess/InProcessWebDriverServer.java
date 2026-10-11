@@ -1,7 +1,6 @@
 package net.kurobako.cef4j.webdriver.inprocess;
 
 import java.io.IOException;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 
@@ -9,15 +8,12 @@ import net.kurobako.cef4j.webdriver.WebDriverServer;
 public final class InProcessWebDriverServer {
     private InProcessWebDriverServer() {}
 
-    @Nonnull
-    public static WebDriverServer start(@Nonnull InProcessBrowserRuntimeFactory runtimeFactory) throws IOException {
+    public static WebDriverServer start(InProcessBrowserRuntimeFactory runtimeFactory) throws IOException {
         WebDriverJsonCodec codec = WebDriverJsonCodec.installed();
         return start(runtimeFactory, codec);
     }
 
-    @Nonnull
-    public static WebDriverServer start(
-            @Nonnull InProcessBrowserRuntimeFactory runtimeFactory, @Nonnull WebDriverJsonCodec codec)
+    public static WebDriverServer start(InProcessBrowserRuntimeFactory runtimeFactory, WebDriverJsonCodec codec)
             throws IOException {
         return WebDriverServer.start(new InProcessCefAutomationBackendFactory(runtimeFactory, codec), codec);
     }

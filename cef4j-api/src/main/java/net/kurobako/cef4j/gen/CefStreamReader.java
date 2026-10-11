@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to read data from a stream. The methods of this class may be called on any thread.
@@ -44,7 +43,7 @@ public interface CefStreamReader extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:110</a>
      */
-    long read(@Nonnull ByteBuffer ptr, long n);
+    long read(ByteBuffer ptr, long n);
 
     /**
      * Seek to the specified offset position. {@code whence} may be any one of SEEK_CUR, SEEK_END or SEEK_SET. Returns
@@ -113,7 +112,7 @@ public interface CefStreamReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:97</a>
      */
-    static Optional<CefStreamReader> createForData(@Nonnull ByteBuffer data) {
+    static Optional<CefStreamReader> createForData(ByteBuffer data) {
         return Optional.ofNullable(NativePeer.createForData0(data));
     }
 
@@ -174,7 +173,7 @@ public interface CefStreamReader extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public long read(@Nonnull ByteBuffer ptr, long n) {
+        public long read(ByteBuffer ptr, long n) {
             checkNotClosed();
             return read0(nativePtr, ptr, n);
         }
@@ -203,7 +202,7 @@ public interface CefStreamReader extends CefLibraryObject {
             return mayBlock0(nativePtr);
         }
 
-        static native long read0(long self, @Nonnull ByteBuffer ptr, long n);
+        static native long read0(long self, ByteBuffer ptr, long n);
 
         static native int seek0(long self, long offset, int whence);
 
@@ -215,12 +214,12 @@ public interface CefStreamReader extends CefLibraryObject {
 
         static native CefStreamReader createForFile0(@Nullable String fileName);
 
-        static native CefStreamReader createForData0(@Nonnull ByteBuffer data);
+        static native CefStreamReader createForData0(ByteBuffer data);
 
         static native CefStreamReader createForHandler0(@Nullable CefReadHandler handler);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

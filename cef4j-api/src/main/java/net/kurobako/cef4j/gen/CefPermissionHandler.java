@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to permission requests. The methods of this class will be called on
@@ -98,7 +97,7 @@ public interface CefPermissionHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:133</a>
      */
     default void onDismissPermissionPrompt(
-            @Nullable CefBrowser browser, long promptId, @Nonnull CefPermissionRequestResult result) {}
+            @Nullable CefBrowser browser, long promptId, CefPermissionRequestResult result) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -144,7 +143,7 @@ public interface CefPermissionHandler extends CefClientHandler {
 
         @Override
         public void onDismissPermissionPrompt(
-                @Nullable CefBrowser browser, long promptId, @Nonnull CefPermissionRequestResult result) {
+                @Nullable CefBrowser browser, long promptId, CefPermissionRequestResult result) {
             for (CefPermissionHandler d : delegates) d.onDismissPermissionPrompt(browser, promptId, result);
         }
     }

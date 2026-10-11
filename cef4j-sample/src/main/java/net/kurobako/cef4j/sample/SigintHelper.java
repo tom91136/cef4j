@@ -12,10 +12,19 @@ final class SigintHelper {
             Object sigInt = signalClass.getConstructor(String.class).newInstance("INT");
             Object handler = java.lang.reflect.Proxy.newProxyInstance(
                     handlerClass.getClassLoader(), new Class<?>[] {handlerClass}, (proxy, method, margs) -> {
-                        if ("handle".equals(method.getName())) {
-                            onSignal.run();
+                        switch (method.getName()) {
+                            case "handle":
+                                onSignal.run();
+                                return null;
+                            case "equals":
+                                return proxy == margs[0];
+                            case "hashCode":
+                                return System.identityHashCode(proxy);
+                            case "toString":
+                                return "SigintHandler";
+                            default:
+                                return null;
                         }
-                        return null;
                     });
             signalClass.getMethod("handle", signalClass, handlerClass).invoke(null, sigInt, handler);
         } catch (Exception e) {

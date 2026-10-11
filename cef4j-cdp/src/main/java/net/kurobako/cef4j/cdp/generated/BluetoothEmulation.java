@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -33,8 +32,8 @@ public final class BluetoothEmulation {
         POWERED_ON("powered-on");
         public final String value;
         CentralState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CentralState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CentralState of(String value) {
             for (CentralState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -49,8 +48,8 @@ public final class BluetoothEmulation {
         DISCOVERY("discovery");
         public final String value;
         GATTOperationType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static GATTOperationType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static GATTOperationType of(String value) {
             for (GATTOperationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -66,8 +65,8 @@ public final class BluetoothEmulation {
         WRITE_WITHOUT_RESPONSE("write-without-response");
         public final String value;
         CharacteristicWriteType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CharacteristicWriteType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CharacteristicWriteType of(String value) {
             for (CharacteristicWriteType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -84,8 +83,8 @@ public final class BluetoothEmulation {
         UNSUBSCRIBE_FROM_NOTIFICATIONS("unsubscribe-from-notifications");
         public final String value;
         CharacteristicOperationType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CharacteristicOperationType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CharacteristicOperationType of(String value) {
             for (CharacteristicOperationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -100,8 +99,8 @@ public final class BluetoothEmulation {
         WRITE("write");
         public final String value;
         DescriptorOperationType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DescriptorOperationType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DescriptorOperationType of(String value) {
             for (DescriptorOperationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -164,14 +163,16 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return Optional.ofNullable((String) raw("name"));
+            Object value = raw("name");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the uuids field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> uuids() {
-            return Optional.ofNullable(list(raw("uuids"), element0 -> (String) element0));
+            Object value = raw("uuids");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Stores the external appearance description of the device.
@@ -194,7 +195,8 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<BluetoothEmulation.ManufacturerData>> manufacturerData() {
-            return Optional.ofNullable(list(raw("manufacturerData"), element0 -> java.util.Objects.requireNonNull(BluetoothEmulation.ManufacturerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("manufacturerData");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(BluetoothEmulation.ManufacturerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sets the name field.
@@ -359,56 +361,64 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> broadcast() {
-            return Optional.ofNullable((Boolean) raw("broadcast"));
+            Object value = raw("broadcast");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the read field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> read() {
-            return Optional.ofNullable((Boolean) raw("read"));
+            Object value = raw("read");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the writeWithoutResponse field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> writeWithoutResponse() {
-            return Optional.ofNullable((Boolean) raw("writeWithoutResponse"));
+            Object value = raw("writeWithoutResponse");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the write field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> write() {
-            return Optional.ofNullable((Boolean) raw("write"));
+            Object value = raw("write");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the notify field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> notifyValue() {
-            return Optional.ofNullable((Boolean) raw("notify"));
+            Object value = raw("notify");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the indicate field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> indicate() {
-            return Optional.ofNullable((Boolean) raw("indicate"));
+            Object value = raw("indicate");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the authenticatedSignedWrites field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> authenticatedSignedWrites() {
-            return Optional.ofNullable((Boolean) raw("authenticatedSignedWrites"));
+            Object value = raw("authenticatedSignedWrites");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the extendedProperties field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> extendedProperties() {
-            return Optional.ofNullable((Boolean) raw("extendedProperties"));
+            Object value = raw("extendedProperties");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the broadcast field.
@@ -880,7 +890,8 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return Optional.ofNullable((String) raw("data"));
+            Object value = raw("data");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the characteristicId field.
@@ -975,7 +986,8 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return Optional.ofNullable((String) raw("data"));
+            Object value = raw("data");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the descriptorId field.
@@ -1403,14 +1415,16 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return Optional.ofNullable((String) raw("data"));
+            Object value = raw("data");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the writeType field.
          * @return the protocol field value, empty when absent
          */
         public Optional<BluetoothEmulation.CharacteristicWriteType> writeType() {
-            return Optional.ofNullable(raw("writeType") == null ? null : BluetoothEmulation.CharacteristicWriteType.of((String) raw("writeType")));
+            Object value = raw("writeType");
+            return Optional.ofNullable(value == null ? null : BluetoothEmulation.CharacteristicWriteType.of((String) value));
         }
         /**
          * Sets the characteristicId field.
@@ -1495,7 +1509,8 @@ public final class BluetoothEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return Optional.ofNullable((String) raw("data"));
+            Object value = raw("data");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the descriptorId field.
@@ -1547,7 +1562,7 @@ public final class BluetoothEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("state", CdpObject.json(state));
             params.put("leSupported", CdpObject.json(leSupported));
-            return client.call("BluetoothEmulation.enable", params, result_ -> null);
+            return client.call("BluetoothEmulation.enable", params);
         }
         /**
          * Enable the BluetoothEmulation domain.
@@ -1555,7 +1570,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("BluetoothEmulation.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.enable", request == null ? null : request.toMap());
         }
         /**
          * Set the state of the simulated central.
@@ -1565,7 +1580,7 @@ public final class BluetoothEmulation {
         public CompletionStage<Void> setSimulatedCentralState(BluetoothEmulation.CentralState state) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("state", CdpObject.json(state));
-            return client.call("BluetoothEmulation.setSimulatedCentralState", params, result_ -> null);
+            return client.call("BluetoothEmulation.setSimulatedCentralState", params);
         }
         /**
          * Set the state of the simulated central.
@@ -1573,14 +1588,14 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSimulatedCentralState(SetSimulatedCentralStateRequest request) {
-            return client.call("BluetoothEmulation.setSimulatedCentralState", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.setSimulatedCentralState", request == null ? null : request.toMap());
         }
         /**
          * Disable the BluetoothEmulation domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("BluetoothEmulation.disable", null, result_ -> null);
+            return client.call("BluetoothEmulation.disable", null);
         }
         /**
          * Simulates a peripheral with |address|, |name| and |knownServiceUuids| that has already been connected to the system.
@@ -1596,7 +1611,7 @@ public final class BluetoothEmulation {
             params.put("name", CdpObject.json(name));
             params.put("manufacturerData", CdpObject.json(manufacturerData));
             params.put("knownServiceUuids", CdpObject.json(knownServiceUuids));
-            return client.call("BluetoothEmulation.simulatePreconnectedPeripheral", params, result_ -> null);
+            return client.call("BluetoothEmulation.simulatePreconnectedPeripheral", params);
         }
         /**
          * Simulates a peripheral with |address|, |name| and |knownServiceUuids| that has already been connected to the system.
@@ -1604,7 +1619,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulatePreconnectedPeripheral(SimulatePreconnectedPeripheralRequest request) {
-            return client.call("BluetoothEmulation.simulatePreconnectedPeripheral", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.simulatePreconnectedPeripheral", request == null ? null : request.toMap());
         }
         /**
          * Simulates an advertisement packet described in |entry| being received by the central.
@@ -1614,7 +1629,7 @@ public final class BluetoothEmulation {
         public CompletionStage<Void> simulateAdvertisement(BluetoothEmulation.ScanEntry entry) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("entry", CdpObject.json(entry));
-            return client.call("BluetoothEmulation.simulateAdvertisement", params, result_ -> null);
+            return client.call("BluetoothEmulation.simulateAdvertisement", params);
         }
         /**
          * Simulates an advertisement packet described in |entry| being received by the central.
@@ -1622,7 +1637,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulateAdvertisement(SimulateAdvertisementRequest request) {
-            return client.call("BluetoothEmulation.simulateAdvertisement", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.simulateAdvertisement", request == null ? null : request.toMap());
         }
         /**
          * Simulates the response code from the peripheral with |address| for a GATT operation of |type|. The |code| value follows the HCI Error Codes from Bluetooth Core Specification Vol 2 Part D 1.3 List Of Error Codes.
@@ -1636,7 +1651,7 @@ public final class BluetoothEmulation {
             params.put("address", CdpObject.json(address));
             params.put("type", CdpObject.json(type));
             params.put("code", CdpObject.json(code));
-            return client.call("BluetoothEmulation.simulateGATTOperationResponse", params, result_ -> null);
+            return client.call("BluetoothEmulation.simulateGATTOperationResponse", params);
         }
         /**
          * Simulates the response code from the peripheral with |address| for a GATT operation of |type|. The |code| value follows the HCI Error Codes from Bluetooth Core Specification Vol 2 Part D 1.3 List Of Error Codes.
@@ -1644,7 +1659,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulateGATTOperationResponse(SimulateGATTOperationResponseRequest request) {
-            return client.call("BluetoothEmulation.simulateGATTOperationResponse", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.simulateGATTOperationResponse", request == null ? null : request.toMap());
         }
         /**
          * Simulates the response from the characteristic with |characteristicId| for a characteristic operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
@@ -1660,7 +1675,7 @@ public final class BluetoothEmulation {
             params.put("type", CdpObject.json(type));
             params.put("code", CdpObject.json(code));
             data.ifPresent(value_ -> params.put("data", CdpObject.json(value_)));
-            return client.call("BluetoothEmulation.simulateCharacteristicOperationResponse", params, result_ -> null);
+            return client.call("BluetoothEmulation.simulateCharacteristicOperationResponse", params);
         }
         /**
          * Simulates the response from the characteristic with |characteristicId| for a characteristic operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
@@ -1678,7 +1693,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulateCharacteristicOperationResponse(SimulateCharacteristicOperationResponseRequest request) {
-            return client.call("BluetoothEmulation.simulateCharacteristicOperationResponse", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.simulateCharacteristicOperationResponse", request == null ? null : request.toMap());
         }
         /**
          * Simulates the response from the descriptor with |descriptorId| for a descriptor operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
@@ -1694,7 +1709,7 @@ public final class BluetoothEmulation {
             params.put("type", CdpObject.json(type));
             params.put("code", CdpObject.json(code));
             data.ifPresent(value_ -> params.put("data", CdpObject.json(value_)));
-            return client.call("BluetoothEmulation.simulateDescriptorOperationResponse", params, result_ -> null);
+            return client.call("BluetoothEmulation.simulateDescriptorOperationResponse", params);
         }
         /**
          * Simulates the response from the descriptor with |descriptorId| for a descriptor operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
@@ -1712,7 +1727,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulateDescriptorOperationResponse(SimulateDescriptorOperationResponseRequest request) {
-            return client.call("BluetoothEmulation.simulateDescriptorOperationResponse", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.simulateDescriptorOperationResponse", request == null ? null : request.toMap());
         }
         /**
          * Adds a service with |serviceUuid| to the peripheral with |address|.
@@ -1742,7 +1757,7 @@ public final class BluetoothEmulation {
         public CompletionStage<Void> removeService(String serviceId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("serviceId", CdpObject.json(serviceId));
-            return client.call("BluetoothEmulation.removeService", params, result_ -> null);
+            return client.call("BluetoothEmulation.removeService", params);
         }
         /**
          * Removes the service respresented by |serviceId| from the simulated central.
@@ -1750,7 +1765,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeService(RemoveServiceRequest request) {
-            return client.call("BluetoothEmulation.removeService", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.removeService", request == null ? null : request.toMap());
         }
         /**
          * Adds a characteristic with |characteristicUuid| and |properties| to the service represented by |serviceId|.
@@ -1782,7 +1797,7 @@ public final class BluetoothEmulation {
         public CompletionStage<Void> removeCharacteristic(String characteristicId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("characteristicId", CdpObject.json(characteristicId));
-            return client.call("BluetoothEmulation.removeCharacteristic", params, result_ -> null);
+            return client.call("BluetoothEmulation.removeCharacteristic", params);
         }
         /**
          * Removes the characteristic respresented by |characteristicId| from the simulated central.
@@ -1790,7 +1805,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeCharacteristic(RemoveCharacteristicRequest request) {
-            return client.call("BluetoothEmulation.removeCharacteristic", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.removeCharacteristic", request == null ? null : request.toMap());
         }
         /**
          * Adds a descriptor with |descriptorUuid| to the characteristic respresented by |characteristicId|.
@@ -1820,7 +1835,7 @@ public final class BluetoothEmulation {
         public CompletionStage<Void> removeDescriptor(String descriptorId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("descriptorId", CdpObject.json(descriptorId));
-            return client.call("BluetoothEmulation.removeDescriptor", params, result_ -> null);
+            return client.call("BluetoothEmulation.removeDescriptor", params);
         }
         /**
          * Removes the descriptor with |descriptorId| from the simulated central.
@@ -1828,7 +1843,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeDescriptor(RemoveDescriptorRequest request) {
-            return client.call("BluetoothEmulation.removeDescriptor", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.removeDescriptor", request == null ? null : request.toMap());
         }
         /**
          * Simulates a GATT disconnection from the peripheral with |address|.
@@ -1838,7 +1853,7 @@ public final class BluetoothEmulation {
         public CompletionStage<Void> simulateGATTDisconnection(String address) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("address", CdpObject.json(address));
-            return client.call("BluetoothEmulation.simulateGATTDisconnection", params, result_ -> null);
+            return client.call("BluetoothEmulation.simulateGATTDisconnection", params);
         }
         /**
          * Simulates a GATT disconnection from the peripheral with |address|.
@@ -1846,7 +1861,7 @@ public final class BluetoothEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulateGATTDisconnection(SimulateGATTDisconnectionRequest request) {
-            return client.call("BluetoothEmulation.simulateGATTDisconnection", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BluetoothEmulation.simulateGATTDisconnection", request == null ? null : request.toMap());
         }
         /**
          * Event for when a GATT operation of |type| to the peripheral with |address| happened.

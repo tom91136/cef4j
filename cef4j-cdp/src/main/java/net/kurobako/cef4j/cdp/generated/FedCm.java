@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -32,8 +31,8 @@ public final class FedCm {
         SIGNUP("SignUp");
         public final String value;
         LoginState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static LoginState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static LoginState of(String value) {
             for (LoginState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -50,8 +49,8 @@ public final class FedCm {
         ERROR("Error");
         public final String value;
         DialogType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DialogType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DialogType of(String value) {
             for (DialogType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -67,8 +66,8 @@ public final class FedCm {
         ERRORMOREDETAILS("ErrorMoreDetails");
         public final String value;
         DialogButton(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DialogButton of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DialogButton of(String value) {
             for (DialogButton constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -83,8 +82,8 @@ public final class FedCm {
         PRIVACYPOLICY("PrivacyPolicy");
         public final String value;
         AccountUrlType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AccountUrlType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AccountUrlType of(String value) {
             for (AccountUrlType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -161,14 +160,16 @@ public final class FedCm {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> termsOfServiceUrl() {
-            return Optional.ofNullable((String) raw("termsOfServiceUrl"));
+            Object value = raw("termsOfServiceUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the privacyPolicyUrl field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> privacyPolicyUrl() {
-            return Optional.ofNullable((String) raw("privacyPolicyUrl"));
+            Object value = raw("privacyPolicyUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the accountId field.
@@ -294,7 +295,8 @@ public final class FedCm {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disableRejectionDelay() {
-            return Optional.ofNullable((Boolean) raw("disableRejectionDelay"));
+            Object value = raw("disableRejectionDelay");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Allows callers to disable the promise rejection delay that would normally happen, if this is unimportant to what&#x27;s being tested. (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
@@ -518,7 +520,8 @@ public final class FedCm {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> triggerCooldown() {
-            return Optional.ofNullable((Boolean) raw("triggerCooldown"));
+            Object value = raw("triggerCooldown");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the dialogId field.
@@ -590,7 +593,8 @@ public final class FedCm {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> subtitle() {
-            return Optional.ofNullable((String) raw("subtitle"));
+            Object value = raw("subtitle");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the dialogId field.
@@ -684,7 +688,7 @@ public final class FedCm {
         public CompletionStage<Void> enable(Optional<Boolean> disableRejectionDelay) {
             Map<String, Object> params = new LinkedHashMap<>();
             disableRejectionDelay.ifPresent(value_ -> params.put("disableRejectionDelay", value_));
-            return client.call("FedCm.enable", params, result_ -> null);
+            return client.call("FedCm.enable", params);
         }
         /**
          * Invokes FedCm.enable with default parameters.
@@ -699,14 +703,14 @@ public final class FedCm {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("FedCm.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("FedCm.enable", request == null ? null : request.toMap());
         }
         /**
          * Invokes FedCm.disable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("FedCm.disable", null, result_ -> null);
+            return client.call("FedCm.disable", null);
         }
         /**
          * Invokes FedCm.selectAccount.
@@ -718,7 +722,7 @@ public final class FedCm {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("dialogId", CdpObject.json(dialogId));
             params.put("accountIndex", CdpObject.json(accountIndex));
-            return client.call("FedCm.selectAccount", params, result_ -> null);
+            return client.call("FedCm.selectAccount", params);
         }
         /**
          * Invokes FedCm.selectAccount with a request object.
@@ -726,7 +730,7 @@ public final class FedCm {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> selectAccount(SelectAccountRequest request) {
-            return client.call("FedCm.selectAccount", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("FedCm.selectAccount", request == null ? null : request.toMap());
         }
         /**
          * Invokes FedCm.clickDialogButton.
@@ -738,7 +742,7 @@ public final class FedCm {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("dialogId", CdpObject.json(dialogId));
             params.put("dialogButton", CdpObject.json(dialogButton));
-            return client.call("FedCm.clickDialogButton", params, result_ -> null);
+            return client.call("FedCm.clickDialogButton", params);
         }
         /**
          * Invokes FedCm.clickDialogButton with a request object.
@@ -746,7 +750,7 @@ public final class FedCm {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clickDialogButton(ClickDialogButtonRequest request) {
-            return client.call("FedCm.clickDialogButton", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("FedCm.clickDialogButton", request == null ? null : request.toMap());
         }
         /**
          * Invokes FedCm.openUrl.
@@ -760,7 +764,7 @@ public final class FedCm {
             params.put("dialogId", CdpObject.json(dialogId));
             params.put("accountIndex", CdpObject.json(accountIndex));
             params.put("accountUrlType", CdpObject.json(accountUrlType));
-            return client.call("FedCm.openUrl", params, result_ -> null);
+            return client.call("FedCm.openUrl", params);
         }
         /**
          * Invokes FedCm.openUrl with a request object.
@@ -768,7 +772,7 @@ public final class FedCm {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> openUrl(OpenUrlRequest request) {
-            return client.call("FedCm.openUrl", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("FedCm.openUrl", request == null ? null : request.toMap());
         }
         /**
          * Invokes FedCm.dismissDialog.
@@ -780,7 +784,7 @@ public final class FedCm {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("dialogId", CdpObject.json(dialogId));
             triggerCooldown.ifPresent(value_ -> params.put("triggerCooldown", value_));
-            return client.call("FedCm.dismissDialog", params, result_ -> null);
+            return client.call("FedCm.dismissDialog", params);
         }
         /**
          * Invokes FedCm.dismissDialog with the required parameters.
@@ -796,14 +800,14 @@ public final class FedCm {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dismissDialog(DismissDialogRequest request) {
-            return client.call("FedCm.dismissDialog", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("FedCm.dismissDialog", request == null ? null : request.toMap());
         }
         /**
          * Resets the cooldown time, if any, to allow the next FedCM call to show a dialog even if one was recently dismissed by the user.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetCooldown() {
-            return client.call("FedCm.resetCooldown", null, result_ -> null);
+            return client.call("FedCm.resetCooldown", null);
         }
         /**
          * Subscribes to FedCm.dialogShown.

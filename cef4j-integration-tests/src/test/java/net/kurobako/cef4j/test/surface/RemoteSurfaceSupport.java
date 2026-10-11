@@ -8,8 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
 import net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend;
@@ -22,6 +20,7 @@ import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestResources;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.jspecify.annotations.Nullable;
 
 final class RemoteSurfaceSupport {
     private RemoteSurfaceSupport() {}
@@ -71,8 +70,8 @@ final class RemoteSurfaceSupport {
         }
     }
 
-    @javax.annotation.Nullable
-    private static RuntimeException close(@javax.annotation.Nullable RuntimeException failure, AutoCloseable resource) {
+    @Nullable
+    private static RuntimeException close(@Nullable RuntimeException failure, AutoCloseable resource) {
         try {
             resource.close();
         } catch (Exception cleanupFailure) {
@@ -148,7 +147,7 @@ final class RemoteSurfaceSupport {
             delegate.onFrame(this::dispatch);
         }
 
-        private void dispatch(int width, int height, @Nonnull ByteBuffer pixels, @Nonnull FrameMetadata metadata) {
+        private void dispatch(int width, int height, ByteBuffer pixels, FrameMetadata metadata) {
             probe.accept(width, height, pixels);
             FrameConsumer current = consumer;
             if (current != null) current.accept(width, height, pixels, metadata);

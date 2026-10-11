@@ -5,15 +5,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
 
 public final class CefFutures {
     private CefFutures() {}
 
-    @Nonnull
     @SuppressWarnings("FutureReturnValueIgnored")
     public static <S, T> CompletableFuture<T> map(
-            @Nonnull CompletableFuture<S> source, @Nonnull Function<? super S, ? extends T> mapper) {
+            CompletableFuture<S> source, Function<? super S, ? extends T> mapper) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(mapper, "mapper");
         PropagatingFuture<T> result = new PropagatingFuture<>(source::cancel);
@@ -31,10 +29,20 @@ public final class CefFutures {
         return result;
     }
 
-    @Nonnull
+    @SuppressWarnings("FutureReturnValueIgnored")
+    public static CompletableFuture<Void> discard(CompletableFuture<?> source) {
+        Objects.requireNonNull(source, "source");
+        PropagatingFuture<Void> result = new PropagatingFuture<>(source::cancel);
+        source.whenComplete((value, failure) -> {
+            if (failure != null) result.completeExceptionally(failure);
+            else result.complete(null);
+        });
+        return result;
+    }
+
     @SuppressWarnings("FutureReturnValueIgnored")
     public static <S, T> CompletableFuture<T> flatMap(
-            @Nonnull CompletableFuture<S> source, @Nonnull Function<? super S, ? extends CompletableFuture<T>> mapper) {
+            CompletableFuture<S> source, Function<? super S, ? extends CompletableFuture<T>> mapper) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(mapper, "mapper");
         AtomicReference<CompletableFuture<?>> active = new AtomicReference<>(source);
@@ -66,8 +74,7 @@ public final class CefFutures {
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
-    public static void observeFailure(
-            @Nonnull CompletableFuture<?> future, @Nonnull Consumer<? super Throwable> observer) {
+    public static void observeFailure(CompletableFuture<?> future, Consumer<? super Throwable> observer) {
         Objects.requireNonNull(future, "future");
         Objects.requireNonNull(observer, "observer");
         future.whenComplete((ignored, failure) -> {

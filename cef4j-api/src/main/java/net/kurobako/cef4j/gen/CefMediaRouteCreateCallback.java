@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for {@link net.kurobako.cef4j.gen.CefMediaRouter#createRoute(CefMediaSource, CefMediaSink,
@@ -42,7 +41,7 @@ public interface CefMediaRouteCreateCallback extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:209</a>
      */
     default void onMediaRouteCreateFinished(
-            @Nonnull CefMediaRouteCreateResult result, @Nullable String error, @Nullable CefMediaRoute route) {}
+            CefMediaRouteCreateResult result, @Nullable String error, @Nullable CefMediaRoute route) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -58,7 +57,7 @@ public interface CefMediaRouteCreateCallback extends CefClientHandler {
 
         @Override
         public void onMediaRouteCreateFinished(
-                @Nonnull CefMediaRouteCreateResult result, @Nullable String error, @Nullable CefMediaRoute route) {
+                CefMediaRouteCreateResult result, @Nullable String error, @Nullable CefMediaRoute route) {
             for (CefMediaRouteCreateCallback d : delegates) d.onMediaRouteCreateFinished(result, error, route);
         }
     }

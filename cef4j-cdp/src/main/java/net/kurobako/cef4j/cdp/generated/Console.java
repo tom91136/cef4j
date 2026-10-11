@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -51,8 +50,8 @@ public final class Console {
             WORKER("worker");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SourceValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -70,8 +69,8 @@ public final class Console {
             INFO("info");
             public final String value;
             LevelValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static LevelValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static LevelValues of(String value) {
                 for (LevelValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -104,7 +103,8 @@ public final class Console {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Line number in the resource that generated this message (1-based).
@@ -238,21 +238,21 @@ public final class Console {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearMessages() {
-            return client.call("Console.clearMessages", null, result_ -> null);
+            return client.call("Console.clearMessages", null);
         }
         /**
          * Disables console domain, prevents further console messages from being reported to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Console.disable", null, result_ -> null);
+            return client.call("Console.disable", null);
         }
         /**
          * Enables console domain, sends the messages collected so far to the client by means of the {@code messageAdded} notification.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Console.enable", null, result_ -> null);
+            return client.call("Console.enable", null);
         }
         /**
          * Issued when new console message is added.

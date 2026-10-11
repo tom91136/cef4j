@@ -2,13 +2,12 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle view events. All size and position values are in density independent pixels (DIP)
@@ -153,7 +152,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:116</a>
      */
-    default void onLayoutChanged(@Nullable CefView view, @Nonnull CefRect newBounds) {}
+    default void onLayoutChanged(@Nullable CefView view, CefRect newBounds) {}
 
     /**
      * Called when {@code view} gains focus.
@@ -257,7 +256,7 @@ public interface CefViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public void onLayoutChanged(@Nullable CefView view, @Nonnull CefRect newBounds) {
+        public void onLayoutChanged(@Nullable CefView view, CefRect newBounds) {
             for (CefViewDelegate d : delegates) d.onLayoutChanged(view, newBounds);
         }
 

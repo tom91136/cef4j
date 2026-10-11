@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Supports creation and modification of menus. See cef_menu_id_t for the command ids that have default implementations.
@@ -600,7 +599,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
      */
-    boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color);
+    boolean setColor(int commandId, CefMenuColorType colorType, int color);
 
     /**
      * Set the explicit color for {@code command_id} and {@code index} to {@code color}. Specify a {@code color} value
@@ -616,7 +615,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
      */
-    boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color);
+    boolean setColorAt(int index, CefMenuColorType colorType, int color);
 
     /**
      * Returns in {@code color} the color that was explicitly set for {@code command_id} and {@code color_type}. If a
@@ -630,7 +629,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
      */
-    boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color);
+    boolean getColor(int commandId, CefMenuColorType colorType, int[] color);
 
     /**
      * Returns in {@code color} the color that was explicitly set for {@code command_id} and {@code color_type}. Specify
@@ -645,7 +644,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
      */
-    boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color);
+    boolean getColorAt(int index, CefMenuColorType colorType, int[] color);
 
     /**
      * Sets the font list for the specified {@code command_id}. If {@code font_list} is empty the system font will be
@@ -1062,25 +1061,25 @@ public interface CefMenuModel extends CefLibraryObject {
         }
 
         @Override
-        public boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color) {
+        public boolean setColor(int commandId, CefMenuColorType colorType, int color) {
             checkNotClosed();
             return setColor0(nativePtr, commandId, colorType, color);
         }
 
         @Override
-        public boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color) {
+        public boolean setColorAt(int index, CefMenuColorType colorType, int color) {
             checkNotClosed();
             return setColorAt0(nativePtr, index, colorType, color);
         }
 
         @Override
-        public boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color) {
+        public boolean getColor(int commandId, CefMenuColorType colorType, int[] color) {
             checkNotClosed();
             return getColor0(nativePtr, commandId, colorType, color);
         }
 
         @Override
-        public boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color) {
+        public boolean getColorAt(int index, CefMenuColorType colorType, int[] color) {
             checkNotClosed();
             return getColorAt0(nativePtr, index, colorType, color);
         }
@@ -1198,13 +1197,13 @@ public interface CefMenuModel extends CefLibraryObject {
         static native boolean getAcceleratorAt0(
                 long self, long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-        static native boolean setColor0(long self, int commandId, @Nonnull CefMenuColorType colorType, int color);
+        static native boolean setColor0(long self, int commandId, CefMenuColorType colorType, int color);
 
-        static native boolean setColorAt0(long self, int index, @Nonnull CefMenuColorType colorType, int color);
+        static native boolean setColorAt0(long self, int index, CefMenuColorType colorType, int color);
 
-        static native boolean getColor0(long self, int commandId, @Nonnull CefMenuColorType colorType, int[] color);
+        static native boolean getColor0(long self, int commandId, CefMenuColorType colorType, int[] color);
 
-        static native boolean getColorAt0(long self, int index, @Nonnull CefMenuColorType colorType, int[] color);
+        static native boolean getColorAt0(long self, int index, CefMenuColorType colorType, int[] color);
 
         static native boolean setFontList0(long self, int commandId, @Nullable String fontList);
 
@@ -1213,7 +1212,7 @@ public interface CefMenuModel extends CefLibraryObject {
         static native CefMenuModel create0(@Nullable CefMenuModelDelegate delegate);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

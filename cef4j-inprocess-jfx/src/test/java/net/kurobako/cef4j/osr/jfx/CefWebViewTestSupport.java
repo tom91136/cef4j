@@ -16,10 +16,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.UncaughtExceptionTracker;
+import org.jspecify.annotations.Nullable;
 
 final class CefWebViewTestSupport {
     private static final UncaughtExceptionTracker JAVA_FX_FAILURES = new UncaughtExceptionTracker();
@@ -135,8 +135,8 @@ final class CefWebViewTestSupport {
             return task.call();
         }
         CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<T> result = new AtomicReference<>();
-        AtomicReference<Throwable> error = new AtomicReference<>();
+        AtomicReference<@Nullable T> result = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> error = new AtomicReference<>();
         Platform.runLater(() -> {
             try {
                 result.set(task.call());

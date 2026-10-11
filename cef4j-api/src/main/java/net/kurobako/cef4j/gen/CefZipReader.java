@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class that supports the reading of zip archives via the zlib unzip API. The methods of this class should only be
@@ -148,7 +147,7 @@ public interface CefZipReader extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:120</a>
      */
-    int readFile(@Nonnull ByteBuffer buffer);
+    int readFile(ByteBuffer buffer);
 
     /**
      * Returns the current offset in the uncompressed file contents.
@@ -283,7 +282,7 @@ public interface CefZipReader extends CefLibraryObject {
         }
 
         @Override
-        public int readFile(@Nonnull ByteBuffer buffer) {
+        public int readFile(ByteBuffer buffer) {
             checkNotClosed();
             return readFile0(nativePtr, buffer);
         }
@@ -318,7 +317,7 @@ public interface CefZipReader extends CefLibraryObject {
 
         static native boolean closeFile0(long self);
 
-        static native int readFile0(long self, @Nonnull ByteBuffer buffer);
+        static native int readFile0(long self, ByteBuffer buffer);
 
         static native long tell0(long self);
 
@@ -327,7 +326,7 @@ public interface CefZipReader extends CefLibraryObject {
         static native CefZipReader create0(@Nullable CefStreamReader stream);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

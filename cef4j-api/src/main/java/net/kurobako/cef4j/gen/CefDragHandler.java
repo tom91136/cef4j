@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to dragging. The methods of this class will be called on the UI
@@ -39,7 +38,7 @@ public interface CefDragHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
      */
     default boolean onDragEnter(
-            @Nullable CefBrowser browser, @Nullable CefDragData dragData, @Nonnull CefDragOperationsMask mask) {
+            @Nullable CefBrowser browser, @Nullable CefDragData dragData, CefDragOperationsMask mask) {
         return false;
     }
 
@@ -58,10 +57,7 @@ public interface CefDragHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:68</a>
      */
     default void onDraggableRegionsChanged(
-            @Nullable CefBrowser browser,
-            @Nullable CefFrame frame,
-            long regionsCount,
-            @Nonnull CefDraggableRegion[] regions) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, long regionsCount, CefDraggableRegion[] regions) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -77,7 +73,7 @@ public interface CefDragHandler extends CefClientHandler {
 
         @Override
         public boolean onDragEnter(
-                @Nullable CefBrowser browser, @Nullable CefDragData dragData, @Nonnull CefDragOperationsMask mask) {
+                @Nullable CefBrowser browser, @Nullable CefDragData dragData, CefDragOperationsMask mask) {
             for (CefDragHandler d : delegates) {
                 if (d.onDragEnter(browser, dragData, mask)) return true;
             }
@@ -90,7 +86,7 @@ public interface CefDragHandler extends CefClientHandler {
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
                 long regionsCount,
-                @Nonnull CefDraggableRegion[] regions) {
+                CefDraggableRegion[] regions) {
             for (CefDragHandler d : delegates) d.onDraggableRegionsChanged(browser, frame, regionsCount, regions);
         }
     }

@@ -448,7 +448,7 @@ public final class CefErrorCode implements CefEnum<CefErrorCode> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefErrorCode)) return false;
         return this.value == ((CefErrorCode) obj).value;

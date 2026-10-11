@@ -3,9 +3,9 @@ package net.kurobako.cef4j;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Thread-safe frame buffer for CEF off-screen rendering.
@@ -74,7 +74,7 @@ public final class CefFrameBuffer<I> {
          * @param dirtyRects regions that changed, or {@code null} for a full-frame update
          * @return the image containing the stamped pixels (may be {@code prev} reused, or a new instance)
          */
-        I stamp(Optional<I> prev, int[] pixels, int width, int height, @Nullable CefRect[] dirtyRects);
+        I stamp(Optional<I> prev, int[] pixels, int width, int height, CefRect @Nullable [] dirtyRects);
     }
 
     private int[] pixelBuffer;
@@ -156,7 +156,7 @@ public final class CefFrameBuffer<I> {
      * @param dirtyRects array of dirty rectangles, or {@code null} for a full-frame copy
      * @return the stamped image, or empty if the frame was skipped
      */
-    public Optional<I> onPaint(ByteBuffer buffer, int width, int height, @Nullable CefRect[] dirtyRects) {
+    public Optional<I> onPaint(ByteBuffer buffer, int width, int height, CefRect @Nullable [] dirtyRects) {
         if (width <= 0 || height <= 0 || buffer == null) return Optional.empty();
 
         int pixelCount;
@@ -244,7 +244,7 @@ public final class CefFrameBuffer<I> {
         return (int) count;
     }
 
-    private void accumulateRects(@Nullable CefRect[] rects) {
+    private void accumulateRects(CefRect @Nullable [] rects) {
         if (rects == null) return;
         for (CefRect r : rects) {
             int rx2 = r.x + r.width;

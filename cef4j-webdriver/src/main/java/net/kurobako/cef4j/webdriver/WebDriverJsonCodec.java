@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Serialization boundary for WebDriver HTTP and CDP JSON, layered over a {@link CdpCodec}. The codec must keep explicit
@@ -20,33 +19,28 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 public final class WebDriverJsonCodec {
     private final CdpCodec codec;
 
-    public WebDriverJsonCodec(@Nonnull CdpCodec codec) {
+    public WebDriverJsonCodec(CdpCodec codec) {
         this.codec = Objects.requireNonNull(codec, "codec");
     }
 
-    @Nonnull
     public CdpCodec cdpCodec() {
         return codec;
     }
 
-    @Nonnull
-    public JsonElement decode(@Nonnull byte[] json) {
+    public JsonElement decode(byte[] json) {
         return toJsonElement(codec.decode(json));
     }
 
-    @Nonnull
-    public JsonElement decode(@Nonnull String json) {
+    public JsonElement decode(String json) {
         return decode(json.getBytes(StandardCharsets.UTF_8));
     }
 
-    @Nonnull
-    public byte[] encode(@Nonnull JsonElement value) {
+    public byte[] encode(JsonElement value) {
         Object raw = fromJsonElement(value);
         return raw == null ? "null".getBytes(StandardCharsets.UTF_8) : codec.encode(raw);
     }
 
     /** Wraps the installed {@link CdpCodec} provider. Prefer explicit injection when multiple codecs are present. */
-    @Nonnull
     public static WebDriverJsonCodec installed() {
         Iterator<CdpCodec> providers = ServiceLoader.load(CdpCodec.class).iterator();
         if (!providers.hasNext()) {
@@ -63,7 +57,6 @@ public final class WebDriverJsonCodec {
     }
 
     @NullableBoundary("JSON null maps to the JDK null wire value")
-    @Nonnull
     static JsonElement toJsonElement(@Nullable Object value) {
         if (value == null) return JsonNull.INSTANCE;
         if (value instanceof JsonElement) return (JsonElement) value;
@@ -86,7 +79,7 @@ public final class WebDriverJsonCodec {
     }
 
     @Nullable
-    static Object fromJsonElement(@Nonnull JsonElement value) {
+    static Object fromJsonElement(JsonElement value) {
         if (value.isNull()) return null;
         if (value.isObject()) {
             Map<String, Object> object = new LinkedHashMap<>();

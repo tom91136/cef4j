@@ -3,9 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface that should be implemented to handle V8 function calls. The methods of this class will be called on the
@@ -43,7 +43,7 @@ public interface CefV8Handler extends CefClientHandler {
             @Nullable String name,
             @Nullable CefV8Value object,
             long argumentsCount,
-            @Nullable CefV8Value[] arguments,
+            CefV8Value @Nullable [] arguments,
             @Nullable AtomicReference<CefV8Value> retval,
             @Nullable String exception) {
         return false;
@@ -66,7 +66,7 @@ public interface CefV8Handler extends CefClientHandler {
                 @Nullable String name,
                 @Nullable CefV8Value object,
                 long argumentsCount,
-                @Nullable CefV8Value[] arguments,
+                CefV8Value @Nullable [] arguments,
                 @Nullable AtomicReference<CefV8Value> retval,
                 @Nullable String exception) {
             for (CefV8Handler d : delegates) {

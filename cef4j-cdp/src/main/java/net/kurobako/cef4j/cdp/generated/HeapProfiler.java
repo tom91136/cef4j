@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class HeapProfiler {
      */
     public static final class HeapSnapshotObjectId implements CdpValue<String> {
         public final String value;
-        public HeapSnapshotObjectId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public HeapSnapshotObjectId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof HeapSnapshotObjectId)) return false;
             return value.equals(((HeapSnapshotObjectId) other).value);
@@ -310,7 +309,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return Optional.ofNullable((String) raw("objectGroup"));
+            Object value = raw("objectGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the objectId field.
@@ -371,14 +371,16 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeObjectsCollectedByMajorGC() {
-            return Optional.ofNullable((Boolean) raw("includeObjectsCollectedByMajorGC"));
+            Object value = raw("includeObjectsCollectedByMajorGC");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by minor GC, which is useful when tuning a latency-sensitive application for minimal GC activity.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeObjectsCollectedByMinorGC() {
-            return Optional.ofNullable((Boolean) raw("includeObjectsCollectedByMinorGC"));
+            Object value = raw("includeObjectsCollectedByMinorGC");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
@@ -468,7 +470,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> trackAllocations() {
-            return Optional.ofNullable((Boolean) raw("trackAllocations"));
+            Object value = raw("trackAllocations");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the trackAllocations field.
@@ -504,7 +507,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> reportProgress() {
-            return Optional.ofNullable((Boolean) raw("reportProgress"));
+            Object value = raw("reportProgress");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Deprecated in favor of {@code exposeInternals}.
@@ -513,14 +517,16 @@ public final class HeapProfiler {
          */
         @Deprecated
         public Optional<Boolean> treatGlobalObjectsAsRoots() {
-            return Optional.ofNullable((Boolean) raw("treatGlobalObjectsAsRoots"));
+            Object value = raw("treatGlobalObjectsAsRoots");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, numerical values are included in the snapshot
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> captureNumericValue() {
-            return Optional.ofNullable((Boolean) raw("captureNumericValue"));
+            Object value = raw("captureNumericValue");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, exposes internals of the snapshot.
@@ -528,7 +534,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exposeInternals() {
-            return Optional.ofNullable((Boolean) raw("exposeInternals"));
+            Object value = raw("exposeInternals");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken when the tracking is stopped.
@@ -624,7 +631,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> reportProgress() {
-            return Optional.ofNullable((Boolean) raw("reportProgress"));
+            Object value = raw("reportProgress");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, a raw snapshot without artificial roots will be generated. Deprecated in favor of {@code exposeInternals}.
@@ -633,14 +641,16 @@ public final class HeapProfiler {
          */
         @Deprecated
         public Optional<Boolean> treatGlobalObjectsAsRoots() {
-            return Optional.ofNullable((Boolean) raw("treatGlobalObjectsAsRoots"));
+            Object value = raw("treatGlobalObjectsAsRoots");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, numerical values are included in the snapshot
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> captureNumericValue() {
-            return Optional.ofNullable((Boolean) raw("captureNumericValue"));
+            Object value = raw("captureNumericValue");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, exposes internals of the snapshot.
@@ -648,7 +658,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exposeInternals() {
-            return Optional.ofNullable((Boolean) raw("exposeInternals"));
+            Object value = raw("exposeInternals");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken.
@@ -851,7 +862,8 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> finished() {
-            return Optional.ofNullable((Boolean) raw("finished"));
+            Object value = raw("finished");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the done field.
@@ -911,7 +923,7 @@ public final class HeapProfiler {
         public CompletionStage<Void> addInspectedHeapObject(HeapProfiler.HeapSnapshotObjectId heapObjectId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("heapObjectId", CdpObject.json(heapObjectId));
-            return client.call("HeapProfiler.addInspectedHeapObject", params, result_ -> null);
+            return client.call("HeapProfiler.addInspectedHeapObject", params);
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
@@ -919,28 +931,28 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addInspectedHeapObject(AddInspectedHeapObjectRequest request) {
-            return client.call("HeapProfiler.addInspectedHeapObject", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("HeapProfiler.addInspectedHeapObject", request == null ? null : request.toMap());
         }
         /**
          * Invokes HeapProfiler.collectGarbage.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> collectGarbage() {
-            return client.call("HeapProfiler.collectGarbage", null, result_ -> null);
+            return client.call("HeapProfiler.collectGarbage", null);
         }
         /**
          * Invokes HeapProfiler.disable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("HeapProfiler.disable", null, result_ -> null);
+            return client.call("HeapProfiler.disable", null);
         }
         /**
          * Invokes HeapProfiler.enable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("HeapProfiler.enable", null, result_ -> null);
+            return client.call("HeapProfiler.enable", null);
         }
         /**
          * Invokes HeapProfiler.getHeapObjectId.
@@ -1009,7 +1021,7 @@ public final class HeapProfiler {
             stackDepth.ifPresent(value_ -> params.put("stackDepth", value_));
             includeObjectsCollectedByMajorGC.ifPresent(value_ -> params.put("includeObjectsCollectedByMajorGC", value_));
             includeObjectsCollectedByMinorGC.ifPresent(value_ -> params.put("includeObjectsCollectedByMinorGC", value_));
-            return client.call("HeapProfiler.startSampling", params, result_ -> null);
+            return client.call("HeapProfiler.startSampling", params);
         }
         /**
          * Invokes HeapProfiler.startSampling with default parameters.
@@ -1024,7 +1036,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling(StartSamplingRequest request) {
-            return client.call("HeapProfiler.startSampling", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("HeapProfiler.startSampling", request == null ? null : request.toMap());
         }
         /**
          * Invokes HeapProfiler.startTrackingHeapObjects.
@@ -1034,7 +1046,7 @@ public final class HeapProfiler {
         public CompletionStage<Void> startTrackingHeapObjects(Optional<Boolean> trackAllocations) {
             Map<String, Object> params = new LinkedHashMap<>();
             trackAllocations.ifPresent(value_ -> params.put("trackAllocations", value_));
-            return client.call("HeapProfiler.startTrackingHeapObjects", params, result_ -> null);
+            return client.call("HeapProfiler.startTrackingHeapObjects", params);
         }
         /**
          * Invokes HeapProfiler.startTrackingHeapObjects with default parameters.
@@ -1049,7 +1061,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTrackingHeapObjects(StartTrackingHeapObjectsRequest request) {
-            return client.call("HeapProfiler.startTrackingHeapObjects", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("HeapProfiler.startTrackingHeapObjects", request == null ? null : request.toMap());
         }
         /**
          * Invokes HeapProfiler.stopSampling.
@@ -1072,7 +1084,7 @@ public final class HeapProfiler {
             treatGlobalObjectsAsRoots.ifPresent(value_ -> params.put("treatGlobalObjectsAsRoots", value_));
             captureNumericValue.ifPresent(value_ -> params.put("captureNumericValue", value_));
             exposeInternals.ifPresent(value_ -> params.put("exposeInternals", value_));
-            return client.call("HeapProfiler.stopTrackingHeapObjects", params, result_ -> null);
+            return client.call("HeapProfiler.stopTrackingHeapObjects", params);
         }
         /**
          * Invokes HeapProfiler.stopTrackingHeapObjects with default parameters.
@@ -1087,7 +1099,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopTrackingHeapObjects(StopTrackingHeapObjectsRequest request) {
-            return client.call("HeapProfiler.stopTrackingHeapObjects", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("HeapProfiler.stopTrackingHeapObjects", request == null ? null : request.toMap());
         }
         /**
          * Invokes HeapProfiler.takeHeapSnapshot.
@@ -1103,7 +1115,7 @@ public final class HeapProfiler {
             treatGlobalObjectsAsRoots.ifPresent(value_ -> params.put("treatGlobalObjectsAsRoots", value_));
             captureNumericValue.ifPresent(value_ -> params.put("captureNumericValue", value_));
             exposeInternals.ifPresent(value_ -> params.put("exposeInternals", value_));
-            return client.call("HeapProfiler.takeHeapSnapshot", params, result_ -> null);
+            return client.call("HeapProfiler.takeHeapSnapshot", params);
         }
         /**
          * Invokes HeapProfiler.takeHeapSnapshot with default parameters.
@@ -1118,7 +1130,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> takeHeapSnapshot(TakeHeapSnapshotRequest request) {
-            return client.call("HeapProfiler.takeHeapSnapshot", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("HeapProfiler.takeHeapSnapshot", request == null ? null : request.toMap());
         }
         /**
          * Subscribes to HeapProfiler.addHeapSnapshotChunk.

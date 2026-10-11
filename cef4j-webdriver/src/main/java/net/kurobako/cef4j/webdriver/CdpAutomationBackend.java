@@ -2,6 +2,7 @@ package net.kurobako.cef4j.webdriver;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.generated.Browser;
@@ -76,14 +76,11 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     /** Queries browser metadata and creates the common WebDriver command backend. */
-    @Nonnull
-    public static CompletableFuture<CdpAutomationBackend> create(@Nonnull JsonCdpBrowser cdp) {
+    public static CompletableFuture<CdpAutomationBackend> create(JsonCdpBrowser cdp) {
         return create(cdp, POLL_EXECUTOR);
     }
 
-    @Nonnull
-    public static CompletableFuture<CdpAutomationBackend> create(
-            @Nonnull JsonCdpBrowser cdp, @Nonnull Executor pollExecutor) {
+    public static CompletableFuture<CdpAutomationBackend> create(JsonCdpBrowser cdp, Executor pollExecutor) {
         Objects.requireNonNull(cdp, "cdp");
         Objects.requireNonNull(pollExecutor, "pollExecutor");
         CdpClient client = new CdpClient(cdp, cdp.jsonCodec().cdpCodec());
@@ -98,33 +95,28 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public JsonObject capabilities() {
         return capabilities.deepCopy();
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<Void> navigate(@Nonnull String url) {
+    public CompletableFuture<Void> navigate(String url) {
         Objects.requireNonNull(url, "url");
         elements.clear();
         return cdp.loadUrl(url).thenCompose(ignored -> awaitNotLoading());
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> currentUrl() {
         return evaluateValue("window.location.href").thenApply(JsonElement::string);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> title() {
         return evaluateValue("document.title").thenApply(JsonElement::string);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> pageSource() {
         return dom.getDocument(OptionalLong.of(0), Optional.empty())
                 .thenCompose(root -> {
@@ -137,8 +129,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<JsonElement> executeScript(@Nonnull String script, @Nonnull JsonArray arguments) {
+    public CompletableFuture<JsonElement> executeScript(String script, JsonArray arguments) {
         Objects.requireNonNull(script, "script");
         Objects.requireNonNull(arguments, "arguments");
         return remoteObject("globalThis").thenCompose(globalObject -> {
@@ -166,23 +157,24 @@ public final class CdpAutomationBackend implements AutomationBackend {
         });
     }
 
-    @SuppressWarnings("NullAway")
     private CompletableFuture<Runtime.CallArgument> toCallArgument(JsonElement argument, List<String> borrowedObjects) {
-        if (argument.isObject()
-                && argument.asObject().has(WebDriverServer.ELEMENT_KEY)
-                && argument.asObject().get(WebDriverServer.ELEMENT_KEY).isPrimitive()) {
-            String id = argument.asObject().get(WebDriverServer.ELEMENT_KEY).string();
+        JsonElement element = argument.isObject() ? argument.asObject().get(WebDriverServer.ELEMENT_KEY) : null;
+        if (element != null && element.isPrimitive()) {
+            String id = element.string();
             return resolveElement(id).thenApply(objectId -> {
                 borrowedObjects.add(objectId);
                 return new Runtime.CallArgument().objectId(new Runtime.RemoteObjectId(objectId));
             });
         }
+        Object value = WebDriverJsonCodec.fromJsonElement(argument);
+        // CallArgument.value(null) omits the member, which CDP reads as undefined rather than null
         return CompletableFuture.completedFuture(
-                new Runtime.CallArgument().value(WebDriverJsonCodec.fromJsonElement(argument)));
+                value == null
+                        ? Runtime.CallArgument.fromMap(Collections.singletonMap("value", null))
+                        : new Runtime.CallArgument().value(value));
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<byte[]> screenshot() {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("format", CdpObject.json("png"));
@@ -194,7 +186,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> findElement(String using, String value, Optional<String> parentElement) {
         return findElements(using, value, parentElement).thenApply(found -> {
             if (found.isEmpty()) throw failure(WebDriverError.NO_SUCH_ELEMENT, "unable to locate element: " + value);
@@ -203,7 +194,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<List<String>> findElements(String using, String value, Optional<String> parentElement) {
         validateLocator(using);
         CompletableFuture<String> root =
@@ -215,20 +205,17 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> activeElement() {
         return remoteObject("document.activeElement").thenCompose(this::registerObject);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> elementTagName(String elementId) {
         return callElementValue(elementId, "function(){return this.tagName.toLowerCase();}", List.of())
                 .thenApply(JsonElement::string);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> elementText(String elementId) {
         return callElementValue(
                         elementId,
@@ -238,19 +225,16 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<JsonElement> elementAttribute(String elementId, String name) {
         return callElementValue(elementId, "function(n){return this.getAttribute(n);}", callArguments(name));
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<JsonElement> elementProperty(String elementId, String name) {
         return callElementValue(elementId, "function(n){return this[n];}", callArguments(name));
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<String> elementCssValue(String elementId, String name) {
         return callElementValue(
                         elementId,
@@ -260,7 +244,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<JsonObject> elementRect(String elementId) {
         return callElementValue(
                         elementId,
@@ -270,20 +253,17 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Boolean> elementDisplayed(String elementId) {
         return callElementValue(elementId, DISPLAYED, List.of()).thenApply(JsonElement::booleanValue);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Boolean> elementEnabled(String elementId) {
         return callElementValue(elementId, "function(){return !this.disabled;}", List.of())
                 .thenApply(JsonElement::booleanValue);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Boolean> elementSelected(String elementId) {
         return callElementValue(
                         elementId,
@@ -293,14 +273,13 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> elementClick(String elementId) {
         DOM.BackendNodeId backendNodeId = requireElementId(elementId);
         return resolveElement(elementId)
                 .thenCompose(objectId -> {
                     Map<String, Object> scrollParams = new LinkedHashMap<>();
                     scrollParams.put("backendNodeId", CdpObject.json(backendNodeId.value()));
-                    return client.<Void>call("DOM.scrollIntoViewIfNeeded", scrollParams, result_ -> null)
+                    return client.call("DOM.scrollIntoViewIfNeeded", scrollParams)
                             .toCompletableFuture()
                             .whenComplete((ignored, failure) -> releaseObject(objectId));
                 })
@@ -316,8 +295,10 @@ public final class CdpAutomationBackend implements AutomationBackend {
                     return elementRect(elementId);
                 })
                 .thenCompose(rect -> {
-                    double x = rect.get("x").doubleValue() + rect.get("width").doubleValue() / 2;
-                    double y = rect.get("y").doubleValue() + rect.get("height").doubleValue() / 2;
+                    double x = member(rect, "x").doubleValue()
+                            + member(rect, "width").doubleValue() / 2;
+                    double y = member(rect, "y").doubleValue()
+                            + member(rect, "height").doubleValue() / 2;
                     List<Runtime.CallArgument> point =
                             List.of(new Runtime.CallArgument().value(x), new Runtime.CallArgument().value(y));
                     return callElementValue(
@@ -338,7 +319,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> elementClear(String elementId) {
         return focusElement(elementId)
                 .thenCompose(ignored -> callElementValue(elementId, CLEAR_ELEMENT, List.of()))
@@ -346,7 +326,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> elementSendKeys(String elementId, String text) {
         Objects.requireNonNull(text, "text");
         for (int i = 0; i < text.length(); i++) {
@@ -361,7 +340,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> back() {
         elements.clear();
         return cdp.canGoBack()
@@ -370,7 +348,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> forward() {
         elements.clear();
         return cdp.canGoForward()
@@ -379,7 +356,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> refresh() {
         elements.clear();
         return waitForLoad(() -> page.reload().toCompletableFuture());
@@ -390,7 +366,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<JsonArray> cookies() {
         return currentUrl()
                 .thenCompose(url -> network.getCookies(Optional.of(List.of(url))))
@@ -416,25 +391,23 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<JsonElement> cookie(String name) {
         return cookies().thenApply(all -> {
             for (JsonElement item : all) {
-                if (name.equals(item.asObject().get("name").string())) return item;
+                if (name.equals(member(item.asObject(), "name").string())) return item;
             }
             throw failure(WebDriverError.NO_SUCH_COOKIE, "no cookie named " + name);
         });
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> addCookie(JsonObject cookie) {
         validateCookie(cookie);
         return currentUrl()
                 .thenCompose(url -> {
                     Map<String, Object> params = new LinkedHashMap<>();
-                    params.put("name", CdpObject.json(cookie.get("name").string()));
-                    params.put("value", CdpObject.json(cookie.get("value").string()));
+                    params.put("name", CdpObject.json(member(cookie, "name").string()));
+                    params.put("value", CdpObject.json(member(cookie, "value").string()));
                     params.put("url", CdpObject.json(url));
                     optionalString(cookie, "domain").ifPresent(value -> params.put("domain", CdpObject.json(value)));
                     optionalString(cookie, "path").ifPresent(value -> params.put("path", CdpObject.json(value)));
@@ -497,46 +470,45 @@ public final class CdpAutomationBackend implements AutomationBackend {
         }
         try {
             if (new java.math.BigDecimal(value.string()).longValueExact() < 0) throw new ArithmeticException();
-        } catch (ArithmeticException | NumberFormatException ignored) {
-            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer");
+        } catch (ArithmeticException | NumberFormatException invalid) {
+            throw new WebDriverException(
+                    WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer", invalid);
         }
     }
 
+    private static JsonElement member(JsonObject source, String name) {
+        return Objects.requireNonNull(source.get(name), name);
+    }
+
     private static Optional<String> optionalString(JsonObject source, String name) {
-        return source.has(name) ? Optional.of(source.get(name).string()) : Optional.empty();
+        return Optional.ofNullable(source.get(name)).map(JsonElement::string);
     }
 
     private static Optional<Boolean> optionalBoolean(JsonObject source, String name) {
-        return source.has(name) ? Optional.of(source.get(name).booleanValue()) : Optional.empty();
+        return Optional.ofNullable(source.get(name)).map(JsonElement::booleanValue);
     }
 
     private static Optional<Network.CookieSameSite> optionalSameSite(JsonObject source) {
-        return source.has("sameSite")
-                ? Optional.of(Network.CookieSameSite.of(source.get("sameSite").string()))
-                : Optional.empty();
+        return Optional.ofNullable(source.get("sameSite")).map(value -> Network.CookieSameSite.of(value.string()));
     }
 
     private static Optional<Network.TimeSinceEpoch> optionalExpiry(JsonObject source) {
-        return source.has("expiry")
-                ? Optional.of(new Network.TimeSinceEpoch(source.get("expiry").doubleValue()))
-                : Optional.empty();
+        return Optional.ofNullable(source.get("expiry")).map(value -> new Network.TimeSinceEpoch(value.doubleValue()));
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> deleteCookie(String name) {
         return currentUrl()
                 .thenCompose(url -> {
                     Map<String, Object> params = new LinkedHashMap<>();
                     params.put("name", CdpObject.json(name));
                     params.put("url", CdpObject.json(url));
-                    return client.<Void>call("Network.deleteCookies", params, result -> null);
+                    return client.call("Network.deleteCookies", params);
                 })
                 .thenApply(ignored -> null);
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<Void> deleteAllCookies() {
         return network.clearBrowserCookies().<Void>thenApply(ignored -> null).toCompletableFuture();
     }
@@ -558,8 +530,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         params.put("button", CdpObject.json(button));
         params.put("buttons", buttons);
         params.put("clickCount", clickCount);
-        return client.<Void>call("Input.dispatchMouseEvent", params, result -> null)
-                .toCompletableFuture();
+        return client.call("Input.dispatchMouseEvent", params).toCompletableFuture();
     }
 
     private DOM.BackendNodeId requireElementId(String id) {
@@ -653,15 +624,13 @@ public final class CdpAutomationBackend implements AutomationBackend {
                     String resolved = objectId.get().value();
                     callFunctionOn(resolved, "function(){return this.isConnected;}", List.of(), true)
                             .whenComplete((connected, checkFailure) -> {
-                                boolean attached = false;
-                                if (checkFailure == null) {
-                                    try {
-                                        attached = readEvaluationResult(
-                                                        connected.result(), connected.exceptionDetails())
-                                                .booleanValue();
-                                    } catch (RuntimeException ignored) {
-                                        attached = false;
-                                    }
+                                boolean attached;
+                                try {
+                                    attached = checkFailure == null
+                                            && readEvaluationResult(connected.result(), connected.exceptionDetails())
+                                                    .booleanValue();
+                                } catch (RuntimeException unreadable) {
+                                    attached = false;
                                 }
                                 if (attached) {
                                     result.complete(resolved);
@@ -826,7 +795,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     @Override
-    public void cancelPendingCommands(@Nonnull Throwable failure) {
+    public void cancelPendingCommands(Throwable failure) {
         client.cancelPending(failure);
     }
 

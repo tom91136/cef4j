@@ -8,8 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Standalone {@link CefTransport} that replays a {@link MessageLog} produced by a previous run under
@@ -43,13 +42,13 @@ public final class ReplayTransport implements CefTransport {
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    public static ReplayTransport fromFile(@Nonnull Path file) throws IOException {
+    public static ReplayTransport fromFile(Path file) throws IOException {
         try (MessageLog.Reader r = MessageLog.reader(file)) {
             return fromReader(r);
         }
     }
 
-    public static ReplayTransport fromReader(@Nonnull MessageLog.Reader reader) throws IOException {
+    public static ReplayTransport fromReader(MessageLog.Reader reader) throws IOException {
         List<byte[]> in = new ArrayList<>();
         List<byte[]> out = new ArrayList<>();
         MessageLog.Entry e;
@@ -86,7 +85,7 @@ public final class ReplayTransport implements CefTransport {
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         if (closed.get()) throw new CefTransportException("replay transport closed");
         byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
@@ -96,7 +95,7 @@ public final class ReplayTransport implements CefTransport {
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> h) {
+    public void onReceive(Consumer<ByteBuffer> h) {
         this.handler = h;
     }
 
@@ -113,7 +112,7 @@ public final class ReplayTransport implements CefTransport {
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable r) {
+    public void onDisconnect(Runnable r) {
         // Replay never raises a disconnect; no peer exists.
     }
 

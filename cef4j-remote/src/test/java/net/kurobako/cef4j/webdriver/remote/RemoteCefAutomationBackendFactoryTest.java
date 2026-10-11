@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntime;
 import net.kurobako.cef4j.remote.RemoteBrowserRuntimeFactory;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class RemoteCefAutomationBackendFactoryTest {
@@ -41,7 +41,7 @@ class RemoteCefAutomationBackendFactoryTest {
 
     private static final class NeverClosingDevTools implements CdpTransport {
         @Override
-        public CompletableFuture<byte[]> execute(String method, @Nullable byte[] params) {
+        public CompletableFuture<byte[]> execute(String method, byte @Nullable [] params) {
             throw new UnsupportedOperationException();
         }
 

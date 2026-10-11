@@ -4,14 +4,12 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
 
 /** Allocates CDP message identifiers and owns the lifecycle of their pending results. */
 public final class CdpRequestTracker<T> {
     private final AtomicInteger nextId = new AtomicInteger();
     private final ConcurrentHashMap<Integer, Request<T>> pending = new ConcurrentHashMap<>();
 
-    @Nonnull
     @SuppressWarnings("FutureReturnValueIgnored")
     public Request<T> register() {
         while (true) {
@@ -23,17 +21,17 @@ public final class CdpRequestTracker<T> {
         }
     }
 
-    public void complete(int id, @Nonnull T value) {
+    public void complete(int id, T value) {
         Request<T> request = pending.remove(id);
         if (request != null) request.complete(Objects.requireNonNull(value, "value"));
     }
 
-    public void fail(int id, @Nonnull Throwable failure) {
+    public void fail(int id, Throwable failure) {
         Request<T> request = pending.remove(id);
         if (request != null) request.completeExceptionally(Objects.requireNonNull(failure, "failure"));
     }
 
-    public void failAll(@Nonnull Throwable failure) {
+    public void failAll(Throwable failure) {
         Objects.requireNonNull(failure, "failure");
         pending.forEach((id, request) -> {
             if (pending.remove(id, request)) request.completeExceptionally(failure);

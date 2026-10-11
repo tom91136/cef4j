@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -80,7 +79,8 @@ public final class Performance {
          * @return the protocol field value, empty when absent
          */
         public Optional<EnableTimeDomainValues> timeDomain() {
-            return Optional.ofNullable(raw("timeDomain") == null ? null : EnableTimeDomainValues.of((String) raw("timeDomain")));
+            Object value = raw("timeDomain");
+            return Optional.ofNullable(value == null ? null : EnableTimeDomainValues.of((String) value));
         }
         /**
          * Time domain to use for collecting and reporting duration metrics.
@@ -191,8 +191,8 @@ public final class Performance {
         THREADTICKS("threadTicks");
         public final String value;
         EnableTimeDomainValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static EnableTimeDomainValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static EnableTimeDomainValues of(String value) {
             for (EnableTimeDomainValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -207,8 +207,8 @@ public final class Performance {
         THREADTICKS("threadTicks");
         public final String value;
         SetTimeDomainTimeDomainValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SetTimeDomainTimeDomainValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SetTimeDomainTimeDomainValues of(String value) {
             for (SetTimeDomainTimeDomainValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -223,7 +223,7 @@ public final class Performance {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Performance.disable", null, result_ -> null);
+            return client.call("Performance.disable", null);
         }
         /**
          * Enable collecting and reporting metrics.
@@ -233,7 +233,7 @@ public final class Performance {
         public CompletionStage<Void> enable(Optional<EnableTimeDomainValues> timeDomain) {
             Map<String, Object> params = new LinkedHashMap<>();
             timeDomain.ifPresent(value_ -> params.put("timeDomain", CdpObject.json(value_)));
-            return client.call("Performance.enable", params, result_ -> null);
+            return client.call("Performance.enable", params);
         }
         /**
          * Enable collecting and reporting metrics.
@@ -248,7 +248,7 @@ public final class Performance {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Performance.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Performance.enable", request == null ? null : request.toMap());
         }
         /**
          * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection. Calling this method while metrics collection is enabled returns an error.
@@ -261,7 +261,7 @@ public final class Performance {
         public CompletionStage<Void> setTimeDomain(SetTimeDomainTimeDomainValues timeDomain) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("timeDomain", CdpObject.json(timeDomain));
-            return client.call("Performance.setTimeDomain", params, result_ -> null);
+            return client.call("Performance.setTimeDomain", params);
         }
         /**
          * Sets time domain to use for collecting and reporting duration metrics. Note that this must be called before enabling metrics collection. Calling this method while metrics collection is enabled returns an error.
@@ -272,7 +272,7 @@ public final class Performance {
          */
         @Deprecated
         public CompletionStage<Void> setTimeDomain(SetTimeDomainRequest request) {
-            return client.call("Performance.setTimeDomain", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Performance.setTimeDomain", request == null ? null : request.toMap());
         }
         /**
          * Retrieve current values of run-time metrics.

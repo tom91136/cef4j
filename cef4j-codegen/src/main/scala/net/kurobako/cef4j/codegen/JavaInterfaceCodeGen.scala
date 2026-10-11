@@ -106,8 +106,6 @@ object JavaInterfaceCodeGen {
     val hasNullableRet = !isObject && fns.exists(fn => handlerReturnIsNullable(fn, handlerNames))
     val hasNullable    = hasNullableRet || (fns.iterator ++ ancestorFns.iterator)
       .exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-    val hasNonnull = (fns.iterator ++ ancestorFns.iterator)
-      .exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
 
     val methods = fns.map(fn =>
       renderInterfaceMethod(fn, docs, isObject, handlerNames, sourceHeader, cefStructName)
@@ -130,7 +128,6 @@ object JavaInterfaceCodeGen {
     } else ""
 
     val ffHasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-    val ffHasNonnull  = freeFunctions.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
     val ffHasOptional = freeFunctions.exists(ff => JavaCodeGen.isOptionalReturn(FnPtr("_", ff.ret, ff.params)))
 
     val fnTypes       = fns.flatMap(fn => fn.ret :: fn.params.map(_.typ))
@@ -161,8 +158,7 @@ object JavaInterfaceCodeGen {
 
     val allImports = (List(
       if (hasOptional || ffHasOptional) Some("import java.util.Optional;") else None,
-      if (hasNullable || ffHasNullable) Some("import javax.annotation.Nullable;") else None,
-      if (hasNonnull || ffHasNonnull) Some("import javax.annotation.Nonnull;") else None
+      if (hasNullable || ffHasNullable) Some("import org.jspecify.annotations.Nullable;") else None
     ).flatten ++ typeImports ++ crossPkgImports).distinct.sorted
 
     val extendsClause = if (isObject) {
@@ -260,7 +256,6 @@ ${allLines.mkString("\n")}
     val (staticMethods, _) = renderStaticMethods(freeFunctions, docs, isClass = true)
 
     val hasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-    val hasNonnull  = freeFunctions.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
     val hasOptional = freeFunctions.exists(ff => JavaMethods.usesOptionalReturn(ff.ret))
 
     val ffTypes     = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))
@@ -268,8 +263,7 @@ ${allLines.mkString("\n")}
 
     val imports = (List(
       if (hasOptional) Some("import java.util.Optional;") else None,
-      if (hasNullable) Some("import javax.annotation.Nullable;") else None,
-      if (hasNonnull) Some("import javax.annotation.Nonnull;") else None
+      if (hasNullable) Some("import org.jspecify.annotations.Nullable;") else None
     ).flatten ++ typeImports).distinct.sorted
 
     JavaCodeGen.renderJavaFile(
@@ -339,9 +333,10 @@ ${allLines.mkString("\n")}
         }
     }
 
-    val retAnn = if (handlerReturnIsNullable(fn, handlerNames)) "@Nullable " else ""
+    val declaredRet =
+      if (handlerReturnIsNullable(fn, handlerNames)) Naming.nullableType(shape.retType) else shape.retType
     s"""        @Override
-       |        public $retAnn${shape.retType} $methodName($paramsDecl) {
+       |        public $declaredRet $methodName($paramsDecl) {
        |$body
        |        }""".stripMargin
   }
@@ -367,8 +362,9 @@ ${allLines.mkString("\n")}
       s"$javadoc    ${shape.retType} $methodName(${shape.paramsDecl});"
     } else {
       val defaultReturn = defaultMethodReturn(fn, handlerNames)
-      val retAnn        = if (handlerReturnIsNullable(fn, handlerNames)) "@Nullable " else ""
-      s"$javadoc    default $retAnn${shape.retType} $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
+      val declaredRet   =
+        if (handlerReturnIsNullable(fn, handlerNames)) Naming.nullableType(shape.retType) else shape.retType
+      s"$javadoc    default $declaredRet $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
     }
   }
 

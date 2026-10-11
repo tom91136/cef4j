@@ -14,6 +14,10 @@
     <name>cef4j-inprocess-webdriver</name>
     <description>WebDriver adapter for CEF browsers hosted in the client JVM</description>
 
+    <properties>
+        <cef4j.module.name>net.kurobako.cef4j.inprocess.webdriver</cef4j.module.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
@@ -28,8 +32,8 @@
             <artifactId>cef4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>

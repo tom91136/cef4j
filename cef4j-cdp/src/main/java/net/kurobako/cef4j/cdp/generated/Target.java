@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -28,9 +27,9 @@ public final class Target {
      */
     public static final class TargetID implements CdpValue<String> {
         public final String value;
-        public TargetID(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public TargetID(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof TargetID)) return false;
             return value.equals(((TargetID) other).value);
@@ -43,9 +42,9 @@ public final class Target {
      */
     public static final class SessionID implements CdpValue<String> {
         public final String value;
-        public SessionID(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public SessionID(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof SessionID)) return false;
             return value.equals(((SessionID) other).value);
@@ -101,14 +100,16 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> parentId() {
-            return Optional.ofNullable(raw("parentId") == null ? null : new Target.TargetID((String) raw("parentId")));
+            Object value = raw("parentId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Opener target Id
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> openerId() {
-            return Optional.ofNullable(raw("openerId") == null ? null : new Target.TargetID((String) raw("openerId")));
+            Object value = raw("openerId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Whether the target has access to the originating window.
@@ -124,7 +125,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> openerFrameId() {
-            return Optional.ofNullable(raw("openerFrameId") == null ? null : new Page.FrameId((String) raw("openerFrameId")));
+            Object value = raw("openerFrameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
@@ -132,7 +134,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> parentFrameId() {
-            return Optional.ofNullable(raw("parentFrameId") == null ? null : new Page.FrameId((String) raw("parentFrameId")));
+            Object value = raw("parentFrameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Returns the browserContextId field.
@@ -140,7 +143,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
@@ -148,7 +152,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> subtype() {
-            return Optional.ofNullable((String) raw("subtype"));
+            Object value = raw("subtype");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
@@ -156,7 +161,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> embedderData() {
-            return Optional.ofNullable(objectMap(raw("embedderData")));
+            Object value = raw("embedderData");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Sets the targetId field.
@@ -365,14 +371,16 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exclude() {
-            return Optional.ofNullable((Boolean) raw("exclude"));
+            Object value = raw("exclude");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If not present, matches any type.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> type() {
-            return Optional.ofNullable((String) raw("type"));
+            Object value = raw("type");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set, causes exclusion of matching targets from the list.
@@ -464,8 +472,8 @@ public final class Target {
         FULLSCREEN("fullscreen");
         public final String value;
         WindowState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static WindowState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static WindowState of(String value) {
             for (WindowState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -535,7 +543,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> flatten() {
-            return Optional.ofNullable((Boolean) raw("flatten"));
+            Object value = raw("flatten");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the targetId field.
@@ -634,14 +643,16 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bindingName() {
-            return Optional.ofNullable((String) raw("bindingName"));
+            Object value = raw("bindingName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If true, inherits the current root session&#x27;s permissions (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> inheritPermissions() {
-            return Optional.ofNullable((Boolean) raw("inheritPermissions"));
+            Object value = raw("inheritPermissions");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the targetId field.
@@ -705,7 +716,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disposeOnDetach() {
-            return Optional.ofNullable((Boolean) raw("disposeOnDetach"));
+            Object value = raw("disposeOnDetach");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Proxy server, similar to the one passed to --proxy-server
@@ -713,7 +725,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> proxyServer() {
-            return Optional.ofNullable((String) raw("proxyServer"));
+            Object value = raw("proxyServer");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Proxy bypass list, similar to the one passed to --proxy-bypass-list
@@ -721,7 +734,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> proxyBypassList() {
-            return Optional.ofNullable((String) raw("proxyBypassList"));
+            Object value = raw("proxyBypassList");
+            return Optional.ofNullable((String) value);
         }
         /**
          * An optional list of origins to grant unlimited cross-origin access to. Parts of the URL other than those constituting origin are ignored.
@@ -729,7 +743,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> originsWithUniversalNetworkAccess() {
-            return Optional.ofNullable(list(raw("originsWithUniversalNetworkAccess"), element0 -> (String) element0));
+            Object value = raw("originsWithUniversalNetworkAccess");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * If specified, disposes this context when debugging session disconnects.
@@ -875,7 +890,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.WindowState> windowState() {
-            return Optional.ofNullable(raw("windowState") == null ? null : Target.WindowState.of((String) raw("windowState")));
+            Object value = raw("windowState");
+            return Optional.ofNullable(value == null ? null : Target.WindowState.of((String) value));
         }
         /**
          * The browser context to create the page in.
@@ -883,7 +899,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Whether BeginFrames for this target will be controlled via DevTools (headless shell only, not supported on MacOS yet, false by default).
@@ -891,21 +908,24 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableBeginFrameControl() {
-            return Optional.ofNullable((Boolean) raw("enableBeginFrameControl"));
+            Object value = raw("enableBeginFrameControl");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to create a new Window or Tab (false by default, not supported by headless shell).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> newWindow() {
-            return Optional.ofNullable((Boolean) raw("newWindow"));
+            Object value = raw("newWindow");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to create the target in background or foreground (false by default, not supported by headless shell).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> background() {
-            return Optional.ofNullable((Boolean) raw("background"));
+            Object value = raw("background");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to create the target of type &quot;tab&quot;.
@@ -913,7 +933,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> forTab() {
-            return Optional.ofNullable((Boolean) raw("forTab"));
+            Object value = raw("forTab");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to create a hidden target. The hidden target is observable via protocol, but not present in the tab UI strip. Cannot be created with {@code forTab: true}, {@code newWindow: true} or {@code background: false}. The life-time of the tab is limited to the life-time of the session.
@@ -921,7 +942,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hidden() {
-            return Optional.ofNullable((Boolean) raw("hidden"));
+            Object value = raw("hidden");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If specified, the option is used to determine if the new target should be focused or not. By default, the focus behavior depends on the value of the background field. For example, background=false and focus=false will result in the target tab being opened but the browser window remain unchanged (if it was in the background, it will remain in the background) and background=false with focus=undefined will result in the window being focused. Using background: true and focus: true is not supported and will result in an error.
@@ -929,7 +951,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> focus() {
-            return Optional.ofNullable((Boolean) raw("focus"));
+            Object value = raw("focus");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The initial URL the page will be navigated to. An empty string indicates about:blank.
@@ -1186,7 +1209,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.SessionID> sessionId() {
-            return Optional.ofNullable(raw("sessionId") == null ? null : new Target.SessionID((String) raw("sessionId")));
+            Object value = raw("sessionId");
+            return Optional.ofNullable(value == null ? null : new Target.SessionID((String) value));
         }
         /**
          * Deprecated.
@@ -1195,7 +1219,8 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+            Object value = raw("targetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Session to detach.
@@ -1288,7 +1313,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> targetId() {
-            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+            Object value = raw("targetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Sets the targetId field.
@@ -1325,7 +1351,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            return Optional.ofNullable(list(raw("filter"), element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("filter");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Only targets matching filter will be reported. If filter is not specified and target discovery is currently enabled, a filter used for target discovery is used for consistency.
@@ -1381,7 +1408,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.SessionID> sessionId() {
-            return Optional.ofNullable(raw("sessionId") == null ? null : new Target.SessionID((String) raw("sessionId")));
+            Object value = raw("sessionId");
+            return Optional.ofNullable(value == null ? null : new Target.SessionID((String) value));
         }
         /**
          * Deprecated.
@@ -1390,7 +1418,8 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+            Object value = raw("targetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Sets the message field.
@@ -1481,7 +1510,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> flatten() {
-            return Optional.ofNullable((Boolean) raw("flatten"));
+            Object value = raw("flatten");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Only targets matching filter will be attached.
@@ -1489,7 +1519,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            return Optional.ofNullable(list(raw("filter"), element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("filter");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Whether to auto-attach to related targets.
@@ -1591,7 +1622,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            return Optional.ofNullable(list(raw("filter"), element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("filter");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sets the targetId field.
@@ -1662,7 +1694,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            return Optional.ofNullable(list(raw("filter"), element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("filter");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Whether to discover available targets.
@@ -1797,7 +1830,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> panelId() {
-            return Optional.ofNullable((String) raw("panelId"));
+            Object value = raw("panelId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * This can be the page or tab target ID.
@@ -1849,7 +1883,8 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> defaultBrowserContextId() {
-            return Optional.ofNullable(raw("defaultBrowserContextId") == null ? null : new Browser.BrowserContextID((String) raw("defaultBrowserContextId")));
+            Object value = raw("defaultBrowserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * An array of browser context ids.
@@ -1964,7 +1999,8 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+            Object value = raw("targetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Detached session identifier.
@@ -2028,7 +2064,8 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
+            Object value = raw("targetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Identifier of a session which sends a message.
@@ -2218,7 +2255,7 @@ public final class Target {
         public CompletionStage<Void> activateTarget(Target.TargetID targetId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
-            return client.call("Target.activateTarget", params, result_ -> null);
+            return client.call("Target.activateTarget", params);
         }
         /**
          * Activates (focuses) the target.
@@ -2226,7 +2263,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> activateTarget(ActivateTargetRequest request) {
-            return client.call("Target.activateTarget", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.activateTarget", request == null ? null : request.toMap());
         }
         /**
          * Attaches to the target with given id.
@@ -2297,7 +2334,7 @@ public final class Target {
             params.put("targetId", CdpObject.json(targetId));
             bindingName.ifPresent(value_ -> params.put("bindingName", CdpObject.json(value_)));
             inheritPermissions.ifPresent(value_ -> params.put("inheritPermissions", value_));
-            return client.call("Target.exposeDevToolsProtocol", params, result_ -> null);
+            return client.call("Target.exposeDevToolsProtocol", params);
         }
         /**
          * Inject object to the target&#x27;s main frame that provides a communication channel with browser target.
@@ -2319,7 +2356,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> exposeDevToolsProtocol(ExposeDevToolsProtocolRequest request) {
-            return client.call("Target.exposeDevToolsProtocol", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.exposeDevToolsProtocol", request == null ? null : request.toMap());
         }
         /**
          * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
@@ -2419,7 +2456,7 @@ public final class Target {
             Map<String, Object> params = new LinkedHashMap<>();
             sessionId.ifPresent(value_ -> params.put("sessionId", CdpObject.json(value_)));
             targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
-            return client.call("Target.detachFromTarget", params, result_ -> null);
+            return client.call("Target.detachFromTarget", params);
         }
         /**
          * Detaches session with given id.
@@ -2434,7 +2471,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> detachFromTarget(DetachFromTargetRequest request) {
-            return client.call("Target.detachFromTarget", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.detachFromTarget", request == null ? null : request.toMap());
         }
         /**
          * Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
@@ -2444,7 +2481,7 @@ public final class Target {
         public CompletionStage<Void> disposeBrowserContext(Browser.BrowserContextID browserContextId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("browserContextId", CdpObject.json(browserContextId));
-            return client.call("Target.disposeBrowserContext", params, result_ -> null);
+            return client.call("Target.disposeBrowserContext", params);
         }
         /**
          * Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
@@ -2452,7 +2489,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disposeBrowserContext(DisposeBrowserContextRequest request) {
-            return client.call("Target.disposeBrowserContext", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.disposeBrowserContext", request == null ? null : request.toMap());
         }
         /**
          * Returns information about a target.
@@ -2521,7 +2558,7 @@ public final class Target {
             params.put("message", CdpObject.json(message));
             sessionId.ifPresent(value_ -> params.put("sessionId", CdpObject.json(value_)));
             targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
-            return client.call("Target.sendMessageToTarget", params, result_ -> null);
+            return client.call("Target.sendMessageToTarget", params);
         }
         /**
          * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
@@ -2541,7 +2578,7 @@ public final class Target {
          */
         @Deprecated
         public CompletionStage<Void> sendMessageToTarget(SendMessageToTargetRequest request) {
-            return client.call("Target.sendMessageToTarget", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.sendMessageToTarget", request == null ? null : request.toMap());
         }
         /**
          * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
@@ -2557,7 +2594,7 @@ public final class Target {
             params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
             flatten.ifPresent(value_ -> params.put("flatten", value_));
             filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
-            return client.call("Target.setAutoAttach", params, result_ -> null);
+            return client.call("Target.setAutoAttach", params);
         }
         /**
          * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
@@ -2574,7 +2611,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAutoAttach(SetAutoAttachRequest request) {
-            return client.call("Target.setAutoAttach", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.setAutoAttach", request == null ? null : request.toMap());
         }
         /**
          * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
@@ -2589,7 +2626,7 @@ public final class Target {
             params.put("targetId", CdpObject.json(targetId));
             params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
             filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
-            return client.call("Target.autoAttachRelated", params, result_ -> null);
+            return client.call("Target.autoAttachRelated", params);
         }
         /**
          * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
@@ -2608,7 +2645,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> autoAttachRelated(AutoAttachRelatedRequest request) {
-            return client.call("Target.autoAttachRelated", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.autoAttachRelated", request == null ? null : request.toMap());
         }
         /**
          * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
@@ -2620,7 +2657,7 @@ public final class Target {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("discover", CdpObject.json(discover));
             filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
-            return client.call("Target.setDiscoverTargets", params, result_ -> null);
+            return client.call("Target.setDiscoverTargets", params);
         }
         /**
          * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
@@ -2636,7 +2673,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDiscoverTargets(SetDiscoverTargetsRequest request) {
-            return client.call("Target.setDiscoverTargets", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.setDiscoverTargets", request == null ? null : request.toMap());
         }
         /**
          * Enables target discovery for the specified locations, when {@code setDiscoverTargets} was set to {@code true}.
@@ -2647,7 +2684,7 @@ public final class Target {
         public CompletionStage<Void> setRemoteLocations(java.util.List<Target.RemoteLocation> locations) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("locations", CdpObject.json(locations));
-            return client.call("Target.setRemoteLocations", params, result_ -> null);
+            return client.call("Target.setRemoteLocations", params);
         }
         /**
          * Enables target discovery for the specified locations, when {@code setDiscoverTargets} was set to {@code true}.
@@ -2656,7 +2693,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setRemoteLocations(SetRemoteLocationsRequest request) {
-            return client.call("Target.setRemoteLocations", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Target.setRemoteLocations", request == null ? null : request.toMap());
         }
         /**
          * Gets the targetId of the DevTools page target opened for the given target (if any).

@@ -113,7 +113,7 @@ public final class CefUrlRequestStatus implements CefEnum<CefUrlRequestStatus> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefUrlRequestStatus)) return false;
         return this.value == ((CefUrlRequestStatus) obj).value;

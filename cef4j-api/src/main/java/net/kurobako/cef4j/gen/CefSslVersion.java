@@ -112,7 +112,7 @@ public final class CefSslVersion implements CefEnum<CefSslVersion> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefSslVersion)) return false;
         return this.value == ((CefSslVersion) obj).value;

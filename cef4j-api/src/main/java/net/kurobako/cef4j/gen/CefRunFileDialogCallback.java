@@ -3,9 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for {@link net.kurobako.cef4j.gen.CefBrowserHost#runFileDialog(CefFileDialogMode, String, String,

@@ -112,7 +112,8 @@ ${allLines.mkString("\n")}
       val ctorParams  = renderCtorParams(userFields)
       val ctorAssigns = renderCtorAssigns(userFields, "        ")
 
-      val nullableImport = if (userFields.exists(f => !isPrimitive(f.typ))) List("javax.annotation.Nullable") else Nil
+      val nullableImport =
+        if (userFields.exists(f => !isPrimitive(f.typ))) List("org.jspecify.annotations.Nullable") else Nil
       val typeImports = (allTypes.flatMap(Naming.javaImports) ++ nullableImport).distinct.sorted.map(i => s"import $i;")
       val crossPkgImports = if (subPackage.nonEmpty) {
         val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
@@ -238,15 +239,17 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
       fieldPrefix: String
   )(using Naming.Context, DocComments.Context): String =
     fields.map { f =>
-      val doc    = indentDoc(renderFieldDoc(f.name, fieldDocs), docIndent)
-      val prefix = if (isPrimitive(f.typ)) fieldPrefix else s"$fieldPrefix@Nullable "
-      s"$doc$prefix${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
+      val doc      = indentDoc(renderFieldDoc(f.name, fieldDocs), docIndent)
+      val javaType = Naming.javaType(f.typ)
+      val declared = if (isPrimitive(f.typ)) javaType else Naming.nullableType(javaType)
+      s"$doc$fieldPrefix$declared ${Naming.toCamelCase(f.name)};"
     }.mkString("\n")
 
   private def renderCtorParams(fields: List[Field])(using Naming.Context): String =
     fields.map { f =>
-      val ann = if (isPrimitive(f.typ)) "" else "@Nullable "
-      s"$ann${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)}"
+      val javaType = Naming.javaType(f.typ)
+      val declared = if (isPrimitive(f.typ)) javaType else Naming.nullableType(javaType)
+      s"$declared ${Naming.toCamelCase(f.name)}"
     }.mkString(", ")
 
   private def renderCtorAssigns(fields: List[Field], indent: String)(using Naming.Context): String =
@@ -272,12 +275,12 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
 
     if (fields.isEmpty) {
       s"""$pad@Override
-${pad}public boolean equals(Object obj) {
+${pad}public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
 $pad    return this == obj || obj instanceof $className;
 $pad}"""
     } else {
       s"""$pad@Override
-${pad}public boolean equals(Object obj) {
+${pad}public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
 $pad    if (this == obj) return true;
 $pad    if (!(obj instanceof $className)) return false;
 $pad    $className other = ($className) obj;

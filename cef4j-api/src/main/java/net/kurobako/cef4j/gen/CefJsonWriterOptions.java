@@ -116,7 +116,7 @@ public final class CefJsonWriterOptions implements CefEnum<CefJsonWriterOptions>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefJsonWriterOptions)) return false;
         return this.value == ((CefJsonWriterOptions) obj).value;

@@ -14,6 +14,7 @@ import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import net.kurobako.cef4j.test.LocalTestServer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -30,8 +31,8 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/popup", "<html><head><title>popup-page</title></head><body>popup</body></html>"))) {
             WebView view = createAttachedWebView();
             AtomicBoolean popupRequested = new AtomicBoolean();
-            AtomicReference<PopupFeatures> receivedFeatures = new AtomicReference<>();
-            AtomicReference<String> popupTitle = new AtomicReference<>();
+            AtomicReference<@Nullable PopupFeatures> receivedFeatures = new AtomicReference<>();
+            AtomicReference<@Nullable String> popupTitle = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 popupRequested.set(true);
@@ -78,7 +79,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/opener", "<html><body><script>window.open('/popup', '_blank');</script></body></html>",
                 "/popup", "<html><head><title>popup-title</title></head><body>popup</body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<String> popupTitle = new AtomicReference<>();
+            AtomicReference<@Nullable String> popupTitle = new AtomicReference<>();
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = newPopupView();
                 popupView
@@ -107,7 +108,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/first", "<html><head><title>first-popup</title></head><body>first</body></html>",
                 "/second", "<html><head><title>second-popup</title></head><body>second</body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<String> popupTitle = new AtomicReference<>();
+            AtomicReference<@Nullable String> popupTitle = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = newPopupView();
@@ -167,7 +168,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/popup",
                 "<html><head><title>sized-popup</title></head><body>popup</body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<Rectangle2D> popupBounds = new AtomicReference<>();
+            AtomicReference<@Nullable Rectangle2D> popupBounds = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = newPopupView();
@@ -195,7 +196,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/popup",
                 "<html><head><title>small-popup</title></head><body>small</body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<Rectangle2D> popupBounds = new AtomicReference<>();
+            AtomicReference<@Nullable Rectangle2D> popupBounds = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = newPopupView();
@@ -229,7 +230,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                                 + "}, 100);"
                                 + "</script></body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<Rectangle2D> latestBounds = new AtomicReference<>();
+            AtomicReference<@Nullable Rectangle2D> latestBounds = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = newPopupView();

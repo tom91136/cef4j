@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -28,9 +27,9 @@ public final class IO {
      */
     public static final class StreamHandle implements CdpValue<String> {
         public final String value;
-        public StreamHandle(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public StreamHandle(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof StreamHandle)) return false;
             return value.equals(((StreamHandle) other).value);
@@ -206,7 +205,8 @@ public final class IO {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> base64Encoded() {
-            return Optional.ofNullable((Boolean) raw("base64Encoded"));
+            Object value = raw("base64Encoded");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Data that were read.
@@ -270,7 +270,7 @@ public final class IO {
         public CompletionStage<Void> close(IO.StreamHandle handle) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("handle", CdpObject.json(handle));
-            return client.call("IO.close", params, result_ -> null);
+            return client.call("IO.close", params);
         }
         /**
          * Close the stream, discard any temporary backing storage.
@@ -278,7 +278,7 @@ public final class IO {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> close(CloseRequest request) {
-            return client.call("IO.close", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("IO.close", request == null ? null : request.toMap());
         }
         /**
          * Read a chunk of the stream

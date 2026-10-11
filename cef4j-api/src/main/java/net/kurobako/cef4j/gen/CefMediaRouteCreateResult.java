@@ -124,7 +124,7 @@ public final class CefMediaRouteCreateResult implements CefEnum<CefMediaRouteCre
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMediaRouteCreateResult)) return false;
         return this.value == ((CefMediaRouteCreateResult) obj).value;

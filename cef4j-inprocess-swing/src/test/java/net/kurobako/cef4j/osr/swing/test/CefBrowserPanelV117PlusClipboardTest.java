@@ -448,7 +448,9 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
             throw new RuntimeException(cause);
         } catch (TimeoutException e) {
             future.cancel(true);
-            throw new TimeoutException(timeoutMessage);
+            TimeoutException failure = new TimeoutException(timeoutMessage);
+            failure.initCause(e);
+            throw failure;
         } finally {
             executor.shutdownNow();
         }

@@ -164,7 +164,7 @@ public final class CefCursorType implements CefEnum<CefCursorType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefCursorType)) return false;
         return this.value == ((CefCursorType) obj).value;

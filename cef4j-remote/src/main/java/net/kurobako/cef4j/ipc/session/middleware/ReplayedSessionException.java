@@ -1,6 +1,6 @@
 package net.kurobako.cef4j.ipc.session.middleware;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** Failure terminal recorded from a live session and reproduced without loading its original exception class. */
 public final class ReplayedSessionException extends RuntimeException {

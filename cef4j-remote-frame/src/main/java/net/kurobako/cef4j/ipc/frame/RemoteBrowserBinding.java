@@ -8,8 +8,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
@@ -22,6 +20,7 @@ import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.JsResult;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.remote.RemoteViewportConstraints;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     private final FrameTransport.FrameConsumer frames;
     private final AtomicLong desiredSize = new AtomicLong(packSize(1, 1));
     private final AtomicLong reportedSize = new AtomicLong(-1);
-    private final AtomicReference<BrowserHost> hostRef = new AtomicReference<>();
+    private final AtomicReference<@Nullable BrowserHost> hostRef = new AtomicReference<>();
     private volatile CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
 
     @Nullable
@@ -71,10 +70,10 @@ public final class RemoteBrowserBinding implements AutoCloseable {
      * @param frames receives frames on the transport's thread
      */
     public RemoteBrowserBinding(
-            @Nonnull String owner,
-            @Nonnull Executor uiThread,
-            @Nonnull FrameTransportFactory frameTransportFactory,
-            @Nonnull FrameTransport.FrameConsumer frames) {
+            String owner,
+            Executor uiThread,
+            FrameTransportFactory frameTransportFactory,
+            FrameTransport.FrameConsumer frames) {
         this.owner = Objects.requireNonNull(owner, "owner");
         this.uiThread = Objects.requireNonNull(uiThread, "uiThread");
         this.frameTransportFactory = Objects.requireNonNull(frameTransportFactory, "frameTransportFactory");
@@ -85,7 +84,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
      * Wires this binding to a session with a connected transport. Repeating the call with the same session is
      * idempotent; attaching to a different session is rejected because browser handles are session-scoped.
      */
-    public synchronized void attach(@Nonnull CefSession session) {
+    public synchronized void attach(CefSession session) {
         if (attachedOnce) {
             if (this.session == session) return;
             throw new IllegalStateException(owner + " instances cannot be attached to more than one session");
@@ -163,19 +162,16 @@ public final class RemoteBrowserBinding implements AutoCloseable {
         return Optional.ofNullable(hostRef.get());
     }
 
-    @Nonnull
     public CompletableFuture<RemoteHandle> browserReady() {
         return browserHandle.copy();
     }
 
-    @Nonnull
-    public RemoteHandle awaitBrowserHandle(@Nonnull Duration timeout) throws Exception {
+    public RemoteHandle awaitBrowserHandle(Duration timeout) throws Exception {
         return browserHandle.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     /** Completes when the load is queued (server-side ack); does not wait for page rendering. */
-    @Nonnull
-    public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+    public CompletableFuture<Void> loadUrl(String url) {
         return browserHandle.thenCompose(handle ->
                 new Browser(requireSession(), handle).getMainFrame().thenCompose(frame -> frame.loadUrl(url)));
     }
@@ -184,8 +180,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
      * Evaluates JS in the main frame. Objects and arrays come back JSON-stringified, primitives in their string form,
      * and null/undefined as an empty string; JS errors fail the future.
      */
-    @Nonnull
-    public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+    public CompletableFuture<String> evaluateJavascript(String script) {
         return browserHandle.thenCompose(handle -> {
             CefSession current = requireSession();
             return new Browser(current, handle)
@@ -198,7 +193,6 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     }
 
     /** Requests a viewport resize after queued UI work and completes once the remote runtime acknowledges it. */
-    @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
         RemoteViewportConstraints.validate(width, height);
         CompletableFuture<Void> queuedUiWork = new CompletableFuture<>();
@@ -257,7 +251,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
 
     /** Observes best-effort asynchronous work so failures are visible without blocking the UI thread. */
     @SuppressWarnings("FutureReturnValueIgnored")
-    public void observe(@Nonnull CompletableFuture<?> future, @Nonnull String action) {
+    public void observe(CompletableFuture<?> future, String action) {
         future.whenComplete((ignored, failure) -> {
             if (failure == null) return;
             if (session == null) LOG.debug("{} stopped during release: {}", action, failure.toString());
@@ -324,7 +318,6 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     /** Creates and subscribes a frame transport for the attached session's browser. */
     @FunctionalInterface
     public interface FrameTransportFactory {
-        @Nonnull
-        FrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser);
+        FrameTransport bind(CefSession session, RemoteHandle browser);
     }
 }

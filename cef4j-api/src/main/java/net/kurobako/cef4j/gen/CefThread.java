@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A simple thread abstraction that establishes a message loop on a new thread. The consumer uses CefTaskRunner to
@@ -92,10 +91,10 @@ public interface CefThread extends CefLibraryObject {
      */
     static Optional<CefThread> create(
             @Nullable String displayName,
-            @Nonnull CefThreadPriority priority,
-            @Nonnull CefMessageLoopType messageLoopType,
+            CefThreadPriority priority,
+            CefMessageLoopType messageLoopType,
             int stoppable,
-            @Nonnull CefComInitMode comInitMode) {
+            CefComInitMode comInitMode) {
         return Optional.ofNullable(NativePeer.create0(displayName, priority, messageLoopType, stoppable, comInitMode));
     }
 
@@ -176,13 +175,13 @@ public interface CefThread extends CefLibraryObject {
 
         static native CefThread create0(
                 @Nullable String displayName,
-                @Nonnull CefThreadPriority priority,
-                @Nonnull CefMessageLoopType messageLoopType,
+                CefThreadPriority priority,
+                CefMessageLoopType messageLoopType,
                 int stoppable,
-                @Nonnull CefComInitMode comInitMode);
+                CefComInitMode comInitMode);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

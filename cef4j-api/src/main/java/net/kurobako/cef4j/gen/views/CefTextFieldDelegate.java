@@ -2,12 +2,11 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefKeyEvent;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle Textfield events. The methods of this class will be called on the browser process
@@ -41,7 +40,7 @@ public interface CefTextFieldDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield__delegate_8h.html">views/cef_textfield_delegate.h:53</a>
      */
-    default boolean onKeyEvent(@Nullable CefTextField textfield, @Nonnull CefKeyEvent event) {
+    default boolean onKeyEvent(@Nullable CefTextField textfield, CefKeyEvent event) {
         return false;
     }
 
@@ -72,7 +71,7 @@ public interface CefTextFieldDelegate extends CefClientHandler {
         }
 
         @Override
-        public boolean onKeyEvent(@Nullable CefTextField textfield, @Nonnull CefKeyEvent event) {
+        public boolean onKeyEvent(@Nullable CefTextField textfield, CefKeyEvent event) {
             for (CefTextFieldDelegate d : delegates) {
                 if (d.onKeyEvent(textfield, event)) return true;
             }

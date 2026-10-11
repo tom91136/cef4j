@@ -9,15 +9,14 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Window;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefMouseButtonType;
 import net.kurobako.cef4j.gen.CefMouseEvent;
+import org.jspecify.annotations.Nullable;
 
 final class CefWebViewPopupSurface {
     private final CefWebView view;
 
-    @Nullable
-    private javafx.stage.Popup popup;
+    private javafx.stage.@Nullable Popup popup;
 
     @Nullable
     private ImageView imageView;

@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -131,8 +130,8 @@ public final class PWA {
         BROWSER("browser");
         public final String value;
         DisplayMode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DisplayMode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DisplayMode of(String value) {
             for (DisplayMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -214,7 +213,8 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> installUrlOrBundleUrl() {
-            return Optional.ofNullable((String) raw("installUrlOrBundleUrl"));
+            Object value = raw("installUrlOrBundleUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the manifestId field.
@@ -307,7 +307,8 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the manifestId field.
@@ -462,14 +463,16 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> linkCapturing() {
-            return Optional.ofNullable((Boolean) raw("linkCapturing"));
+            Object value = raw("linkCapturing");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the displayMode field.
          * @return the protocol field value, empty when absent
          */
         public Optional<PWA.DisplayMode> displayMode() {
-            return Optional.ofNullable(raw("displayMode") == null ? null : PWA.DisplayMode.of((String) raw("displayMode")));
+            Object value = raw("displayMode");
+            return Optional.ofNullable(value == null ? null : PWA.DisplayMode.of((String) value));
         }
         /**
          * Sets the manifestId field.
@@ -600,7 +603,7 @@ public final class PWA {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
             installUrlOrBundleUrl.ifPresent(value_ -> params.put("installUrlOrBundleUrl", CdpObject.json(value_)));
-            return client.call("PWA.install", params, result_ -> null);
+            return client.call("PWA.install", params);
         }
         /**
          * Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
@@ -628,7 +631,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> install(InstallRequest request) {
-            return client.call("PWA.install", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("PWA.install", request == null ? null : request.toMap());
         }
         /**
          * Uninstalls the given manifest_id and closes any opened app windows.
@@ -638,7 +641,7 @@ public final class PWA {
         public CompletionStage<Void> uninstall(String manifestId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.uninstall", params, result_ -> null);
+            return client.call("PWA.uninstall", params);
         }
         /**
          * Uninstalls the given manifest_id and closes any opened app windows.
@@ -646,7 +649,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> uninstall(UninstallRequest request) {
-            return client.call("PWA.uninstall", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("PWA.uninstall", request == null ? null : request.toMap());
         }
         /**
          * Launches the installed web app, or an url in the same web app instead of the default start url if it is provided. Returns a page Target.TargetID which can be used to attach to via Target.attachToTarget or similar APIs.
@@ -708,7 +711,7 @@ public final class PWA {
         public CompletionStage<Void> openCurrentPageInApp(String manifestId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.openCurrentPageInApp", params, result_ -> null);
+            return client.call("PWA.openCurrentPageInApp", params);
         }
         /**
          * Opens the current page in its web app identified by the manifest id, needs to be called on a page target. This function returns immediately without waiting for the app to finish loading.
@@ -716,7 +719,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> openCurrentPageInApp(OpenCurrentPageInAppRequest request) {
-            return client.call("PWA.openCurrentPageInApp", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("PWA.openCurrentPageInApp", request == null ? null : request.toMap());
         }
         /**
          * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.
@@ -732,7 +735,7 @@ public final class PWA {
             params.put("manifestId", CdpObject.json(manifestId));
             linkCapturing.ifPresent(value_ -> params.put("linkCapturing", value_));
             displayMode.ifPresent(value_ -> params.put("displayMode", CdpObject.json(value_)));
-            return client.call("PWA.changeAppUserSettings", params, result_ -> null);
+            return client.call("PWA.changeAppUserSettings", params);
         }
         /**
          * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.
@@ -752,7 +755,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> changeAppUserSettings(ChangeAppUserSettingsRequest request) {
-            return client.call("PWA.changeAppUserSettings", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("PWA.changeAppUserSettings", request == null ? null : request.toMap());
         }
     }
 }

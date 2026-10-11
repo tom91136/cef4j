@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to JavaScript dialogs. The methods of this class will be called on
@@ -53,7 +52,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
     default boolean onJsDialog(
             @Nullable CefBrowser browser,
             @Nullable String originUrl,
-            @Nonnull CefJsDialogType dialogType,
+            CefJsDialogType dialogType,
             @Nullable String messageText,
             @Nullable String defaultPromptText,
             @Nullable CefJsDialogCallback callback,
@@ -129,7 +128,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
         public boolean onJsDialog(
                 @Nullable CefBrowser browser,
                 @Nullable String originUrl,
-                @Nonnull CefJsDialogType dialogType,
+                CefJsDialogType dialogType,
                 @Nullable String messageText,
                 @Nullable String defaultPromptText,
                 @Nullable CefJsDialogCallback callback,

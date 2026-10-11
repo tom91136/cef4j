@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefDockingMode;
 import net.kurobako.cef4j.gen.CefInsets;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Controller for an overlay that contains a contents View added via
@@ -125,7 +124,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:93</a>
      */
-    void setBounds(@Nonnull CefRect bounds);
+    void setBounds(CefRect bounds);
 
     /**
      * Returns the bounds (size and position) of this overlay in parent coordinates.
@@ -166,7 +165,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:120</a>
      */
-    void setSize(@Nonnull CefSize size);
+    void setSize(CefSize size);
 
     /**
      * Returns the size of this overlay in parent coordinates.
@@ -195,7 +194,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:139</a>
      */
-    void setPosition(@Nonnull CefPoint position);
+    void setPosition(CefPoint position);
 
     /**
      * Returns the position of this overlay in parent coordinates.
@@ -220,7 +219,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:157</a>
      */
-    void setInsets(@Nonnull CefInsets insets);
+    void setInsets(CefInsets insets);
 
     /**
      * Returns the insets for this overlay in parent coordinates.
@@ -371,7 +370,7 @@ public interface CefOverlayController extends CefLibraryObject {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             setBounds0(nativePtr, bounds);
         }
@@ -389,7 +388,7 @@ public interface CefOverlayController extends CefLibraryObject {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             setSize0(nativePtr, size);
         }
@@ -401,7 +400,7 @@ public interface CefOverlayController extends CefLibraryObject {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             setPosition0(nativePtr, position);
         }
@@ -413,7 +412,7 @@ public interface CefOverlayController extends CefLibraryObject {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             setInsets0(nativePtr, insets);
         }
@@ -460,21 +459,21 @@ public interface CefOverlayController extends CefLibraryObject {
 
         static native void destroy0(long self);
 
-        static native void setBounds0(long self, @Nonnull CefRect bounds);
+        static native void setBounds0(long self, CefRect bounds);
 
         static native CefRect getBounds0(long self);
 
         static native CefRect getBoundsInScreen0(long self);
 
-        static native void setSize0(long self, @Nonnull CefSize size);
+        static native void setSize0(long self, CefSize size);
 
         static native CefSize getSize0(long self);
 
-        static native void setPosition0(long self, @Nonnull CefPoint position);
+        static native void setPosition0(long self, CefPoint position);
 
         static native CefPoint getPosition0(long self);
 
-        static native void setInsets0(long self, @Nonnull CefInsets insets);
+        static native void setInsets0(long self, CefInsets insets);
 
         static native CefInsets getInsets0(long self);
 
@@ -487,7 +486,7 @@ public interface CefOverlayController extends CefLibraryObject {
         static native boolean isDrawn0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

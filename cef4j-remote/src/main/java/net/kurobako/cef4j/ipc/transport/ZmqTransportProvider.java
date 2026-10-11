@@ -2,34 +2,26 @@ package net.kurobako.cef4j.ipc.transport;
 
 import java.time.Duration;
 import java.util.function.BooleanSupplier;
-import javax.annotation.Nonnull;
 
 /** ZeroMQ transport service provider. */
 public final class ZmqTransportProvider implements CefTransportProvider {
     @Override
-    @Nonnull
     public String name() {
         return "zmq";
     }
 
     @Override
-    @Nonnull
-    public CefTransport connect(@Nonnull String endpoint) {
+    public CefTransport connect(String endpoint) {
         return ZmqTransport.connect(endpoint);
     }
 
     @Override
-    @Nonnull
-    public CefTransport connect(@Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity) {
+    public CefTransport connect(String endpoint, BooleanSupplier reconnectContinuity) {
         return ZmqTransport.connect(endpoint, reconnectContinuity);
     }
 
     @Override
-    @Nonnull
-    public CefTransport connect(
-            @Nonnull String endpoint,
-            @Nonnull BooleanSupplier reconnectContinuity,
-            @Nonnull Duration reconnectTimeout) {
+    public CefTransport connect(String endpoint, BooleanSupplier reconnectContinuity, Duration reconnectTimeout) {
         return ZmqTransport.connect(endpoint, reconnectContinuity, reconnectTimeout);
     }
 }

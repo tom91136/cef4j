@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.transport;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 
 /**
  * Byte-frame channel between a client and the CEF runtime server. Opaque to envelope/wire format - the session layer
@@ -33,19 +32,19 @@ public interface CefTransport extends Closeable {
      *     {@code limit} on return. Buffer is not retained past this call.
      * @throws CefTransportException if the transport is closed, disconnected, or the frame cannot be sent.
      */
-    void send(@Nonnull ByteBuffer frame) throws CefTransportException;
+    void send(ByteBuffer frame) throws CefTransportException;
 
     /**
      * Register the receive handler. Single subscriber; calling twice replaces the previous handler. The buffer passed
      * to {@code handler} is owned by the transport and valid only for the duration of the callback.
      */
-    void onReceive(@Nonnull Consumer<ByteBuffer> handler);
+    void onReceive(Consumer<ByteBuffer> handler);
 
     /**
      * Register the remote-disconnect handler. Single subscriber; fires at most once per transport lifetime. Not fired
      * for local {@link #close} calls.
      */
-    void onDisconnect(@Nonnull Runnable handler);
+    void onDisconnect(Runnable handler);
 
     /** Returns {@code true} if the transport is currently connected and capable of sending. */
     boolean isConnected();

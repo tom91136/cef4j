@@ -2,14 +2,14 @@ package net.kurobako.cef4j.test;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 
 /** Records the first uncaught thread failure so an owning test can report it on the test thread. */
 public final class UncaughtExceptionTracker implements Thread.UncaughtExceptionHandler {
-    private final AtomicReference<Failure> failure = new AtomicReference<>();
+    private final AtomicReference<@Nullable Failure> failure = new AtomicReference<>();
 
     @Override
-    public void uncaughtException(@Nonnull Thread thread, @Nonnull Throwable throwable) {
+    public void uncaughtException(Thread thread, Throwable throwable) {
         failure.compareAndSet(null, new Failure(thread.getName(), throwable));
     }
 

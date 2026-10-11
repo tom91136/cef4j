@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class representing a binary value. Can be used on any process and thread.
@@ -115,7 +114,7 @@ public interface CefBinaryValue extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:295</a>
      */
-    long getData(@Nonnull ByteBuffer buffer, long dataOffset);
+    long getData(ByteBuffer buffer, long dataOffset);
     /**
      * Decodes the base64 encoded string {@code data}. The returned value will be {@code null} if the decoding fails.
      *
@@ -138,7 +137,7 @@ public interface CefBinaryValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:239</a>
      */
-    static Optional<CefBinaryValue> create(@Nonnull ByteBuffer data) {
+    static Optional<CefBinaryValue> create(ByteBuffer data) {
         return Optional.ofNullable(NativePeer.create0(data));
     }
 
@@ -230,7 +229,7 @@ public interface CefBinaryValue extends CefLibraryObject {
         }
 
         @Override
-        public long getData(@Nonnull ByteBuffer buffer, long dataOffset) {
+        public long getData(ByteBuffer buffer, long dataOffset) {
             checkNotClosed();
             return getData0(nativePtr, buffer, dataOffset);
         }
@@ -249,14 +248,14 @@ public interface CefBinaryValue extends CefLibraryObject {
 
         static native long getSize0(long self);
 
-        static native long getData0(long self, @Nonnull ByteBuffer buffer, long dataOffset);
+        static native long getData0(long self, ByteBuffer buffer, long dataOffset);
 
         static native CefBinaryValue base64Decode0(@Nullable String data);
 
-        static native CefBinaryValue create0(@Nonnull ByteBuffer data);
+        static native CefBinaryValue create0(ByteBuffer data);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

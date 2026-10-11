@@ -15,6 +15,8 @@
     <description>Sample Swing and JavaFX browsers using cef4j</description>
 
     <properties>
+
+        <japicmp.skip>true</japicmp.skip>
         <javafx.version>19.0.2.1</javafx.version>
         <bytecode.check.skip>true</bytecode.check.skip>
         <exec.mainClass>net.kurobako.cef4j.sample.SwingBrowserApp</exec.mainClass>
@@ -39,8 +41,8 @@
             <artifactId>cef4j-inprocess-jfx</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

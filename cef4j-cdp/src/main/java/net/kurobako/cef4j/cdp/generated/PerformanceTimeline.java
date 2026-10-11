@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -59,21 +58,24 @@ public final class PerformanceTimeline {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> elementId() {
-            return Optional.ofNullable((String) raw("elementId"));
+            Object value = raw("elementId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The URL of the image (may be trimmed).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the nodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Sets the renderTime field.
@@ -184,7 +186,8 @@ public final class PerformanceTimeline {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Sets the previousRect field.
@@ -346,14 +349,16 @@ public final class PerformanceTimeline {
          * @return the protocol field value, empty when absent
          */
         public Optional<PerformanceTimeline.LargestContentfulPaint> lcpDetails() {
-            return Optional.ofNullable(raw("lcpDetails") == null ? null : PerformanceTimeline.LargestContentfulPaint.fromMap(java.util.Objects.requireNonNull(objectMap(raw("lcpDetails")))));
+            Object value = raw("lcpDetails");
+            return Optional.ofNullable(value == null ? null : PerformanceTimeline.LargestContentfulPaint.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the layoutShiftDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<PerformanceTimeline.LayoutShift> layoutShiftDetails() {
-            return Optional.ofNullable(raw("layoutShiftDetails") == null ? null : PerformanceTimeline.LayoutShift.fromMap(java.util.Objects.requireNonNull(objectMap(raw("layoutShiftDetails")))));
+            Object value = raw("layoutShiftDetails");
+            return Optional.ofNullable(value == null ? null : PerformanceTimeline.LayoutShift.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifies the frame that this event is related to. Empty for non-frame targets.
@@ -517,7 +522,7 @@ public final class PerformanceTimeline {
         public CompletionStage<Void> enable(java.util.List<String> eventTypes) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventTypes", CdpObject.json(eventTypes));
-            return client.call("PerformanceTimeline.enable", params, result_ -> null);
+            return client.call("PerformanceTimeline.enable", params);
         }
         /**
          * Previously buffered events would be reported before method returns. See also: timelineEventAdded
@@ -525,7 +530,7 @@ public final class PerformanceTimeline {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("PerformanceTimeline.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("PerformanceTimeline.enable", request == null ? null : request.toMap());
         }
         /**
          * Sent when a performance timeline event is added. See reportPerformanceTimeline method.

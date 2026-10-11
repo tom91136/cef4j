@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -58,6 +56,7 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefScreenInfo;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Swing off-screen rendering panel for a CEF browser. */
 @SuppressWarnings({"this-escape", "resource"})
@@ -117,8 +116,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
      *     {@link Cef#addAppHandler(CefApp)} before initialisation
      * @throws IllegalStateException if CEF has been terminated
      */
-    public static void initialise(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, Optional<CefApp> appHandler) {
+    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs, Optional<CefApp> appHandler) {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
@@ -426,7 +424,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
-            public boolean getRootScreenRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
+            public boolean getRootScreenRect(@Nullable CefBrowser b, CefRect.Mutable rect) {
                 if (!screenLocationValid) return false;
                 rect.x = cachedScreenX;
                 rect.y = cachedScreenY;
@@ -436,7 +434,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             }
 
             @Override
-            public void getViewRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
+            public void getViewRect(@Nullable CefBrowser b, CefRect.Mutable rect) {
                 rect.x = 0;
                 rect.y = 0;
                 rect.width = Math.max(1, getWidth());
@@ -452,7 +450,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             }
 
             @Override
-            public boolean getScreenInfo(@Nullable CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
+            public boolean getScreenInfo(@Nullable CefBrowser b, CefScreenInfo.Mutable screenInfo) {
                 GraphicsConfiguration gc = getGraphicsConfiguration();
                 if (gc == null) return false;
                 float scale = getEffectiveScaleFactor();
@@ -486,17 +484,17 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             }
 
             @Override
-            public void onPopupSize(@Nullable CefBrowser browser, @Nonnull CefRect rect) {
+            public void onPopupSize(@Nullable CefBrowser browser, CefRect rect) {
                 popupRect = new CefRect(rect.x, rect.y, rect.width, rect.height);
             }
 
             @Override
             public void onPaint(
                     @Nullable CefBrowser b,
-                    @Nonnull CefPaintElementType type,
+                    CefPaintElementType type,
                     long dirtyRectsCount,
-                    @Nonnull CefRect[] dirtyRects,
-                    @Nonnull ByteBuffer buffer,
+                    CefRect[] dirtyRects,
+                    ByteBuffer buffer,
                     int width,
                     int height) {
                 boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;

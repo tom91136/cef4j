@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -96,7 +95,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return Optional.ofNullable(raw("requestId") == null ? null : new Network.RequestId((String) raw("requestId")));
+            Object value = raw("requestId");
+            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
         }
         /**
          * Returns the url field.
@@ -174,8 +174,8 @@ public final class Audits {
         EXCLUDESCHEMEMISMATCH("ExcludeSchemeMismatch");
         public final String value;
         CookieExclusionReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieExclusionReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieExclusionReason of(String value) {
             for (CookieExclusionReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -202,8 +202,8 @@ public final class Audits {
         WARNTHIRDPARTYCOOKIEHEURISTIC("WarnThirdPartyCookieHeuristic");
         public final String value;
         CookieWarningReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieWarningReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieWarningReason of(String value) {
             for (CookieWarningReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -218,8 +218,8 @@ public final class Audits {
         READCOOKIE("ReadCookie");
         public final String value;
         CookieOperation(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieOperation of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieOperation of(String value) {
             for (CookieOperation constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -235,8 +235,8 @@ public final class Audits {
         HEURISTICS("Heuristics");
         public final String value;
         InsightType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InsightType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InsightType of(String value) {
             for (InsightType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -264,7 +264,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> tableEntryUrl() {
-            return Optional.ofNullable((String) raw("tableEntryUrl"));
+            Object value = raw("tableEntryUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the type field.
@@ -308,14 +309,16 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedCookie> cookie() {
-            return Optional.ofNullable(raw("cookie") == null ? null : Audits.AffectedCookie.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cookie")))));
+            Object value = raw("cookie");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedCookie.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the rawCookieLine field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rawCookieLine() {
-            return Optional.ofNullable((String) raw("rawCookieLine"));
+            Object value = raw("rawCookieLine");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the cookieWarningReasons field.
@@ -343,28 +346,32 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> siteForCookies() {
-            return Optional.ofNullable((String) raw("siteForCookies"));
+            Object value = raw("siteForCookies");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the cookieUrl field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cookieUrl() {
-            return Optional.ofNullable((String) raw("cookieUrl"));
+            Object value = raw("cookieUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return Optional.ofNullable(raw("request") == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("request")))));
+            Object value = raw("request");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The recommended solution to the issue.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieIssueInsight> insight() {
-            return Optional.ofNullable(raw("insight") == null ? null : Audits.CookieIssueInsight.fromMap(java.util.Objects.requireNonNull(objectMap(raw("insight")))));
+            Object value = raw("insight");
+            return Optional.ofNullable(value == null ? null : Audits.CookieIssueInsight.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * If AffectedCookie is not set then rawCookieLine contains the raw Set-Cookie header string. This hints at a problem where the cookie line is syntactically or semantically malformed in a way that no valid cookie could be created.
@@ -509,8 +516,8 @@ public final class Audits {
         DOCUMENTCOOKIE("DocumentCookie");
         public final String value;
         PerformanceIssueType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PerformanceIssueType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PerformanceIssueType of(String value) {
             for (PerformanceIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -538,7 +545,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            return Optional.ofNullable(raw("sourceCodeLocation") == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("sourceCodeLocation")))));
+            Object value = raw("sourceCodeLocation");
+            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the performanceIssueType field.
@@ -577,8 +585,8 @@ public final class Audits {
         MIXEDCONTENTWARNING("MixedContentWarning");
         public final String value;
         MixedContentResolutionStatus(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static MixedContentResolutionStatus of(@Nonnull String value) {
+        public String value() { return value; }
+        public static MixedContentResolutionStatus of(String value) {
             for (MixedContentResolutionStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -620,8 +628,8 @@ public final class Audits {
         XSLT("XSLT");
         public final String value;
         MixedContentResourceType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static MixedContentResourceType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static MixedContentResourceType of(String value) {
             for (MixedContentResourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -641,7 +649,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.MixedContentResourceType> resourceType() {
-            return Optional.ofNullable(raw("resourceType") == null ? null : Audits.MixedContentResourceType.of((String) raw("resourceType")));
+            Object value = raw("resourceType");
+            return Optional.ofNullable(value == null ? null : Audits.MixedContentResourceType.of((String) value));
         }
         /**
          * The way the mixed content issue is being resolved.
@@ -669,14 +678,16 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return Optional.ofNullable(raw("request") == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("request")))));
+            Object value = raw("request");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Optional because not every mixed content issue is necessarily linked to a frame.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> frame() {
-            return Optional.ofNullable(raw("frame") == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(raw("frame")))));
+            Object value = raw("frame");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The type of resource causing the mixed content issue (css, js, iframe, form,...). Marked as optional because it is mapped to from blink::mojom::RequestContextType, which will be replaced by network::mojom::RequestDestination
@@ -774,8 +785,8 @@ public final class Audits {
         SRIMESSAGESIGNATUREMISMATCH("SRIMessageSignatureMismatch");
         public final String value;
         BlockedByResponseReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static BlockedByResponseReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static BlockedByResponseReason of(String value) {
             for (BlockedByResponseReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -803,14 +814,16 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> parentFrame() {
-            return Optional.ofNullable(raw("parentFrame") == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(raw("parentFrame")))));
+            Object value = raw("parentFrame");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the blockedFrame field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> blockedFrame() {
-            return Optional.ofNullable(raw("blockedFrame") == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(raw("blockedFrame")))));
+            Object value = raw("blockedFrame");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the reason field.
@@ -882,8 +895,8 @@ public final class Audits {
         HEAVYADWARNING("HeavyAdWarning");
         public final String value;
         HeavyAdResolutionStatus(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static HeavyAdResolutionStatus of(@Nonnull String value) {
+        public String value() { return value; }
+        public static HeavyAdResolutionStatus of(String value) {
             for (HeavyAdResolutionStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -899,8 +912,8 @@ public final class Audits {
         CPUPEAKLIMIT("CpuPeakLimit");
         public final String value;
         HeavyAdReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static HeavyAdReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static HeavyAdReason of(String value) {
             for (HeavyAdReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -977,8 +990,8 @@ public final class Audits {
         KWASMEVALVIOLATION("kWasmEvalViolation");
         public final String value;
         ContentSecurityPolicyViolationType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ContentSecurityPolicyViolationType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ContentSecurityPolicyViolationType of(String value) {
             for (ContentSecurityPolicyViolationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -998,7 +1011,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ScriptId> scriptId() {
-            return Optional.ofNullable(raw("scriptId") == null ? null : new Runtime.ScriptId((String) raw("scriptId")));
+            Object value = raw("scriptId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ScriptId((String) value));
         }
         /**
          * Returns the url field.
@@ -1080,7 +1094,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> blockedURL() {
-            return Optional.ofNullable((String) raw("blockedURL"));
+            Object value = raw("blockedURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Specific directive that is violated, causing the CSP issue.
@@ -1108,21 +1123,24 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> frameAncestor() {
-            return Optional.ofNullable(raw("frameAncestor") == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(raw("frameAncestor")))));
+            Object value = raw("frameAncestor");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the sourceCodeLocation field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            return Optional.ofNullable(raw("sourceCodeLocation") == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("sourceCodeLocation")))));
+            Object value = raw("sourceCodeLocation");
+            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            return Optional.ofNullable(raw("violatingNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("violatingNodeId")).longValue()));
+            Object value = raw("violatingNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * The url not included in allowed sources.
@@ -1232,8 +1250,8 @@ public final class Audits {
         CREATIONISSUE("CreationIssue");
         public final String value;
         SharedArrayBufferIssueType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SharedArrayBufferIssueType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SharedArrayBufferIssueType of(String value) {
             for (SharedArrayBufferIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1333,28 +1351,32 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> location() {
-            return Optional.ofNullable(raw("location") == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("location")))));
+            Object value = raw("location");
+            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the initiatorOrigin field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> initiatorOrigin() {
-            return Optional.ofNullable((String) raw("initiatorOrigin"));
+            Object value = raw("initiatorOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the resourceIPAddressSpace field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.IPAddressSpace> resourceIPAddressSpace() {
-            return Optional.ofNullable(raw("resourceIPAddressSpace") == null ? null : Network.IPAddressSpace.of((String) raw("resourceIPAddressSpace")));
+            Object value = raw("resourceIPAddressSpace");
+            return Optional.ofNullable(value == null ? null : Network.IPAddressSpace.of((String) value));
         }
         /**
          * Returns the clientSecurityState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ClientSecurityState> clientSecurityState() {
-            return Optional.ofNullable(raw("clientSecurityState") == null ? null : Network.ClientSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(raw("clientSecurityState")))));
+            Object value = raw("clientSecurityState");
+            return Optional.ofNullable(value == null ? null : Network.ClientSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the corsErrorStatus field.
@@ -1483,8 +1505,8 @@ public final class Audits {
         NAVIGATIONREGISTRATIONUNIQUESCOPEALREADYSET("NavigationRegistrationUniqueScopeAlreadySet");
         public final String value;
         AttributionReportingIssueType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AttributionReportingIssueType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AttributionReportingIssueType of(String value) {
             for (AttributionReportingIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1523,8 +1545,8 @@ public final class Audits {
         WRITEERRORUNSUPPORTEDTYPE("WriteErrorUnsupportedType");
         public final String value;
         SharedDictionaryError(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SharedDictionaryError of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SharedDictionaryError of(String value) {
             for (SharedDictionaryError constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1562,8 +1584,8 @@ public final class Audits {
         SIGNATUREBASEUNSUPPORTEDCOMPONENT("SignatureBaseUnsupportedComponent");
         public final String value;
         SRIMessageSignatureError(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SRIMessageSignatureError of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SRIMessageSignatureError of(String value) {
             for (SRIMessageSignatureError constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1580,8 +1602,8 @@ public final class Audits {
         INCORRECTDIGESTLENGTH("IncorrectDigestLength");
         public final String value;
         UnencodedDigestError(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static UnencodedDigestError of(@Nonnull String value) {
+        public String value() { return value; }
+        public static UnencodedDigestError of(String value) {
             for (UnencodedDigestError constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1600,8 +1622,8 @@ public final class Audits {
         INVALIDURLPATTERN("InvalidUrlPattern");
         public final String value;
         ConnectionAllowlistError(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ConnectionAllowlistError of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ConnectionAllowlistError of(String value) {
             for (ConnectionAllowlistError constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1629,21 +1651,24 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return Optional.ofNullable(raw("request") == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("request")))));
+            Object value = raw("request");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            return Optional.ofNullable(raw("violatingNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("violatingNodeId")).longValue()));
+            Object value = raw("violatingNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Returns the invalidParameter field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> invalidParameter() {
-            return Optional.ofNullable((String) raw("invalidParameter"));
+            Object value = raw("invalidParameter");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the violationType field.
@@ -1821,7 +1846,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> location() {
-            return Optional.ofNullable(raw("location") == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("location")))));
+            Object value = raw("location");
+            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the url field.
@@ -2074,8 +2100,8 @@ public final class Audits {
         FORMMODELCONTEXTPARAMETERMISSINGNAME("FormModelContextParameterMissingName");
         public final String value;
         GenericIssueErrorType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static GenericIssueErrorType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static GenericIssueErrorType of(String value) {
             for (GenericIssueErrorType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2103,28 +2129,32 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            return Optional.ofNullable(raw("violatingNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("violatingNodeId")).longValue()));
+            Object value = raw("violatingNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Returns the violatingNodeAttribute field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> violatingNodeAttribute() {
-            return Optional.ofNullable((String) raw("violatingNodeAttribute"));
+            Object value = raw("violatingNodeAttribute");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return Optional.ofNullable(raw("request") == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("request")))));
+            Object value = raw("request");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Issues with the same errorType are aggregated in the frontend.
@@ -2222,7 +2252,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> affectedFrame() {
-            return Optional.ofNullable(raw("affectedFrame") == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(raw("affectedFrame")))));
+            Object value = raw("affectedFrame");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the sourceCodeLocation field.
@@ -2383,8 +2414,8 @@ public final class Audits {
         METATAGMODIFIEDHTML("MetaTagModifiedHTML");
         public final String value;
         ClientHintIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ClientHintIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ClientHintIssueReason of(String value) {
             for (ClientHintIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2464,8 +2495,8 @@ public final class Audits {
         SUPPRESSEDBYSEGMENTATIONPLATFORM("SuppressedBySegmentationPlatform");
         public final String value;
         FederatedAuthRequestIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static FederatedAuthRequestIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static FederatedAuthRequestIssueReason of(String value) {
             for (FederatedAuthRequestIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2512,8 +2543,8 @@ public final class Audits {
         NORETURNINGUSERFROMFETCHEDACCOUNTS("NoReturningUserFromFetchedAccounts");
         public final String value;
         FederatedAuthUserInfoRequestIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static FederatedAuthUserInfoRequestIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static FederatedAuthUserInfoRequestIssueReason of(String value) {
             for (FederatedAuthUserInfoRequestIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2607,8 +2638,8 @@ public final class Audits {
         TOKENVERIFICATIONKBSIGNATUREFAILED("TokenVerificationKbSignatureFailed");
         public final String value;
         EmailVerificationRequestIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static EmailVerificationRequestIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static EmailVerificationRequestIssueReason of(String value) {
             for (EmailVerificationRequestIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2684,7 +2715,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return Optional.ofNullable(raw("requestId") == null ? null : new Network.RequestId((String) raw("requestId")));
+            Object value = raw("requestId");
+            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
         }
         /**
          * The URL that failed to load.
@@ -2731,8 +2763,8 @@ public final class Audits {
         ENFORCENOOPENERFORNAVIGATION("EnforceNoopenerForNavigation");
         public final String value;
         PartitioningBlobURLInfo(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PartitioningBlobURLInfo of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PartitioningBlobURLInfo of(String value) {
             for (PartitioningBlobURLInfo constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2792,8 +2824,8 @@ public final class Audits {
         INTERACTIVECONTENTSUMMARYDESCENDANT("InteractiveContentSummaryDescendant");
         public final String value;
         ElementAccessibilityIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ElementAccessibilityIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ElementAccessibilityIssueReason of(String value) {
             for (ElementAccessibilityIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2866,8 +2898,8 @@ public final class Audits {
         REQUESTFAILED("RequestFailed");
         public final String value;
         StyleSheetLoadingIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StyleSheetLoadingIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StyleSheetLoadingIssueReason of(String value) {
             for (StyleSheetLoadingIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2902,7 +2934,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FailedRequestInfo> failedRequestInfo() {
-            return Optional.ofNullable(raw("failedRequestInfo") == null ? null : Audits.FailedRequestInfo.fromMap(java.util.Objects.requireNonNull(objectMap(raw("failedRequestInfo")))));
+            Object value = raw("failedRequestInfo");
+            return Optional.ofNullable(value == null ? null : Audits.FailedRequestInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Source code position that referenced the failing stylesheet.
@@ -2951,8 +2984,8 @@ public final class Audits {
         INVALIDNAME("InvalidName");
         public final String value;
         PropertyRuleIssueReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PropertyRuleIssueReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PropertyRuleIssueReason of(String value) {
             for (PropertyRuleIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2987,7 +3020,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> propertyValue() {
-            return Optional.ofNullable((String) raw("propertyValue"));
+            Object value = raw("propertyValue");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Source code position of the property rule.
@@ -3035,8 +3069,8 @@ public final class Audits {
         NOISEDCANVASREADBACK("NoisedCanvasReadback");
         public final String value;
         UserReidentificationIssueType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static UserReidentificationIssueType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static UserReidentificationIssueType of(String value) {
             for (UserReidentificationIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -3064,14 +3098,16 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return Optional.ofNullable(raw("request") == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("request")))));
+            Object value = raw("request");
+            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Applies to NoisedCanvasReadback issue type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            return Optional.ofNullable(raw("sourceCodeLocation") == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("sourceCodeLocation")))));
+            Object value = raw("sourceCodeLocation");
+            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the type field.
@@ -3146,8 +3182,8 @@ public final class Audits {
         INVALIDSIZEVALUE("InvalidSizeValue");
         public final String value;
         PermissionElementIssueType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PermissionElementIssueType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PermissionElementIssueType of(String value) {
             for (PermissionElementIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -3175,49 +3211,56 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> type() {
-            return Optional.ofNullable((String) raw("type"));
+            Object value = raw("type");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The node ID of the &lt;permission&gt; element.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * True if the issue is a warning, false if it is an error.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isWarning() {
-            return Optional.ofNullable((Boolean) raw("isWarning"));
+            Object value = raw("isWarning");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Fields for message construction: Used for messages that reference a specific permission name
          * @return the protocol field value, empty when absent
          */
         public Optional<String> permissionName() {
-            return Optional.ofNullable((String) raw("permissionName"));
+            Object value = raw("permissionName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Used for messages about occlusion
          * @return the protocol field value, empty when absent
          */
         public Optional<String> occluderNodeInfo() {
-            return Optional.ofNullable((String) raw("occluderNodeInfo"));
+            Object value = raw("occluderNodeInfo");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Used for messages about occluder&#x27;s parent
          * @return the protocol field value, empty when absent
          */
         public Optional<String> occluderParentNodeInfo() {
-            return Optional.ofNullable((String) raw("occluderParentNodeInfo"));
+            Object value = raw("occluderParentNodeInfo");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Used for messages about activation disabled reason
          * @return the protocol field value, empty when absent
          */
         public Optional<String> disableReason() {
-            return Optional.ofNullable((String) raw("disableReason"));
+            Object value = raw("disableReason");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the issueType field.
@@ -3383,7 +3426,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
+            Object value = raw("stackTrace");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Which API was intervened on.
@@ -3458,8 +3502,8 @@ public final class Audits {
         EMAILVERIFICATIONREQUESTISSUE("EmailVerificationRequestIssue");
         public final String value;
         InspectorIssueCode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InspectorIssueCode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InspectorIssueCode of(String value) {
             for (InspectorIssueCode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -3480,70 +3524,80 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieIssueDetails> cookieIssueDetails() {
-            return Optional.ofNullable(raw("cookieIssueDetails") == null ? null : Audits.CookieIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cookieIssueDetails")))));
+            Object value = raw("cookieIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.CookieIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the mixedContentIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.MixedContentIssueDetails> mixedContentIssueDetails() {
-            return Optional.ofNullable(raw("mixedContentIssueDetails") == null ? null : Audits.MixedContentIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("mixedContentIssueDetails")))));
+            Object value = raw("mixedContentIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.MixedContentIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the blockedByResponseIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.BlockedByResponseIssueDetails> blockedByResponseIssueDetails() {
-            return Optional.ofNullable(raw("blockedByResponseIssueDetails") == null ? null : Audits.BlockedByResponseIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("blockedByResponseIssueDetails")))));
+            Object value = raw("blockedByResponseIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.BlockedByResponseIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the heavyAdIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.HeavyAdIssueDetails> heavyAdIssueDetails() {
-            return Optional.ofNullable(raw("heavyAdIssueDetails") == null ? null : Audits.HeavyAdIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("heavyAdIssueDetails")))));
+            Object value = raw("heavyAdIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.HeavyAdIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the contentSecurityPolicyIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ContentSecurityPolicyIssueDetails> contentSecurityPolicyIssueDetails() {
-            return Optional.ofNullable(raw("contentSecurityPolicyIssueDetails") == null ? null : Audits.ContentSecurityPolicyIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentSecurityPolicyIssueDetails")))));
+            Object value = raw("contentSecurityPolicyIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.ContentSecurityPolicyIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the sharedArrayBufferIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SharedArrayBufferIssueDetails> sharedArrayBufferIssueDetails() {
-            return Optional.ofNullable(raw("sharedArrayBufferIssueDetails") == null ? null : Audits.SharedArrayBufferIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("sharedArrayBufferIssueDetails")))));
+            Object value = raw("sharedArrayBufferIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.SharedArrayBufferIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the corsIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CorsIssueDetails> corsIssueDetails() {
-            return Optional.ofNullable(raw("corsIssueDetails") == null ? null : Audits.CorsIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("corsIssueDetails")))));
+            Object value = raw("corsIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.CorsIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the attributionReportingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AttributionReportingIssueDetails> attributionReportingIssueDetails() {
-            return Optional.ofNullable(raw("attributionReportingIssueDetails") == null ? null : Audits.AttributionReportingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("attributionReportingIssueDetails")))));
+            Object value = raw("attributionReportingIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.AttributionReportingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the quirksModeIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.QuirksModeIssueDetails> quirksModeIssueDetails() {
-            return Optional.ofNullable(raw("quirksModeIssueDetails") == null ? null : Audits.QuirksModeIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("quirksModeIssueDetails")))));
+            Object value = raw("quirksModeIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.QuirksModeIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the partitioningBlobURLIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PartitioningBlobURLIssueDetails> partitioningBlobURLIssueDetails() {
-            return Optional.ofNullable(raw("partitioningBlobURLIssueDetails") == null ? null : Audits.PartitioningBlobURLIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitioningBlobURLIssueDetails")))));
+            Object value = raw("partitioningBlobURLIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.PartitioningBlobURLIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the navigatorUserAgentIssueDetails field.
@@ -3552,140 +3606,160 @@ public final class Audits {
          */
         @Deprecated
         public Optional<Audits.NavigatorUserAgentIssueDetails> navigatorUserAgentIssueDetails() {
-            return Optional.ofNullable(raw("navigatorUserAgentIssueDetails") == null ? null : Audits.NavigatorUserAgentIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("navigatorUserAgentIssueDetails")))));
+            Object value = raw("navigatorUserAgentIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.NavigatorUserAgentIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the genericIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.GenericIssueDetails> genericIssueDetails() {
-            return Optional.ofNullable(raw("genericIssueDetails") == null ? null : Audits.GenericIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("genericIssueDetails")))));
+            Object value = raw("genericIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.GenericIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the deprecationIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.DeprecationIssueDetails> deprecationIssueDetails() {
-            return Optional.ofNullable(raw("deprecationIssueDetails") == null ? null : Audits.DeprecationIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("deprecationIssueDetails")))));
+            Object value = raw("deprecationIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.DeprecationIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the clientHintIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ClientHintIssueDetails> clientHintIssueDetails() {
-            return Optional.ofNullable(raw("clientHintIssueDetails") == null ? null : Audits.ClientHintIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("clientHintIssueDetails")))));
+            Object value = raw("clientHintIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.ClientHintIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the federatedAuthRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FederatedAuthRequestIssueDetails> federatedAuthRequestIssueDetails() {
-            return Optional.ofNullable(raw("federatedAuthRequestIssueDetails") == null ? null : Audits.FederatedAuthRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("federatedAuthRequestIssueDetails")))));
+            Object value = raw("federatedAuthRequestIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.FederatedAuthRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the bounceTrackingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.BounceTrackingIssueDetails> bounceTrackingIssueDetails() {
-            return Optional.ofNullable(raw("bounceTrackingIssueDetails") == null ? null : Audits.BounceTrackingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("bounceTrackingIssueDetails")))));
+            Object value = raw("bounceTrackingIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.BounceTrackingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the cookieDeprecationMetadataIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieDeprecationMetadataIssueDetails> cookieDeprecationMetadataIssueDetails() {
-            return Optional.ofNullable(raw("cookieDeprecationMetadataIssueDetails") == null ? null : Audits.CookieDeprecationMetadataIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cookieDeprecationMetadataIssueDetails")))));
+            Object value = raw("cookieDeprecationMetadataIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.CookieDeprecationMetadataIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the stylesheetLoadingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.StylesheetLoadingIssueDetails> stylesheetLoadingIssueDetails() {
-            return Optional.ofNullable(raw("stylesheetLoadingIssueDetails") == null ? null : Audits.StylesheetLoadingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stylesheetLoadingIssueDetails")))));
+            Object value = raw("stylesheetLoadingIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.StylesheetLoadingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the propertyRuleIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PropertyRuleIssueDetails> propertyRuleIssueDetails() {
-            return Optional.ofNullable(raw("propertyRuleIssueDetails") == null ? null : Audits.PropertyRuleIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("propertyRuleIssueDetails")))));
+            Object value = raw("propertyRuleIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.PropertyRuleIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the federatedAuthUserInfoRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FederatedAuthUserInfoRequestIssueDetails> federatedAuthUserInfoRequestIssueDetails() {
-            return Optional.ofNullable(raw("federatedAuthUserInfoRequestIssueDetails") == null ? null : Audits.FederatedAuthUserInfoRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("federatedAuthUserInfoRequestIssueDetails")))));
+            Object value = raw("federatedAuthUserInfoRequestIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.FederatedAuthUserInfoRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the sharedDictionaryIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SharedDictionaryIssueDetails> sharedDictionaryIssueDetails() {
-            return Optional.ofNullable(raw("sharedDictionaryIssueDetails") == null ? null : Audits.SharedDictionaryIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("sharedDictionaryIssueDetails")))));
+            Object value = raw("sharedDictionaryIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.SharedDictionaryIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the elementAccessibilityIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ElementAccessibilityIssueDetails> elementAccessibilityIssueDetails() {
-            return Optional.ofNullable(raw("elementAccessibilityIssueDetails") == null ? null : Audits.ElementAccessibilityIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("elementAccessibilityIssueDetails")))));
+            Object value = raw("elementAccessibilityIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.ElementAccessibilityIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the sriMessageSignatureIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SRIMessageSignatureIssueDetails> sriMessageSignatureIssueDetails() {
-            return Optional.ofNullable(raw("sriMessageSignatureIssueDetails") == null ? null : Audits.SRIMessageSignatureIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("sriMessageSignatureIssueDetails")))));
+            Object value = raw("sriMessageSignatureIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.SRIMessageSignatureIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the unencodedDigestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.UnencodedDigestIssueDetails> unencodedDigestIssueDetails() {
-            return Optional.ofNullable(raw("unencodedDigestIssueDetails") == null ? null : Audits.UnencodedDigestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("unencodedDigestIssueDetails")))));
+            Object value = raw("unencodedDigestIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.UnencodedDigestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the connectionAllowlistIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ConnectionAllowlistIssueDetails> connectionAllowlistIssueDetails() {
-            return Optional.ofNullable(raw("connectionAllowlistIssueDetails") == null ? null : Audits.ConnectionAllowlistIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("connectionAllowlistIssueDetails")))));
+            Object value = raw("connectionAllowlistIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.ConnectionAllowlistIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the userReidentificationIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.UserReidentificationIssueDetails> userReidentificationIssueDetails() {
-            return Optional.ofNullable(raw("userReidentificationIssueDetails") == null ? null : Audits.UserReidentificationIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("userReidentificationIssueDetails")))));
+            Object value = raw("userReidentificationIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.UserReidentificationIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the permissionElementIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PermissionElementIssueDetails> permissionElementIssueDetails() {
-            return Optional.ofNullable(raw("permissionElementIssueDetails") == null ? null : Audits.PermissionElementIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("permissionElementIssueDetails")))));
+            Object value = raw("permissionElementIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.PermissionElementIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the performanceIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PerformanceIssueDetails> performanceIssueDetails() {
-            return Optional.ofNullable(raw("performanceIssueDetails") == null ? null : Audits.PerformanceIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("performanceIssueDetails")))));
+            Object value = raw("performanceIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.PerformanceIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the selectivePermissionsInterventionIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SelectivePermissionsInterventionIssueDetails> selectivePermissionsInterventionIssueDetails() {
-            return Optional.ofNullable(raw("selectivePermissionsInterventionIssueDetails") == null ? null : Audits.SelectivePermissionsInterventionIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("selectivePermissionsInterventionIssueDetails")))));
+            Object value = raw("selectivePermissionsInterventionIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.SelectivePermissionsInterventionIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the emailVerificationRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.EmailVerificationRequestIssueDetails> emailVerificationRequestIssueDetails() {
-            return Optional.ofNullable(raw("emailVerificationRequestIssueDetails") == null ? null : Audits.EmailVerificationRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("emailVerificationRequestIssueDetails")))));
+            Object value = raw("emailVerificationRequestIssueDetails");
+            return Optional.ofNullable(value == null ? null : Audits.EmailVerificationRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the cookieIssueDetails field.
@@ -4237,9 +4311,9 @@ public final class Audits {
      */
     public static final class IssueId implements CdpValue<String> {
         public final String value;
-        public IssueId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public IssueId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof IssueId)) return false;
             return value.equals(((IssueId) other).value);
@@ -4275,7 +4349,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.IssueId> issueId() {
-            return Optional.ofNullable(raw("issueId") == null ? null : new Audits.IssueId((String) raw("issueId")));
+            Object value = raw("issueId");
+            return Optional.ofNullable(value == null ? null : new Audits.IssueId((String) value));
         }
         /**
          * Sets the code field.
@@ -4360,7 +4435,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> sizeOnly() {
-            return Optional.ofNullable((Boolean) raw("sizeOnly"));
+            Object value = raw("sizeOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the network request to get content for.
@@ -4431,7 +4507,8 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> body() {
-            return Optional.ofNullable((String) raw("body"));
+            Object value = raw("body");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Size before re-encoding.
@@ -4519,8 +4596,8 @@ public final class Audits {
         PNG("png");
         public final String value;
         GetEncodedResponseEncodingValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static GetEncodedResponseEncodingValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static GetEncodedResponseEncodingValues of(String value) {
             for (GetEncodedResponseEncodingValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -4568,14 +4645,14 @@ public final class Audits {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Audits.disable", null, result_ -> null);
+            return client.call("Audits.disable", null);
         }
         /**
          * Enables issues domain, sends the issues collected so far to the client by means of the {@code issueAdded} event.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Audits.enable", null, result_ -> null);
+            return client.call("Audits.enable", null);
         }
         /**
          * Runs the form issues check for the target page. Found issues are reported using Audits.issueAdded event.

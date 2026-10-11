@@ -1,7 +1,7 @@
 package net.kurobako.cef4j.test;
 
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Cleanup helpers that keep the original failure primary. */
 @NullableBoundary("cleanup accepts resources that were never opened and an absent first failure")

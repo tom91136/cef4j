@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent a browser. When used in the browser process the methods of this class may be called on any
@@ -255,7 +254,7 @@ public interface CefBrowser extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:189</a>
      */
-    void getFrameIdentifiers(@Nonnull List<String> identifiers);
+    void getFrameIdentifiers(List<String> identifiers);
 
     /**
      * Returns the names of all existing frames.
@@ -266,7 +265,7 @@ public interface CefBrowser extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:195</a>
      */
-    void getFrameNames(@Nonnull List<String> names);
+    void getFrameNames(List<String> names);
 
     final class NativePeer implements CefBrowser, AutoCloseable {
         private final long nativePtr;
@@ -427,13 +426,13 @@ public interface CefBrowser extends CefLibraryObject {
         }
 
         @Override
-        public void getFrameIdentifiers(@Nonnull List<String> identifiers) {
+        public void getFrameIdentifiers(List<String> identifiers) {
             checkNotClosed();
             getFrameIdentifiers0(nativePtr, identifiers);
         }
 
         @Override
-        public void getFrameNames(@Nonnull List<String> names) {
+        public void getFrameNames(List<String> names) {
             checkNotClosed();
             getFrameNames0(nativePtr, names);
         }
@@ -476,12 +475,12 @@ public interface CefBrowser extends CefLibraryObject {
 
         static native long getFrameCount0(long self);
 
-        static native void getFrameIdentifiers0(long self, @Nonnull List<String> identifiers);
+        static native void getFrameIdentifiers0(long self, List<String> identifiers);
 
-        static native void getFrameNames0(long self, @Nonnull List<String> names);
+        static native void getFrameNames0(long self, List<String> names);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

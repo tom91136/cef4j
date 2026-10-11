@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to commands. The methods of this class will be called on the UI
@@ -44,8 +43,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
      */
-    default boolean onChromeCommand(
-            @Nullable CefBrowser browser, int commandId, @Nonnull CefWindowOpenDisposition disposition) {
+    default boolean onChromeCommand(@Nullable CefBrowser browser, int commandId, CefWindowOpenDisposition disposition) {
         return false;
     }
 
@@ -98,7 +96,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:94</a>
      */
-    default boolean isChromePageActionIconVisible(@Nonnull CefChromePageActionIconType iconType) {
+    default boolean isChromePageActionIconVisible(CefChromePageActionIconType iconType) {
         return false;
     }
 
@@ -115,7 +113,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:105</a>
      */
-    default boolean isChromeToolbarButtonVisible(@Nonnull CefChromeToolbarButtonType buttonType) {
+    default boolean isChromeToolbarButtonVisible(CefChromeToolbarButtonType buttonType) {
         return false;
     }
     /**
@@ -133,7 +131,7 @@ public interface CefCommandHandler extends CefClientHandler {
 
         @Override
         public boolean onChromeCommand(
-                @Nullable CefBrowser browser, int commandId, @Nonnull CefWindowOpenDisposition disposition) {
+                @Nullable CefBrowser browser, int commandId, CefWindowOpenDisposition disposition) {
             for (CefCommandHandler d : delegates) {
                 if (d.onChromeCommand(browser, commandId, disposition)) return true;
             }
@@ -160,7 +158,7 @@ public interface CefCommandHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean isChromePageActionIconVisible(@Nonnull CefChromePageActionIconType iconType) {
+        public boolean isChromePageActionIconVisible(CefChromePageActionIconType iconType) {
             for (CefCommandHandler d : delegates) {
                 if (d.isChromePageActionIconVisible(iconType)) return true;
             }
@@ -169,7 +167,7 @@ public interface CefCommandHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean isChromeToolbarButtonVisible(@Nonnull CefChromeToolbarButtonType buttonType) {
+        public boolean isChromeToolbarButtonVisible(CefChromeToolbarButtonType buttonType) {
             for (CefCommandHandler d : delegates) {
                 if (d.isChromeToolbarButtonVisible(buttonType)) return true;
             }

@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to create and/or parse command line arguments. Arguments with "--", "-" and, on Windows, "/" prefixes are
@@ -77,7 +76,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:96</a>
      */
-    void initFromArgv(int argc, @Nonnull List<String> argv);
+    void initFromArgv(int argc, List<String> argv);
 
     /**
      * Initialize the command line with the string returned by calling GetCommandLineW(). This method is only supported
@@ -113,7 +112,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:118</a>
      */
-    void getArgv(@Nonnull List<String> argv);
+    void getArgv(List<String> argv);
 
     /**
      * Constructs and returns the represented command line string. Use this method cautiously because quoting behavior
@@ -194,7 +193,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:164</a>
      */
-    void getSwitches(@Nonnull Map<String, String> switches);
+    void getSwitches(Map<String, String> switches);
 
     /**
      * Add a switch to the end of the command line.
@@ -241,7 +240,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:200</a>
      */
-    void getArguments(@Nonnull List<String> arguments);
+    void getArguments(List<String> arguments);
 
     /**
      * Add an argument to the end of the command line.
@@ -365,7 +364,7 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void initFromArgv(int argc, @Nonnull List<String> argv) {
+        public void initFromArgv(int argc, List<String> argv) {
             checkNotClosed();
             initFromArgv0(nativePtr, argc, argv);
         }
@@ -383,7 +382,7 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void getArgv(@Nonnull List<String> argv) {
+        public void getArgv(List<String> argv) {
             checkNotClosed();
             getArgv0(nativePtr, argv);
         }
@@ -425,7 +424,7 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void getSwitches(@Nonnull Map<String, String> switches) {
+        public void getSwitches(Map<String, String> switches) {
             checkNotClosed();
             getSwitches0(nativePtr, switches);
         }
@@ -449,7 +448,7 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void getArguments(@Nonnull List<String> arguments) {
+        public void getArguments(List<String> arguments) {
             checkNotClosed();
             getArguments0(nativePtr, arguments);
         }
@@ -478,13 +477,13 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native CefCommandLine copy0(long self);
 
-        static native void initFromArgv0(long self, int argc, @Nonnull List<String> argv);
+        static native void initFromArgv0(long self, int argc, List<String> argv);
 
         static native void initFromString0(long self, @Nullable String commandLine);
 
         static native void reset0(long self);
 
-        static native void getArgv0(long self, @Nonnull List<String> argv);
+        static native void getArgv0(long self, List<String> argv);
 
         static native String getCommandLineString0(long self);
 
@@ -498,7 +497,7 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native String getSwitchValue0(long self, @Nullable String name);
 
-        static native void getSwitches0(long self, @Nonnull Map<String, String> switches);
+        static native void getSwitches0(long self, Map<String, String> switches);
 
         static native void appendSwitch0(long self, @Nullable String name);
 
@@ -506,7 +505,7 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native boolean hasArguments0(long self);
 
-        static native void getArguments0(long self, @Nonnull List<String> arguments);
+        static native void getArguments0(long self, List<String> arguments);
 
         static native void appendArgument0(long self, @Nullable String argument);
 
@@ -519,7 +518,7 @@ public interface CefCommandLine extends CefLibraryObject {
         static native CefCommandLine getGlobal0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

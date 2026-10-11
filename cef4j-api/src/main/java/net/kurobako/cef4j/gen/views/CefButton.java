@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefButtonState;
 import net.kurobako.cef4j.gen.CefInsets;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A View representing a button. Depending on the specific type, the button could be implemented by a native control or
@@ -52,7 +51,7 @@ public interface CefButton extends CefView {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:59</a>
      */
-    void setState(@Nonnull CefButtonState state);
+    void setState(CefButtonState state);
 
     /**
      * Returns the current display state of the Button.
@@ -149,7 +148,7 @@ public interface CefButton extends CefView {
         }
 
         @Override
-        public void setState(@Nonnull CefButtonState state) {
+        public void setState(CefButtonState state) {
             checkNotClosed();
             setState0(nativePtr, state);
         }
@@ -288,7 +287,7 @@ public interface CefButton extends CefView {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -306,7 +305,7 @@ public interface CefButton extends CefView {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -318,7 +317,7 @@ public interface CefButton extends CefView {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -330,7 +329,7 @@ public interface CefButton extends CefView {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -456,38 +455,38 @@ public interface CefButton extends CefView {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -495,7 +494,7 @@ public interface CefButton extends CefView {
 
         static native CefLabelButton asLabelButton0(long self);
 
-        static native void setState0(long self, @Nonnull CefButtonState state);
+        static native void setState0(long self, CefButtonState state);
 
         static native CefButtonState getState0(long self);
 
@@ -506,7 +505,7 @@ public interface CefButton extends CefView {
         static native void setAccessibleName0(long self, @Nullable String name);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

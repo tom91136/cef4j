@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -42,8 +41,8 @@ public final class Tracing {
             ECHOTOCONSOLE("echoToConsole");
             public final String value;
             RecordModeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static RecordModeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static RecordModeValues of(String value) {
                 for (RecordModeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -56,7 +55,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<TraceConfig.RecordModeValues> recordMode() {
-            return Optional.ofNullable(raw("recordMode") == null ? null : TraceConfig.RecordModeValues.of((String) raw("recordMode")));
+            Object value = raw("recordMode");
+            return Optional.ofNullable(value == null ? null : TraceConfig.RecordModeValues.of((String) value));
         }
         /**
          * Size of the trace buffer in kilobytes. If not specified or zero is passed, a default value of 200 MB would be used.
@@ -73,7 +73,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableSampling() {
-            return Optional.ofNullable((Boolean) raw("enableSampling"));
+            Object value = raw("enableSampling");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Turns on system tracing.
@@ -81,7 +82,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableSystrace() {
-            return Optional.ofNullable((Boolean) raw("enableSystrace"));
+            Object value = raw("enableSystrace");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Turns on argument filter.
@@ -89,21 +91,24 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableArgumentFilter() {
-            return Optional.ofNullable((Boolean) raw("enableArgumentFilter"));
+            Object value = raw("enableArgumentFilter");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Included category filters.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> includedCategories() {
-            return Optional.ofNullable(list(raw("includedCategories"), element0 -> (String) element0));
+            Object value = raw("includedCategories");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Excluded category filters.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> excludedCategories() {
-            return Optional.ofNullable(list(raw("excludedCategories"), element0 -> (String) element0));
+            Object value = raw("excludedCategories");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Configuration to synthesize the delays in tracing.
@@ -111,7 +116,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> syntheticDelays() {
-            return Optional.ofNullable(list(raw("syntheticDelays"), element0 -> (String) element0));
+            Object value = raw("syntheticDelays");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Configuration for memory dump triggers. Used only when &quot;memory-infra&quot; category is enabled.
@@ -119,7 +125,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> memoryDumpConfig() {
-            return Optional.ofNullable(objectMap(raw("memoryDumpConfig")));
+            Object value = raw("memoryDumpConfig");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Controls how the trace buffer stores data. The default is {@code recordUntilFull}.
@@ -307,8 +314,8 @@ public final class Tracing {
         PROTO("proto");
         public final String value;
         StreamFormat(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StreamFormat of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StreamFormat of(String value) {
             for (StreamFormat constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -324,8 +331,8 @@ public final class Tracing {
         GZIP("gzip");
         public final String value;
         StreamCompression(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StreamCompression of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StreamCompression of(String value) {
             for (StreamCompression constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -342,8 +349,8 @@ public final class Tracing {
         DETAILED("detailed");
         public final String value;
         MemoryDumpLevelOfDetail(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static MemoryDumpLevelOfDetail of(@Nonnull String value) {
+        public String value() { return value; }
+        public static MemoryDumpLevelOfDetail of(String value) {
             for (MemoryDumpLevelOfDetail constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -360,8 +367,8 @@ public final class Tracing {
         SYSTEM("system");
         public final String value;
         TracingBackend(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static TracingBackend of(@Nonnull String value) {
+        public String value() { return value; }
+        public static TracingBackend of(String value) {
             for (TracingBackend constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -420,14 +427,16 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> deterministic() {
-            return Optional.ofNullable((Boolean) raw("deterministic"));
+            Object value = raw("deterministic");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Specifies level of details in memory dump. Defaults to &quot;detailed&quot;.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.MemoryDumpLevelOfDetail> levelOfDetail() {
-            return Optional.ofNullable(raw("levelOfDetail") == null ? null : Tracing.MemoryDumpLevelOfDetail.of((String) raw("levelOfDetail")));
+            Object value = raw("levelOfDetail");
+            return Optional.ofNullable(value == null ? null : Tracing.MemoryDumpLevelOfDetail.of((String) value));
         }
         /**
          * Enables more deterministic results by forcing garbage collection
@@ -484,7 +493,8 @@ public final class Tracing {
          */
         @Deprecated
         public Optional<String> categories() {
-            return Optional.ofNullable((String) raw("categories"));
+            Object value = raw("categories");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Tracing options
@@ -494,7 +504,8 @@ public final class Tracing {
          */
         @Deprecated
         public Optional<String> options() {
-            return Optional.ofNullable((String) raw("options"));
+            Object value = raw("options");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
@@ -510,14 +521,16 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<StartTransferModeValues> transferMode() {
-            return Optional.ofNullable(raw("transferMode") == null ? null : StartTransferModeValues.of((String) raw("transferMode")));
+            Object value = raw("transferMode");
+            return Optional.ofNullable(value == null ? null : StartTransferModeValues.of((String) value));
         }
         /**
          * Trace data format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code json}).
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamFormat> streamFormat() {
-            return Optional.ofNullable(raw("streamFormat") == null ? null : Tracing.StreamFormat.of((String) raw("streamFormat")));
+            Object value = raw("streamFormat");
+            return Optional.ofNullable(value == null ? null : Tracing.StreamFormat.of((String) value));
         }
         /**
          * Compression format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code none})
@@ -525,14 +538,16 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamCompression> streamCompression() {
-            return Optional.ofNullable(raw("streamCompression") == null ? null : Tracing.StreamCompression.of((String) raw("streamCompression")));
+            Object value = raw("streamCompression");
+            return Optional.ofNullable(value == null ? null : Tracing.StreamCompression.of((String) value));
         }
         /**
          * Returns the traceConfig field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.TraceConfig> traceConfig() {
-            return Optional.ofNullable(raw("traceConfig") == null ? null : Tracing.TraceConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("traceConfig")))));
+            Object value = raw("traceConfig");
+            return Optional.ofNullable(value == null ? null : Tracing.TraceConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Base64-encoded serialized perfetto.protos.TraceConfig protobuf message When specified, the parameters {@code categories}, {@code options}, {@code traceConfig} are ignored. (Encoded as a base64 string when passed over JSON)
@@ -540,7 +555,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> perfettoConfig() {
-            return Optional.ofNullable((String) raw("perfettoConfig"));
+            Object value = raw("perfettoConfig");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Backend type (defaults to {@code auto})
@@ -548,7 +564,8 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.TracingBackend> tracingBackend() {
-            return Optional.ofNullable(raw("tracingBackend") == null ? null : Tracing.TracingBackend.of((String) raw("tracingBackend")));
+            Object value = raw("tracingBackend");
+            return Optional.ofNullable(value == null ? null : Tracing.TracingBackend.of((String) value));
         }
         /**
          * Category/tag filter
@@ -913,21 +930,24 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<IO.StreamHandle> stream() {
-            return Optional.ofNullable(raw("stream") == null ? null : new IO.StreamHandle((String) raw("stream")));
+            Object value = raw("stream");
+            return Optional.ofNullable(value == null ? null : new IO.StreamHandle((String) value));
         }
         /**
          * Trace data format of returned stream.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamFormat> traceFormat() {
-            return Optional.ofNullable(raw("traceFormat") == null ? null : Tracing.StreamFormat.of((String) raw("traceFormat")));
+            Object value = raw("traceFormat");
+            return Optional.ofNullable(value == null ? null : Tracing.StreamFormat.of((String) value));
         }
         /**
          * Compression format of returned stream.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamCompression> streamCompression() {
-            return Optional.ofNullable(raw("streamCompression") == null ? null : Tracing.StreamCompression.of((String) raw("streamCompression")));
+            Object value = raw("streamCompression");
+            return Optional.ofNullable(value == null ? null : Tracing.StreamCompression.of((String) value));
         }
         /**
          * Indicates whether some trace data is known to have been lost, e.g. because the trace ring buffer wrapped around.
@@ -1001,8 +1021,8 @@ public final class Tracing {
         RETURNASSTREAM("ReturnAsStream");
         public final String value;
         StartTransferModeValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StartTransferModeValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StartTransferModeValues of(String value) {
             for (StartTransferModeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1017,7 +1037,7 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> end() {
-            return client.call("Tracing.end", null, result_ -> null);
+            return client.call("Tracing.end", null);
         }
         /**
          * Gets supported tracing categories.
@@ -1044,7 +1064,7 @@ public final class Tracing {
         public CompletionStage<Void> recordClockSyncMarker(String syncId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("syncId", CdpObject.json(syncId));
-            return client.call("Tracing.recordClockSyncMarker", params, result_ -> null);
+            return client.call("Tracing.recordClockSyncMarker", params);
         }
         /**
          * Record a clock sync marker in the trace.
@@ -1053,7 +1073,7 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> recordClockSyncMarker(RecordClockSyncMarkerRequest request) {
-            return client.call("Tracing.recordClockSyncMarker", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Tracing.recordClockSyncMarker", request == null ? null : request.toMap());
         }
         /**
          * Request a global memory dump.
@@ -1109,7 +1129,7 @@ public final class Tracing {
             traceConfig.ifPresent(value_ -> params.put("traceConfig", CdpObject.json(value_)));
             perfettoConfig.ifPresent(value_ -> params.put("perfettoConfig", CdpObject.json(value_)));
             tracingBackend.ifPresent(value_ -> params.put("tracingBackend", CdpObject.json(value_)));
-            return client.call("Tracing.start", params, result_ -> null);
+            return client.call("Tracing.start", params);
         }
         /**
          * Start trace events collection.
@@ -1124,7 +1144,7 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> start(StartRequest request) {
-            return client.call("Tracing.start", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Tracing.start", request == null ? null : request.toMap());
         }
         /**
          * Subscribes to Tracing.bufferUsage.

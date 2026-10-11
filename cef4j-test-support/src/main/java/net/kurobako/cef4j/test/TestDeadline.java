@@ -10,6 +10,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** One monotonic timeout budget shared by every asynchronous phase of a test operation. */
 public final class TestDeadline {
@@ -65,12 +67,14 @@ public final class TestDeadline {
         return remainingNanos() == 0L;
     }
 
-    public <T> T await(CompletableFuture<T> attempt, String phase)
+    @NullableBoundary("futures may complete with null")
+    public <T extends @Nullable Object> T await(CompletableFuture<T> attempt, String phase)
             throws InterruptedException, ExecutionException, TimeoutException {
         return await(attempt, phase, Duration.ofNanos(Long.MAX_VALUE));
     }
 
-    public <T> T await(CompletableFuture<T> attempt, String phase, Duration attemptLimit)
+    @NullableBoundary("futures may complete with null")
+    public <T extends @Nullable Object> T await(CompletableFuture<T> attempt, String phase, Duration attemptLimit)
             throws InterruptedException, ExecutionException, TimeoutException {
         Objects.requireNonNull(attempt, "attempt");
         Objects.requireNonNull(phase, "phase");
@@ -79,7 +83,9 @@ public final class TestDeadline {
             return attempt.get(remaining, TimeUnit.NANOSECONDS);
         } catch (TimeoutException timedOut) {
             attempt.cancel(true);
-            throw remaining < remainingNanos() ? timeout(phase, attemptLimit) : timeout(phase);
+            TimeoutException failure = remaining < remainingNanos() ? timeout(phase, attemptLimit) : timeout(phase);
+            failure.initCause(timedOut);
+            throw failure;
         }
     }
 

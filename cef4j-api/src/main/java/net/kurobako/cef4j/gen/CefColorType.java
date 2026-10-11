@@ -87,7 +87,7 @@ public final class CefColorType implements CefEnum<CefColorType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefColorType)) return false;
         return this.value == ((CefColorType) obj).value;

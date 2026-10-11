@@ -1,10 +1,11 @@
-// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-platform
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 #include "jni_util.h"
 #include "runtime_stubs.gen.h"
 
 using FnPtr_ = void (*)();
 #ifdef _MSC_VER
-#pragma warning(disable: 4100)
+  #pragma warning(disable : 4100)
 static FnPtr_ runtime_stubs_verify_[] = {
 #else
 __attribute__((used)) static FnPtr_ runtime_stubs_verify_[] = {

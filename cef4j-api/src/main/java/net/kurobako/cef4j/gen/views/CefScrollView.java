@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefInsets;
 import net.kurobako.cef4j.gen.CefLibraryObject;
@@ -12,6 +10,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A ScrollView will show horizontal and/or vertical scrollbars when necessary based on the size of the attached content
@@ -326,7 +325,7 @@ public interface CefScrollView extends CefView {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -344,7 +343,7 @@ public interface CefScrollView extends CefView {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -356,7 +355,7 @@ public interface CefScrollView extends CefView {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -368,7 +367,7 @@ public interface CefScrollView extends CefView {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -494,38 +493,38 @@ public interface CefScrollView extends CefView {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -548,7 +547,7 @@ public interface CefScrollView extends CefView {
         static native CefScrollView create0(@Nullable CefViewDelegate delegate);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

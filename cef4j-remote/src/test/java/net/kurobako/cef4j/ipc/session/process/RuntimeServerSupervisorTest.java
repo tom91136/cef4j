@@ -15,7 +15,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
@@ -290,24 +289,24 @@ final class RuntimeServerSupervisorTest {
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                @Nonnull CefMessageEncoder request, @Nonnull CefMessageDecoder<R> decoder) {
+                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             return delegate.request(request, decoder);
         }
 
         @Override
         public <E extends CefMessageView> HandlerRegistration on(
-                int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+                int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
             return delegate.on(messageId, decoder, handler);
         }
 
         @Override
         public <E extends CefMessageView> HandlerRegistration intercept(
-                int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler) {
+                int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
             return delegate.intercept(messageId, decoder, handler);
         }
 
         @Override
-        public HandlerRegistration onClose(@Nonnull Runnable handler) {
+        public HandlerRegistration onClose(Runnable handler) {
             installing.enter();
             return () -> {};
         }

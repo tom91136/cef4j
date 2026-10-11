@@ -3,12 +3,10 @@ package net.kurobako.cef4j.http;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
 
 interface CefHttpEngine {
 
-    @Nonnull
-    Cancellation send(@Nonnull RequestSpec spec, @Nonnull ResponseSink sink);
+    Cancellation send(RequestSpec spec, ResponseSink sink);
 
     interface Cancellation extends AutoCloseable {
         void cancel();
@@ -20,13 +18,13 @@ interface CefHttpEngine {
     }
 
     interface ResponseSink {
-        void onResponse(int status, @Nonnull String statusText, @Nonnull Map<String, List<String>> headers);
+        void onResponse(int status, String statusText, Map<String, List<String>> headers);
 
-        void onData(@Nonnull byte[] chunk);
+        void onData(byte[] chunk);
 
         void onComplete();
 
-        void onError(@Nonnull IOException error);
+        void onError(IOException error);
     }
 
     final class RequestSpec {
@@ -35,11 +33,7 @@ interface CefHttpEngine {
         final Map<String, List<String>> headers;
         final byte[] body;
 
-        RequestSpec(
-                @Nonnull String url,
-                @Nonnull String method,
-                @Nonnull Map<String, List<String>> headers,
-                @Nonnull byte[] body) {
+        RequestSpec(String url, String method, Map<String, List<String>> headers, byte[] body) {
             this.url = url;
             this.method = method;
             this.headers = headers;

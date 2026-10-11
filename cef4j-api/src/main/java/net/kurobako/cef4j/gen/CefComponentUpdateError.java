@@ -97,7 +97,7 @@ public final class CefComponentUpdateError implements CefEnum<CefComponentUpdate
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefComponentUpdateError)) return false;
         return this.value == ((CefComponentUpdateError) obj).value;

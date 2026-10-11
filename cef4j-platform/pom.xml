@@ -15,6 +15,10 @@
     <name>cef4j-platform</name>
     <description>Platform-specific cef4j JNI bridge and subprocess launcher</description>
 
+    <properties>
+        <japicmp.skip>true</japicmp.skip>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -212,15 +216,25 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <configuration>
+                    <skip>${clang.format.skip}</skip>
                     <cpp>
                         <includes>
-                            <include>cef4j-platform/native/gen/**/*.cpp</include>
-                            <include>cef4j-platform/native/gen/**/*.h</include>
+                            <include>native/gen/**/*.cpp</include>
+                            <include>native/gen/**/*.h</include>
+                            <include>native/runtime/**/*.cpp</include>
+                            <include>native/runtime/**/*.h</include>
+                            <include>native/runtime/**/*.mm</include>
                         </includes>
-                        <eclipseCdt>
-                            <version>11.6</version>
-                            <file>${maven.multiModuleProjectDirectory}/eclipse-cdt-format.xml</file>
-                        </eclipseCdt>
+                        <replaceRegex>
+                            <name>unprefixed fixed-width integers</name>
+                            <searchRegex>\bstd::(u?int(?:_least|_fast)?(?:8|16|32|64)_t|u?intptr_t|u?intmax_t|size_t|ptrdiff_t)\b</searchRegex>
+                            <replacement>$1</replacement>
+                        </replaceRegex>
+                        <clangFormat>
+                            <version>${clang.format.version}</version>
+                            <pathToExe>${clang.format.exe}</pathToExe>
+                            <style>file:${maven.multiModuleProjectDirectory}/.clang-format</style>
+                        </clangFormat>
                     </cpp>
                 </configuration>
                 <executions>
@@ -230,6 +244,9 @@
                         <goals>
                             <goal>apply</goal>
                         </goals>
+                        <configuration>
+                            <filePatterns>.*[/\\]gen[/\\].*</filePatterns>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -110,7 +110,7 @@ public final class CefXmlEncodingType implements CefEnum<CefXmlEncodingType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefXmlEncodingType)) return false;
         return this.value == ((CefXmlEncodingType) obj).value;

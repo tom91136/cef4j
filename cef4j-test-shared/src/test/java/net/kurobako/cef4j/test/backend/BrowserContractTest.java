@@ -6,11 +6,9 @@ import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Test;
 
 class BrowserContractTest {
@@ -20,27 +18,23 @@ class BrowserContractTest {
         AtomicInteger attempts = new AtomicInteger();
         BrowserSession session = new BrowserSession() {
             @Override
-            @Nonnull
-            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+            public CompletableFuture<Void> loadUrl(String url) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+            public CompletableFuture<String> evaluateJavascript(String script) {
                 if (attempts.incrementAndGet() > 1) return CompletableFuture.completedFuture("1");
                 return new CompletableFuture<>() {
                     @Override
-                    public String get(long timeout, TimeUnit unit)
-                            throws InterruptedException, ExecutionException, TimeoutException {
+                    public String get(long timeout, TimeUnit unit) throws TimeoutException {
                         throw new TimeoutException("CEF browser-info routing is not ready");
                     }
                 };
             }
 
             @Override
-            @Nonnull
-            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) {
+            public PaintInfo awaitNextPaint(Duration timeout) {
                 throw new UnsupportedOperationException();
             }
 
@@ -60,27 +54,23 @@ class BrowserContractTest {
         paints.add(new BrowserSession.PaintInfo(800, 600, 800L * 600L * 4L));
         BrowserSession session = new BrowserSession() {
             @Override
-            @Nonnull
-            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+            public CompletableFuture<Void> loadUrl(String url) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+            public CompletableFuture<String> evaluateJavascript(String script) {
                 return CompletableFuture.completedFuture("640x480");
             }
 
             @Override
-            @Nonnull
-            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws TimeoutException {
+            public PaintInfo awaitNextPaint(Duration timeout) throws TimeoutException {
                 PaintInfo paint = paints.poll();
                 if (paint == null) throw new TimeoutException("no paint");
                 return paint;
             }
 
             @Override
-            @Nonnull
             public CompletableFuture<Void> resizeViewport(int width, int height) {
                 resizes.incrementAndGet();
                 paints.add(new PaintInfo(width, height, (long) width * height * 4L));
@@ -103,20 +93,17 @@ class BrowserContractTest {
     void preservesBackendDiagnosticsWhenPaintTimesOut() {
         BrowserSession session = new BrowserSession() {
             @Override
-            @Nonnull
-            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+            public CompletableFuture<Void> loadUrl(String url) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+            public CompletableFuture<String> evaluateJavascript(String script) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws TimeoutException {
+            public PaintInfo awaitNextPaint(Duration timeout) throws TimeoutException {
                 throw new TimeoutException("pipeline=shared-file{events=0, callbacks=0}");
             }
 
@@ -138,26 +125,22 @@ class BrowserContractTest {
         AtomicInteger resizes = new AtomicInteger();
         BrowserSession session = new BrowserSession() {
             @Override
-            @Nonnull
-            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+            public CompletableFuture<Void> loadUrl(String url) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+            public CompletableFuture<String> evaluateJavascript(String script) {
                 return CompletableFuture.completedFuture("512x384");
             }
 
             @Override
-            @Nonnull
-            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws TimeoutException {
+            public PaintInfo awaitNextPaint(Duration timeout) throws TimeoutException {
                 if (resizes.get() < 2) throw new TimeoutException("resize acknowledged without a paint");
                 return new PaintInfo(512, 384, 512L * 384L * 4L);
             }
 
             @Override
-            @Nonnull
             public CompletableFuture<Void> resizeViewport(int width, int height) {
                 resizes.incrementAndGet();
                 return CompletableFuture.completedFuture(null);
@@ -182,27 +165,23 @@ class BrowserContractTest {
         Queue<BrowserSession.PaintInfo> paints = new ArrayDeque<>();
         BrowserSession session = new BrowserSession() {
             @Override
-            @Nonnull
-            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+            public CompletableFuture<Void> loadUrl(String url) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+            public CompletableFuture<String> evaluateJavascript(String script) {
                 return CompletableFuture.completedFuture(width.get() + "x" + height.get());
             }
 
             @Override
-            @Nonnull
-            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws TimeoutException {
+            public PaintInfo awaitNextPaint(Duration timeout) throws TimeoutException {
                 PaintInfo paint = paints.poll();
                 if (paint == null) throw new TimeoutException("no paint after an unchanged resize");
                 return paint;
             }
 
             @Override
-            @Nonnull
             public CompletableFuture<Void> resizeViewport(int nextWidth, int nextHeight) {
                 int previousWidth = width.getAndSet(nextWidth);
                 int previousHeight = height.getAndSet(nextHeight);
@@ -231,25 +210,21 @@ class BrowserContractTest {
         AtomicInteger resizes = new AtomicInteger();
         BrowserSession session = new BrowserSession() {
             @Override
-            @Nonnull
-            public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+            public CompletableFuture<Void> loadUrl(String url) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            @Nonnull
-            public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+            public CompletableFuture<String> evaluateJavascript(String script) {
                 return CompletableFuture.completedFuture(resizes.get() < 2 ? "512x480" : "512x384");
             }
 
             @Override
-            @Nonnull
-            public PaintInfo awaitNextPaint(@Nonnull Duration timeout) {
+            public PaintInfo awaitNextPaint(Duration timeout) {
                 return new PaintInfo(512, 384, 512L * 384L * 4L);
             }
 
             @Override
-            @Nonnull
             public CompletableFuture<Void> resizeViewport(int width, int height) {
                 resizes.incrementAndGet();
                 return CompletableFuture.completedFuture(null);

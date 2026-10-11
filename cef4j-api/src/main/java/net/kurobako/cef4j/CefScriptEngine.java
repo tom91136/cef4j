@@ -8,8 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefListValue;
@@ -17,6 +15,7 @@ import net.kurobako.cef4j.gen.CefProcessId;
 import net.kurobako.cef4j.gen.CefProcessMessage;
 import net.kurobako.cef4j.gen.CefValue;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,7 +159,7 @@ public final class CefScriptEngine implements AutoCloseable {
         }
     }
 
-    private final Supplier<CefFrame> frameSupplier;
+    private final Supplier<@Nullable CefFrame> frameSupplier;
     private final AtomicInteger nextId = new AtomicInteger(1);
     private final AtomicInteger nextCallbackId = new AtomicInteger(1);
     private final ConcurrentHashMap<Integer, CompletableFuture<Result>> pending = new ConcurrentHashMap<>();
@@ -173,7 +172,8 @@ public final class CefScriptEngine implements AutoCloseable {
      *
      * @param frameSupplier returns the current {@link CefFrame}, or {@code null} if not yet available
      */
-    public CefScriptEngine(@Nonnull Supplier<CefFrame> frameSupplier) {
+    @NullableBoundary("the frame supplier returns null until a browser is attached")
+    public CefScriptEngine(Supplier<@Nullable CefFrame> frameSupplier) {
         this.frameSupplier = Objects.requireNonNull(frameSupplier, "frameSupplier");
     }
 
@@ -187,12 +187,12 @@ public final class CefScriptEngine implements AutoCloseable {
      * Evaluate a JavaScript expression and return the result as a JSON string.
      *
      * @param expression the JS expression to evaluate
-     * @return future completing with the JSON-serialized result
+     * @return future completing with the JSON-serialized result, or {@code null} for a void result
      */
-    @Nonnull
-    public CompletableFuture<String> evaluate(@Nonnull String expression) {
+    @NullableBoundary("void script results complete with null")
+    public CompletableFuture<@Nullable String> evaluate(String expression) {
         Objects.requireNonNull(expression, "expression");
-        return transform(sendEval(expression, MODE_JSON), result -> {
+        return CefScriptEngine.<@Nullable String>transform(sendEval(expression, MODE_JSON), result -> {
             if (result.isError()) throw new CefScriptException(result.error().orElse(null));
             if (result.isJson()) return result.json().orElse(null);
             if (result.isVoid()) return null;
@@ -207,8 +207,7 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param expression the JS expression to evaluate
      * @return future completing with the handle ID
      */
-    @Nonnull
-    public CompletableFuture<Integer> evaluateHandle(@Nonnull String expression) {
+    public CompletableFuture<Integer> evaluateHandle(String expression) {
         Objects.requireNonNull(expression, "expression");
         return transform(sendEval(expression, MODE_HANDLE), result -> {
             if (result.isError()) throw new CefScriptException(result.error().orElse(null));
@@ -225,8 +224,7 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param asHandle if true, return the property as a new handle; if false, JSON-serialize it
      * @return future completing with the result
      */
-    @Nonnull
-    public CompletableFuture<Result> getProperty(int handleId, @Nonnull String key, boolean asHandle) {
+    public CompletableFuture<Result> getProperty(int handleId, String key, boolean asHandle) {
         Objects.requireNonNull(key, "key");
         return sendRequest(MSG_GET, 4, null, (args, reqId) -> {
             args.setInt(0, reqId);
@@ -244,22 +242,22 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param valueJson the value as JSON (e.g. "42", "\"hello\"", "{}")
      * @return future completing when the set is acknowledged
      */
-    @Nonnull
-    public CompletableFuture<Void> setProperty(int handleId, @Nonnull String key, @Nonnull String valueJson) {
+    public CompletableFuture<Void> setProperty(int handleId, String key, String valueJson) {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(valueJson, "valueJson");
         return transform(
-                sendRequest(MSG_SET, 4, null, (args, reqId) -> {
-                    args.setInt(0, reqId);
-                    args.setInt(1, handleId);
-                    args.setString(2, key);
-                    args.setString(3, valueJson);
-                }),
-                result -> {
-                    if (result.isError())
-                        throw new CefScriptException(result.error().orElse(null));
-                    return null;
-                });
+                        sendRequest(MSG_SET, 4, null, (args, reqId) -> {
+                            args.setInt(0, reqId);
+                            args.setInt(1, handleId);
+                            args.setString(2, key);
+                            args.setString(3, valueJson);
+                        }),
+                        result -> {
+                            if (result.isError())
+                                throw new CefScriptException(result.error().orElse(null));
+                            return result;
+                        })
+                .thenAccept(ignored -> {});
     }
 
     /**
@@ -271,9 +269,7 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param asHandle if true, return the call result as a new handle; if false, JSON-serialize it
      * @return future completing with the result
      */
-    @Nonnull
-    public CompletableFuture<Result> call(
-            int handleId, @Nonnull String method, @Nonnull String argsJson, boolean asHandle) {
+    public CompletableFuture<Result> call(int handleId, String method, String argsJson, boolean asHandle) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(argsJson, "argsJson");
         return sendRequest(MSG_CALL, 5, null, (args, reqId) -> {
@@ -293,8 +289,7 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param asHandle if true, return the result as a new handle; if false, JSON-serialize it
      * @return future completing with the result
      */
-    @Nonnull
-    public CompletableFuture<Result> invoke(int handleId, @Nonnull String argsJson, boolean asHandle) {
+    public CompletableFuture<Result> invoke(int handleId, String argsJson, boolean asHandle) {
         Objects.requireNonNull(argsJson, "argsJson");
         return sendRequest(MSG_INVOKE, 4, null, (args, reqId) -> {
             args.setInt(0, reqId);
@@ -343,9 +338,8 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param handler receives an array of V8 handle IDs for the arguments each time JS calls the function
      * @return future completing with the V8 handle ID of the JS function
      */
-    @Nonnull
     @SuppressWarnings("FutureReturnValueIgnored")
-    public CompletableFuture<Integer> createCallback(@Nonnull CallbackHandler handler) {
+    public CompletableFuture<Integer> createCallback(CallbackHandler handler) {
         Objects.requireNonNull(handler, "handler");
         int callbackId = nextCallbackId.getAndIncrement();
         CompletableFuture<Integer> result;
@@ -488,7 +482,7 @@ public final class CefScriptEngine implements AutoCloseable {
     }
 
     /** Fails requests and forgets callback handles owned by the renderer context that is being replaced. */
-    public void cancelPending(@Nonnull String reason) {
+    public void cancelPending(String reason) {
         Objects.requireNonNull(reason, "reason");
         synchronized (lifecycleLock) {
             if (!disposed) cancelPendingLocked(reason);
@@ -553,7 +547,8 @@ public final class CefScriptEngine implements AutoCloseable {
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
-    private static <T> CompletableFuture<T> transform(CompletableFuture<Result> source, Function<Result, T> mapper) {
+    private static <T extends @Nullable Object> CompletableFuture<T> transform(
+            CompletableFuture<Result> source, Function<Result, T> mapper) {
         CompletableFuture<T> transformed = source.thenApply(mapper);
         transformed.whenComplete((ignored, error) -> {
             if (error != null) source.completeExceptionally(error);

@@ -15,12 +15,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.middleware.CefSessionMiddleware;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +43,12 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
 
     @FunctionalInterface
     public interface ConnectionListener {
-        void onConnection(@Nonnull Connection connection);
+        void onConnection(Connection connection);
     }
 
     private final Configuration configuration;
     private final ScheduledExecutorService executor;
-    private final AtomicReference<Connection> current = new AtomicReference<>();
+    private final AtomicReference<@Nullable Connection> current = new AtomicReference<>();
     private final AtomicReference<State> state = new AtomicReference<>(State.NEW);
     private final AtomicLong generations = new AtomicLong();
     private final CopyOnWriteArrayList<ListenerRegistration> listeners = new CopyOnWriteArrayList<>();
@@ -57,7 +56,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
     private volatile boolean closed;
     private int consecutiveFailures;
 
-    public RuntimeServerSupervisor(@Nonnull Configuration configuration) {
+    public RuntimeServerSupervisor(Configuration configuration) {
         this.configuration = Objects.requireNonNull(configuration, "configuration");
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r, "cef4j-runtime-supervisor");
@@ -67,7 +66,6 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
     }
 
     /** Starts supervision once and resolves when the first server generation is connected. */
-    @Nonnull
     public synchronized CompletableFuture<Connection> start() {
         if (closed) {
             CompletableFuture<Connection> failed = new CompletableFuture<>();
@@ -83,8 +81,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
     }
 
     /** Receives every new generation, including the current one when already connected. */
-    @Nonnull
-    public synchronized AutoCloseable onConnection(@Nonnull ConnectionListener listener) {
+    public synchronized AutoCloseable onConnection(ConnectionListener listener) {
         if (closed) throw new IllegalStateException("supervisor is closed");
         ListenerRegistration registration = new ListenerRegistration(Objects.requireNonNull(listener, "listener"));
         listeners.add(registration);
@@ -94,12 +91,10 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         return () -> listeners.remove(registration);
     }
 
-    @Nonnull
     public Optional<Connection> current() {
         return Optional.ofNullable(current.get());
     }
 
-    @Nonnull
     public State state() {
         return Objects.requireNonNull(state.get());
     }
@@ -289,8 +284,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         private final java.util.concurrent.atomic.AtomicBoolean closed =
                 new java.util.concurrent.atomic.AtomicBoolean();
 
-        @Nullable
-        private CefSession.HandlerRegistration closeRegistration;
+        private CefSession.@Nullable HandlerRegistration closeRegistration;
 
         private Connection(long generation, RuntimeServerProcess process, CefSession session) {
             this.generation = generation;
@@ -306,12 +300,10 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
             return process.pid();
         }
 
-        @Nonnull
         public CefSession session() {
             return session;
         }
 
-        @Nonnull
         public RuntimeServerHandshake handshake() {
             return process.handshake();
         }
@@ -342,16 +334,16 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         private final Optional<String> bearerToken;
 
         public Configuration(
-                @Nonnull Path binary,
-                @Nonnull String transport,
-                @Nonnull String bindEndpoint,
-                @Nonnull String frameTransport,
-                @Nonnull Duration bootstrapTimeout,
-                @Nonnull Duration requestTimeout,
-                @Nonnull Duration initialRestartDelay,
-                @Nonnull Duration maxRestartDelay,
+                Path binary,
+                String transport,
+                String bindEndpoint,
+                String frameTransport,
+                Duration bootstrapTimeout,
+                Duration requestTimeout,
+                Duration initialRestartDelay,
+                Duration maxRestartDelay,
                 int maxConsecutiveFailures,
-                @Nonnull Map<String, String> environment) {
+                Map<String, String> environment) {
             this(
                     binary,
                     transport,
@@ -367,16 +359,16 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         }
 
         public Configuration(
-                @Nonnull Path binary,
-                @Nonnull String transport,
-                @Nonnull String bindEndpoint,
-                @Nonnull String frameTransport,
-                @Nonnull Duration bootstrapTimeout,
-                @Nonnull Duration requestTimeout,
-                @Nonnull Duration initialRestartDelay,
-                @Nonnull Duration maxRestartDelay,
+                Path binary,
+                String transport,
+                String bindEndpoint,
+                String frameTransport,
+                Duration bootstrapTimeout,
+                Duration requestTimeout,
+                Duration initialRestartDelay,
+                Duration maxRestartDelay,
                 int maxConsecutiveFailures,
-                @Nonnull Map<String, String> environment,
+                Map<String, String> environment,
                 Optional<String> bearerToken) {
             this(
                     binary,
@@ -436,8 +428,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         }
 
         /** Return an equivalent configuration that decorates every newly connected server generation. */
-        @Nonnull
-        public Configuration withSessionMiddleware(@Nonnull CefSessionMiddleware middleware) {
+        public Configuration withSessionMiddleware(CefSessionMiddleware middleware) {
             return new Configuration(
                     binary,
                     transport,
@@ -453,8 +444,7 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     middleware);
         }
 
-        @Nonnull
-        public static Configuration defaults(@Nonnull Path binary) {
+        public static Configuration defaults(Path binary) {
             return new Configuration(
                     binary,
                     "zmq",

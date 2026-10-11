@@ -30,12 +30,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.CefTransports;
 import net.kurobako.cef4j.ipc.transport.WebSocketTransport;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,18 +75,18 @@ public final class RuntimeServerProcess implements Closeable {
     private final Duration transportReconnectTimeout;
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    public static RuntimeServerProcess spawn(@Nonnull Path binary, @Nonnull String bindEndpoint) throws IOException {
+    public static RuntimeServerProcess spawn(Path binary, String bindEndpoint) throws IOException {
         return spawn(binary, "zmq", bindEndpoint, "shared-file", DEFAULT_BOOTSTRAP_TIMEOUT, Map.of());
     }
 
     /** Spawns a runtime server with explicit environment additions, useful for portable CEF distributions. */
     public static RuntimeServerProcess spawn(
-            @Nonnull Path binary,
-            @Nonnull String transport,
-            @Nonnull String bindEndpoint,
-            @Nonnull String frameTransport,
-            @Nonnull Duration bootstrapTimeout,
-            @Nonnull Map<String, String> environment)
+            Path binary,
+            String transport,
+            String bindEndpoint,
+            String frameTransport,
+            Duration bootstrapTimeout,
+            Map<String, String> environment)
             throws IOException {
         Objects.requireNonNull(binary, "binary");
         Objects.requireNonNull(transport, "transport");
@@ -290,34 +289,28 @@ public final class RuntimeServerProcess implements Closeable {
         this.transportReconnectTimeout = transportReconnectTimeout;
     }
 
-    @Nonnull
     public RuntimeServerHandshake handshake() {
         return handshake;
     }
 
-    @Nonnull
     public String transport() {
         return transport;
     }
 
-    @Nonnull
     public String frameTransport() {
         return frameTransport;
     }
 
-    @Nonnull
     public String endpoint() {
         return endpoint;
     }
 
     /** Connects using the provider selected by the runtime server. */
-    @Nonnull
     public CefTransport connect() throws CefTransportException {
         return supervise(CefTransports.connect(transport, endpoint, process::isAlive, transportReconnectTimeout));
     }
 
     /** Connects a WebSocket generation, authenticating with the bearer token when present. */
-    @Nonnull
     public CefTransport connectWebSocket(Optional<String> bearerToken) throws CefTransportException {
         if (!"websocket".equals(transport)) {
             throw new CefTransportException("runtime server selected " + transport + ", not websocket");
@@ -337,14 +330,12 @@ public final class RuntimeServerProcess implements Closeable {
         return process.pid();
     }
 
-    @Nonnull
     public String diagnosticSummary() {
         String output = recentOutput.isEmpty() ? "none" : recentOutput.stream().collect(Collectors.joining(" | "));
         return "runtime-server{pid=" + pid() + ", alive=" + isAlive() + ", recent=" + output + "}";
     }
 
     /** Completes with the process exit code, whether exit was expected or a crash. */
-    @Nonnull
     public CompletableFuture<Integer> onExit() {
         return process.onExit().thenApply(Process::exitValue);
     }

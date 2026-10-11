@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implemented by the client to observe MediaRouter events and registered via
@@ -39,7 +38,7 @@ public interface CefMediaObserver extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:126</a>
      */
-    default void onSinks(long sinksCount, @Nullable CefMediaSink[] sinks) {}
+    default void onSinks(long sinksCount, CefMediaSink @Nullable [] sinks) {}
 
     /**
      * The list of available media routes has changed or
@@ -53,7 +52,7 @@ public interface CefMediaObserver extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:133</a>
      */
-    default void onRoutes(long routesCount, @Nullable CefMediaRoute[] routes) {}
+    default void onRoutes(long routesCount, CefMediaRoute @Nullable [] routes) {}
 
     /**
      * The connection state of {@code route} has changed.
@@ -66,7 +65,7 @@ public interface CefMediaObserver extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:141</a>
      */
-    default void onRouteStateChanged(@Nullable CefMediaRoute route, @Nonnull CefMediaRouteConnectionState state) {}
+    default void onRouteStateChanged(@Nullable CefMediaRoute route, CefMediaRouteConnectionState state) {}
 
     /**
      * A message was received over {@code route}. {@code message} is only valid for the scope of this callback and
@@ -86,7 +85,7 @@ public interface CefMediaObserver extends CefClientHandler {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:148</a>
      */
-    default void onRouteMessageReceived(@Nullable CefMediaRoute route, @Nonnull ByteBuffer message) {}
+    default void onRouteMessageReceived(@Nullable CefMediaRoute route, ByteBuffer message) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -101,22 +100,22 @@ public interface CefMediaObserver extends CefClientHandler {
         }
 
         @Override
-        public void onSinks(long sinksCount, @Nullable CefMediaSink[] sinks) {
+        public void onSinks(long sinksCount, CefMediaSink @Nullable [] sinks) {
             for (CefMediaObserver d : delegates) d.onSinks(sinksCount, sinks);
         }
 
         @Override
-        public void onRoutes(long routesCount, @Nullable CefMediaRoute[] routes) {
+        public void onRoutes(long routesCount, CefMediaRoute @Nullable [] routes) {
             for (CefMediaObserver d : delegates) d.onRoutes(routesCount, routes);
         }
 
         @Override
-        public void onRouteStateChanged(@Nullable CefMediaRoute route, @Nonnull CefMediaRouteConnectionState state) {
+        public void onRouteStateChanged(@Nullable CefMediaRoute route, CefMediaRouteConnectionState state) {
             for (CefMediaObserver d : delegates) d.onRouteStateChanged(route, state);
         }
 
         @Override
-        public void onRouteMessageReceived(@Nullable CefMediaRoute route, @Nonnull ByteBuffer message) {
+        public void onRouteMessageReceived(@Nullable CefMediaRoute route, ByteBuffer message) {
             for (CefMediaObserver d : delegates) d.onRouteMessageReceived(route, message);
         }
     }

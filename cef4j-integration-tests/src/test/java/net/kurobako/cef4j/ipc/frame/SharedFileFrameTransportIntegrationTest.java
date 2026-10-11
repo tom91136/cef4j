@@ -20,6 +20,7 @@ import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerSupervisor;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -44,7 +45,7 @@ class SharedFileFrameTransportIntegrationTest {
                     });
 
             Thread mainThread = Thread.currentThread();
-            java.util.concurrent.atomic.AtomicReference<String> consumerThreadName =
+            java.util.concurrent.atomic.AtomicReference<@Nullable String> consumerThreadName =
                     new java.util.concurrent.atomic.AtomicReference<>();
 
             try (FrameTransport ft = SharedFileFrameTransport.bindAll(session)) {

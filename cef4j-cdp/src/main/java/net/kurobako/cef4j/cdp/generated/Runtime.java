@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -28,9 +27,9 @@ public final class Runtime {
      */
     public static final class ScriptId implements CdpValue<String> {
         public final String value;
-        public ScriptId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public ScriptId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof ScriptId)) return false;
             return value.equals(((ScriptId) other).value);
@@ -56,8 +55,8 @@ public final class Runtime {
             IDONLY("idOnly");
             public final String value;
             SerializationValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SerializationValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SerializationValues of(String value) {
                 for (SerializationValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -84,7 +83,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> additionalParameters() {
-            return Optional.ofNullable(objectMap(raw("additionalParameters")));
+            Object value = raw("additionalParameters");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Sets the serialization field.
@@ -171,8 +171,8 @@ public final class Runtime {
             GENERATOR("generator");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -191,14 +191,16 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> value() {
-            return Optional.ofNullable(raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable(value);
         }
         /**
          * Returns the objectId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectId() {
-            return Optional.ofNullable((String) raw("objectId"));
+            Object value = raw("objectId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Set if value reference met more then once during serialization. In such case, value is provided only to one of the serialized values. Unique per value in the scope of one CDP call.
@@ -277,9 +279,9 @@ public final class Runtime {
      */
     public static final class RemoteObjectId implements CdpValue<String> {
         public final String value;
-        public RemoteObjectId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public RemoteObjectId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof RemoteObjectId)) return false;
             return value.equals(((RemoteObjectId) other).value);
@@ -292,9 +294,9 @@ public final class Runtime {
      */
     public static final class UnserializableValue implements CdpValue<String> {
         public final String value;
-        public UnserializableValue(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public UnserializableValue(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof UnserializableValue)) return false;
             return value.equals(((UnserializableValue) other).value);
@@ -325,8 +327,8 @@ public final class Runtime {
             BIGINT("bigint");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -359,8 +361,8 @@ public final class Runtime {
             TRUSTEDTYPE("trustedtype");
             public final String value;
             SubtypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SubtypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SubtypeValues of(String value) {
                 for (SubtypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -379,35 +381,40 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<RemoteObject.SubtypeValues> subtype() {
-            return Optional.ofNullable(raw("subtype") == null ? null : RemoteObject.SubtypeValues.of((String) raw("subtype")));
+            Object value = raw("subtype");
+            return Optional.ofNullable(value == null ? null : RemoteObject.SubtypeValues.of((String) value));
         }
         /**
          * Object class (constructor) name. Specified for {@code object} type values only.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> className() {
-            return Optional.ofNullable((String) raw("className"));
+            Object value = raw("className");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Remote object value in case of primitive values or JSON values (if it was requested).
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> value() {
-            return Optional.ofNullable(raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable(value);
         }
         /**
          * Primitive value which can not be JSON-stringified does not have {@code value}, but gets this property.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.UnserializableValue> unserializableValue() {
-            return Optional.ofNullable(raw("unserializableValue") == null ? null : new Runtime.UnserializableValue((String) raw("unserializableValue")));
+            Object value = raw("unserializableValue");
+            return Optional.ofNullable(value == null ? null : new Runtime.UnserializableValue((String) value));
         }
         /**
          * String representation of the object.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> description() {
-            return Optional.ofNullable((String) raw("description"));
+            Object value = raw("description");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Deep serialized value.
@@ -415,14 +422,16 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.DeepSerializedValue> deepSerializedValue() {
-            return Optional.ofNullable(raw("deepSerializedValue") == null ? null : Runtime.DeepSerializedValue.fromMap(java.util.Objects.requireNonNull(objectMap(raw("deepSerializedValue")))));
+            Object value = raw("deepSerializedValue");
+            return Optional.ofNullable(value == null ? null : Runtime.DeepSerializedValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Unique object identifier (for non-primitive values).
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Preview containing abbreviated property values. Specified for {@code object} type values only.
@@ -430,7 +439,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ObjectPreview> preview() {
-            return Optional.ofNullable(raw("preview") == null ? null : Runtime.ObjectPreview.fromMap(java.util.Objects.requireNonNull(objectMap(raw("preview")))));
+            Object value = raw("preview");
+            return Optional.ofNullable(value == null ? null : Runtime.ObjectPreview.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the customPreview field.
@@ -438,7 +448,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.CustomPreview> customPreview() {
-            return Optional.ofNullable(raw("customPreview") == null ? null : Runtime.CustomPreview.fromMap(java.util.Objects.requireNonNull(objectMap(raw("customPreview")))));
+            Object value = raw("customPreview");
+            return Optional.ofNullable(value == null ? null : Runtime.CustomPreview.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Object type.
@@ -639,7 +650,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> bodyGetterId() {
-            return Optional.ofNullable(raw("bodyGetterId") == null ? null : new Runtime.RemoteObjectId((String) raw("bodyGetterId")));
+            Object value = raw("bodyGetterId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * The JSON-stringified result of formatter.header(object, config) call. It contains json ML array that represents RemoteObject.
@@ -693,8 +705,8 @@ public final class Runtime {
             BIGINT("bigint");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -727,8 +739,8 @@ public final class Runtime {
             TRUSTEDTYPE("trustedtype");
             public final String value;
             SubtypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SubtypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SubtypeValues of(String value) {
                 for (SubtypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -747,14 +759,16 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<ObjectPreview.SubtypeValues> subtype() {
-            return Optional.ofNullable(raw("subtype") == null ? null : ObjectPreview.SubtypeValues.of((String) raw("subtype")));
+            Object value = raw("subtype");
+            return Optional.ofNullable(value == null ? null : ObjectPreview.SubtypeValues.of((String) value));
         }
         /**
          * String representation of the object.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> description() {
-            return Optional.ofNullable((String) raw("description"));
+            Object value = raw("description");
+            return Optional.ofNullable((String) value);
         }
         /**
          * True iff some of the properties or entries of the original object did not fit.
@@ -775,7 +789,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.EntryPreview>> entries() {
-            return Optional.ofNullable(list(raw("entries"), element0 -> java.util.Objects.requireNonNull(Runtime.EntryPreview.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("entries");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Runtime.EntryPreview.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Object type.
@@ -883,8 +898,8 @@ public final class Runtime {
             BIGINT("bigint");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -917,8 +932,8 @@ public final class Runtime {
             TRUSTEDTYPE("trustedtype");
             public final String value;
             SubtypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SubtypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SubtypeValues of(String value) {
                 for (SubtypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -944,21 +959,24 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> value() {
-            return Optional.ofNullable((String) raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Nested value preview.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ObjectPreview> valuePreview() {
-            return Optional.ofNullable(raw("valuePreview") == null ? null : Runtime.ObjectPreview.fromMap(java.util.Objects.requireNonNull(objectMap(raw("valuePreview")))));
+            Object value = raw("valuePreview");
+            return Optional.ofNullable(value == null ? null : Runtime.ObjectPreview.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Object subtype hint. Specified for {@code object} type values only.
          * @return the protocol field value, empty when absent
          */
         public Optional<PropertyPreview.SubtypeValues> subtype() {
-            return Optional.ofNullable(raw("subtype") == null ? null : PropertyPreview.SubtypeValues.of((String) raw("subtype")));
+            Object value = raw("subtype");
+            return Optional.ofNullable(value == null ? null : PropertyPreview.SubtypeValues.of((String) value));
         }
         /**
          * Property name.
@@ -1047,7 +1065,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ObjectPreview> key() {
-            return Optional.ofNullable(raw("key") == null ? null : Runtime.ObjectPreview.fromMap(java.util.Objects.requireNonNull(objectMap(raw("key")))));
+            Object value = raw("key");
+            return Optional.ofNullable(value == null ? null : Runtime.ObjectPreview.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Preview of the value.
@@ -1105,28 +1124,32 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> value() {
-            return Optional.ofNullable(raw("value") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("value")))));
+            Object value = raw("value");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * True if the value associated with the property may be changed (data descriptors only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> writable() {
-            return Optional.ofNullable((Boolean) raw("writable"));
+            Object value = raw("writable");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * A function which serves as a getter for the property, or {@code undefined} if there is no getter (accessor descriptors only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> get() {
-            return Optional.ofNullable(raw("get") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("get")))));
+            Object value = raw("get");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * A function which serves as a setter for the property, or {@code undefined} if there is no setter (accessor descriptors only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> set() {
-            return Optional.ofNullable(raw("set") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("set")))));
+            Object value = raw("set");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * True if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object.
@@ -1147,21 +1170,24 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> wasThrown() {
-            return Optional.ofNullable((Boolean) raw("wasThrown"));
+            Object value = raw("wasThrown");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True if the property is owned for the object.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isOwn() {
-            return Optional.ofNullable((Boolean) raw("isOwn"));
+            Object value = raw("isOwn");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Property symbol object, if the property is of the {@code symbol} type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> symbol() {
-            return Optional.ofNullable(raw("symbol") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("symbol")))));
+            Object value = raw("symbol");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Property name or symbol description.
@@ -1338,7 +1364,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> value() {
-            return Optional.ofNullable(raw("value") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("value")))));
+            Object value = raw("value");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Conventional property name.
@@ -1390,21 +1417,24 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> value() {
-            return Optional.ofNullable(raw("value") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("value")))));
+            Object value = raw("value");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * A function which serves as a getter for the private property, or {@code undefined} if there is no getter (accessor descriptors only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> get() {
-            return Optional.ofNullable(raw("get") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("get")))));
+            Object value = raw("get");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * A function which serves as a setter for the private property, or {@code undefined} if there is no setter (accessor descriptors only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> set() {
-            return Optional.ofNullable(raw("set") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("set")))));
+            Object value = raw("set");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Private property name.
@@ -1484,21 +1514,24 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> value() {
-            return Optional.ofNullable(raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable(value);
         }
         /**
          * Primitive value which can not be JSON-stringified.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.UnserializableValue> unserializableValue() {
-            return Optional.ofNullable(raw("unserializableValue") == null ? null : new Runtime.UnserializableValue((String) raw("unserializableValue")));
+            Object value = raw("unserializableValue");
+            return Optional.ofNullable(value == null ? null : new Runtime.UnserializableValue((String) value));
         }
         /**
          * Remote object handle.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Primitive value or serializable javascript object.
@@ -1561,8 +1594,8 @@ public final class Runtime {
     public static final class ExecutionContextId implements CdpValue<Long> {
         public final long value;
         public ExecutionContextId(long value) { this.value = value; }
-        @Nonnull public Long value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Long value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof ExecutionContextId)) return false;
             return value == ((ExecutionContextId) other).value;
@@ -1613,7 +1646,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> auxData() {
-            return Optional.ofNullable(objectMap(raw("auxData")));
+            Object value = raw("auxData");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed.
@@ -1713,35 +1747,40 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ScriptId> scriptId() {
-            return Optional.ofNullable(raw("scriptId") == null ? null : new Runtime.ScriptId((String) raw("scriptId")));
+            Object value = raw("scriptId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ScriptId((String) value));
         }
         /**
          * URL of the exception location, to be used when the script was not reported.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * JavaScript stack trace if available.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
+            Object value = raw("stackTrace");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Exception object if available.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> exception() {
-            return Optional.ofNullable(raw("exception") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exception")))));
+            Object value = raw("exception");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the context where exception happened.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Dictionary with entries of meta data that the client associated with this exception, such as information about associated network requests, etc.
@@ -1749,7 +1788,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> exceptionMetaData() {
-            return Optional.ofNullable(objectMap(raw("exceptionMetaData")));
+            Object value = raw("exceptionMetaData");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Exception id.
@@ -1904,8 +1944,8 @@ public final class Runtime {
     public static final class Timestamp implements CdpValue<Double> {
         public final double value;
         public Timestamp(double value) { this.value = value; }
-        @Nonnull public Double value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Double value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof Timestamp)) return false;
             return Double.compare(value, ((Timestamp) other).value) == 0;
@@ -1919,8 +1959,8 @@ public final class Runtime {
     public static final class TimeDelta implements CdpValue<Double> {
         public final double value;
         public TimeDelta(double value) { this.value = value; }
-        @Nonnull public Double value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Double value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof TimeDelta)) return false;
             return Double.compare(value, ((TimeDelta) other).value) == 0;
@@ -2032,7 +2072,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> description() {
-            return Optional.ofNullable((String) raw("description"));
+            Object value = raw("description");
+            return Optional.ofNullable((String) value);
         }
         /**
          * JavaScript function name.
@@ -2046,7 +2087,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> parent() {
-            return Optional.ofNullable(raw("parent") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("parent")))));
+            Object value = raw("parent");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Asynchronous JavaScript stack trace that preceded this stack, if available.
@@ -2054,7 +2096,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTraceId> parentId() {
-            return Optional.ofNullable(raw("parentId") == null ? null : Runtime.StackTraceId.fromMap(java.util.Objects.requireNonNull(objectMap(raw("parentId")))));
+            Object value = raw("parentId");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTraceId.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * String label of this stack trace. For async traces this may be a name of the function that initiated the async call.
@@ -2128,9 +2171,9 @@ public final class Runtime {
      */
     public static final class UniqueDebuggerId implements CdpValue<String> {
         public final String value;
-        public UniqueDebuggerId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public UniqueDebuggerId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof UniqueDebuggerId)) return false;
             return value.equals(((UniqueDebuggerId) other).value);
@@ -2160,7 +2203,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.UniqueDebuggerId> debuggerId() {
-            return Optional.ofNullable(raw("debuggerId") == null ? null : new Runtime.UniqueDebuggerId((String) raw("debuggerId")));
+            Object value = raw("debuggerId");
+            return Optional.ofNullable(value == null ? null : new Runtime.UniqueDebuggerId((String) value));
         }
         /**
          * Sets the id field.
@@ -2219,14 +2263,16 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> returnByValue() {
-            return Optional.ofNullable((Boolean) raw("returnByValue"));
+            Object value = raw("returnByValue");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether preview should be generated for the result.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generatePreview() {
-            return Optional.ofNullable((Boolean) raw("generatePreview"));
+            Object value = raw("generatePreview");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the promise.
@@ -2303,28 +2349,32 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Call arguments. All call arguments must belong to the same JavaScript world as the target object.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.CallArgument>> arguments() {
-            return Optional.ofNullable(list(raw("arguments"), element0 -> java.util.Objects.requireNonNull(Runtime.CallArgument.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("arguments");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Runtime.CallArgument.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides {@code setPauseOnException} state.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> silent() {
-            return Optional.ofNullable((Boolean) raw("silent"));
+            Object value = raw("silent");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the result is expected to be a JSON object which should be sent by value. Can be overriden by {@code serializationOptions}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> returnByValue() {
-            return Optional.ofNullable((Boolean) raw("returnByValue"));
+            Object value = raw("returnByValue");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether preview should be generated for the result.
@@ -2332,35 +2382,40 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generatePreview() {
-            return Optional.ofNullable((Boolean) raw("generatePreview"));
+            Object value = raw("generatePreview");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether execution should be treated as initiated by user in the UI.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> userGesture() {
-            return Optional.ofNullable((Boolean) raw("userGesture"));
+            Object value = raw("userGesture");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether execution should {@code await} for resulting value and return once awaited promise is resolved.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> awaitPromise() {
-            return Optional.ofNullable((Boolean) raw("awaitPromise"));
+            Object value = raw("awaitPromise");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Specifies execution context which global object will be used to call function on. Either executionContextId or objectId should be specified.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Symbolic group name that can be used to release multiple objects. If objectGroup is not specified and objectId is, objectGroup will be inherited from object.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return Optional.ofNullable((String) raw("objectGroup"));
+            Object value = raw("objectGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Whether to throw an exception if side effect cannot be ruled out during evaluation.
@@ -2368,7 +2423,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> throwOnSideEffect() {
-            return Optional.ofNullable((Boolean) raw("throwOnSideEffect"));
+            Object value = raw("throwOnSideEffect");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * An alternative way to specify the execution context to call function on. Compared to contextId that may be reused across processes, this is guaranteed to be system-unique, so it can be used to prevent accidental function call in context different than intended (e.g. as a result of navigation across process boundaries). This is mutually exclusive with {@code executionContextId}.
@@ -2376,7 +2432,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> uniqueContextId() {
-            return Optional.ofNullable((String) raw("uniqueContextId"));
+            Object value = raw("uniqueContextId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Specifies the result serialization. If provided, overrides {@code generatePreview} and {@code returnByValue}.
@@ -2384,7 +2441,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.SerializationOptions> serializationOptions() {
-            return Optional.ofNullable(raw("serializationOptions") == null ? null : Runtime.SerializationOptions.fromMap(java.util.Objects.requireNonNull(objectMap(raw("serializationOptions")))));
+            Object value = raw("serializationOptions");
+            return Optional.ofNullable(value == null ? null : Runtime.SerializationOptions.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Declaration of the function to call.
@@ -2667,7 +2725,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Expression to compile.
@@ -2744,35 +2803,40 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return Optional.ofNullable((String) raw("objectGroup"));
+            Object value = raw("objectGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Determines whether Command Line API should be available during the evaluation.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeCommandLineAPI() {
-            return Optional.ofNullable((Boolean) raw("includeCommandLineAPI"));
+            Object value = raw("includeCommandLineAPI");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides {@code setPauseOnException} state.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> silent() {
-            return Optional.ofNullable((Boolean) raw("silent"));
+            Object value = raw("silent");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Specifies in which execution context to perform evaluation. If the parameter is omitted the evaluation will be performed in the context of the inspected page. This is mutually exclusive with {@code uniqueContextId}, which offers an alternative way to identify the execution context that is more reliable in a multi-process environment.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> contextId() {
-            return Optional.ofNullable(raw("contextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("contextId")).longValue()));
+            Object value = raw("contextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Whether the result is expected to be a JSON object that should be sent by value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> returnByValue() {
-            return Optional.ofNullable((Boolean) raw("returnByValue"));
+            Object value = raw("returnByValue");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether preview should be generated for the result.
@@ -2780,21 +2844,24 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generatePreview() {
-            return Optional.ofNullable((Boolean) raw("generatePreview"));
+            Object value = raw("generatePreview");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether execution should be treated as initiated by user in the UI.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> userGesture() {
-            return Optional.ofNullable((Boolean) raw("userGesture"));
+            Object value = raw("userGesture");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether execution should {@code await} for resulting value and return once awaited promise is resolved.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> awaitPromise() {
-            return Optional.ofNullable((Boolean) raw("awaitPromise"));
+            Object value = raw("awaitPromise");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to throw an exception if side effect cannot be ruled out during evaluation. This implies {@code disableBreaks} below.
@@ -2802,7 +2869,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> throwOnSideEffect() {
-            return Optional.ofNullable((Boolean) raw("throwOnSideEffect"));
+            Object value = raw("throwOnSideEffect");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Terminate execution after timing out (number of milliseconds).
@@ -2810,7 +2878,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.TimeDelta> timeout() {
-            return Optional.ofNullable(raw("timeout") == null ? null : new Runtime.TimeDelta(((Number) raw("timeout")).doubleValue()));
+            Object value = raw("timeout");
+            return Optional.ofNullable(value == null ? null : new Runtime.TimeDelta(((Number) value).doubleValue()));
         }
         /**
          * Disable breakpoints during execution.
@@ -2818,7 +2887,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disableBreaks() {
-            return Optional.ofNullable((Boolean) raw("disableBreaks"));
+            Object value = raw("disableBreaks");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Setting this flag to true enables {@code let} re-declaration and top-level {@code await}. Note that {@code let} variables can only be re-declared if they originate from {@code replMode} themselves.
@@ -2826,7 +2896,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> replMode() {
-            return Optional.ofNullable((Boolean) raw("replMode"));
+            Object value = raw("replMode");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The Content Security Policy (CSP) for the target might block &#x27;unsafe-eval&#x27; which includes eval(), Function(), setTimeout() and setInterval() when called with non-callable arguments. This flag bypasses CSP for this evaluation and allows unsafe-eval. Defaults to true.
@@ -2834,7 +2905,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowUnsafeEvalBlockedByCSP() {
-            return Optional.ofNullable((Boolean) raw("allowUnsafeEvalBlockedByCSP"));
+            Object value = raw("allowUnsafeEvalBlockedByCSP");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * An alternative way to specify the execution context to evaluate in. Compared to contextId that may be reused across processes, this is guaranteed to be system-unique, so it can be used to prevent accidental evaluation of the expression in context different than intended (e.g. as a result of navigation across process boundaries). This is mutually exclusive with {@code contextId}.
@@ -2842,7 +2914,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> uniqueContextId() {
-            return Optional.ofNullable((String) raw("uniqueContextId"));
+            Object value = raw("uniqueContextId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Specifies the result serialization. If provided, overrides {@code generatePreview} and {@code returnByValue}.
@@ -2850,7 +2923,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.SerializationOptions> serializationOptions() {
-            return Optional.ofNullable(raw("serializationOptions") == null ? null : Runtime.SerializationOptions.fromMap(java.util.Objects.requireNonNull(objectMap(raw("serializationOptions")))));
+            Object value = raw("serializationOptions");
+            return Optional.ofNullable(value == null ? null : Runtime.SerializationOptions.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Expression to evaluate.
@@ -3177,7 +3251,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ownProperties() {
-            return Optional.ofNullable((Boolean) raw("ownProperties"));
+            Object value = raw("ownProperties");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, returns accessor properties (with getter/setter) only; internal properties are not returned either.
@@ -3185,7 +3260,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> accessorPropertiesOnly() {
-            return Optional.ofNullable((Boolean) raw("accessorPropertiesOnly"));
+            Object value = raw("accessorPropertiesOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether preview should be generated for the results.
@@ -3193,7 +3269,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generatePreview() {
-            return Optional.ofNullable((Boolean) raw("generatePreview"));
+            Object value = raw("generatePreview");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, returns non-indexed properties only.
@@ -3201,7 +3278,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> nonIndexedPropertiesOnly() {
-            return Optional.ofNullable((Boolean) raw("nonIndexedPropertiesOnly"));
+            Object value = raw("nonIndexedPropertiesOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the object to return properties for.
@@ -3306,7 +3384,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Specifies in which execution context to lookup global scope variables.
@@ -3356,7 +3435,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return Optional.ofNullable((String) raw("objectGroup"));
+            Object value = raw("objectGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Identifier of the prototype to return objects for.
@@ -3483,49 +3563,56 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Symbolic group name that can be used to release multiple objects.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return Optional.ofNullable((String) raw("objectGroup"));
+            Object value = raw("objectGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides {@code setPauseOnException} state.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> silent() {
-            return Optional.ofNullable((Boolean) raw("silent"));
+            Object value = raw("silent");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Determines whether Command Line API should be available during the evaluation.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeCommandLineAPI() {
-            return Optional.ofNullable((Boolean) raw("includeCommandLineAPI"));
+            Object value = raw("includeCommandLineAPI");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the result is expected to be a JSON object which should be sent by value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> returnByValue() {
-            return Optional.ofNullable((Boolean) raw("returnByValue"));
+            Object value = raw("returnByValue");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether preview should be generated for the result.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generatePreview() {
-            return Optional.ofNullable((Boolean) raw("generatePreview"));
+            Object value = raw("generatePreview");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether execution should {@code await} for resulting value and return once awaited promise is resolved.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> awaitPromise() {
-            return Optional.ofNullable((Boolean) raw("awaitPromise"));
+            Object value = raw("awaitPromise");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Id of the script to run.
@@ -3801,14 +3888,16 @@ public final class Runtime {
          */
         @Deprecated
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * If specified, the binding is exposed to the executionContext with matching name, even for contexts created after the binding is added. See also {@code ExecutionContext.name} and {@code worldName} parameter to {@code Page.addScriptToEvaluateOnNewDocument}. This parameter is mutually exclusive with {@code executionContextId}.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> executionContextName() {
-            return Optional.ofNullable((String) raw("executionContextName"));
+            Object value = raw("executionContextName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the name field.
@@ -3953,7 +4042,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return Optional.ofNullable(raw("exceptionDetails") == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exceptionDetails")))));
+            Object value = raw("exceptionDetails");
+            return Optional.ofNullable(value == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Promise result. Will contain rejected value if promise was rejected.
@@ -4004,7 +4094,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return Optional.ofNullable(raw("exceptionDetails") == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exceptionDetails")))));
+            Object value = raw("exceptionDetails");
+            return Optional.ofNullable(value == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Call result.
@@ -4048,14 +4139,16 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ScriptId> scriptId() {
-            return Optional.ofNullable(raw("scriptId") == null ? null : new Runtime.ScriptId((String) raw("scriptId")));
+            Object value = raw("scriptId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ScriptId((String) value));
         }
         /**
          * Exception details.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return Optional.ofNullable(raw("exceptionDetails") == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exceptionDetails")))));
+            Object value = raw("exceptionDetails");
+            return Optional.ofNullable(value == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Id of the script.
@@ -4115,7 +4208,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return Optional.ofNullable(raw("exceptionDetails") == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exceptionDetails")))));
+            Object value = raw("exceptionDetails");
+            return Optional.ofNullable(value == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Evaluation result.
@@ -4241,7 +4335,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.InternalPropertyDescriptor>> internalProperties() {
-            return Optional.ofNullable(list(raw("internalProperties"), element0 -> java.util.Objects.requireNonNull(Runtime.InternalPropertyDescriptor.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("internalProperties");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Runtime.InternalPropertyDescriptor.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Object private properties.
@@ -4249,14 +4344,16 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.PrivatePropertyDescriptor>> privateProperties() {
-            return Optional.ofNullable(list(raw("privateProperties"), element0 -> java.util.Objects.requireNonNull(Runtime.PrivatePropertyDescriptor.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("privateProperties");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Runtime.PrivatePropertyDescriptor.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Exception details.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return Optional.ofNullable(raw("exceptionDetails") == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exceptionDetails")))));
+            Object value = raw("exceptionDetails");
+            return Optional.ofNullable(value == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Object properties.
@@ -4345,7 +4442,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return Optional.ofNullable(raw("exceptionDetails") == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exceptionDetails")))));
+            Object value = raw("exceptionDetails");
+            return Optional.ofNullable(value == null ? null : Runtime.ExceptionDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Run result.
@@ -4467,8 +4565,8 @@ public final class Runtime {
             TIMEEND("timeEnd");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -4508,7 +4606,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
+            Object value = raw("stackTrace");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Console context descriptor for calls on non-default console context (not console.*): &#x27;anonymous#unique-logger-id&#x27; for call on unnamed context, &#x27;name#unique-logger-id&#x27; for call on named context.
@@ -4516,7 +4615,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> context() {
-            return Optional.ofNullable((String) raw("context"));
+            Object value = raw("context");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Type of the call.
@@ -4790,7 +4890,8 @@ public final class Runtime {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Sets the object field.
@@ -4953,21 +5054,21 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Runtime.disable", null, result_ -> null);
+            return client.call("Runtime.disable", null);
         }
         /**
          * Discards collected exceptions and console API calls.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> discardConsoleEntries() {
-            return client.call("Runtime.discardConsoleEntries", null, result_ -> null);
+            return client.call("Runtime.discardConsoleEntries", null);
         }
         /**
          * Enables reporting of execution contexts creation by means of {@code executionContextCreated} event. When the reporting gets enabled the event will be sent immediately for each existing execution context.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Runtime.enable", null, result_ -> null);
+            return client.call("Runtime.enable", null);
         }
         /**
          * Evaluates expression on global object.
@@ -5136,7 +5237,7 @@ public final class Runtime {
         public CompletionStage<Void> releaseObject(Runtime.RemoteObjectId objectId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("objectId", CdpObject.json(objectId));
-            return client.call("Runtime.releaseObject", params, result_ -> null);
+            return client.call("Runtime.releaseObject", params);
         }
         /**
          * Releases remote object with given id.
@@ -5144,7 +5245,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseObject(ReleaseObjectRequest request) {
-            return client.call("Runtime.releaseObject", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.releaseObject", request == null ? null : request.toMap());
         }
         /**
          * Releases all remote objects that belong to a given group.
@@ -5154,7 +5255,7 @@ public final class Runtime {
         public CompletionStage<Void> releaseObjectGroup(String objectGroup) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("objectGroup", CdpObject.json(objectGroup));
-            return client.call("Runtime.releaseObjectGroup", params, result_ -> null);
+            return client.call("Runtime.releaseObjectGroup", params);
         }
         /**
          * Releases all remote objects that belong to a given group.
@@ -5162,14 +5263,14 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseObjectGroup(ReleaseObjectGroupRequest request) {
-            return client.call("Runtime.releaseObjectGroup", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.releaseObjectGroup", request == null ? null : request.toMap());
         }
         /**
          * Tells inspected instance to run if it was waiting for debugger to attach.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> runIfWaitingForDebugger() {
-            return client.call("Runtime.runIfWaitingForDebugger", null, result_ -> null);
+            return client.call("Runtime.runIfWaitingForDebugger", null);
         }
         /**
          * Runs script with given id in a given context.
@@ -5219,7 +5320,7 @@ public final class Runtime {
         public CompletionStage<Void> setAsyncCallStackDepth(long maxDepth) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("maxDepth", CdpObject.json(maxDepth));
-            return client.call("Runtime.setAsyncCallStackDepth", params, result_ -> null);
+            return client.call("Runtime.setAsyncCallStackDepth", params);
         }
         /**
          * Enables or disables async call stacks tracking.
@@ -5227,7 +5328,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAsyncCallStackDepth(SetAsyncCallStackDepthRequest request) {
-            return client.call("Runtime.setAsyncCallStackDepth", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.setAsyncCallStackDepth", request == null ? null : request.toMap());
         }
         /**
          * Invokes Runtime.setCustomObjectFormatterEnabled.
@@ -5238,7 +5339,7 @@ public final class Runtime {
         public CompletionStage<Void> setCustomObjectFormatterEnabled(boolean enabled) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
-            return client.call("Runtime.setCustomObjectFormatterEnabled", params, result_ -> null);
+            return client.call("Runtime.setCustomObjectFormatterEnabled", params);
         }
         /**
          * Invokes Runtime.setCustomObjectFormatterEnabled with a request object.
@@ -5247,7 +5348,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCustomObjectFormatterEnabled(SetCustomObjectFormatterEnabledRequest request) {
-            return client.call("Runtime.setCustomObjectFormatterEnabled", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.setCustomObjectFormatterEnabled", request == null ? null : request.toMap());
         }
         /**
          * Invokes Runtime.setMaxCallStackSizeToCapture.
@@ -5258,7 +5359,7 @@ public final class Runtime {
         public CompletionStage<Void> setMaxCallStackSizeToCapture(long size) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("size", CdpObject.json(size));
-            return client.call("Runtime.setMaxCallStackSizeToCapture", params, result_ -> null);
+            return client.call("Runtime.setMaxCallStackSizeToCapture", params);
         }
         /**
          * Invokes Runtime.setMaxCallStackSizeToCapture with a request object.
@@ -5267,7 +5368,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setMaxCallStackSizeToCapture(SetMaxCallStackSizeToCaptureRequest request) {
-            return client.call("Runtime.setMaxCallStackSizeToCapture", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.setMaxCallStackSizeToCapture", request == null ? null : request.toMap());
         }
         /**
          * Terminate current or next JavaScript execution. Will cancel the termination when the outer-most script execution ends.
@@ -5275,7 +5376,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> terminateExecution() {
-            return client.call("Runtime.terminateExecution", null, result_ -> null);
+            return client.call("Runtime.terminateExecution", null);
         }
         /**
          * If executionContextId is empty, adds binding with the given name on the global objects of all inspected contexts, including those created later, bindings survive reloads. Binding function takes exactly one argument, this argument should be string, in case of any other input, function throws an exception. Each binding function call produces Runtime.bindingCalled notification.
@@ -5289,7 +5390,7 @@ public final class Runtime {
             params.put("name", CdpObject.json(name));
             executionContextId.ifPresent(value_ -> params.put("executionContextId", CdpObject.json(value_)));
             executionContextName.ifPresent(value_ -> params.put("executionContextName", CdpObject.json(value_)));
-            return client.call("Runtime.addBinding", params, result_ -> null);
+            return client.call("Runtime.addBinding", params);
         }
         /**
          * If executionContextId is empty, adds binding with the given name on the global objects of all inspected contexts, including those created later, bindings survive reloads. Binding function takes exactly one argument, this argument should be string, in case of any other input, function throws an exception. Each binding function call produces Runtime.bindingCalled notification.
@@ -5305,7 +5406,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addBinding(AddBindingRequest request) {
-            return client.call("Runtime.addBinding", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.addBinding", request == null ? null : request.toMap());
         }
         /**
          * This method does not remove binding function from global object but unsubscribes current runtime agent from Runtime.bindingCalled notifications.
@@ -5315,7 +5416,7 @@ public final class Runtime {
         public CompletionStage<Void> removeBinding(String name) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("name", CdpObject.json(name));
-            return client.call("Runtime.removeBinding", params, result_ -> null);
+            return client.call("Runtime.removeBinding", params);
         }
         /**
          * This method does not remove binding function from global object but unsubscribes current runtime agent from Runtime.bindingCalled notifications.
@@ -5323,7 +5424,7 @@ public final class Runtime {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeBinding(RemoveBindingRequest request) {
-            return client.call("Runtime.removeBinding", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Runtime.removeBinding", request == null ? null : request.toMap());
         }
         /**
          * This method tries to lookup and populate exception details for a JavaScript Error object. Note that the stackTrace portion of the resulting exceptionDetails will only be populated if the Runtime domain was enabled at the time when the Error was thrown.

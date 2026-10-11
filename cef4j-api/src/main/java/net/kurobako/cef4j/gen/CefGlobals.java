@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
@@ -35,7 +34,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:50</a>
      */
     public static int executeProcess(
-            @Nonnull CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
+            CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
         return executeProcess0(args, application, windowsSandboxInfo);
     }
 
@@ -56,8 +55,8 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:68</a>
      */
     public static int initialize(
-            @Nonnull CefMainArgs args,
-            @Nonnull CefSettings settings,
+            CefMainArgs args,
+            CefSettings settings,
             @Nullable CefApp application,
             @Nullable NativePointer windowsSandboxInfo) {
         return initialize0(args, settings, application, windowsSandboxInfo);
@@ -482,11 +481,11 @@ public final class CefGlobals {
         return resolveUrl0(baseUrl, relativeUrl, resolvedUrl);
     }
 
-    public static int parseUrl(@Nullable String url, @Nonnull CefUrlParts.Mutable parts) {
+    public static int parseUrl(@Nullable String url, CefUrlParts.Mutable parts) {
         return parseUrl0(url, parts);
     }
 
-    public static int createUrl(@Nonnull CefUrlParts parts, @Nullable String url) {
+    public static int createUrl(CefUrlParts parts, @Nullable String url) {
         return createUrl0(parts, url);
     }
 
@@ -534,7 +533,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:90</a>
      */
-    public static void getExtensionsForMimeType(@Nullable String mimeType, @Nonnull List<String> extensions) {
+    public static void getExtensionsForMimeType(@Nullable String mimeType, List<String> extensions) {
         getExtensionsForMimeType0(mimeType, extensions);
     }
 
@@ -547,7 +546,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:100</a>
      */
-    public static Optional<String> base64Encode(@Nonnull ByteBuffer data) {
+    public static Optional<String> base64Encode(ByteBuffer data) {
         return Optional.ofNullable(base64Encode0(data));
     }
 
@@ -556,11 +555,11 @@ public final class CefGlobals {
     }
 
     public static Optional<String> uridecode(
-            @Nullable String text, int convertToUtf8, @Nonnull CefUriUnescapeRule unescapeRule) {
+            @Nullable String text, int convertToUtf8, CefUriUnescapeRule unescapeRule) {
         return Optional.ofNullable(uridecode0(text, convertToUtf8, unescapeRule));
     }
 
-    public static Optional<String> writeJson(@Nullable CefValue node, @Nonnull CefJsonWriterOptions options) {
+    public static Optional<String> writeJson(@Nullable CefValue node, CefJsonWriterOptions options) {
         return Optional.ofNullable(writeJson0(node, options));
     }
 
@@ -574,7 +573,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__path__util_8h.html">cef_path_util.h:45</a>
      */
-    public static int getPath(@Nonnull CefPathKey key, @Nullable String path) {
+    public static int getPath(CefPathKey key, @Nullable String path) {
         return getPath0(key, path);
     }
 
@@ -655,7 +654,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:65</a>
      */
-    public static int isCertStatusError(@Nonnull CefCertStatus status) {
+    public static int isCertStatusError(CefCertStatus status) {
         return isCertStatusError0(status);
     }
 
@@ -669,7 +668,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:124</a>
      */
-    public static int currentlyOn(@Nonnull CefThreadId threadId) {
+    public static int currentlyOn(CefThreadId threadId) {
         return currentlyOn0(threadId);
     }
 
@@ -683,7 +682,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:131</a>
      */
-    public static boolean postTask(@Nonnull CefThreadId threadId, @Nullable CefTask task) {
+    public static boolean postTask(CefThreadId threadId, @Nullable CefTask task) {
         return postTask0(threadId, task);
     }
 
@@ -697,7 +696,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:138</a>
      */
-    public static boolean postDelayedTask(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs) {
+    public static boolean postDelayedTask(CefThreadId threadId, @Nullable CefTask task, long delayMs) {
         return postDelayedTask0(threadId, task, delayMs);
     }
 
@@ -803,11 +802,11 @@ public final class CefGlobals {
     }
 
     private static native int executeProcess0(
-            @Nonnull CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo);
+            CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo);
 
     private static native int initialize0(
-            @Nonnull CefMainArgs args,
-            @Nonnull CefSettings settings,
+            CefMainArgs args,
+            CefSettings settings,
             @Nullable CefApp application,
             @Nullable NativePointer windowsSandboxInfo);
 
@@ -863,26 +862,25 @@ public final class CefGlobals {
     private static native int resolveUrl0(
             @Nullable String baseUrl, @Nullable String relativeUrl, @Nullable String resolvedUrl);
 
-    private static native int parseUrl0(@Nullable String url, @Nonnull CefUrlParts.Mutable parts);
+    private static native int parseUrl0(@Nullable String url, CefUrlParts.Mutable parts);
 
-    private static native int createUrl0(@Nonnull CefUrlParts parts, @Nullable String url);
+    private static native int createUrl0(CefUrlParts parts, @Nullable String url);
 
     private static native String formatUrlForSecurityDisplay0(@Nullable String originUrl);
 
     private static native String getMimeType0(@Nullable String extension);
 
-    private static native void getExtensionsForMimeType0(@Nullable String mimeType, @Nonnull List<String> extensions);
+    private static native void getExtensionsForMimeType0(@Nullable String mimeType, List<String> extensions);
 
-    private static native String base64Encode0(@Nonnull ByteBuffer data);
+    private static native String base64Encode0(ByteBuffer data);
 
     private static native String uriencode0(@Nullable String text, int usePlus);
 
-    private static native String uridecode0(
-            @Nullable String text, int convertToUtf8, @Nonnull CefUriUnescapeRule unescapeRule);
+    private static native String uridecode0(@Nullable String text, int convertToUtf8, CefUriUnescapeRule unescapeRule);
 
-    private static native String writeJson0(@Nullable CefValue node, @Nonnull CefJsonWriterOptions options);
+    private static native String writeJson0(@Nullable CefValue node, CefJsonWriterOptions options);
 
-    private static native int getPath0(@Nonnull CefPathKey key, @Nullable String path);
+    private static native int getPath0(CefPathKey key, @Nullable String path);
 
     private static native int launchProcess0(@Nullable CefCommandLine commandLine);
 
@@ -891,13 +889,13 @@ public final class CefGlobals {
 
     private static native boolean clearSchemeHandlerFactories0();
 
-    private static native int isCertStatusError0(@Nonnull CefCertStatus status);
+    private static native int isCertStatusError0(CefCertStatus status);
 
-    private static native int currentlyOn0(@Nonnull CefThreadId threadId);
+    private static native int currentlyOn0(CefThreadId threadId);
 
-    private static native boolean postTask0(@Nonnull CefThreadId threadId, @Nullable CefTask task);
+    private static native boolean postTask0(CefThreadId threadId, @Nullable CefTask task);
 
-    private static native boolean postDelayedTask0(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs);
+    private static native boolean postDelayedTask0(CefThreadId threadId, @Nullable CefTask task, long delayMs);
 
     private static native int beginTracing0(@Nullable String categories, @Nullable CefCompletionCallback callback);
 

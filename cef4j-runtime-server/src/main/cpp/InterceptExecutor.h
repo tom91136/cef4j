@@ -12,24 +12,24 @@ namespace cef4j::runtime {
 
 class InterceptExecutor {
 public:
-    InterceptExecutor(unsigned int parallelism, std::size_t maxPending);
-    ~InterceptExecutor();
+  InterceptExecutor(unsigned int parallelism, size_t maxPending);
+  ~InterceptExecutor();
 
-    InterceptExecutor(const InterceptExecutor&) = delete;
-    InterceptExecutor& operator=(const InterceptExecutor&) = delete;
+  InterceptExecutor(const InterceptExecutor &) = delete;
+  InterceptExecutor &operator=(const InterceptExecutor &) = delete;
 
-    bool execute(std::function<void()> work);
-    void shutdown();
+  bool execute(std::function<void()> work);
+  void shutdown();
 
 private:
-    void run();
+  void run();
 
-    const std::size_t maxPending_;
-    std::mutex mutex_;
-    std::condition_variable ready_;
-    std::deque<std::function<void()>> pending_;
-    std::vector<std::thread> workers_;
-    bool stopping_ = false;
+  const size_t maxPending_;
+  std::mutex mutex_;
+  std::condition_variable ready_;
+  std::deque<std::function<void()>> pending_;
+  std::vector<std::thread> workers_;
+  bool stopping_ = false;
 };
 
 } // namespace cef4j::runtime

@@ -136,7 +136,7 @@ public final class CefMenuId implements CefEnum<CefMenuId> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMenuId)) return false;
         return this.value == ((CefMenuId) obj).value;

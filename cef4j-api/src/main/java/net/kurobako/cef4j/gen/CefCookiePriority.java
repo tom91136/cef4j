@@ -101,7 +101,7 @@ public final class CefCookiePriority implements CefEnum<CefCookiePriority> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefCookiePriority)) return false;
         return this.value == ((CefCookiePriority) obj).value;

@@ -1,6 +1,5 @@
 package net.kurobako.cef4j.ipc.session.middleware;
 
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTrace.Kind;
 
 /**
@@ -9,8 +8,7 @@ import net.kurobako.cef4j.ipc.session.middleware.SessionTrace.Kind;
  */
 @FunctionalInterface
 public interface TracePayloadFilter {
-    @Nonnull
-    byte[] filter(@Nonnull Kind kind, int messageId, @Nonnull byte[] payload);
+    byte[] filter(Kind kind, int messageId, byte[] payload);
 
     static TracePayloadFilter identity() {
         return (kind, messageId, payload) -> payload;

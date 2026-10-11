@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle audio events.
@@ -38,7 +37,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:52</a>
      */
-    default boolean getAudioParameters(@Nullable CefBrowser browser, @Nonnull CefAudioParameters.Mutable params) {
+    default boolean getAudioParameters(@Nullable CefBrowser browser, CefAudioParameters.Mutable params) {
         return false;
     }
 
@@ -57,7 +56,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
      */
-    default void onAudioStreamStarted(@Nullable CefBrowser browser, @Nonnull CefAudioParameters params, int channels) {}
+    default void onAudioStreamStarted(@Nullable CefBrowser browser, CefAudioParameters params, int channels) {}
 
     /**
      * Called on the audio stream thread when a PCM packet is received for the stream. {@code data} is an array
@@ -123,7 +122,7 @@ public interface CefAudioHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean getAudioParameters(@Nullable CefBrowser browser, @Nonnull CefAudioParameters.Mutable params) {
+        public boolean getAudioParameters(@Nullable CefBrowser browser, CefAudioParameters.Mutable params) {
             for (CefAudioHandler d : delegates) {
                 if (d.getAudioParameters(browser, params)) return true;
             }
@@ -132,8 +131,7 @@ public interface CefAudioHandler extends CefClientHandler {
         }
 
         @Override
-        public void onAudioStreamStarted(
-                @Nullable CefBrowser browser, @Nonnull CefAudioParameters params, int channels) {
+        public void onAudioStreamStarted(@Nullable CefBrowser browser, CefAudioParameters params, int channels) {
             for (CefAudioHandler d : delegates) d.onAudioStreamStarted(browser, params, channels);
         }
 

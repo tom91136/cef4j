@@ -10,12 +10,15 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Worker;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
+@NullableBoundary("implements javafx.concurrent.Worker, whose value and exception are null until set")
 final class CefLoadWorker implements Worker<Void> {
     private final CefWebEngine engine;
     private final ReadOnlyObjectWrapper<State> state = new ReadOnlyObjectWrapper<>(this, "state", State.READY);
-    private final ReadOnlyObjectWrapper<Void> value = new ReadOnlyObjectWrapper<>(this, "value");
-    private final ReadOnlyObjectWrapper<Throwable> exception = new ReadOnlyObjectWrapper<>(this, "exception");
+    private final ReadOnlyObjectWrapper<@Nullable Void> value = new ReadOnlyObjectWrapper<>(this, "value");
+    private final ReadOnlyObjectWrapper<@Nullable Throwable> exception = new ReadOnlyObjectWrapper<>(this, "exception");
     private final ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper(this, "workDone", -1);
     private final ReadOnlyDoubleWrapper totalWork = new ReadOnlyDoubleWrapper(this, "totalWork", -1);
     private final ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(this, "progress", -1);
@@ -85,22 +88,24 @@ final class CefLoadWorker implements Worker<Void> {
     }
 
     @Override
-    public Void getValue() {
+    public @Nullable Void getValue() {
         return value.get();
     }
 
     @Override
-    public ReadOnlyObjectProperty<Void> valueProperty() {
+    @SuppressWarnings("NullAway")
+    public ReadOnlyObjectProperty<@Nullable Void> valueProperty() {
         return value.getReadOnlyProperty();
     }
 
     @Override
-    public Throwable getException() {
+    public @Nullable Throwable getException() {
         return exception.get();
     }
 
     @Override
-    public ReadOnlyObjectProperty<Throwable> exceptionProperty() {
+    @SuppressWarnings("NullAway")
+    public ReadOnlyObjectProperty<@Nullable Throwable> exceptionProperty() {
         return exception.getReadOnlyProperty();
     }
 
@@ -169,11 +174,11 @@ final class CefLoadWorker implements Worker<Void> {
         return getState();
     }
 
-    public Void value() {
+    public @Nullable Void value() {
         return getValue();
     }
 
-    public Throwable exception() {
+    public @Nullable Throwable exception() {
         return getException();
     }
 

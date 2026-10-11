@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.kurobako.cef4j.cdp.CdpCodec;
+import org.jspecify.annotations.Nullable;
 
 /** Jackson-core implementation of the codec-neutral {@link CdpCodec} contract. */
 public final class JacksonCdpCodec implements CdpCodec {
@@ -31,7 +32,7 @@ public final class JacksonCdpCodec implements CdpCodec {
     }
 
     @Override
-    public Object decode(byte[] json) {
+    public @Nullable Object decode(byte[] json) {
         try (JsonParser parser = JSON.createParser(json)) {
             JsonToken token = parser.nextToken();
             if (token == null) throw new IllegalArgumentException("CDP JSON is empty");
@@ -43,8 +44,7 @@ public final class JacksonCdpCodec implements CdpCodec {
         }
     }
 
-    @SuppressWarnings("NullAway")
-    private static Object read(JsonParser parser, JsonToken token) throws IOException {
+    private static @Nullable Object read(JsonParser parser, JsonToken token) throws IOException {
         switch (token) {
             case START_OBJECT:
                 Map<String, Object> object = new LinkedHashMap<>();

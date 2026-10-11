@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class MappedBufferCleaner {
 
@@ -133,8 +133,8 @@ final class MappedBufferCleaner {
         private static final Method INVOKE_CLEANER;
 
         static {
-            Object unsafe = null;
-            Method invokeCleaner = null;
+            Object unsafe;
+            Method invokeCleaner;
             try {
                 Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
                 Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");

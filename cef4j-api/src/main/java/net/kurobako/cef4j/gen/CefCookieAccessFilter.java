@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to filter cookies that may be sent or received from resource requests. The methods of this
@@ -44,10 +43,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:217</a>
      */
     default boolean canSendCookie(
-            @Nullable CefBrowser browser,
-            @Nullable CefFrame frame,
-            @Nullable CefRequest request,
-            @Nonnull CefCookie cookie) {
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, CefCookie cookie) {
         return false;
     }
 
@@ -73,7 +69,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
             @Nullable CefFrame frame,
             @Nullable CefRequest request,
             @Nullable CefResponse response,
-            @Nonnull CefCookie cookie) {
+            CefCookie cookie) {
         return false;
     }
     /**
@@ -94,7 +90,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
                 @Nullable CefRequest request,
-                @Nonnull CefCookie cookie) {
+                CefCookie cookie) {
             for (CefCookieAccessFilter d : delegates) {
                 if (d.canSendCookie(browser, frame, request, cookie)) return true;
             }
@@ -108,7 +104,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
                 @Nullable CefFrame frame,
                 @Nullable CefRequest request,
                 @Nullable CefResponse response,
-                @Nonnull CefCookie cookie) {
+                CefCookie cookie) {
             for (CefCookieAccessFilter d : delegates) {
                 if (d.canSaveCookie(browser, frame, request, response, cookie)) return true;
             }

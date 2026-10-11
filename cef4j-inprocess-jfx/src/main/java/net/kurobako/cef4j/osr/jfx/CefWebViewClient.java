@@ -19,8 +19,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
@@ -55,6 +53,7 @@ import net.kurobako.cef4j.gen.CefTransitionType;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.gen.CefWindowOpenDisposition;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("resource")
 final class CefWebViewClient implements CefClient {
@@ -103,12 +102,12 @@ final class CefWebViewClient implements CefClient {
                     int popupId,
                     @Nullable String targetUrl,
                     @Nullable String targetFrameName,
-                    @Nonnull CefWindowOpenDisposition targetDisposition,
+                    CefWindowOpenDisposition targetDisposition,
                     boolean userGesture,
                     @Nullable CefPopupFeatures popupFeatures,
-                    @Nonnull CefWindowInfo.Mutable windowInfo,
+                    CefWindowInfo.Mutable windowInfo,
                     @Nullable AtomicReference<CefClient> clientRef,
-                    @Nonnull CefBrowserSettings.Mutable settings,
+                    CefBrowserSettings.Mutable settings,
                     @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                     int[] noJavascriptAccess) {
                 return view.handleBeforePopup(windowInfo, clientRef);
@@ -120,12 +119,12 @@ final class CefWebViewClient implements CefClient {
                     @Nullable CefFrame frame,
                     @Nullable String targetUrl,
                     @Nullable String targetFrameName,
-                    @Nonnull CefWindowOpenDisposition targetDisposition,
+                    CefWindowOpenDisposition targetDisposition,
                     boolean userGesture,
                     @Nullable CefPopupFeatures popupFeatures,
-                    @Nonnull CefWindowInfo.Mutable windowInfo,
+                    CefWindowInfo.Mutable windowInfo,
                     @Nullable AtomicReference<CefClient> clientRef,
-                    @Nonnull CefBrowserSettings.Mutable settings,
+                    CefBrowserSettings.Mutable settings,
                     @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                     int[] noJavascriptAccess) {
                 return view.handleBeforePopup(windowInfo, clientRef);
@@ -143,7 +142,7 @@ final class CefWebViewClient implements CefClient {
         return Optional.of(new CefLoadHandler() {
             @Override
             public void onLoadStart(
-                    @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefTransitionType transitionType) {
+                    @Nullable CefBrowser browser, @Nullable CefFrame frame, CefTransitionType transitionType) {
                 if (isMainFrame(frame)) {
                     view.scriptEngine.cancelPending("page navigation replaced the renderer context");
                 }
@@ -172,7 +171,7 @@ final class CefWebViewClient implements CefClient {
             public void onLoadError(
                     @Nullable CefBrowser browser,
                     @Nullable CefFrame frame,
-                    @Nonnull CefErrorCode errorCode,
+                    CefErrorCode errorCode,
                     @Nullable String errorText,
                     @Nullable String failedUrl) {
                 if (!isMainFrame(frame)) return;
@@ -203,7 +202,7 @@ final class CefWebViewClient implements CefClient {
             @Override
             public boolean onConsoleMessage(
                     @Nullable CefBrowser browser,
-                    @Nonnull CefLogSeverity level,
+                    CefLogSeverity level,
                     @Nullable String message,
                     @Nullable String source,
                     int line) {
@@ -216,7 +215,7 @@ final class CefWebViewClient implements CefClient {
             }
 
             @SuppressWarnings({"MissingOverride", "UnusedVariable", "UnusedMethod", "EffectivelyPrivate"})
-            public boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
+            public boolean onContentsBoundsChange(@Nullable CefBrowser browser, CefRect newBounds) {
                 view.updateDetachedBounds(newBounds, true);
                 view.requestViewRefresh(true);
                 return true;
@@ -226,7 +225,7 @@ final class CefWebViewClient implements CefClient {
             public boolean onCursorChange(
                     @Nullable CefBrowser browser,
                     long cursor,
-                    @Nonnull CefCursorType type,
+                    CefCursorType type,
                     @Nullable CefCursorInfo customCursorInfo) {
                 return updateCursor(type);
             }
@@ -235,12 +234,12 @@ final class CefWebViewClient implements CefClient {
             public boolean onCursorChange(
                     @Nullable CefBrowser browser,
                     int cursor,
-                    @Nonnull CefCursorType type,
+                    CefCursorType type,
                     @Nullable CefCursorInfo customCursorInfo) {
                 return updateCursor(type);
             }
 
-            private boolean updateCursor(@Nonnull CefCursorType type) {
+            private boolean updateCursor(CefCursorType type) {
                 Cursor jfxCursor = view.mapCursor(type);
                 Platform.runLater(() -> {
                     if (view.getCursor() != jfxCursor) view.setCursor(jfxCursor);
@@ -299,7 +298,7 @@ final class CefWebViewClient implements CefClient {
             public boolean onJsDialog(
                     @Nullable CefBrowser browser,
                     @Nullable String originUrl,
-                    @Nonnull CefJsDialogType dialogType,
+                    CefJsDialogType dialogType,
                     @Nullable String messageText,
                     @Nullable String defaultPromptText,
                     @Nullable CefJsDialogCallback callback,
@@ -321,7 +320,7 @@ final class CefWebViewClient implements CefClient {
                     case PROMPT:
                         javafx.util.Callback<CefPromptData, String> prompt = view.engine.getPromptHandler();
                         if (prompt == null) return false;
-                        AtomicReference<String> promptResult = new AtomicReference<>();
+                        AtomicReference<@Nullable String> promptResult = new AtomicReference<>();
                         view.runOnFxAndWait(() -> promptResult.set(prompt.call(new CefPromptData(
                                 Objects.requireNonNullElse(messageText, ""),
                                 Objects.requireNonNullElse(defaultPromptText, "")))));
@@ -351,7 +350,7 @@ final class CefWebViewClient implements CefClient {
     @NullableBoundary("CEF client callbacks are nullable across supported ABI versions")
     @SuppressWarnings({"MissingOverride", "UnusedMethod"})
     public boolean onProcessMessageReceived(
-            @Nullable CefBrowser browser, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
+            @Nullable CefBrowser browser, CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
         if (handleLegacyContentsBounds(message)) return true;
         return view.scriptEngine.handleMessage(browser, null, sourceProcess, message);
     }
@@ -361,7 +360,7 @@ final class CefWebViewClient implements CefClient {
     public boolean onProcessMessageReceived(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefProcessId sourceProcess,
+            CefProcessId sourceProcess,
             @Nullable CefProcessMessage message) {
         if (handleLegacyContentsBounds(message)) return true;
         return view.scriptEngine.handleMessage(browser, frame, sourceProcess, message);

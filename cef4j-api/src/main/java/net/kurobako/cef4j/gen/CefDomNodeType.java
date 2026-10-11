@@ -114,7 +114,7 @@ public final class CefDomNodeType implements CefEnum<CefDomNodeType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefDomNodeType)) return false;
         return this.value == ((CefDomNodeType) obj).value;

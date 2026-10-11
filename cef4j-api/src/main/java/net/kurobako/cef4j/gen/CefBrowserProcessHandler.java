@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to implement browser process callbacks. The methods of this class will be called on the browser process
@@ -54,8 +53,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:56</a>
      */
-    default void onRegisterCustomPreferences(
-            @Nonnull CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {}
+    default void onRegisterCustomPreferences(CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {}
 
     /**
      * Called on the browser process UI thread immediately after the CEF context has been initialized.
@@ -168,8 +166,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
         }
 
         @Override
-        public void onRegisterCustomPreferences(
-                @Nonnull CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {
+        public void onRegisterCustomPreferences(CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {
             for (CefBrowserProcessHandler d : delegates) d.onRegisterCustomPreferences(type, registrar);
         }
 

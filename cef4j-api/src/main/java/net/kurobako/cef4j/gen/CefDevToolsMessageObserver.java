@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for
@@ -60,7 +59,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
-    default boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
+    default boolean onDevToolsMessage(@Nullable CefBrowser browser, ByteBuffer message) {
         return false;
     }
 
@@ -160,7 +159,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
         }
 
         @Override
-        public boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
+        public boolean onDevToolsMessage(@Nullable CefBrowser browser, ByteBuffer message) {
             for (CefDevToolsMessageObserver d : delegates) {
                 if (d.onDevToolsMessage(browser, message)) return true;
             }

@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Marker interface for CEF structs allocated on the library (DLL) side.
@@ -33,7 +32,7 @@ public interface CefLibraryObject extends AutoCloseable {
         return false;
     }
 
-    static void requireOpen(@Nullable CefLibraryObject obj, @Nonnull String name) {
+    static void requireOpen(@Nullable CefLibraryObject obj, String name) {
         if (obj != null && obj.peerIsClosed()) {
             throw new IllegalStateException(name + " argument has been closed");
         }

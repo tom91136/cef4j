@@ -8,6 +8,7 @@ import net.kurobako.cef4j.codegen.passes.CleanOutputDirs
 import net.kurobako.cef4j.codegen.passes.DiscoverHeaders
 import net.kurobako.cef4j.codegen.passes.EmitMarkerInterfaces
 import net.kurobako.cef4j.codegen.passes.EmitNativePointer
+import net.kurobako.cef4j.codegen.passes.EmitPackageInfos
 import net.kurobako.cef4j.codegen.passes.EmitRuntimeStubs
 import net.kurobako.cef4j.codegen.passes.EmitTree
 import net.kurobako.cef4j.codegen.passes.InitialiseDocComments
@@ -48,6 +49,15 @@ object Main {
       }
     }
     EmitTree(cfg, parseState, refinedTree)
+    if (cfg.emitJava) {
+      if (cfg.emitJavaPlatformOnly)
+        EmitPackageInfos(
+          cfg.outJavaPlatformPackageDir,
+          s"${cfg.javaPackage}.${cfg.javaPlatformSubPackage}",
+          Banners.java
+        )
+      else EmitPackageInfos(cfg.outJavaPackageDir, cfg.javaPackage, Banners.java)
+    }
     cfg.outResourceDir.foreach { dir =>
       cfg.cefApiVersionRaw.foreach { raw =>
         val major  = raw.takeWhile(_.isDigit)

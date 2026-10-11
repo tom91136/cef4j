@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class representing print settings.
@@ -90,9 +89,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
      */
     void setPrinterPrintableArea(
-            @Nonnull CefSize physicalSizeDeviceUnits,
-            @Nonnull CefRect printableAreaDeviceUnits,
-            boolean landscapeNeedsFlip);
+            CefSize physicalSizeDeviceUnits, CefRect printableAreaDeviceUnits, boolean landscapeNeedsFlip);
 
     /**
      * Set the device name.
@@ -155,7 +152,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:122</a>
      */
-    void setPageRanges(long rangesCount, @Nonnull CefRange[] ranges);
+    void setPageRanges(long rangesCount, CefRange[] ranges);
 
     /**
      * Returns the number of page ranges that currently exist.
@@ -243,7 +240,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
      */
-    void setColorModel(@Nonnull CefColorModel model);
+    void setColorModel(CefColorModel model);
 
     /**
      * Get the color model.
@@ -292,7 +289,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
      */
-    void setDuplexMode(@Nonnull CefDuplexMode mode);
+    void setDuplexMode(CefDuplexMode mode);
 
     /**
      * Get the duplex mode.
@@ -389,9 +386,7 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         @Override
         public void setPrinterPrintableArea(
-                @Nonnull CefSize physicalSizeDeviceUnits,
-                @Nonnull CefRect printableAreaDeviceUnits,
-                boolean landscapeNeedsFlip) {
+                CefSize physicalSizeDeviceUnits, CefRect printableAreaDeviceUnits, boolean landscapeNeedsFlip) {
             checkNotClosed();
             setPrinterPrintableArea0(nativePtr, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip);
         }
@@ -421,7 +416,7 @@ public interface CefPrintSettings extends CefLibraryObject {
         }
 
         @Override
-        public void setPageRanges(long rangesCount, @Nonnull CefRange[] ranges) {
+        public void setPageRanges(long rangesCount, CefRange[] ranges) {
             checkNotClosed();
             setPageRanges0(nativePtr, rangesCount, ranges);
         }
@@ -463,7 +458,7 @@ public interface CefPrintSettings extends CefLibraryObject {
         }
 
         @Override
-        public void setColorModel(@Nonnull CefColorModel model) {
+        public void setColorModel(CefColorModel model) {
             checkNotClosed();
             setColorModel0(nativePtr, model);
         }
@@ -487,7 +482,7 @@ public interface CefPrintSettings extends CefLibraryObject {
         }
 
         @Override
-        public void setDuplexMode(@Nonnull CefDuplexMode mode) {
+        public void setDuplexMode(CefDuplexMode mode) {
             checkNotClosed();
             setDuplexMode0(nativePtr, mode);
         }
@@ -508,8 +503,8 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native void setPrinterPrintableArea0(
                 long self,
-                @Nonnull CefSize physicalSizeDeviceUnits,
-                @Nonnull CefRect printableAreaDeviceUnits,
+                CefSize physicalSizeDeviceUnits,
+                CefRect printableAreaDeviceUnits,
                 boolean landscapeNeedsFlip);
 
         static native void setDeviceName0(long self, @Nullable String name);
@@ -520,7 +515,7 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native int getDpi0(long self);
 
-        static native void setPageRanges0(long self, long rangesCount, @Nonnull CefRange[] ranges);
+        static native void setPageRanges0(long self, long rangesCount, CefRange[] ranges);
 
         static native long getPageRangesCount0(long self);
 
@@ -534,7 +529,7 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native boolean willCollate0(long self);
 
-        static native void setColorModel0(long self, @Nonnull CefColorModel model);
+        static native void setColorModel0(long self, CefColorModel model);
 
         static native CefColorModel getColorModel0(long self);
 
@@ -542,14 +537,14 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native int getCopies0(long self);
 
-        static native void setDuplexMode0(long self, @Nonnull CefDuplexMode mode);
+        static native void setDuplexMode0(long self, CefDuplexMode mode);
 
         static native CefDuplexMode getDuplexMode0(long self);
 
         static native CefPrintSettings create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

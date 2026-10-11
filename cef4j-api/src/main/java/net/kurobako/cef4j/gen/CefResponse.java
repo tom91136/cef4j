@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent a web response. The methods of this class may be called on any thread.
@@ -60,7 +59,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:72</a>
      */
-    void setError(@Nonnull CefErrorCode error);
+    void setError(CefErrorCode error);
 
     /**
      * Get the response status code.
@@ -190,7 +189,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:143</a>
      */
-    void getHeaderMap(@Nonnull Map<String, List<String>> headerMap);
+    void getHeaderMap(Map<String, List<String>> headerMap);
 
     /**
      * Set all response header fields.
@@ -201,7 +200,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:149</a>
      */
-    void setHeaderMap(@Nonnull Map<String, List<String>> headerMap);
+    void setHeaderMap(Map<String, List<String>> headerMap);
 
     /**
      * Get the resolved URL after redirects or changed as a result of HSTS.
@@ -294,7 +293,7 @@ public interface CefResponse extends CefLibraryObject {
         }
 
         @Override
-        public void setError(@Nonnull CefErrorCode error) {
+        public void setError(CefErrorCode error) {
             checkNotClosed();
             setError0(nativePtr, error);
         }
@@ -360,13 +359,13 @@ public interface CefResponse extends CefLibraryObject {
         }
 
         @Override
-        public void getHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+        public void getHeaderMap(Map<String, List<String>> headerMap) {
             checkNotClosed();
             getHeaderMap0(nativePtr, headerMap);
         }
 
         @Override
-        public void setHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+        public void setHeaderMap(Map<String, List<String>> headerMap) {
             checkNotClosed();
             setHeaderMap0(nativePtr, headerMap);
         }
@@ -387,7 +386,7 @@ public interface CefResponse extends CefLibraryObject {
 
         static native CefErrorCode getError0(long self);
 
-        static native void setError0(long self, @Nonnull CefErrorCode error);
+        static native void setError0(long self, CefErrorCode error);
 
         static native int getStatus0(long self);
 
@@ -410,9 +409,9 @@ public interface CefResponse extends CefLibraryObject {
         static native void setHeaderByName0(
                 long self, @Nullable String name, @Nullable String value, boolean overwrite);
 
-        static native void getHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
+        static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
 
-        static native void setHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
+        static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
 
         static native String getUrl0(long self);
 
@@ -421,7 +420,7 @@ public interface CefResponse extends CefLibraryObject {
         static native CefResponse create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

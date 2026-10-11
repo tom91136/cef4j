@@ -106,7 +106,7 @@ public final class CefPointerType implements CefEnum<CefPointerType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefPointerType)) return false;
         return this.value == ((CefPointerType) obj).value;

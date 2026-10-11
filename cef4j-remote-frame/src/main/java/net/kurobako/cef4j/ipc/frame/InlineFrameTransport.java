@@ -6,14 +6,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.InlinePaintEvent;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,18 +37,16 @@ public final class InlineFrameTransport implements FrameTransport {
     @Nullable
     private CefSession session;
 
-    private final AtomicReference<CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
+    private final AtomicReference<@Nullable CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
     private volatile boolean closed;
 
-    @Nonnull
-    public static InlineFrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser) {
+    public static InlineFrameTransport bind(CefSession session, RemoteHandle browser) {
         InlineFrameTransport transport = new InlineFrameTransport(browser);
         transport.subscribe(session);
         return transport;
     }
 
-    @Nonnull
-    public static InlineFrameTransport bindAll(@Nonnull CefSession session) {
+    public static InlineFrameTransport bindAll(CefSession session) {
         InlineFrameTransport transport = new InlineFrameTransport(null);
         transport.subscribe(session);
         return transport;

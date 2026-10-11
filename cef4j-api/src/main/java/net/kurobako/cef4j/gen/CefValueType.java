@@ -113,7 +113,7 @@ public final class CefValueType implements CefEnum<CefValueType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefValueType)) return false;
         return this.value == ((CefValueType) obj).value;

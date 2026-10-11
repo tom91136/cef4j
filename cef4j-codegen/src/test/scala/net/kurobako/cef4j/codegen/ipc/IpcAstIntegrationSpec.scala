@@ -89,7 +89,10 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       assert(java.contains(s"class ${f.className}"), s"Java facade emit missing class for ${f.className}")
       assert(java.contains("implements AutoCloseable"), s"Java facade ${f.className} is not AutoCloseable")
       assert(java.contains("CefSession"), s"Java facade ${f.className} missing CefSession reference")
-      assert(java.contains("CefFutures.map"), s"Java facade ${f.className} does not propagate cancellation")
+      assert(
+        java.contains("CefFutures.map") || java.contains("CefFutures.discard"),
+        s"Java facade ${f.className} does not propagate cancellation"
+      )
       assert(!java.contains(".thenApply"), s"Java facade ${f.className} bypasses cancellation propagation")
       assert(java.contains("RemoteHandle"), s"Java facade ${f.className} missing RemoteHandle reference")
       assert(java.contains("private final Object closeLock = new Object();"))

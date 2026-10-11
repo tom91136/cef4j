@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used for managing cookies. The methods of this class may be called on any thread unless otherwise indicated.
@@ -71,7 +70,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * @param callback may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:89</a>
      */
-    boolean setCookie(@Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback);
+    boolean setCookie(@Nullable String url, CefCookie cookie, @Nullable CefSetCookieCallback callback);
 
     /**
      * Delete all cookies that match the specified parameters. If both {@code url} and {@code cookie_name} values are
@@ -184,8 +183,7 @@ public interface CefCookieManager extends CefLibraryObject {
         }
 
         @Override
-        public boolean setCookie(
-                @Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback) {
+        public boolean setCookie(@Nullable String url, CefCookie cookie, @Nullable CefSetCookieCallback callback) {
             checkNotClosed();
             return setCookie0(nativePtr, url, cookie, callback);
         }
@@ -209,7 +207,7 @@ public interface CefCookieManager extends CefLibraryObject {
                 long self, @Nullable String url, boolean includeHttpOnly, @Nullable CefCookieVisitor visitor);
 
         static native boolean setCookie0(
-                long self, @Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback);
+                long self, @Nullable String url, CefCookie cookie, @Nullable CefSetCookieCallback callback);
 
         static native boolean deleteCookies0(
                 long self,
@@ -222,7 +220,7 @@ public interface CefCookieManager extends CefLibraryObject {
         static native CefCookieManager getGlobalManager0(@Nullable CefCompletionCallback callback);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

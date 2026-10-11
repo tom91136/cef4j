@@ -2,9 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Structure representing cursor information. {@code buffer} will be {@code size.width}*{@code size.height}*4 bytes in
@@ -43,7 +43,7 @@ public final class CefCursorInfo {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefCursorInfo)) return false;
         CefCursorInfo other = (CefCursorInfo) obj;

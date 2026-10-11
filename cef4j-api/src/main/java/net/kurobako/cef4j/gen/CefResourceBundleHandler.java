@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to implement a custom resource bundle interface. See CefSettings for additional options related to
@@ -62,7 +61,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:64</a>
      */
-    default boolean getDataResource(int resourceId, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
+    default boolean getDataResource(int resourceId, AtomicReference<NativePointer> data, long[] dataSize) {
         return false;
     }
 
@@ -83,10 +82,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:78</a>
      */
     default boolean getDataResourceForScale(
-            int resourceId,
-            @Nonnull CefScaleFactor scaleFactor,
-            @Nonnull AtomicReference<NativePointer> data,
-            long[] dataSize) {
+            int resourceId, CefScaleFactor scaleFactor, AtomicReference<NativePointer> data, long[] dataSize) {
         return false;
     }
     /**
@@ -112,7 +108,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean getDataResource(int resourceId, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
+        public boolean getDataResource(int resourceId, AtomicReference<NativePointer> data, long[] dataSize) {
             for (CefResourceBundleHandler d : delegates) {
                 if (d.getDataResource(resourceId, data, dataSize)) return true;
             }
@@ -122,10 +118,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
 
         @Override
         public boolean getDataResourceForScale(
-                int resourceId,
-                @Nonnull CefScaleFactor scaleFactor,
-                @Nonnull AtomicReference<NativePointer> data,
-                long[] dataSize) {
+                int resourceId, CefScaleFactor scaleFactor, AtomicReference<NativePointer> data, long[] dataSize) {
             for (CefResourceBundleHandler d : delegates) {
                 if (d.getDataResourceForScale(resourceId, scaleFactor, data, dataSize)) return true;
             }

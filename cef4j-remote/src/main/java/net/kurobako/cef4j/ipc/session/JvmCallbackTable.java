@@ -1,9 +1,8 @@
 package net.kurobako.cef4j.ipc.session;
 
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Client-side handle table for callback objects (e.g. visitors) that the client owns and the server invokes.
@@ -31,7 +30,7 @@ public final class JvmCallbackTable<T> {
     private final IntIdAllocator ids = new IntIdAllocator();
 
     /** Registers {@code callback} and returns its int32 id. */
-    public int register(@Nonnull T callback) {
+    public int register(T callback) {
         return ids.allocate(id -> entries.putIfAbsent(id, callback) == null);
     }
 

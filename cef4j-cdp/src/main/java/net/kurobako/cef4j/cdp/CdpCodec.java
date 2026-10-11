@@ -1,7 +1,7 @@
 package net.kurobako.cef4j.cdp;
 
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Converts between JSON bytes and JSON-compatible JDK values. Decoders return maps with string keys, lists, strings,

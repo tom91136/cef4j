@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to keyboard input. The methods of this class will be called on the
@@ -42,7 +41,7 @@ public interface CefKeyboardHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:51</a>
      */
     default boolean onPreKeyEvent(
-            @Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
+            @Nullable CefBrowser browser, CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
         return false;
     }
 
@@ -60,7 +59,7 @@ public interface CefKeyboardHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
-    default boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
+    default boolean onKeyEvent(@Nullable CefBrowser browser, CefKeyEvent event, long osEvent) {
         return false;
     }
     /**
@@ -78,7 +77,7 @@ public interface CefKeyboardHandler extends CefClientHandler {
 
         @Override
         public boolean onPreKeyEvent(
-                @Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
+                @Nullable CefBrowser browser, CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
             for (CefKeyboardHandler d : delegates) {
                 if (d.onPreKeyEvent(browser, event, osEvent, isKeyboardShortcut)) return true;
             }
@@ -87,7 +86,7 @@ public interface CefKeyboardHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
+        public boolean onKeyEvent(@Nullable CefBrowser browser, CefKeyEvent event, long osEvent) {
             for (CefKeyboardHandler d : delegates) {
                 if (d.onKeyEvent(browser, event, osEvent)) return true;
             }

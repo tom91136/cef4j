@@ -110,7 +110,7 @@ public final class CefResponseFilterStatus implements CefEnum<CefResponseFilterS
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefResponseFilterStatus)) return false;
         return this.value == ((CefResponseFilterStatus) obj).value;

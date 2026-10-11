@@ -5,10 +5,9 @@ package net.kurobako.cef4j.gen;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class provides access to Chromium's component updater service, allowing clients to discover registered
@@ -98,7 +97,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      */
     void update(
             @Nullable String componentId,
-            @Nonnull CefComponentUpdatePriority priority,
+            CefComponentUpdatePriority priority,
             @Nullable CefComponentUpdateCallback callback);
     /**
      * Returns the global CefComponentUpdater singleton. Returns {@code null} if called from the incorrect thread.
@@ -178,7 +177,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
         @Override
         public void update(
                 @Nullable String componentId,
-                @Nonnull CefComponentUpdatePriority priority,
+                CefComponentUpdatePriority priority,
                 @Nullable CefComponentUpdateCallback callback) {
             checkNotClosed();
             update0(nativePtr, componentId, priority, callback);
@@ -193,13 +192,13 @@ public interface CefComponentUpdater extends CefLibraryObject {
         static native void update0(
                 long self,
                 @Nullable String componentId,
-                @Nonnull CefComponentUpdatePriority priority,
+                CefComponentUpdatePriority priority,
                 @Nullable CefComponentUpdateCallback callback);
 
         static native CefComponentUpdater get0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

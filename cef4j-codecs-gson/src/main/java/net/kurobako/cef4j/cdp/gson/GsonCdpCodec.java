@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import net.kurobako.cef4j.cdp.CdpCodec;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Gson implementation of the codec-neutral {@link CdpCodec} contract. The default configuration keeps explicit
@@ -35,7 +36,7 @@ public final class GsonCdpCodec implements CdpCodec {
     }
 
     @Override
-    public Object decode(byte[] json) {
+    public @Nullable Object decode(byte[] json) {
         return gson.fromJson(new String(json, StandardCharsets.UTF_8), Object.class);
     }
 

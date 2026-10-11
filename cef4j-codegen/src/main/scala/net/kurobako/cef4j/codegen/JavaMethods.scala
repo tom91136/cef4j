@@ -35,11 +35,6 @@ object JavaMethods {
     }
   }
 
-  def hasNonnullParam(params: List[Param], metaAttrs: List[(String, String)]): Boolean = {
-    val optionals = optionalParams(metaAttrs)
-    params.exists(p => !optionals.contains(p.name) && JavaCodeGen.isStrictNullCheck(p.typ))
-  }
-
   def shape(
       ret: CType,
       visibleParams: List[Param],
@@ -78,19 +73,14 @@ object JavaMethods {
       s"return $callExpr;"
     }
 
-  private def paramAnnotation(param: Param, optionals: Set[String]): Option[String] =
-    if (optionals.contains(param.name) && JavaCodeGen.isReferenceType(param.typ))
-      Some("@Nullable")
-    else if (JavaCodeGen.isStrictNullCheck(param.typ))
-      Some("@Nonnull")
-    else if (JavaCodeGen.isReferenceType(param.typ))
-      Some("@Nullable")
-    else
-      None
+  private def isNullableParam(param: Param, optionals: Set[String]): Boolean =
+    JavaCodeGen.isReferenceType(param.typ)
+      && (optionals.contains(param.name) || !JavaCodeGen.isStrictNullCheck(param.typ))
 
   private def renderParam(param: Param, optionals: Set[String])(using Naming.Context): String = {
     val javaType  = Naming.javaType(param.typ)
     val paramName = Naming.toCamelCase(param.name)
-    paramAnnotation(param, optionals).fold(s"$javaType $paramName")(ann => s"$ann $javaType $paramName")
+    val declared  = if (isNullableParam(param, optionals)) Naming.nullableType(javaType) else javaType
+    s"$declared $paramName"
   }
 }

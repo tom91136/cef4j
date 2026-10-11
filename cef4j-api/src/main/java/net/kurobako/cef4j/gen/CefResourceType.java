@@ -147,7 +147,7 @@ public final class CefResourceType implements CefEnum<CefResourceType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefResourceType)) return false;
         return this.value == ((CefResourceType) obj).value;

@@ -10,7 +10,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -38,12 +37,12 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
     private final Executor startupExecutor;
 
     public RuntimeServerBrowserRuntimeFactory(
-            @Nonnull Path binary,
-            @Nonnull String controlTransport,
-            @Nonnull String endpoint,
-            @Nonnull String frameTransport,
-            @Nonnull Duration timeout,
-            @Nonnull Map<String, String> environment) {
+            Path binary,
+            String controlTransport,
+            String endpoint,
+            String frameTransport,
+            Duration timeout,
+            Map<String, String> environment) {
         this(
                 binary,
                 controlTransport,
@@ -56,13 +55,13 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
     }
 
     public RuntimeServerBrowserRuntimeFactory(
-            @Nonnull Path binary,
-            @Nonnull String controlTransport,
-            @Nonnull String endpoint,
-            @Nonnull String frameTransport,
-            @Nonnull Duration timeout,
-            @Nonnull Map<String, String> environment,
-            @Nonnull CefSessionMiddleware sessionMiddleware) {
+            Path binary,
+            String controlTransport,
+            String endpoint,
+            String frameTransport,
+            Duration timeout,
+            Map<String, String> environment,
+            CefSessionMiddleware sessionMiddleware) {
         this(
                 binary,
                 controlTransport,
@@ -75,14 +74,14 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
     }
 
     public RuntimeServerBrowserRuntimeFactory(
-            @Nonnull Path binary,
-            @Nonnull String controlTransport,
-            @Nonnull String endpoint,
-            @Nonnull String frameTransport,
-            @Nonnull Duration timeout,
-            @Nonnull Map<String, String> environment,
-            @Nonnull CefSessionMiddleware sessionMiddleware,
-            @Nonnull Executor startupExecutor) {
+            Path binary,
+            String controlTransport,
+            String endpoint,
+            String frameTransport,
+            Duration timeout,
+            Map<String, String> environment,
+            CefSessionMiddleware sessionMiddleware,
+            Executor startupExecutor) {
         this.binary = Objects.requireNonNull(binary, "binary");
         this.controlTransport = Objects.requireNonNull(controlTransport, "controlTransport");
         this.endpoint = Objects.requireNonNull(endpoint, "endpoint");
@@ -94,7 +93,6 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
     }
 
     @Override
-    @Nonnull
     public CompletableFuture<? extends RemoteBrowserRuntime> create() {
         CompletableFuture<OwnedRuntime> result = new CompletableFuture<>();
         try {

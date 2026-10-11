@@ -106,7 +106,7 @@ public final class CefDuplexMode implements CefEnum<CefDuplexMode> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefDuplexMode)) return false;
         return this.value == ((CefDuplexMode) obj).value;

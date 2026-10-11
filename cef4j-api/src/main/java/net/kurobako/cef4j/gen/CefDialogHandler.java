@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle dialog events. The methods of this class will be called on the browser process UI
@@ -57,7 +56,7 @@ public interface CefDialogHandler extends CefClientHandler {
      */
     default boolean onFileDialog(
             @Nullable CefBrowser browser,
-            @Nonnull CefFileDialogMode mode,
+            CefFileDialogMode mode,
             @Nullable String title,
             @Nullable String defaultFilePath,
             @Nullable List<String> acceptFilters,
@@ -82,7 +81,7 @@ public interface CefDialogHandler extends CefClientHandler {
         @Override
         public boolean onFileDialog(
                 @Nullable CefBrowser browser,
-                @Nonnull CefFileDialogMode mode,
+                CefFileDialogMode mode,
                 @Nullable String title,
                 @Nullable String defaultFilePath,
                 @Nullable List<String> acceptFilters,

@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class LayerTree {
      */
     public static final class LayerId implements CdpValue<String> {
         public final String value;
-        public LayerId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public LayerId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof LayerId)) return false;
             return value.equals(((LayerId) other).value);
@@ -44,9 +43,9 @@ public final class LayerTree {
      */
     public static final class SnapshotId implements CdpValue<String> {
         public final String value;
-        public SnapshotId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public SnapshotId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof SnapshotId)) return false;
             return value.equals(((SnapshotId) other).value);
@@ -72,8 +71,8 @@ public final class LayerTree {
             WHEELEVENTHANDLER("WheelEventHandler");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -141,14 +140,16 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.LayerId> nearestLayerShiftingStickyBox() {
-            return Optional.ofNullable(raw("nearestLayerShiftingStickyBox") == null ? null : new LayerTree.LayerId((String) raw("nearestLayerShiftingStickyBox")));
+            Object value = raw("nearestLayerShiftingStickyBox");
+            return Optional.ofNullable(value == null ? null : new LayerTree.LayerId((String) value));
         }
         /**
          * The nearest sticky layer that shifts the containing block
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.LayerId> nearestLayerShiftingContainingBlock() {
-            return Optional.ofNullable(raw("nearestLayerShiftingContainingBlock") == null ? null : new LayerTree.LayerId((String) raw("nearestLayerShiftingContainingBlock")));
+            Object value = raw("nearestLayerShiftingContainingBlock");
+            return Optional.ofNullable(value == null ? null : new LayerTree.LayerId((String) value));
         }
         /**
          * Layout rectangle of the sticky element before being shifted
@@ -284,14 +285,16 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.LayerId> parentLayerId() {
-            return Optional.ofNullable(raw("parentLayerId") == null ? null : new LayerTree.LayerId((String) raw("parentLayerId")));
+            Object value = raw("parentLayerId");
+            return Optional.ofNullable(value == null ? null : new LayerTree.LayerId((String) value));
         }
         /**
          * The backend id for the node associated with this layer.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Offset from parent layer, X coordinate.
@@ -326,7 +329,8 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Double>> transform() {
-            return Optional.ofNullable(list(raw("transform"), element0 -> ((Number) element0).doubleValue()));
+            Object value = raw("transform");
+            return Optional.ofNullable(list(value, element0 -> ((Number) element0).doubleValue()));
         }
         /**
          * Transform anchor point X, absent if no transform specified
@@ -371,21 +375,24 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> invisible() {
-            return Optional.ofNullable((Boolean) raw("invisible"));
+            Object value = raw("invisible");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Rectangles scrolling on main thread only.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<LayerTree.ScrollRect>> scrollRects() {
-            return Optional.ofNullable(list(raw("scrollRects"), element0 -> java.util.Objects.requireNonNull(LayerTree.ScrollRect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("scrollRects");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(LayerTree.ScrollRect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sticky position constraint information
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.StickyPositionConstraint> stickyPositionConstraint() {
-            return Optional.ofNullable(raw("stickyPositionConstraint") == null ? null : LayerTree.StickyPositionConstraint.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stickyPositionConstraint")))));
+            Object value = raw("stickyPositionConstraint");
+            return Optional.ofNullable(value == null ? null : LayerTree.StickyPositionConstraint.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The unique id for this layer.
@@ -760,7 +767,8 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Rect> clipRect() {
-            return Optional.ofNullable(raw("clipRect") == null ? null : DOM.Rect.fromMap(java.util.Objects.requireNonNull(objectMap(raw("clipRect")))));
+            Object value = raw("clipRect");
+            return Optional.ofNullable(value == null ? null : DOM.Rect.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The id of the layer snapshot.
@@ -1104,7 +1112,8 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<LayerTree.Layer>> layers() {
-            return Optional.ofNullable(list(raw("layers"), element0 -> java.util.Objects.requireNonNull(LayerTree.Layer.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("layers");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(LayerTree.Layer.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Layer tree, absent if not in the compositing mode.
@@ -1151,14 +1160,14 @@ public final class LayerTree {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("LayerTree.disable", null, result_ -> null);
+            return client.call("LayerTree.disable", null);
         }
         /**
          * Enables compositing tree inspection.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("LayerTree.enable", null, result_ -> null);
+            return client.call("LayerTree.enable", null);
         }
         /**
          * Returns the snapshot identifier.
@@ -1236,7 +1245,7 @@ public final class LayerTree {
         public CompletionStage<Void> releaseSnapshot(LayerTree.SnapshotId snapshotId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("snapshotId", CdpObject.json(snapshotId));
-            return client.call("LayerTree.releaseSnapshot", params, result_ -> null);
+            return client.call("LayerTree.releaseSnapshot", params);
         }
         /**
          * Releases layer snapshot captured by the back-end.
@@ -1244,7 +1253,7 @@ public final class LayerTree {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseSnapshot(ReleaseSnapshotRequest request) {
-            return client.call("LayerTree.releaseSnapshot", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("LayerTree.releaseSnapshot", request == null ? null : request.toMap());
         }
         /**
          * Replays the layer snapshot and returns the resulting bitmap.

@@ -114,7 +114,7 @@ public final class CefTextInputMode implements CefEnum<CefTextInputMode> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTextInputMode)) return false;
         return this.value == ((CefTextInputMode) obj).value;

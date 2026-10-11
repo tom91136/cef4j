@@ -136,7 +136,7 @@ public final class CefWindowOpenDisposition implements CefEnum<CefWindowOpenDisp
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefWindowOpenDisposition)) return false;
         return this.value == ((CefWindowOpenDisposition) obj).value;

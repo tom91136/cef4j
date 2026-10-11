@@ -2,8 +2,6 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefKeyEvent;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.gen.CefRuntimeStyle;
 import net.kurobako.cef4j.gen.CefShowState;
 import net.kurobako.cef4j.gen.CefState;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle window events. The methods of this class will be called on the browser process UI
@@ -99,7 +98,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:79</a>
      */
-    default void onWindowBoundsChanged(@Nullable CefWindow window, @Nonnull CefRect newBounds) {}
+    default void onWindowBoundsChanged(@Nullable CefWindow window, CefRect newBounds) {}
 
     /**
      * Called when {@code window} is transitioning to or from fullscreen mode. On MacOS the transition occurs
@@ -360,7 +359,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:229</a>
      */
-    default boolean onKeyEvent(@Nullable CefWindow window, @Nonnull CefKeyEvent event) {
+    default boolean onKeyEvent(@Nullable CefWindow window, CefKeyEvent event) {
         return false;
     }
 
@@ -427,8 +426,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:282</a>
      */
-    default boolean getLinuxWindowProperties(
-            @Nullable CefWindow window, @Nonnull CefLinuxWindowProperties.Mutable properties) {
+    default boolean getLinuxWindowProperties(@Nullable CefWindow window, CefLinuxWindowProperties.Mutable properties) {
         return false;
     }
     /**
@@ -465,7 +463,7 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public void onWindowBoundsChanged(@Nullable CefWindow window, @Nonnull CefRect newBounds) {
+        public void onWindowBoundsChanged(@Nullable CefWindow window, CefRect newBounds) {
             for (CefWindowDelegate d : delegates) d.onWindowBoundsChanged(window, newBounds);
         }
 
@@ -580,7 +578,7 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public boolean onKeyEvent(@Nullable CefWindow window, @Nonnull CefKeyEvent event) {
+        public boolean onKeyEvent(@Nullable CefWindow window, CefKeyEvent event) {
             for (CefWindowDelegate d : delegates) {
                 if (d.onKeyEvent(window, event)) return true;
             }
@@ -601,7 +599,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean getLinuxWindowProperties(
-                @Nullable CefWindow window, @Nonnull CefLinuxWindowProperties.Mutable properties) {
+                @Nullable CefWindow window, CefLinuxWindowProperties.Mutable properties) {
             for (CefWindowDelegate d : delegates) {
                 if (d.getLinuxWindowProperties(window, properties)) return true;
             }

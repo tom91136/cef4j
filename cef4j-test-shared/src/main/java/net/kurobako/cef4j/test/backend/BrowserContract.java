@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Assumptions;
 
@@ -22,7 +21,7 @@ public final class BrowserContract {
 
     private BrowserContract() {}
 
-    public static void verify(@Nonnull BrowserBackend backend) throws Exception {
+    public static void verify(BrowserBackend backend) throws Exception {
         Assumptions.assumeTrue(backend.isAvailable(), () -> backend.name() + " unavailable");
         try (FixtureSite site = FixtureSite.start()) {
             verify(backend, site);

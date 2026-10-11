@@ -11,6 +11,7 @@ import PDL.TypeExpr
 import net.kurobako.cef4j.codegen.AtomicFiles
 import net.kurobako.cef4j.codegen.Banners
 import net.kurobako.cef4j.codegen.FileSystem
+import net.kurobako.cef4j.codegen.passes.EmitPackageInfos
 
 /** Generates cef4j's map-backed Java CDP API from pinned Chromium protocol schemas. */
 object Main {
@@ -152,6 +153,7 @@ object Main {
       AtomicFiles.writeString(output.resolve(s"${domain.name}.java"), emitter.emitDomain(domain))
     )
     AtomicFiles.writeString(output.resolve("CdpDomains.java"), emitter.emitDomains(domains))
+    EmitPackageInfos(output, cfg.javaPackage, banners.java)
     println(s"cef4j CDP codegen complete: ${domains.size} domains for Chromium $chromiumVersion")
   }
 
@@ -402,8 +404,8 @@ object Main {
         List(
           s"$indent    public final String value;",
           s"$indent    $name(String value) { this.value = value; }",
-          s"$indent    @Nonnull public String value() { return value; }",
-          s"$indent    public static $name of(@Nonnull String value) {",
+          s"$indent    public String value() { return value; }",
+          s"$indent    public static $name of(String value) {",
           s"$indent        for ($name constant : values()) {",
           s"$indent            if (constant.value.equals(value)) return constant;",
           s"$indent        }",
@@ -435,15 +437,15 @@ object Main {
         case TypeExpr.Str => "java.util.Objects.requireNonNull(value)"
         case _            => "value"
       }
-      val paramAnno = if (typeName == "String") "@Nonnull " else ""
+      val paramAnno = if (typeName == "String") "" else ""
       javadoc(doc, indent, s"Tagged $typeName wire value for $name.", Nil, None) ++
         deprecated(doc, indent) ++
         List(
           s"${indent}public static final class $name implements $generic {",
           s"$indent    public final $typeName value;",
           s"$indent    public $name(${paramAnno}$typeName value) { this.value = $constructor; }",
-          s"$indent    @Nonnull public $valueType value() { return value; }",
-          s"$indent    @Override public boolean equals(Object other) {",
+          s"$indent    public $valueType value() { return value; }",
+          s"$indent    @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {",
           s"$indent        if (this == other) return true;",
           s"$indent        if (!(other instanceof $name)) return false;",
           s"$indent        return $compare;",
@@ -474,7 +476,6 @@ object Main {
       val kind                     = kindOf(domain, prop.typeExpr)
       val rawJava                  = rawJavaType(domain, owner, prop)
       val source                   = s"raw(${jsonString(fieldName)})"
-      val decoded                  = decodeField(domain, owner, prop, source, "")
       val (typeName, body, prefix) =
         if (!optional) {
           val t        = primitiveOf(kind).getOrElse(rawJava)
@@ -500,7 +501,14 @@ object Main {
               ""
             )
           case _ =>
-            (s"Optional<$rawJava>", List(s"return Optional.ofNullable($decoded);"), "")
+            (
+              s"Optional<$rawJava>",
+              List(
+                s"Object value = $source;",
+                s"return Optional.ofNullable(${decodeField(domain, owner, prop, "value", "")});"
+              ),
+              ""
+            )
         }
       javadoc(
         docOf(prop),
@@ -687,7 +695,6 @@ object Main {
       val kind                     = kindOf(domain, prop.typeExpr)
       val rawJava                  = paramRawJava(domain, commandName, prop)
       val source                   = s"raw(${jsonString(fieldName)})"
-      val decoded                  = decodeParamField(domain, commandName, prop, source, "")
       val (typeName, body, prefix) =
         if (!optional) {
           val t        = primitiveOf(kind).getOrElse(rawJava)
@@ -713,7 +720,14 @@ object Main {
               ""
             )
           case _ =>
-            (s"Optional<$rawJava>", List(s"return Optional.ofNullable($decoded);"), "")
+            (
+              s"Optional<$rawJava>",
+              List(
+                s"Object value = $source;",
+                s"return Optional.ofNullable(${decodeParamField(domain, commandName, prop, "value", "")});"
+              ),
+              ""
+            )
         }
       javadoc(
         docOf(prop),
@@ -857,7 +871,7 @@ object Main {
             }
           }
       val decoder = command.returns match {
-        case Nil                       => "result_ -> null"
+        case Nil                       => ""
         case List(ret) if ret.optional =>
           primitiveOf(returnKind(domain, ret)) match {
             case Some("long") =>
@@ -877,7 +891,8 @@ object Main {
         case List(ret) => s"result_ -> ${strictReturnDecode(domain, ret)}"
         case _         => s"result_ -> new ${prefix}Result(result_)"
       }
-      val retType = command.returns match {
+      val decoderArg = if (decoder.isEmpty) "" else s", $decoder"
+      val retType    = command.returns match {
         case Nil       => "CompletionStage<Void>"
         case List(ret) =>
           val raw = returnRawJava(domain, ret)
@@ -895,7 +910,7 @@ object Main {
         deprecated(docOf(command), "        ") ++
         List(s"        public $retType $method(${signature.mkString(", ")}) {") ++
         build ++
-        List(s"            return client.call(\"$domain.$name\", $args, $decoder);", "        }")
+        List(s"            return client.call(\"$domain.$name\", $args$decoderArg);", "        }")
       val default = Option.when(optionalAll)(
         javadoc(docOf(command), "        ", s"Invokes $domain.$name with default parameters.", Nil, Some(returnsDoc)) ++
           deprecated(docOf(command), "        ") ++
@@ -936,7 +951,7 @@ object Main {
           deprecated(docOf(command), "        ") ++
           List(
             s"        public $retType $method($reqType request) {",
-            s"            return client.call(\"$domain.$name\", request == null ? null : request.toMap(), $decoder);",
+            s"            return client.call(\"$domain.$name\", request == null ? null : request.toMap()$decoderArg);",
             "        }"
           )
       }.toList.flatten
@@ -958,7 +973,6 @@ object Main {
         "import java.util.OptionalLong;",
         "import java.util.concurrent.CompletionStage;",
         "import java.util.function.Consumer;",
-        "import javax.annotation.Nonnull;",
         Banners.javaAnnotationImport,
         "import net.kurobako.cef4j.cdp.CdpClient;",
         "import net.kurobako.cef4j.cdp.CdpObject;",

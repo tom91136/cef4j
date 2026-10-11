@@ -7,9 +7,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.generated.CdpDomains;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Typed CDP facade over any in-process or remote transport. */
 public final class CdpClient implements AutoCloseable {
@@ -46,6 +46,19 @@ public final class CdpClient implements AutoCloseable {
                 result.completeExceptionally(decodeFailure);
             }
         });
+        result.whenComplete((ignored, failure) -> {
+            if (result.isCancelled()) source.cancel(false);
+        });
+        return result;
+    }
+
+    /** Sends a command whose result carries no fields. */
+    @SuppressWarnings("FutureReturnValueIgnored")
+    @NullableBoundary("CDP commands omit the JSON params member with null")
+    public CompletionStage<Void> call(String method, @Nullable Map<String, Object> params) {
+        CompletableFuture<Map<String, Object>> source =
+                call(method, params, result -> result).toCompletableFuture();
+        CompletableFuture<Void> result = source.thenAccept(ignored -> {});
         result.whenComplete((ignored, failure) -> {
             if (result.isCancelled()) source.cancel(false);
         });

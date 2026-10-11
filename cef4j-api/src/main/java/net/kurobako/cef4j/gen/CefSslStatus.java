@@ -165,7 +165,7 @@ public interface CefSslStatus extends CefLibraryObject {
         static native CefX509Certificate getX509Certificate0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

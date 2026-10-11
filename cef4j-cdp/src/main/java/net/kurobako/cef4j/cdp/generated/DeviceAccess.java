@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class DeviceAccess {
      */
     public static final class RequestId implements CdpValue<String> {
         public final String value;
-        public RequestId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public RequestId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof RequestId)) return false;
             return value.equals(((RequestId) other).value);
@@ -44,9 +43,9 @@ public final class DeviceAccess {
      */
     public static final class DeviceId implements CdpValue<String> {
         public final String value;
-        public DeviceId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public DeviceId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof DeviceId)) return false;
             return value.equals(((DeviceId) other).value);
@@ -232,14 +231,14 @@ public final class DeviceAccess {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("DeviceAccess.enable", null, result_ -> null);
+            return client.call("DeviceAccess.enable", null);
         }
         /**
          * Disable events in this domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("DeviceAccess.disable", null, result_ -> null);
+            return client.call("DeviceAccess.disable", null);
         }
         /**
          * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
@@ -251,7 +250,7 @@ public final class DeviceAccess {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             params.put("deviceId", CdpObject.json(deviceId));
-            return client.call("DeviceAccess.selectPrompt", params, result_ -> null);
+            return client.call("DeviceAccess.selectPrompt", params);
         }
         /**
          * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
@@ -259,7 +258,7 @@ public final class DeviceAccess {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> selectPrompt(SelectPromptRequest request) {
-            return client.call("DeviceAccess.selectPrompt", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DeviceAccess.selectPrompt", request == null ? null : request.toMap());
         }
         /**
          * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
@@ -269,7 +268,7 @@ public final class DeviceAccess {
         public CompletionStage<Void> cancelPrompt(DeviceAccess.RequestId id) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
-            return client.call("DeviceAccess.cancelPrompt", params, result_ -> null);
+            return client.call("DeviceAccess.cancelPrompt", params);
         }
         /**
          * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
@@ -277,7 +276,7 @@ public final class DeviceAccess {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelPrompt(CancelPromptRequest request) {
-            return client.call("DeviceAccess.cancelPrompt", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DeviceAccess.cancelPrompt", request == null ? null : request.toMap());
         }
         /**
          * A device request opened a user prompt to select a device. Respond with the selectPrompt or cancelPrompt command.

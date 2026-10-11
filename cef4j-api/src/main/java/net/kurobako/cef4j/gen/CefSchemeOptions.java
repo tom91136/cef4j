@@ -95,7 +95,7 @@ public final class CefSchemeOptions implements CefEnum<CefSchemeOptions> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefSchemeOptions)) return false;
         return this.value == ((CefSchemeOptions) obj).value;

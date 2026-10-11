@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to browser display state. The methods of this class will be called
@@ -144,7 +143,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      */
     default boolean onConsoleMessage(
             @Nullable CefBrowser browser,
-            @Nonnull CefLogSeverity level,
+            CefLogSeverity level,
             @Nullable String message,
             @Nullable String source,
             int line) {
@@ -165,7 +164,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
      */
-    default boolean onAutoResize(@Nullable CefBrowser browser, @Nonnull CefSize newSize) {
+    default boolean onAutoResize(@Nullable CefBrowser browser, CefSize newSize) {
         return false;
     }
 
@@ -198,10 +197,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:144</a>
      */
     default boolean onCursorChange(
-            @Nullable CefBrowser browser,
-            long cursor,
-            @Nonnull CefCursorType type,
-            @Nullable CefCursorInfo customCursorInfo) {
+            @Nullable CefBrowser browser, long cursor, CefCursorType type, @Nullable CefCursorInfo customCursorInfo) {
         return false;
     }
 
@@ -246,7 +242,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
      */
-    default boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
+    default boolean onContentsBoundsChange(@Nullable CefBrowser browser, CefRect newBounds) {
         return false;
     }
 
@@ -267,7 +263,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:193</a>
      */
-    default boolean getRootWindowScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+    default boolean getRootWindowScreenRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
         return false;
     }
     /**
@@ -320,7 +316,7 @@ public interface CefDisplayHandler extends CefClientHandler {
         @Override
         public boolean onConsoleMessage(
                 @Nullable CefBrowser browser,
-                @Nonnull CefLogSeverity level,
+                CefLogSeverity level,
                 @Nullable String message,
                 @Nullable String source,
                 int line) {
@@ -332,7 +328,7 @@ public interface CefDisplayHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean onAutoResize(@Nullable CefBrowser browser, @Nonnull CefSize newSize) {
+        public boolean onAutoResize(@Nullable CefBrowser browser, CefSize newSize) {
             for (CefDisplayHandler d : delegates) {
                 if (d.onAutoResize(browser, newSize)) return true;
             }
@@ -349,7 +345,7 @@ public interface CefDisplayHandler extends CefClientHandler {
         public boolean onCursorChange(
                 @Nullable CefBrowser browser,
                 long cursor,
-                @Nonnull CefCursorType type,
+                CefCursorType type,
                 @Nullable CefCursorInfo customCursorInfo) {
             for (CefDisplayHandler d : delegates) {
                 if (d.onCursorChange(browser, cursor, type, customCursorInfo)) return true;
@@ -364,7 +360,7 @@ public interface CefDisplayHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
+        public boolean onContentsBoundsChange(@Nullable CefBrowser browser, CefRect newBounds) {
             for (CefDisplayHandler d : delegates) {
                 if (d.onContentsBoundsChange(browser, newBounds)) return true;
             }
@@ -373,7 +369,7 @@ public interface CefDisplayHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean getRootWindowScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+        public boolean getRootWindowScreenRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
             for (CefDisplayHandler d : delegates) {
                 if (d.getRootWindowScreenRect(browser, rect)) return true;
             }

@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent a frame in the browser window. When used in the browser process the methods of this class may
@@ -346,7 +345,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:248</a>
      */
-    void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message);
+    void sendProcessMessage(CefProcessId targetProcess, @Nullable CefProcessMessage message);
 
     final class NativePeer implements CefFrame, AutoCloseable {
         private final long nativePtr;
@@ -545,7 +544,7 @@ public interface CefFrame extends CefLibraryObject {
         }
 
         @Override
-        public void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message) {
+        public void sendProcessMessage(CefProcessId targetProcess, @Nullable CefProcessMessage message) {
             checkNotClosed();
             CefLibraryObject.requireOpen(message, "CefProcessMessage");
             sendProcessMessage0(nativePtr, targetProcess, message);
@@ -604,10 +603,10 @@ public interface CefFrame extends CefLibraryObject {
                 long self, @Nullable CefRequest request, @Nullable CefUrlRequestClient client);
 
         static native void sendProcessMessage0(
-                long self, @Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message);
+                long self, CefProcessId targetProcess, @Nullable CefProcessMessage message);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

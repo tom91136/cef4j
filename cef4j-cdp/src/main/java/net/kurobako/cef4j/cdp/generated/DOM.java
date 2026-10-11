@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,8 +28,8 @@ public final class DOM {
     public static final class NodeId implements CdpValue<Long> {
         public final long value;
         public NodeId(long value) { this.value = value; }
-        @Nonnull public Long value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Long value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof NodeId)) return false;
             return value == ((NodeId) other).value;
@@ -44,8 +43,8 @@ public final class DOM {
     public static final class BackendNodeId implements CdpValue<Long> {
         public final long value;
         public BackendNodeId(long value) { this.value = value; }
-        @Nonnull public Long value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Long value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof BackendNodeId)) return false;
             return value == ((BackendNodeId) other).value;
@@ -58,9 +57,9 @@ public final class DOM {
      */
     public static final class StyleSheetId implements CdpValue<String> {
         public final String value;
-        public StyleSheetId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public StyleSheetId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof StyleSheetId)) return false;
             return value.equals(((StyleSheetId) other).value);
@@ -173,8 +172,8 @@ public final class DOM {
         OVERSCROLL_AREA_PARENT("overscroll-area-parent");
         public final String value;
         PseudoType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PseudoType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PseudoType of(String value) {
             for (PseudoType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -190,8 +189,8 @@ public final class DOM {
         CLOSED("closed");
         public final String value;
         ShadowRootType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ShadowRootType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ShadowRootType of(String value) {
             for (ShadowRootType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -207,8 +206,8 @@ public final class DOM {
         NOQUIRKSMODE("NoQuirksMode");
         public final String value;
         CompatibilityMode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CompatibilityMode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CompatibilityMode of(String value) {
             for (CompatibilityMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -224,8 +223,8 @@ public final class DOM {
         BOTH("Both");
         public final String value;
         PhysicalAxes(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static PhysicalAxes of(@Nonnull String value) {
+        public String value() { return value; }
+        public static PhysicalAxes of(String value) {
             for (PhysicalAxes constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -241,8 +240,8 @@ public final class DOM {
         BOTH("Both");
         public final String value;
         LogicalAxes(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static LogicalAxes of(@Nonnull String value) {
+        public String value() { return value; }
+        public static LogicalAxes of(String value) {
             for (LogicalAxes constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -257,8 +256,8 @@ public final class DOM {
         VERTICAL("vertical");
         public final String value;
         ScrollOrientation(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ScrollOrientation of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ScrollOrientation of(String value) {
             for (ScrollOrientation constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -286,7 +285,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> parentId() {
-            return Optional.ofNullable(raw("parentId") == null ? null : new DOM.NodeId(((Number) raw("parentId")).longValue()));
+            Object value = raw("parentId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * The BackendNodeId for this node.
@@ -336,126 +336,144 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> children() {
-            return Optional.ofNullable(list(raw("children"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("children");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> attributes() {
-            return Optional.ofNullable(list(raw("attributes"), element0 -> (String) element0));
+            Object value = raw("attributes");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentURL() {
-            return Optional.ofNullable((String) raw("documentURL"));
+            Object value = raw("documentURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            return Optional.ofNullable((String) raw("baseURL"));
+            Object value = raw("baseURL");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code DocumentType}&#x27;s publicId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> publicId() {
-            return Optional.ofNullable((String) raw("publicId"));
+            Object value = raw("publicId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code DocumentType}&#x27;s systemId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> systemId() {
-            return Optional.ofNullable((String) raw("systemId"));
+            Object value = raw("systemId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code DocumentType}&#x27;s internalSubset.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> internalSubset() {
-            return Optional.ofNullable((String) raw("internalSubset"));
+            Object value = raw("internalSubset");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code Document}&#x27;s XML version in case of XML documents.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> xmlVersion() {
-            return Optional.ofNullable((String) raw("xmlVersion"));
+            Object value = raw("xmlVersion");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code Attr}&#x27;s name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return Optional.ofNullable((String) raw("name"));
+            Object value = raw("name");
+            return Optional.ofNullable((String) value);
         }
         /**
          * {@code Attr}&#x27;s value.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> value() {
-            return Optional.ofNullable((String) raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Pseudo element type for this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            return Optional.ofNullable(raw("pseudoType") == null ? null : DOM.PseudoType.of((String) raw("pseudoType")));
+            Object value = raw("pseudoType");
+            return Optional.ofNullable(value == null ? null : DOM.PseudoType.of((String) value));
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            return Optional.ofNullable((String) raw("pseudoIdentifier"));
+            Object value = raw("pseudoIdentifier");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Shadow root type.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShadowRootType> shadowRootType() {
-            return Optional.ofNullable(raw("shadowRootType") == null ? null : DOM.ShadowRootType.of((String) raw("shadowRootType")));
+            Object value = raw("shadowRootType");
+            return Optional.ofNullable(value == null ? null : DOM.ShadowRootType.of((String) value));
         }
         /**
          * Frame ID for frame owner elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Content document for frame owner elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Node> contentDocument() {
-            return Optional.ofNullable(raw("contentDocument") == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentDocument")))));
+            Object value = raw("contentDocument");
+            return Optional.ofNullable(value == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Shadow root list for given element host.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> shadowRoots() {
-            return Optional.ofNullable(list(raw("shadowRoots"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("shadowRoots");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Content document fragment for template elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Node> templateContent() {
-            return Optional.ofNullable(raw("templateContent") == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(raw("templateContent")))));
+            Object value = raw("templateContent");
+            return Optional.ofNullable(value == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Pseudo elements associated with this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> pseudoElements() {
-            return Optional.ofNullable(list(raw("pseudoElements"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("pseudoElements");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
@@ -464,35 +482,40 @@ public final class DOM {
          */
         @Deprecated
         public Optional<DOM.Node> importedDocument() {
-            return Optional.ofNullable(raw("importedDocument") == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(raw("importedDocument")))));
+            Object value = raw("importedDocument");
+            return Optional.ofNullable(value == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Distributed nodes for given insertion point.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.BackendNode>> distributedNodes() {
-            return Optional.ofNullable(list(raw("distributedNodes"), element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("distributedNodes");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Whether the node is SVG.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSVG() {
-            return Optional.ofNullable((Boolean) raw("isSVG"));
+            Object value = raw("isSVG");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the compatibilityMode field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.CompatibilityMode> compatibilityMode() {
-            return Optional.ofNullable(raw("compatibilityMode") == null ? null : DOM.CompatibilityMode.of((String) raw("compatibilityMode")));
+            Object value = raw("compatibilityMode");
+            return Optional.ofNullable(value == null ? null : DOM.CompatibilityMode.of((String) value));
         }
         /**
          * Returns the assignedSlot field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNode> assignedSlot() {
-            return Optional.ofNullable(raw("assignedSlot") == null ? null : DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(objectMap(raw("assignedSlot")))));
+            Object value = raw("assignedSlot");
+            return Optional.ofNullable(value == null ? null : DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the isScrollable field.
@@ -500,7 +523,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isScrollable() {
-            return Optional.ofNullable((Boolean) raw("isScrollable"));
+            Object value = raw("isScrollable");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the affectedByStartingStyles field.
@@ -508,7 +532,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> affectedByStartingStyles() {
-            return Optional.ofNullable((Boolean) raw("affectedByStartingStyles"));
+            Object value = raw("affectedByStartingStyles");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the adoptedStyleSheets field.
@@ -516,7 +541,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.StyleSheetId>> adoptedStyleSheets() {
-            return Optional.ofNullable(list(raw("adoptedStyleSheets"), element0 -> new DOM.StyleSheetId((String) element0)));
+            Object value = raw("adoptedStyleSheets");
+            return Optional.ofNullable(list(value, element0 -> new DOM.StyleSheetId((String) element0)));
         }
         /**
          * Returns the adProvenance field.
@@ -524,7 +550,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdProvenance> adProvenance() {
-            return Optional.ofNullable(raw("adProvenance") == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(raw("adProvenance")))));
+            Object value = raw("adProvenance");
+            return Optional.ofNullable(value == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Node identifier that is passed into the rest of the DOM messages as the {@code nodeId}. Backend will only push node with given {@code id} once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
@@ -1297,7 +1324,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShapeOutsideInfo> shapeOutside() {
-            return Optional.ofNullable(raw("shapeOutside") == null ? null : DOM.ShapeOutsideInfo.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shapeOutside")))));
+            Object value = raw("shapeOutside");
+            return Optional.ofNullable(value == null ? null : DOM.ShapeOutsideInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Content box
@@ -1621,7 +1649,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> insertBeforeNodeId() {
-            return Optional.ofNullable(raw("insertBeforeNodeId") == null ? null : new DOM.NodeId(((Number) raw("insertBeforeNodeId")).longValue()));
+            Object value = raw("insertBeforeNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Id of the node to copy.
@@ -1675,21 +1704,24 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
@@ -1704,7 +1736,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return Optional.ofNullable((Boolean) raw("pierce"));
+            Object value = raw("pierce");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the node.
@@ -1812,28 +1845,32 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Rect> rect() {
-            return Optional.ofNullable(raw("rect") == null ? null : DOM.Rect.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rect")))));
+            Object value = raw("rect");
+            return Optional.ofNullable(value == null ? null : DOM.Rect.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the node.
@@ -1960,7 +1997,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<EnableIncludeWhitespaceValues> includeWhitespace() {
-            return Optional.ofNullable(raw("includeWhitespace") == null ? null : EnableIncludeWhitespaceValues.of((String) raw("includeWhitespace")));
+            Object value = raw("includeWhitespace");
+            return Optional.ofNullable(value == null ? null : EnableIncludeWhitespaceValues.of((String) value));
         }
         /**
          * Whether to include whitespaces in the children array of returned Nodes.
@@ -1998,21 +2036,24 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node.
@@ -2118,21 +2159,24 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node.
@@ -2205,21 +2249,24 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node.
@@ -2299,7 +2346,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return Optional.ofNullable((Boolean) raw("pierce"));
+            Object value = raw("pierce");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
@@ -2363,7 +2411,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return Optional.ofNullable((Boolean) raw("pierce"));
+            Object value = raw("pierce");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
@@ -2442,7 +2491,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return Optional.ofNullable((Boolean) raw("pierce"));
+            Object value = raw("pierce");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Node ID pointing to the root of a subtree.
@@ -2519,14 +2569,16 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowDOM() {
-            return Optional.ofNullable((Boolean) raw("includeUserAgentShadowDOM"));
+            Object value = raw("includeUserAgentShadowDOM");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to ignore pointer-events: none on elements and hit test them.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignorePointerEventsNone() {
-            return Optional.ofNullable((Boolean) raw("ignorePointerEventsNone"));
+            Object value = raw("ignorePointerEventsNone");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * X coordinate.
@@ -2598,21 +2650,24 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Include all shadow roots. Equals to false if not specified.
@@ -2620,7 +2675,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeShadowDOM() {
-            return Optional.ofNullable((Boolean) raw("includeShadowDOM"));
+            Object value = raw("includeShadowDOM");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the node.
@@ -2843,7 +2899,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> insertBeforeNodeId() {
-            return Optional.ofNullable(raw("insertBeforeNodeId") == null ? null : new DOM.NodeId(((Number) raw("insertBeforeNodeId")).longValue()));
+            Object value = raw("insertBeforeNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Id of the node to move.
@@ -2913,7 +2970,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowDOM() {
-            return Optional.ofNullable((Boolean) raw("includeUserAgentShadowDOM"));
+            Object value = raw("includeUserAgentShadowDOM");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Plain text or query selector or XPath search query.
@@ -3296,7 +3354,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return Optional.ofNullable((Boolean) raw("pierce"));
+            Object value = raw("pierce");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Id of the node to get children for.
@@ -3393,28 +3452,32 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Backend identifier of the node to resolve.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Symbolic group name that can be used to release multiple objects.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return Optional.ofNullable((String) raw("objectGroup"));
+            Object value = raw("objectGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Execution context in which to resolve the node.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return Optional.ofNullable(raw("executionContextId") == null ? null : new Runtime.ExecutionContextId(((Number) raw("executionContextId")).longValue()));
+            Object value = raw("executionContextId");
+            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Id of the node to resolve.
@@ -3597,7 +3660,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return Optional.ofNullable((String) raw("name"));
+            Object value = raw("name");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Id of the element to set attributes for.
@@ -3665,21 +3729,24 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Array of file paths to set.
@@ -4112,35 +4179,40 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> containerName() {
-            return Optional.ofNullable((String) raw("containerName"));
+            Object value = raw("containerName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the physicalAxes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PhysicalAxes> physicalAxes() {
-            return Optional.ofNullable(raw("physicalAxes") == null ? null : DOM.PhysicalAxes.of((String) raw("physicalAxes")));
+            Object value = raw("physicalAxes");
+            return Optional.ofNullable(value == null ? null : DOM.PhysicalAxes.of((String) value));
         }
         /**
          * Returns the logicalAxes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.LogicalAxes> logicalAxes() {
-            return Optional.ofNullable(raw("logicalAxes") == null ? null : DOM.LogicalAxes.of((String) raw("logicalAxes")));
+            Object value = raw("logicalAxes");
+            return Optional.ofNullable(value == null ? null : DOM.LogicalAxes.of((String) value));
         }
         /**
          * Returns the queriesScrollState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesScrollState() {
-            return Optional.ofNullable((Boolean) raw("queriesScrollState"));
+            Object value = raw("queriesScrollState");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the queriesAnchored field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesAnchored() {
-            return Optional.ofNullable((Boolean) raw("queriesAnchored"));
+            Object value = raw("queriesAnchored");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the nodeId field.
@@ -4309,7 +4381,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> anchorSpecifier() {
-            return Optional.ofNullable((String) raw("anchorSpecifier"));
+            Object value = raw("anchorSpecifier");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Id of the positioned element from which to find the anchor.
@@ -4421,7 +4494,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Resulting node.
@@ -4525,7 +4599,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Resulting node.
@@ -5083,7 +5158,8 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdProvenance> adProvenance() {
-            return Optional.ofNullable(raw("adProvenance") == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(raw("adProvenance")))));
+            Object value = raw("adProvenance");
+            return Optional.ofNullable(value == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The id of the node.
@@ -5336,8 +5412,8 @@ public final class DOM {
         ALL("all");
         public final String value;
         EnableIncludeWhitespaceValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static EnableIncludeWhitespaceValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static EnableIncludeWhitespaceValues of(String value) {
             for (EnableIncludeWhitespaceValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -5353,8 +5429,8 @@ public final class DOM {
         COMMANDFOR("CommandFor");
         public final String value;
         GetElementByRelationRelationValues(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static GetElementByRelationRelationValues of(@Nonnull String value) {
+        public String value() { return value; }
+        public static GetElementByRelationRelationValues of(String value) {
             for (GetElementByRelationRelationValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -5465,7 +5541,7 @@ public final class DOM {
             backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
             objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
             rect.ifPresent(value_ -> params.put("rect", CdpObject.json(value_)));
-            return client.call("DOM.scrollIntoViewIfNeeded", params, result_ -> null);
+            return client.call("DOM.scrollIntoViewIfNeeded", params);
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
@@ -5480,14 +5556,14 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> scrollIntoViewIfNeeded(ScrollIntoViewIfNeededRequest request) {
-            return client.call("DOM.scrollIntoViewIfNeeded", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.scrollIntoViewIfNeeded", request == null ? null : request.toMap());
         }
         /**
          * Disables DOM agent for the given page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("DOM.disable", null, result_ -> null);
+            return client.call("DOM.disable", null);
         }
         /**
          * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
@@ -5498,7 +5574,7 @@ public final class DOM {
         public CompletionStage<Void> discardSearchResults(String searchId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("searchId", CdpObject.json(searchId));
-            return client.call("DOM.discardSearchResults", params, result_ -> null);
+            return client.call("DOM.discardSearchResults", params);
         }
         /**
          * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
@@ -5507,7 +5583,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> discardSearchResults(DiscardSearchResultsRequest request) {
-            return client.call("DOM.discardSearchResults", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.discardSearchResults", request == null ? null : request.toMap());
         }
         /**
          * Enables DOM agent for the given page.
@@ -5517,7 +5593,7 @@ public final class DOM {
         public CompletionStage<Void> enable(Optional<EnableIncludeWhitespaceValues> includeWhitespace) {
             Map<String, Object> params = new LinkedHashMap<>();
             includeWhitespace.ifPresent(value_ -> params.put("includeWhitespace", CdpObject.json(value_)));
-            return client.call("DOM.enable", params, result_ -> null);
+            return client.call("DOM.enable", params);
         }
         /**
          * Enables DOM agent for the given page.
@@ -5532,7 +5608,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("DOM.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.enable", request == null ? null : request.toMap());
         }
         /**
          * Focuses the given element.
@@ -5546,7 +5622,7 @@ public final class DOM {
             nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
             backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
             objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            return client.call("DOM.focus", params, result_ -> null);
+            return client.call("DOM.focus", params);
         }
         /**
          * Focuses the given element.
@@ -5561,7 +5637,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> focus(FocusRequest request) {
-            return client.call("DOM.focus", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.focus", request == null ? null : request.toMap());
         }
         /**
          * Returns attributes for the specified node.
@@ -5849,21 +5925,21 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> hideHighlight() {
-            return client.call("DOM.hideHighlight", null, result_ -> null);
+            return client.call("DOM.hideHighlight", null);
         }
         /**
          * Highlights DOM node.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightNode() {
-            return client.call("DOM.highlightNode", null, result_ -> null);
+            return client.call("DOM.highlightNode", null);
         }
         /**
          * Highlights given rectangle.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightRect() {
-            return client.call("DOM.highlightRect", null, result_ -> null);
+            return client.call("DOM.highlightRect", null);
         }
         /**
          * Marks last undoable state.
@@ -5871,7 +5947,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> markUndoableState() {
-            return client.call("DOM.markUndoableState", null, result_ -> null);
+            return client.call("DOM.markUndoableState", null);
         }
         /**
          * Moves node into the new container, places it before the given anchor.
@@ -6051,7 +6127,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> redo() {
-            return client.call("DOM.redo", null, result_ -> null);
+            return client.call("DOM.redo", null);
         }
         /**
          * Removes attribute with given name from an element with given id.
@@ -6063,7 +6139,7 @@ public final class DOM {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("name", CdpObject.json(name));
-            return client.call("DOM.removeAttribute", params, result_ -> null);
+            return client.call("DOM.removeAttribute", params);
         }
         /**
          * Removes attribute with given name from an element with given id.
@@ -6071,7 +6147,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeAttribute(RemoveAttributeRequest request) {
-            return client.call("DOM.removeAttribute", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.removeAttribute", request == null ? null : request.toMap());
         }
         /**
          * Removes node with given id.
@@ -6081,7 +6157,7 @@ public final class DOM {
         public CompletionStage<Void> removeNode(DOM.NodeId nodeId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.removeNode", params, result_ -> null);
+            return client.call("DOM.removeNode", params);
         }
         /**
          * Removes node with given id.
@@ -6089,7 +6165,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeNode(RemoveNodeRequest request) {
-            return client.call("DOM.removeNode", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.removeNode", request == null ? null : request.toMap());
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
@@ -6103,7 +6179,7 @@ public final class DOM {
             params.put("nodeId", CdpObject.json(nodeId));
             depth.ifPresent(value_ -> params.put("depth", value_));
             pierce.ifPresent(value_ -> params.put("pierce", value_));
-            return client.call("DOM.requestChildNodes", params, result_ -> null);
+            return client.call("DOM.requestChildNodes", params);
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
@@ -6119,7 +6195,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> requestChildNodes(RequestChildNodesRequest request) {
-            return client.call("DOM.requestChildNodes", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.requestChildNodes", request == null ? null : request.toMap());
         }
         /**
          * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
@@ -6182,7 +6258,7 @@ public final class DOM {
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("name", CdpObject.json(name));
             params.put("value", CdpObject.json(value));
-            return client.call("DOM.setAttributeValue", params, result_ -> null);
+            return client.call("DOM.setAttributeValue", params);
         }
         /**
          * Sets attribute for an element with given id.
@@ -6190,7 +6266,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributeValue(SetAttributeValueRequest request) {
-            return client.call("DOM.setAttributeValue", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setAttributeValue", request == null ? null : request.toMap());
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
@@ -6204,7 +6280,7 @@ public final class DOM {
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("text", CdpObject.json(text));
             name.ifPresent(value_ -> params.put("name", CdpObject.json(value_)));
-            return client.call("DOM.setAttributesAsText", params, result_ -> null);
+            return client.call("DOM.setAttributesAsText", params);
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
@@ -6221,7 +6297,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributesAsText(SetAttributesAsTextRequest request) {
-            return client.call("DOM.setAttributesAsText", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setAttributesAsText", request == null ? null : request.toMap());
         }
         /**
          * Sets files for the given file input element.
@@ -6237,7 +6313,7 @@ public final class DOM {
             nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
             backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
             objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            return client.call("DOM.setFileInputFiles", params, result_ -> null);
+            return client.call("DOM.setFileInputFiles", params);
         }
         /**
          * Sets files for the given file input element.
@@ -6253,7 +6329,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFileInputFiles(SetFileInputFilesRequest request) {
-            return client.call("DOM.setFileInputFiles", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setFileInputFiles", request == null ? null : request.toMap());
         }
         /**
          * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
@@ -6264,7 +6340,7 @@ public final class DOM {
         public CompletionStage<Void> setNodeStackTracesEnabled(boolean enable) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
-            return client.call("DOM.setNodeStackTracesEnabled", params, result_ -> null);
+            return client.call("DOM.setNodeStackTracesEnabled", params);
         }
         /**
          * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
@@ -6273,7 +6349,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeStackTracesEnabled(SetNodeStackTracesEnabledRequest request) {
-            return client.call("DOM.setNodeStackTracesEnabled", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setNodeStackTracesEnabled", request == null ? null : request.toMap());
         }
         /**
          * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
@@ -6332,7 +6408,7 @@ public final class DOM {
         public CompletionStage<Void> setInspectedNode(DOM.NodeId nodeId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.setInspectedNode", params, result_ -> null);
+            return client.call("DOM.setInspectedNode", params);
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
@@ -6341,7 +6417,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInspectedNode(SetInspectedNodeRequest request) {
-            return client.call("DOM.setInspectedNode", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setInspectedNode", request == null ? null : request.toMap());
         }
         /**
          * Sets node name for a node with given id.
@@ -6373,7 +6449,7 @@ public final class DOM {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("value", CdpObject.json(value));
-            return client.call("DOM.setNodeValue", params, result_ -> null);
+            return client.call("DOM.setNodeValue", params);
         }
         /**
          * Sets node value for a node with given id.
@@ -6381,7 +6457,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeValue(SetNodeValueRequest request) {
-            return client.call("DOM.setNodeValue", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setNodeValue", request == null ? null : request.toMap());
         }
         /**
          * Sets node HTML markup, returns new node id.
@@ -6393,7 +6469,7 @@ public final class DOM {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("outerHTML", CdpObject.json(outerHTML));
-            return client.call("DOM.setOuterHTML", params, result_ -> null);
+            return client.call("DOM.setOuterHTML", params);
         }
         /**
          * Sets node HTML markup, returns new node id.
@@ -6401,7 +6477,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setOuterHTML(SetOuterHTMLRequest request) {
-            return client.call("DOM.setOuterHTML", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOM.setOuterHTML", request == null ? null : request.toMap());
         }
         /**
          * Undoes the last performed action.
@@ -6409,7 +6485,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> undo() {
-            return client.call("DOM.undo", null, result_ -> null);
+            return client.call("DOM.undo", null);
         }
         /**
          * Returns iframe node that owns iframe with the given domain.

@@ -16,8 +16,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
@@ -27,6 +25,7 @@ import net.kurobako.cef4j.ipc.frame.SharedFileFrameTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
         this(SharedFileFrameTransport::bind);
     }
 
-    public RemoteBrowserPanel(@Nonnull RemoteBrowserBinding.FrameTransportFactory frameTransportFactory) {
+    public RemoteBrowserPanel(RemoteBrowserBinding.FrameTransportFactory frameTransportFactory) {
         binding = new RemoteBrowserBinding(
                 "RemoteBrowserPanel", SwingUtilities::invokeLater, frameTransportFactory, this::onFrame);
         setFocusable(true);
@@ -63,33 +62,28 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
         });
     }
 
-    public void attach(@Nonnull CefSession session) {
+    public void attach(CefSession session) {
         binding.reportViewportSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
         binding.attach(session);
     }
 
-    @Nonnull
     public CompletableFuture<RemoteHandle> browserReady() {
         return binding.browserReady();
     }
 
-    @Nonnull
-    public RemoteHandle awaitBrowserHandle(@Nonnull Duration timeout) throws Exception {
+    public RemoteHandle awaitBrowserHandle(Duration timeout) throws Exception {
         return binding.awaitBrowserHandle(timeout);
     }
 
-    @Nonnull
-    public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+    public CompletableFuture<Void> loadUrl(String url) {
         return binding.loadUrl(url);
     }
 
-    @Nonnull
-    public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+    public CompletableFuture<String> evaluateJavascript(String script) {
         return binding.evaluateJavascript(script);
     }
 
     /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
-    @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
         return binding.resizeViewport(width, height);
     }

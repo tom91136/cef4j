@@ -2,12 +2,11 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle MenuButton events. The methods of this class will be called on the browser process
@@ -45,7 +44,7 @@ public interface CefMenuButtonDelegate extends CefClientHandler {
      */
     default void onMenuButtonPressed(
             @Nullable CefMenuButton menuButton,
-            @Nonnull CefPoint screenPoint,
+            CefPoint screenPoint,
             @Nullable CefMenuButtonPressedLock buttonPressedLock) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
@@ -63,7 +62,7 @@ public interface CefMenuButtonDelegate extends CefClientHandler {
         @Override
         public void onMenuButtonPressed(
                 @Nullable CefMenuButton menuButton,
-                @Nonnull CefPoint screenPoint,
+                CefPoint screenPoint,
                 @Nullable CefMenuButtonPressedLock buttonPressedLock) {
             for (CefMenuButtonDelegate d : delegates) d.onMenuButtonPressed(menuButton, screenPoint, buttonPressedLock);
         }

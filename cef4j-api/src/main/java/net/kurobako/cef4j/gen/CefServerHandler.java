@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle HTTP server requests. A new thread will be created for each
@@ -170,7 +169,7 @@ public interface CefServerHandler extends CefClientHandler {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:303</a>
      */
-    default void onWebSocketMessage(@Nullable CefServer server, int connectionId, @Nonnull ByteBuffer data) {}
+    default void onWebSocketMessage(@Nullable CefServer server, int connectionId, ByteBuffer data) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -230,7 +229,7 @@ public interface CefServerHandler extends CefClientHandler {
         }
 
         @Override
-        public void onWebSocketMessage(@Nullable CefServer server, int connectionId, @Nonnull ByteBuffer data) {
+        public void onWebSocketMessage(@Nullable CefServer server, int connectionId, ByteBuffer data) {
             for (CefServerHandler d : delegates) d.onWebSocketMessage(server, connectionId, data);
         }
     }

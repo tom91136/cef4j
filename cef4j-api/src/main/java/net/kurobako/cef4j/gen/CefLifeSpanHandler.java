@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to browser life span. The methods of this class will be called on
@@ -81,12 +80,12 @@ public interface CefLifeSpanHandler extends CefClientHandler {
             int popupId,
             @Nullable String targetUrl,
             @Nullable String targetFrameName,
-            @Nonnull CefWindowOpenDisposition targetDisposition,
+            CefWindowOpenDisposition targetDisposition,
             boolean userGesture,
             @Nullable CefPopupFeatures popupFeatures,
-            @Nonnull CefWindowInfo.Mutable windowInfo,
+            CefWindowInfo.Mutable windowInfo,
             @Nullable AtomicReference<CefClient> client,
-            @Nonnull CefBrowserSettings.Mutable settings,
+            CefBrowserSettings.Mutable settings,
             @Nullable AtomicReference<CefDictionaryValue> extraInfo,
             int[] noJavascriptAccess) {
         return false;
@@ -143,9 +142,9 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      */
     default void onBeforeDevToolsPopup(
             @Nullable CefBrowser browser,
-            @Nonnull CefWindowInfo.Mutable windowInfo,
+            CefWindowInfo.Mutable windowInfo,
             @Nullable AtomicReference<CefClient> client,
-            @Nonnull CefBrowserSettings.Mutable settings,
+            CefBrowserSettings.Mutable settings,
             @Nullable AtomicReference<CefDictionaryValue> extraInfo,
             int[] useDefaultWindow) {}
 
@@ -281,12 +280,12 @@ public interface CefLifeSpanHandler extends CefClientHandler {
                 int popupId,
                 @Nullable String targetUrl,
                 @Nullable String targetFrameName,
-                @Nonnull CefWindowOpenDisposition targetDisposition,
+                CefWindowOpenDisposition targetDisposition,
                 boolean userGesture,
                 @Nullable CefPopupFeatures popupFeatures,
-                @Nonnull CefWindowInfo.Mutable windowInfo,
+                CefWindowInfo.Mutable windowInfo,
                 @Nullable AtomicReference<CefClient> client,
-                @Nonnull CefBrowserSettings.Mutable settings,
+                CefBrowserSettings.Mutable settings,
                 @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                 int[] noJavascriptAccess) {
             for (CefLifeSpanHandler d : delegates) {
@@ -317,9 +316,9 @@ public interface CefLifeSpanHandler extends CefClientHandler {
         @Override
         public void onBeforeDevToolsPopup(
                 @Nullable CefBrowser browser,
-                @Nonnull CefWindowInfo.Mutable windowInfo,
+                CefWindowInfo.Mutable windowInfo,
                 @Nullable AtomicReference<CefClient> client,
-                @Nonnull CefBrowserSettings.Mutable settings,
+                CefBrowserSettings.Mutable settings,
                 @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                 int[] useDefaultWindow) {
             for (CefLifeSpanHandler d : delegates)

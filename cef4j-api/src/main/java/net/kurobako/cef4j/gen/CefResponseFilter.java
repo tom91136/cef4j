@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to filter resource response content. The methods of this class will be called on the browser
@@ -87,7 +86,7 @@ public interface CefResponseFilter extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response__filter_8h.html">cef_response_filter.h:59</a>
      */
     default @Nullable CefResponseFilterStatus filter(
-            @Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
+            @Nullable ByteBuffer dataIn, long[] dataInRead, ByteBuffer dataOut, long[] dataOutWritten) {
         return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
     }
     /**
@@ -114,7 +113,7 @@ public interface CefResponseFilter extends CefClientHandler {
 
         @Override
         public @Nullable CefResponseFilterStatus filter(
-                @Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
+                @Nullable ByteBuffer dataIn, long[] dataInRead, ByteBuffer dataOut, long[] dataOutWritten) {
             if (!delegates.isEmpty()) return delegates.get(0).filter(dataIn, dataInRead, dataOut, dataOutWritten);
             return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
         }

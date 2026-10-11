@@ -12,10 +12,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestTempDirs;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -151,8 +151,8 @@ class CefScriptEngineMultiThreadedTest {
     @Test
     @Order(4)
     void interleavedEvals() throws Exception {
-        CompletableFuture<String> fA = engineA.evaluate("'hello'");
-        CompletableFuture<String> fB = engineB.evaluate("'world'");
+        CompletableFuture<@Nullable String> fA = engineA.evaluate("'hello'");
+        CompletableFuture<@Nullable String> fB = engineB.evaluate("'world'");
         assertThat(fA.get(5, TimeUnit.SECONDS)).isEqualTo("\"hello\"");
         assertThat(fB.get(5, TimeUnit.SECONDS)).isEqualTo("\"world\"");
     }

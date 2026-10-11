@@ -121,7 +121,7 @@ public final class CefDomEventCategory implements CefEnum<CefDomEventCategory> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefDomEventCategory)) return false;
         return this.value == ((CefDomEventCategory) obj).value;

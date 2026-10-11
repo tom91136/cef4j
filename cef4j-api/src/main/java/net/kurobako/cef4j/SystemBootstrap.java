@@ -19,12 +19,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,8 +258,9 @@ public final class SystemBootstrap {
      */
     public static Optional<String> helperPath() {
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
-        if (extractionDir != null) {
-            Path launcher = extractionDir.resolve(launcherName);
+        Path extracted = extractionDir;
+        if (extracted != null) {
+            Path launcher = extracted.resolve(launcherName);
             if (Files.exists(launcher)) {
                 return Optional.of(launcher.toAbsolutePath().toString());
             }
@@ -304,7 +306,7 @@ public final class SystemBootstrap {
             try {
                 extractResource(resourceBase + libName, cacheDir.resolve(libName));
                 extractResource(resourceBase + launcherName, launcher);
-                launcher.toFile().setExecutable(true);
+                makeExecutable(launcher);
 
                 if (libcefDir != null) {
                     log.debug("Linking CEF runtime from LIBCEF_DIR: {}", libcefDir);
@@ -437,7 +439,7 @@ public final class SystemBootstrap {
         StringBuilder out = new StringBuilder();
         byte[] bytes = digest.digest();
         for (int i = 0; i < 8; i++) {
-            out.append(String.format("%02x", bytes[i]));
+            out.append(String.format(Locale.ROOT, "%02x", bytes[i]));
         }
         return out.toString();
     }
@@ -480,7 +482,7 @@ public final class SystemBootstrap {
                         || line.endsWith("chrome-sandbox")
                         || line.endsWith("bootstrap")
                         || fileNameStr.equals("Chromium Embedded Framework")) {
-                    target.toFile().setExecutable(true);
+                    makeExecutable(target);
                 }
             }
         }
@@ -596,6 +598,10 @@ public final class SystemBootstrap {
     public static void quitAndWaitMainThreadMessageLoop() {
         if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
         quitAndWaitMainThreadMessageLoop0();
+    }
+
+    private static void makeExecutable(Path file) throws IOException {
+        if (!file.toFile().setExecutable(true)) throw new IOException("Cannot make " + file + " executable");
     }
 
     static void extractResource(String resourcePath, Path target) throws IOException {

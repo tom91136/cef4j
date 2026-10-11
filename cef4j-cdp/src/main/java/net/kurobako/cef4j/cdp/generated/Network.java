@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -48,8 +47,8 @@ public final class Network {
         OTHER("Other");
         public final String value;
         ResourceType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ResourceType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ResourceType of(String value) {
             for (ResourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -61,9 +60,9 @@ public final class Network {
      */
     public static final class LoaderId implements CdpValue<String> {
         public final String value;
-        public LoaderId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public LoaderId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof LoaderId)) return false;
             return value.equals(((LoaderId) other).value);
@@ -76,9 +75,9 @@ public final class Network {
      */
     public static final class RequestId implements CdpValue<String> {
         public final String value;
-        public RequestId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public RequestId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof RequestId)) return false;
             return value.equals(((RequestId) other).value);
@@ -91,9 +90,9 @@ public final class Network {
      */
     public static final class InterceptionId implements CdpValue<String> {
         public final String value;
-        public InterceptionId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public InterceptionId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof InterceptionId)) return false;
             return value.equals(((InterceptionId) other).value);
@@ -121,8 +120,8 @@ public final class Network {
         BLOCKEDBYRESPONSE("BlockedByResponse");
         public final String value;
         ErrorReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ErrorReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ErrorReason of(String value) {
             for (ErrorReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -135,8 +134,8 @@ public final class Network {
     public static final class TimeSinceEpoch implements CdpValue<Double> {
         public final double value;
         public TimeSinceEpoch(double value) { this.value = value; }
-        @Nonnull public Double value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Double value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof TimeSinceEpoch)) return false;
             return Double.compare(value, ((TimeSinceEpoch) other).value) == 0;
@@ -150,8 +149,8 @@ public final class Network {
     public static final class MonotonicTime implements CdpValue<Double> {
         public final double value;
         public MonotonicTime(double value) { this.value = value; }
-        @Nonnull public Double value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Double value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof MonotonicTime)) return false;
             return Double.compare(value, ((MonotonicTime) other).value) == 0;
@@ -174,8 +173,8 @@ public final class Network {
         OTHER("other");
         public final String value;
         ConnectionType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ConnectionType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ConnectionType of(String value) {
             for (ConnectionType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -191,8 +190,8 @@ public final class Network {
         NONE("None");
         public final String value;
         CookieSameSite(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieSameSite of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieSameSite of(String value) {
             for (CookieSameSite constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -209,8 +208,8 @@ public final class Network {
         HIGH("High");
         public final String value;
         CookiePriority(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookiePriority of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookiePriority of(String value) {
             for (CookiePriority constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -227,8 +226,8 @@ public final class Network {
         SECURE("Secure");
         public final String value;
         CookieSourceScheme(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieSourceScheme of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieSourceScheme of(String value) {
             for (CookieSourceScheme constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -632,8 +631,8 @@ public final class Network {
         VERYHIGH("VeryHigh");
         public final String value;
         ResourcePriority(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ResourcePriority of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ResourcePriority of(String value) {
             for (ResourcePriority constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -652,8 +651,8 @@ public final class Network {
         POTENTIALLYBLOCKING("PotentiallyBlocking");
         public final String value;
         RenderBlockingBehavior(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static RenderBlockingBehavior of(@Nonnull String value) {
+        public String value() { return value; }
+        public static RenderBlockingBehavior of(String value) {
             for (RenderBlockingBehavior constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -674,7 +673,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bytes() {
-            return Optional.ofNullable((String) raw("bytes"));
+            Object value = raw("bytes");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the bytes field.
@@ -718,8 +718,8 @@ public final class Network {
             STRICT_ORIGIN_WHEN_CROSS_ORIGIN("strict-origin-when-cross-origin");
             public final String value;
             ReferrerPolicyValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static ReferrerPolicyValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static ReferrerPolicyValues of(String value) {
                 for (ReferrerPolicyValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -738,7 +738,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlFragment() {
-            return Optional.ofNullable((String) raw("urlFragment"));
+            Object value = raw("urlFragment");
+            return Optional.ofNullable((String) value);
         }
         /**
          * HTTP request method.
@@ -761,14 +762,16 @@ public final class Network {
          */
         @Deprecated
         public Optional<String> postData() {
-            return Optional.ofNullable((String) raw("postData"));
+            Object value = raw("postData");
+            return Optional.ofNullable((String) value);
         }
         /**
          * True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasPostData() {
-            return Optional.ofNullable((Boolean) raw("hasPostData"));
+            Object value = raw("hasPostData");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Request body elements (post data broken into individual entries).
@@ -776,14 +779,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.PostDataEntry>> postDataEntries() {
-            return Optional.ofNullable(list(raw("postDataEntries"), element0 -> java.util.Objects.requireNonNull(Network.PostDataEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("postDataEntries");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Network.PostDataEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The mixed content type of the request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.MixedContentType> mixedContentType() {
-            return Optional.ofNullable(raw("mixedContentType") == null ? null : Security.MixedContentType.of((String) raw("mixedContentType")));
+            Object value = raw("mixedContentType");
+            return Optional.ofNullable(value == null ? null : Security.MixedContentType.of((String) value));
         }
         /**
          * Priority of the resource request at the time request is sent.
@@ -804,7 +809,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isLinkPreload() {
-            return Optional.ofNullable((Boolean) raw("isLinkPreload"));
+            Object value = raw("isLinkPreload");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Set for requests when the TrustToken API is used. Contains the parameters passed by the developer (e.g. via &quot;fetch&quot;) as understood by the backend.
@@ -812,7 +818,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TrustTokenParams> trustTokenParams() {
-            return Optional.ofNullable(raw("trustTokenParams") == null ? null : Network.TrustTokenParams.fromMap(java.util.Objects.requireNonNull(objectMap(raw("trustTokenParams")))));
+            Object value = raw("trustTokenParams");
+            return Optional.ofNullable(value == null ? null : Network.TrustTokenParams.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * True if this resource request is considered to be the &#x27;same site&#x27; as the request corresponding to the main frame.
@@ -820,7 +827,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSameSite() {
-            return Optional.ofNullable((Boolean) raw("isSameSite"));
+            Object value = raw("isSameSite");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True when the resource request is ad-related.
@@ -828,7 +836,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isAdRelated() {
-            return Optional.ofNullable((Boolean) raw("isAdRelated"));
+            Object value = raw("isAdRelated");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Request URL (without fragment).
@@ -1216,7 +1225,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyExchangeGroup() {
-            return Optional.ofNullable((String) raw("keyExchangeGroup"));
+            Object value = raw("keyExchangeGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cipher name.
@@ -1230,7 +1240,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> mac() {
-            return Optional.ofNullable((String) raw("mac"));
+            Object value = raw("mac");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Certificate ID value.
@@ -1475,8 +1486,8 @@ public final class Network {
         COMPLIANT("compliant");
         public final String value;
         CertificateTransparencyCompliance(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CertificateTransparencyCompliance of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CertificateTransparencyCompliance of(String value) {
             for (CertificateTransparencyCompliance constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1505,8 +1516,8 @@ public final class Network {
         SRI_MESSAGE_SIGNATURE_MISMATCH("sri-message-signature-mismatch");
         public final String value;
         BlockedReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static BlockedReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static BlockedReason of(String value) {
             for (BlockedReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1547,8 +1558,8 @@ public final class Network {
         LOCALNETWORKACCESSPERMISSIONDENIED("LocalNetworkAccessPermissionDenied");
         public final String value;
         CorsError(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CorsError of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CorsError of(String value) {
             for (CorsError constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1606,8 +1617,8 @@ public final class Network {
         NETWORK("network");
         public final String value;
         ServiceWorkerResponseSource(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ServiceWorkerResponseSource of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ServiceWorkerResponseSource of(String value) {
             for (ServiceWorkerResponseSource constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1632,8 +1643,8 @@ public final class Network {
             REFRESH("Refresh");
             public final String value;
             RefreshPolicyValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static RefreshPolicyValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static RefreshPolicyValues of(String value) {
                 for (RefreshPolicyValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -1659,7 +1670,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> issuers() {
-            return Optional.ofNullable(list(raw("issuers"), element0 -> (String) element0));
+            Object value = raw("issuers");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Sets the operation field.
@@ -1708,8 +1720,8 @@ public final class Network {
         SIGNING("Signing");
         public final String value;
         TrustTokenOperationType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static TrustTokenOperationType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static TrustTokenOperationType of(String value) {
             for (TrustTokenOperationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1731,8 +1743,8 @@ public final class Network {
         UNSPECIFIEDREASON("unspecifiedReason");
         public final String value;
         AlternateProtocolUsage(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static AlternateProtocolUsage of(@Nonnull String value) {
+        public String value() { return value; }
+        public static AlternateProtocolUsage of(String value) {
             for (AlternateProtocolUsage constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1750,8 +1762,8 @@ public final class Network {
         RACE_NETWORK_AND_CACHE("race-network-and-cache");
         public final String value;
         ServiceWorkerRouterSource(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ServiceWorkerRouterSource of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ServiceWorkerRouterSource of(String value) {
             for (ServiceWorkerRouterSource constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1780,14 +1792,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerRouterSource> matchedSourceType() {
-            return Optional.ofNullable(raw("matchedSourceType") == null ? null : Network.ServiceWorkerRouterSource.of((String) raw("matchedSourceType")));
+            Object value = raw("matchedSourceType");
+            return Optional.ofNullable(value == null ? null : Network.ServiceWorkerRouterSource.of((String) value));
         }
         /**
          * The actual router source used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerRouterSource> actualSourceType() {
-            return Optional.ofNullable(raw("actualSourceType") == null ? null : Network.ServiceWorkerRouterSource.of((String) raw("actualSourceType")));
+            Object value = raw("actualSourceType");
+            return Optional.ofNullable(value == null ? null : Network.ServiceWorkerRouterSource.of((String) value));
         }
         /**
          * ID of the rule matched. If there is a matched rule, this field will be set, otherwiser no value will be set.
@@ -1888,7 +1902,8 @@ public final class Network {
          */
         @Deprecated
         public Optional<String> headersText() {
-            return Optional.ofNullable((String) raw("headersText"));
+            Object value = raw("headersText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Resource mimeType as determined by the browser.
@@ -1909,7 +1924,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> requestHeaders() {
-            return Optional.ofNullable(objectMap(raw("requestHeaders")));
+            Object value = raw("requestHeaders");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
@@ -1918,7 +1934,8 @@ public final class Network {
          */
         @Deprecated
         public Optional<String> requestHeadersText() {
-            return Optional.ofNullable((String) raw("requestHeadersText"));
+            Object value = raw("requestHeadersText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Specifies whether physical connection was actually reused for this request.
@@ -1939,7 +1956,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteIPAddress() {
-            return Optional.ofNullable((String) raw("remoteIPAddress"));
+            Object value = raw("remoteIPAddress");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Remote port.
@@ -1954,28 +1972,32 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromDiskCache() {
-            return Optional.ofNullable((Boolean) raw("fromDiskCache"));
+            Object value = raw("fromDiskCache");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Specifies that the request was served from the ServiceWorker.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromServiceWorker() {
-            return Optional.ofNullable((Boolean) raw("fromServiceWorker"));
+            Object value = raw("fromServiceWorker");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Specifies that the request was served from the prefetch cache.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromPrefetchCache() {
-            return Optional.ofNullable((Boolean) raw("fromPrefetchCache"));
+            Object value = raw("fromPrefetchCache");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Specifies that the request was served from the prefetch cache.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromEarlyHints() {
-            return Optional.ofNullable((Boolean) raw("fromEarlyHints"));
+            Object value = raw("fromEarlyHints");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Information about how ServiceWorker Static Router API was used. If this field is set with {@code matchedSourceType} field, a matching rule is found. If this field is set without {@code matchedSource}, no matching rule is found. Otherwise, the API is not used.
@@ -1983,7 +2005,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerRouterInfo> serviceWorkerRouterInfo() {
-            return Optional.ofNullable(raw("serviceWorkerRouterInfo") == null ? null : Network.ServiceWorkerRouterInfo.fromMap(java.util.Objects.requireNonNull(objectMap(raw("serviceWorkerRouterInfo")))));
+            Object value = raw("serviceWorkerRouterInfo");
+            return Optional.ofNullable(value == null ? null : Network.ServiceWorkerRouterInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Total number of bytes received for this request so far.
@@ -1997,35 +2020,40 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceTiming> timing() {
-            return Optional.ofNullable(raw("timing") == null ? null : Network.ResourceTiming.fromMap(java.util.Objects.requireNonNull(objectMap(raw("timing")))));
+            Object value = raw("timing");
+            return Optional.ofNullable(value == null ? null : Network.ResourceTiming.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Response source of response from ServiceWorker.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerResponseSource> serviceWorkerResponseSource() {
-            return Optional.ofNullable(raw("serviceWorkerResponseSource") == null ? null : Network.ServiceWorkerResponseSource.of((String) raw("serviceWorkerResponseSource")));
+            Object value = raw("serviceWorkerResponseSource");
+            return Optional.ofNullable(value == null ? null : Network.ServiceWorkerResponseSource.of((String) value));
         }
         /**
          * The time at which the returned response was generated.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> responseTime() {
-            return Optional.ofNullable(raw("responseTime") == null ? null : new Network.TimeSinceEpoch(((Number) raw("responseTime")).doubleValue()));
+            Object value = raw("responseTime");
+            return Optional.ofNullable(value == null ? null : new Network.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Cache Storage Cache Name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cacheStorageCacheName() {
-            return Optional.ofNullable((String) raw("cacheStorageCacheName"));
+            Object value = raw("cacheStorageCacheName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Protocol used to fetch this request.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> protocol() {
-            return Optional.ofNullable((String) raw("protocol"));
+            Object value = raw("protocol");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The reason why Chrome uses a specific transport protocol for HTTP semantics.
@@ -2033,7 +2061,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AlternateProtocolUsage> alternateProtocolUsage() {
-            return Optional.ofNullable(raw("alternateProtocolUsage") == null ? null : Network.AlternateProtocolUsage.of((String) raw("alternateProtocolUsage")));
+            Object value = raw("alternateProtocolUsage");
+            return Optional.ofNullable(value == null ? null : Network.AlternateProtocolUsage.of((String) value));
         }
         /**
          * Security state of the request resource.
@@ -2047,7 +2076,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SecurityDetails> securityDetails() {
-            return Optional.ofNullable(raw("securityDetails") == null ? null : Network.SecurityDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("securityDetails")))));
+            Object value = raw("securityDetails");
+            return Optional.ofNullable(value == null ? null : Network.SecurityDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Response URL. This URL can be different from CachedResource.url in case of redirect.
@@ -2519,21 +2549,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> headersText() {
-            return Optional.ofNullable((String) raw("headersText"));
+            Object value = raw("headersText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * HTTP request headers.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> requestHeaders() {
-            return Optional.ofNullable(objectMap(raw("requestHeaders")));
+            Object value = raw("requestHeaders");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * HTTP request headers text.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> requestHeadersText() {
-            return Optional.ofNullable((String) raw("requestHeadersText"));
+            Object value = raw("requestHeadersText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * HTTP response status code.
@@ -2703,7 +2736,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Response> response() {
-            return Optional.ofNullable(raw("response") == null ? null : Network.Response.fromMap(java.util.Objects.requireNonNull(objectMap(raw("response")))));
+            Object value = raw("response");
+            return Optional.ofNullable(value == null ? null : Network.Response.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Cached response body size.
@@ -2780,8 +2814,8 @@ public final class Network {
             OTHER("other");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -2800,14 +2834,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stack() {
-            return Optional.ofNullable(raw("stack") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stack")))));
+            Object value = raw("stack");
+            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
@@ -2830,7 +2866,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return Optional.ofNullable(raw("requestId") == null ? null : new Network.RequestId((String) raw("requestId")));
+            Object value = raw("requestId");
+            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
         }
         /**
          * Type of this initiator.
@@ -3052,7 +3089,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return Optional.ofNullable(raw("sameSite") == null ? null : Network.CookieSameSite.of((String) raw("sameSite")));
+            Object value = raw("sameSite");
+            return Optional.ofNullable(value == null ? null : Network.CookieSameSite.of((String) value));
         }
         /**
          * Cookie Priority
@@ -3084,7 +3122,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return Optional.ofNullable(raw("partitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitionKey")))));
+            Object value = raw("partitionKey");
+            return Optional.ofNullable(value == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * True if cookie partition key is opaque.
@@ -3092,7 +3131,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> partitionKeyOpaque() {
-            return Optional.ofNullable((Boolean) raw("partitionKeyOpaque"));
+            Object value = raw("partitionKeyOpaque");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Cookie name.
@@ -3291,8 +3331,8 @@ public final class Network {
         NOCOOKIECONTENT("NoCookieContent");
         public final String value;
         SetCookieBlockedReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SetCookieBlockedReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SetCookieBlockedReason of(String value) {
             for (SetCookieBlockedReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -3324,8 +3364,8 @@ public final class Network {
         ANONYMOUSCONTEXT("AnonymousContext");
         public final String value;
         CookieBlockedReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieBlockedReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieBlockedReason of(String value) {
             for (CookieBlockedReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -3350,8 +3390,8 @@ public final class Network {
         SAMESITENONECOOKIESINSANDBOX("SameSiteNoneCookiesInSandbox");
         public final String value;
         CookieExemptionReason(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CookieExemptionReason of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CookieExemptionReason of(String value) {
             for (CookieExemptionReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -3387,7 +3427,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Cookie> cookie() {
-            return Optional.ofNullable(raw("cookie") == null ? null : Network.Cookie.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cookie")))));
+            Object value = raw("cookie");
+            return Optional.ofNullable(value == null ? null : Network.Cookie.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The reason(s) this cookie was blocked.
@@ -3514,7 +3555,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieExemptionReason> exemptionReason() {
-            return Optional.ofNullable(raw("exemptionReason") == null ? null : Network.CookieExemptionReason.of((String) raw("exemptionReason")));
+            Object value = raw("exemptionReason");
+            return Optional.ofNullable(value == null ? null : Network.CookieExemptionReason.of((String) value));
         }
         /**
          * The cookie object representing the cookie which was not sent.
@@ -3581,49 +3623,56 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cookie domain.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> domain() {
-            return Optional.ofNullable((String) raw("domain"));
+            Object value = raw("domain");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cookie path.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> path() {
-            return Optional.ofNullable((String) raw("path"));
+            Object value = raw("path");
+            return Optional.ofNullable((String) value);
         }
         /**
          * True if cookie is secure.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> secure() {
-            return Optional.ofNullable((Boolean) raw("secure"));
+            Object value = raw("secure");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True if cookie is http-only.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> httpOnly() {
-            return Optional.ofNullable((Boolean) raw("httpOnly"));
+            Object value = raw("httpOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Cookie SameSite type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return Optional.ofNullable(raw("sameSite") == null ? null : Network.CookieSameSite.of((String) raw("sameSite")));
+            Object value = raw("sameSite");
+            return Optional.ofNullable(value == null ? null : Network.CookieSameSite.of((String) value));
         }
         /**
          * Cookie expiration date, session cookie if not set
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> expires() {
-            return Optional.ofNullable(raw("expires") == null ? null : new Network.TimeSinceEpoch(((Number) raw("expires")).doubleValue()));
+            Object value = raw("expires");
+            return Optional.ofNullable(value == null ? null : new Network.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Cookie Priority.
@@ -3631,7 +3680,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePriority> priority() {
-            return Optional.ofNullable(raw("priority") == null ? null : Network.CookiePriority.of((String) raw("priority")));
+            Object value = raw("priority");
+            return Optional.ofNullable(value == null ? null : Network.CookiePriority.of((String) value));
         }
         /**
          * Cookie source scheme type.
@@ -3639,7 +3689,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSourceScheme> sourceScheme() {
-            return Optional.ofNullable(raw("sourceScheme") == null ? null : Network.CookieSourceScheme.of((String) raw("sourceScheme")));
+            Object value = raw("sourceScheme");
+            return Optional.ofNullable(value == null ? null : Network.CookieSourceScheme.of((String) value));
         }
         /**
          * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
@@ -3656,7 +3707,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return Optional.ofNullable(raw("partitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitionKey")))));
+            Object value = raw("partitionKey");
+            return Optional.ofNullable(value == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Cookie name.
@@ -3901,8 +3953,8 @@ public final class Network {
             PROXY("Proxy");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static SourceValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -3914,7 +3966,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<AuthChallenge.SourceValues> source() {
-            return Optional.ofNullable(raw("source") == null ? null : AuthChallenge.SourceValues.of((String) raw("source")));
+            Object value = raw("source");
+            return Optional.ofNullable(value == null ? null : AuthChallenge.SourceValues.of((String) value));
         }
         /**
          * Origin of the challenger.
@@ -4002,8 +4055,8 @@ public final class Network {
             PROVIDECREDENTIALS("ProvideCredentials");
             public final String value;
             ResponseValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static ResponseValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static ResponseValues of(String value) {
                 for (ResponseValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -4022,14 +4075,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> username() {
-            return Optional.ofNullable((String) raw("username"));
+            Object value = raw("username");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> password() {
-            return Optional.ofNullable((String) raw("password"));
+            Object value = raw("password");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
@@ -4086,8 +4141,8 @@ public final class Network {
         HEADERSRECEIVED("HeadersReceived");
         public final String value;
         InterceptionStage(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InterceptionStage of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InterceptionStage of(String value) {
             for (InterceptionStage constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -4109,21 +4164,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlPattern() {
-            return Optional.ofNullable((String) raw("urlPattern"));
+            Object value = raw("urlPattern");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set, only requests for matching resource types will be intercepted.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceType> resourceType() {
-            return Optional.ofNullable(raw("resourceType") == null ? null : Network.ResourceType.of((String) raw("resourceType")));
+            Object value = raw("resourceType");
+            return Optional.ofNullable(value == null ? null : Network.ResourceType.of((String) value));
         }
         /**
          * Stage at which to begin intercepting requests. Default is Request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.InterceptionStage> interceptionStage() {
-            return Optional.ofNullable(raw("interceptionStage") == null ? null : Network.InterceptionStage.of((String) raw("interceptionStage")));
+            Object value = raw("interceptionStage");
+            return Optional.ofNullable(value == null ? null : Network.InterceptionStage.of((String) value));
         }
         /**
          * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
@@ -4216,14 +4274,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certUrl() {
-            return Optional.ofNullable((String) raw("certUrl"));
+            Object value = raw("certUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The hex string of signed exchange signature cert sha256.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certSha256() {
-            return Optional.ofNullable((String) raw("certSha256"));
+            Object value = raw("certSha256");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Signed exchange signature validity Url.
@@ -4251,7 +4311,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> certificates() {
-            return Optional.ofNullable(list(raw("certificates"), element0 -> (String) element0));
+            Object value = raw("certificates");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Signed exchange signature label.
@@ -4466,8 +4527,8 @@ public final class Network {
         SIGNATURETIMESTAMPS("signatureTimestamps");
         public final String value;
         SignedExchangeErrorField(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SignedExchangeErrorField of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SignedExchangeErrorField of(String value) {
             for (SignedExchangeErrorField constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -4504,7 +4565,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SignedExchangeErrorField> errorField() {
-            return Optional.ofNullable(raw("errorField") == null ? null : Network.SignedExchangeErrorField.of((String) raw("errorField")));
+            Object value = raw("errorField");
+            return Optional.ofNullable(value == null ? null : Network.SignedExchangeErrorField.of((String) value));
         }
         /**
          * Error message.
@@ -4581,21 +4643,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SignedExchangeHeader> header() {
-            return Optional.ofNullable(raw("header") == null ? null : Network.SignedExchangeHeader.fromMap(java.util.Objects.requireNonNull(objectMap(raw("header")))));
+            Object value = raw("header");
+            return Optional.ofNullable(value == null ? null : Network.SignedExchangeHeader.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Security details for the signed exchange header.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SecurityDetails> securityDetails() {
-            return Optional.ofNullable(raw("securityDetails") == null ? null : Network.SecurityDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("securityDetails")))));
+            Object value = raw("securityDetails");
+            return Optional.ofNullable(value == null ? null : Network.SecurityDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Errors occurred while handling the signed exchange.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.SignedExchangeError>> errors() {
-            return Optional.ofNullable(list(raw("errors"), element0 -> java.util.Objects.requireNonNull(Network.SignedExchangeError.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("errors");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Network.SignedExchangeError.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The outer response of signed HTTP exchange which was received from network.
@@ -4681,8 +4746,8 @@ public final class Network {
         ZSTD("zstd");
         public final String value;
         ContentEncoding(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ContentEncoding of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ContentEncoding of(String value) {
             for (ContentEncoding constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -4731,7 +4796,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ConnectionType> connectionType() {
-            return Optional.ofNullable(raw("connectionType") == null ? null : Network.ConnectionType.of((String) raw("connectionType")));
+            Object value = raw("connectionType");
+            return Optional.ofNullable(value == null ? null : Network.ConnectionType.of((String) value));
         }
         /**
          * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
@@ -4754,14 +4820,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> packetReordering() {
-            return Optional.ofNullable((Boolean) raw("packetReordering"));
+            Object value = raw("packetReordering");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True to emulate internet disconnection.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> offline() {
-            return Optional.ofNullable((Boolean) raw("offline"));
+            Object value = raw("offline");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. If the pattern is empty, all requests are matched (including p2p connections).
@@ -4941,8 +5009,8 @@ public final class Network {
         IPV6("ipv6");
         public final String value;
         DirectSocketDnsQueryType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DirectSocketDnsQueryType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DirectSocketDnsQueryType of(String value) {
             for (DirectSocketDnsQueryType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -4994,7 +5062,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DirectSocketDnsQueryType> dnsQueryType() {
-            return Optional.ofNullable(raw("dnsQueryType") == null ? null : Network.DirectSocketDnsQueryType.of((String) raw("dnsQueryType")));
+            Object value = raw("dnsQueryType");
+            return Optional.ofNullable(value == null ? null : Network.DirectSocketDnsQueryType.of((String) value));
         }
         /**
          * TCP_NODELAY option
@@ -5092,7 +5161,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteAddr() {
-            return Optional.ofNullable((String) raw("remoteAddr"));
+            Object value = raw("remoteAddr");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Unsigned int 16.
@@ -5107,7 +5177,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> localAddr() {
-            return Optional.ofNullable((String) raw("localAddr"));
+            Object value = raw("localAddr");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Unsigned int 16.
@@ -5122,7 +5193,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DirectSocketDnsQueryType> dnsQueryType() {
-            return Optional.ofNullable(raw("dnsQueryType") == null ? null : Network.DirectSocketDnsQueryType.of((String) raw("dnsQueryType")));
+            Object value = raw("dnsQueryType");
+            return Optional.ofNullable(value == null ? null : Network.DirectSocketDnsQueryType.of((String) value));
         }
         /**
          * Expected to be unsigned integer.
@@ -5145,7 +5217,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> multicastLoopback() {
-            return Optional.ofNullable((Boolean) raw("multicastLoopback"));
+            Object value = raw("multicastLoopback");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Unsigned int 8.
@@ -5160,7 +5233,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> multicastAllowAddressSharing() {
-            return Optional.ofNullable((Boolean) raw("multicastAllowAddressSharing"));
+            Object value = raw("multicastAllowAddressSharing");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the remoteAddr field.
@@ -5364,7 +5438,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteAddr() {
-            return Optional.ofNullable((String) raw("remoteAddr"));
+            Object value = raw("remoteAddr");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Null for connected mode. Expected to be unsigned integer.
@@ -5432,8 +5507,8 @@ public final class Network {
         PERMISSIONWARN("PermissionWarn");
         public final String value;
         LocalNetworkAccessRequestPolicy(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static LocalNetworkAccessRequestPolicy of(@Nonnull String value) {
+        public String value() { return value; }
+        public static LocalNetworkAccessRequestPolicy of(String value) {
             for (LocalNetworkAccessRequestPolicy constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -5451,8 +5526,8 @@ public final class Network {
         UNKNOWN("Unknown");
         public final String value;
         IPAddressSpace(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static IPAddressSpace of(@Nonnull String value) {
+        public String value() { return value; }
+        public static IPAddressSpace of(String value) {
             for (IPAddressSpace constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -5624,7 +5699,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rootScriptFilterlistRule() {
-            return Optional.ofNullable((String) raw("rootScriptFilterlistRule"));
+            Object value = raw("rootScriptFilterlistRule");
+            return Optional.ofNullable((String) value);
         }
         /**
          * A chain of {@code AdScriptIdentifier}s representing the ancestry of an ad script that led to the creation of a resource or element. The chain is ordered from the script itself (lowest level) up to its root ancestor that was flagged by a filter list.
@@ -5669,14 +5745,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> filterlistRule() {
-            return Optional.ofNullable((String) raw("filterlistRule"));
+            Object value = raw("filterlistRule");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The script ancestry that created the ad, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdAncestry> adScriptAncestry() {
-            return Optional.ofNullable(raw("adScriptAncestry") == null ? null : Network.AdAncestry.fromMap(java.util.Objects.requireNonNull(objectMap(raw("adScriptAncestry")))));
+            Object value = raw("adScriptAncestry");
+            return Optional.ofNullable(value == null ? null : Network.AdAncestry.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The filterlist rule that matched, if any.
@@ -5729,8 +5807,8 @@ public final class Network {
         NOOPENERALLOWPOPUPS("NoopenerAllowPopups");
         public final String value;
         CrossOriginOpenerPolicyValue(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CrossOriginOpenerPolicyValue of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CrossOriginOpenerPolicyValue of(String value) {
             for (CrossOriginOpenerPolicyValue constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -5765,14 +5843,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportingEndpoint() {
-            return Optional.ofNullable((String) raw("reportingEndpoint"));
+            Object value = raw("reportingEndpoint");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the reportOnlyReportingEndpoint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportOnlyReportingEndpoint() {
-            return Optional.ofNullable((String) raw("reportOnlyReportingEndpoint"));
+            Object value = raw("reportOnlyReportingEndpoint");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the value field.
@@ -5839,8 +5919,8 @@ public final class Network {
         REQUIRECORP("RequireCorp");
         public final String value;
         CrossOriginEmbedderPolicyValue(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CrossOriginEmbedderPolicyValue of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CrossOriginEmbedderPolicyValue of(String value) {
             for (CrossOriginEmbedderPolicyValue constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -5875,14 +5955,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportingEndpoint() {
-            return Optional.ofNullable((String) raw("reportingEndpoint"));
+            Object value = raw("reportingEndpoint");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the reportOnlyReportingEndpoint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportOnlyReportingEndpoint() {
-            return Optional.ofNullable((String) raw("reportOnlyReportingEndpoint"));
+            Object value = raw("reportOnlyReportingEndpoint");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the value field.
@@ -5948,8 +6030,8 @@ public final class Network {
         META("Meta");
         public final String value;
         ContentSecurityPolicySource(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ContentSecurityPolicySource of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ContentSecurityPolicySource of(String value) {
             for (ContentSecurityPolicySource constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -6028,21 +6110,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CrossOriginOpenerPolicyStatus> coop() {
-            return Optional.ofNullable(raw("coop") == null ? null : Network.CrossOriginOpenerPolicyStatus.fromMap(java.util.Objects.requireNonNull(objectMap(raw("coop")))));
+            Object value = raw("coop");
+            return Optional.ofNullable(value == null ? null : Network.CrossOriginOpenerPolicyStatus.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the coep field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CrossOriginEmbedderPolicyStatus> coep() {
-            return Optional.ofNullable(raw("coep") == null ? null : Network.CrossOriginEmbedderPolicyStatus.fromMap(java.util.Objects.requireNonNull(objectMap(raw("coep")))));
+            Object value = raw("coep");
+            return Optional.ofNullable(value == null ? null : Network.CrossOriginEmbedderPolicyStatus.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the csp field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.ContentSecurityPolicyStatus>> csp() {
-            return Optional.ofNullable(list(raw("csp"), element0 -> java.util.Objects.requireNonNull(Network.ContentSecurityPolicyStatus.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("csp");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Network.ContentSecurityPolicyStatus.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sets the coop field.
@@ -6110,8 +6195,8 @@ public final class Network {
         SUCCESS("Success");
         public final String value;
         ReportStatus(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ReportStatus of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ReportStatus of(String value) {
             for (ReportStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -6124,9 +6209,9 @@ public final class Network {
      */
     public static final class ReportId implements CdpValue<String> {
         public final String value;
-        public ReportId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public ReportId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof ReportId)) return false;
             return value.equals(((ReportId) other).value);
@@ -6396,8 +6481,8 @@ public final class Network {
             DEFERRED("Deferred");
             public final String value;
             UsageValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static UsageValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static UsageValues of(String value) {
                 for (UsageValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -6487,7 +6572,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return Optional.ofNullable(raw("sameSite") == null ? null : Network.CookieSameSite.of((String) raw("sameSite")));
+            Object value = raw("sameSite");
+            return Optional.ofNullable(value == null ? null : Network.CookieSameSite.of((String) value));
         }
         /**
          * The name of the craving.
@@ -6571,8 +6657,8 @@ public final class Network {
             INCLUDE("Include");
             public final String value;
             RuleTypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static RuleTypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static RuleTypeValues of(String value) {
                 for (RuleTypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -6737,7 +6823,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cachedChallenge() {
-            return Optional.ofNullable((String) raw("cachedChallenge"));
+            Object value = raw("cachedChallenge");
+            return Optional.ofNullable((String) value);
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::allowed_refresh_initiators_}.
@@ -6825,9 +6912,9 @@ public final class Network {
      */
     public static final class DeviceBoundSessionEventId implements CdpValue<String> {
         public final String value;
-        public DeviceBoundSessionEventId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public DeviceBoundSessionEventId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof DeviceBoundSessionEventId)) return false;
             return value.equals(((DeviceBoundSessionEventId) other).value);
@@ -6912,8 +6999,8 @@ public final class Network {
         CROSSORIGINREGISTRATIONSITENOTINCLUDED("CrossOriginRegistrationSiteNotIncluded");
         public final String value;
         DeviceBoundSessionFetchResult(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DeviceBoundSessionFetchResult of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DeviceBoundSessionFetchResult of(String value) {
             for (DeviceBoundSessionFetchResult constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -6942,7 +7029,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> netError() {
-            return Optional.ofNullable((String) raw("netError"));
+            Object value = raw("netError");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The response code if the net error was OK and the response code was not 200.
@@ -6957,7 +7045,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> responseErrorBody() {
-            return Optional.ofNullable((String) raw("responseErrorBody"));
+            Object value = raw("responseErrorBody");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The failed request URL.
@@ -7045,14 +7134,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSession> newSession() {
-            return Optional.ofNullable(raw("newSession") == null ? null : Network.DeviceBoundSession.fromMap(java.util.Objects.requireNonNull(objectMap(raw("newSession")))));
+            Object value = raw("newSession");
+            return Optional.ofNullable(value == null ? null : Network.DeviceBoundSession.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Details about a failed device bound session network request if there was one.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSessionFailedRequest> failedRequest() {
-            return Optional.ofNullable(raw("failedRequest") == null ? null : Network.DeviceBoundSessionFailedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("failedRequest")))));
+            Object value = raw("failedRequest");
+            return Optional.ofNullable(value == null ? null : Network.DeviceBoundSessionFailedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The result of the fetch attempt.
@@ -7125,8 +7216,8 @@ public final class Network {
             TRANSIENTSIGNINGERROR("TransientSigningError");
             public final String value;
             RefreshResultValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static RefreshResultValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static RefreshResultValues of(String value) {
                 for (RefreshResultValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -7145,14 +7236,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSessionFetchResult> fetchResult() {
-            return Optional.ofNullable(raw("fetchResult") == null ? null : Network.DeviceBoundSessionFetchResult.of((String) raw("fetchResult")));
+            Object value = raw("fetchResult");
+            return Optional.ofNullable(value == null ? null : Network.DeviceBoundSessionFetchResult.of((String) value));
         }
         /**
          * The session display if there was a newly created session. This is populated for any refresh event that modifies the session config.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSession> newSession() {
-            return Optional.ofNullable(raw("newSession") == null ? null : Network.DeviceBoundSession.fromMap(java.util.Objects.requireNonNull(objectMap(raw("newSession")))));
+            Object value = raw("newSession");
+            return Optional.ofNullable(value == null ? null : Network.DeviceBoundSession.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * See comments on {@code net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh}.
@@ -7166,7 +7259,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSessionFailedRequest> failedRequest() {
-            return Optional.ofNullable(raw("failedRequest") == null ? null : Network.DeviceBoundSessionFailedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(raw("failedRequest")))));
+            Object value = raw("failedRequest");
+            return Optional.ofNullable(value == null ? null : Network.DeviceBoundSessionFailedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The result of a refresh.
@@ -7266,8 +7360,8 @@ public final class Network {
             DEVTOOLS("DevTools");
             public final String value;
             DeletionReasonValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static DeletionReasonValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static DeletionReasonValues of(String value) {
                 for (DeletionReasonValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -7311,8 +7405,8 @@ public final class Network {
             CANTSETBOUNDCOOKIE("CantSetBoundCookie");
             public final String value;
             ChallengeResultValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static ChallengeResultValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static ChallengeResultValues of(String value) {
                 for (ChallengeResultValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -7382,7 +7476,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> netErrorName() {
-            return Optional.ofNullable((String) raw("netErrorName"));
+            Object value = raw("netErrorName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Returns the httpStatusCode field.
@@ -7397,14 +7492,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<IO.StreamHandle> stream() {
-            return Optional.ofNullable(raw("stream") == null ? null : new IO.StreamHandle((String) raw("stream")));
+            Object value = raw("stream");
+            return Optional.ofNullable(value == null ? null : new IO.StreamHandle((String) value));
         }
         /**
          * Response headers.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> headers() {
-            return Optional.ofNullable(objectMap(raw("headers")));
+            Object value = raw("headers");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Sets the success field.
@@ -7620,49 +7717,56 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ErrorReason> errorReason() {
-            return Optional.ofNullable(raw("errorReason") == null ? null : Network.ErrorReason.of((String) raw("errorReason")));
+            Object value = raw("errorReason");
+            return Optional.ofNullable(value == null ? null : Network.ErrorReason.of((String) value));
         }
         /**
          * If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rawResponse() {
-            return Optional.ofNullable((String) raw("rawResponse"));
+            Object value = raw("rawResponse");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set the request url will be modified in a way that&#x27;s not observable by page. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set this allows the request method to be overridden. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> method() {
-            return Optional.ofNullable((String) raw("method"));
+            Object value = raw("method");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set this allows postData to be set. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> postData() {
-            return Optional.ofNullable((String) raw("postData"));
+            Object value = raw("postData");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> headers() {
-            return Optional.ofNullable(objectMap(raw("headers")));
+            Object value = raw("headers");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AuthChallengeResponse> authChallengeResponse() {
-            return Optional.ofNullable(raw("authChallengeResponse") == null ? null : Network.AuthChallengeResponse.fromMap(java.util.Objects.requireNonNull(objectMap(raw("authChallengeResponse")))));
+            Object value = raw("authChallengeResponse");
+            return Optional.ofNullable(value == null ? null : Network.AuthChallengeResponse.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the interceptionId field.
@@ -7829,21 +7933,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If specified, deletes only cookies with the exact domain.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> domain() {
-            return Optional.ofNullable((String) raw("domain"));
+            Object value = raw("domain");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If specified, deletes only cookies with the exact path.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> path() {
-            return Optional.ofNullable((String) raw("path"));
+            Object value = raw("path");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If specified, deletes only cookies with the the given name and partitionKey where all partition key attributes match the cookie partition key attribute.
@@ -7851,7 +7958,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return Optional.ofNullable(raw("partitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitionKey")))));
+            Object value = raw("partitionKey");
+            return Optional.ofNullable(value == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Name of the cookies to remove.
@@ -7997,7 +8105,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ConnectionType> connectionType() {
-            return Optional.ofNullable(raw("connectionType") == null ? null : Network.ConnectionType.of((String) raw("connectionType")));
+            Object value = raw("connectionType");
+            return Optional.ofNullable(value == null ? null : Network.ConnectionType.of((String) value));
         }
         /**
          * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
@@ -8023,7 +8132,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> packetReordering() {
-            return Optional.ofNullable((Boolean) raw("packetReordering"));
+            Object value = raw("packetReordering");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True to emulate internet disconnection.
@@ -8166,14 +8276,16 @@ public final class Network {
          */
         @Deprecated
         public Optional<Boolean> offline() {
-            return Optional.ofNullable((Boolean) raw("offline"));
+            Object value = raw("offline");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True to emulate offline service worker.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> emulateOfflineServiceWorker() {
-            return Optional.ofNullable((Boolean) raw("emulateOfflineServiceWorker"));
+            Object value = raw("emulateOfflineServiceWorker");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Configure conditions for matching requests. If multiple entries match a request, the first entry wins. Global conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are also applied for throttling of p2p connections.
@@ -8290,7 +8402,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ConnectionType> connectionType() {
-            return Optional.ofNullable(raw("connectionType") == null ? null : Network.ConnectionType.of((String) raw("connectionType")));
+            Object value = raw("connectionType");
+            return Optional.ofNullable(value == null ? null : Network.ConnectionType.of((String) value));
         }
         /**
          * True to emulate internet disconnection.
@@ -8389,7 +8502,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> reportDirectSocketTraffic() {
-            return Optional.ofNullable((Boolean) raw("reportDirectSocketTraffic"));
+            Object value = raw("reportDirectSocketTraffic");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Enable storing response bodies outside of renderer, so that these survive a cross-process navigation. Requires maxTotalBufferSize to be set. Currently defaults to false. This field is being deprecated in favor of the dedicated configureDurableMessages command, due to the possibility of deadlocks when awaiting Network.enable before issuing Runtime.runIfWaitingForDebugger.
@@ -8397,7 +8511,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableDurableMessages() {
-            return Optional.ofNullable((Boolean) raw("enableDurableMessages"));
+            Object value = raw("enableDurableMessages");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
@@ -8613,7 +8728,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> urls() {
-            return Optional.ofNullable(list(raw("urls"), element0 -> (String) element0));
+            Object value = raw("urls");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * The list of URLs for which applicable cookies will be fetched. If not specified, it&#x27;s assumed to be set to the list containing the URLs of the page and all of its subframes.
@@ -8850,14 +8966,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> caseSensitive() {
-            return Optional.ofNullable((Boolean) raw("caseSensitive"));
+            Object value = raw("caseSensitive");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If true, treats string parameter as regex.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isRegex() {
-            return Optional.ofNullable((Boolean) raw("isRegex"));
+            Object value = raw("isRegex");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the network response to search.
@@ -8930,7 +9048,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.BlockPattern>> urlPatterns() {
-            return Optional.ofNullable(list(raw("urlPatterns"), element0 -> java.util.Objects.requireNonNull(Network.BlockPattern.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("urlPatterns");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Network.BlockPattern.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * URL patterns to block. Wildcards (&#x27;*&#x27;) are allowed.
@@ -8939,7 +9058,8 @@ public final class Network {
          */
         @Deprecated
         public Optional<java.util.List<String>> urls() {
-            return Optional.ofNullable(list(raw("urls"), element0 -> (String) element0));
+            Object value = raw("urls");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Patterns to match in the order in which they are given. These patterns also take precedence over any wildcard patterns defined in {@code urls}.
@@ -9088,49 +9208,56 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return Optional.ofNullable((String) raw("url"));
+            Object value = raw("url");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cookie domain.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> domain() {
-            return Optional.ofNullable((String) raw("domain"));
+            Object value = raw("domain");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cookie path.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> path() {
-            return Optional.ofNullable((String) raw("path"));
+            Object value = raw("path");
+            return Optional.ofNullable((String) value);
         }
         /**
          * True if cookie is secure.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> secure() {
-            return Optional.ofNullable((Boolean) raw("secure"));
+            Object value = raw("secure");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * True if cookie is http-only.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> httpOnly() {
-            return Optional.ofNullable((Boolean) raw("httpOnly"));
+            Object value = raw("httpOnly");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Cookie SameSite type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return Optional.ofNullable(raw("sameSite") == null ? null : Network.CookieSameSite.of((String) raw("sameSite")));
+            Object value = raw("sameSite");
+            return Optional.ofNullable(value == null ? null : Network.CookieSameSite.of((String) value));
         }
         /**
          * Cookie expiration date, session cookie if not set
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> expires() {
-            return Optional.ofNullable(raw("expires") == null ? null : new Network.TimeSinceEpoch(((Number) raw("expires")).doubleValue()));
+            Object value = raw("expires");
+            return Optional.ofNullable(value == null ? null : new Network.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Cookie Priority type.
@@ -9138,7 +9265,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePriority> priority() {
-            return Optional.ofNullable(raw("priority") == null ? null : Network.CookiePriority.of((String) raw("priority")));
+            Object value = raw("priority");
+            return Optional.ofNullable(value == null ? null : Network.CookiePriority.of((String) value));
         }
         /**
          * Cookie source scheme type.
@@ -9146,7 +9274,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSourceScheme> sourceScheme() {
-            return Optional.ofNullable(raw("sourceScheme") == null ? null : Network.CookieSourceScheme.of((String) raw("sourceScheme")));
+            Object value = raw("sourceScheme");
+            return Optional.ofNullable(value == null ? null : Network.CookieSourceScheme.of((String) value));
         }
         /**
          * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
@@ -9163,7 +9292,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return Optional.ofNullable(raw("partitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("partitionKey")))));
+            Object value = raw("partitionKey");
+            return Optional.ofNullable(value == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Cookie name.
@@ -9563,14 +9693,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> acceptLanguage() {
-            return Optional.ofNullable((String) raw("acceptLanguage"));
+            Object value = raw("acceptLanguage");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The platform navigator.platform should return.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> platform() {
-            return Optional.ofNullable((String) raw("platform"));
+            Object value = raw("platform");
+            return Optional.ofNullable((String) value);
         }
         /**
          * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
@@ -9578,7 +9710,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.UserAgentMetadata> userAgentMetadata() {
-            return Optional.ofNullable(raw("userAgentMetadata") == null ? null : Emulation.UserAgentMetadata.fromMap(java.util.Objects.requireNonNull(objectMap(raw("userAgentMetadata")))));
+            Object value = raw("userAgentMetadata");
+            return Optional.ofNullable(value == null ? null : Emulation.UserAgentMetadata.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * User agent to use.
@@ -9698,7 +9831,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * If no frameId is provided, the status of the target is provided.
@@ -9889,7 +10023,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * URL of the resource to get content for.
@@ -10148,7 +10283,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return Optional.ofNullable((String) raw("data"));
+            Object value = raw("data");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Request identifier.
@@ -10339,21 +10475,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> canceled() {
-            return Optional.ofNullable((Boolean) raw("canceled"));
+            Object value = raw("canceled");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The reason why loading was blocked, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.BlockedReason> blockedReason() {
-            return Optional.ofNullable(raw("blockedReason") == null ? null : Network.BlockedReason.of((String) raw("blockedReason")));
+            Object value = raw("blockedReason");
+            return Optional.ofNullable(value == null ? null : Network.BlockedReason.of((String) value));
         }
         /**
          * The reason why loading was blocked by CORS, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CorsErrorStatus> corsErrorStatus() {
-            return Optional.ofNullable(raw("corsErrorStatus") == null ? null : Network.CorsErrorStatus.fromMap(java.util.Objects.requireNonNull(objectMap(raw("corsErrorStatus")))));
+            Object value = raw("corsErrorStatus");
+            return Optional.ofNullable(value == null ? null : Network.CorsErrorStatus.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Request identifier.
@@ -10556,28 +10695,32 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isDownload() {
-            return Optional.ofNullable((Boolean) raw("isDownload"));
+            Object value = raw("isDownload");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Redirect location, only sent if a redirect was intercepted.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> redirectUrl() {
-            return Optional.ofNullable((String) raw("redirectUrl"));
+            Object value = raw("redirectUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AuthChallenge> authChallenge() {
-            return Optional.ofNullable(raw("authChallenge") == null ? null : Network.AuthChallenge.fromMap(java.util.Objects.requireNonNull(objectMap(raw("authChallenge")))));
+            Object value = raw("authChallenge");
+            return Optional.ofNullable(value == null ? null : Network.AuthChallenge.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Response error if intercepted at response stage or if redirect occurred while intercepting request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ErrorReason> responseErrorReason() {
-            return Optional.ofNullable(raw("responseErrorReason") == null ? null : Network.ErrorReason.of((String) raw("responseErrorReason")));
+            Object value = raw("responseErrorReason");
+            return Optional.ofNullable(value == null ? null : Network.ErrorReason.of((String) value));
         }
         /**
          * Response code if intercepted at response stage or if redirect occurred while intercepting request or auth retry occurred.
@@ -10592,14 +10735,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> responseHeaders() {
-            return Optional.ofNullable(objectMap(raw("responseHeaders")));
+            Object value = raw("responseHeaders");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * If the intercepted request had a corresponding requestWillBeSent event fired for it, then this requestId will be the same as the requestId present in the requestWillBeSent event.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return Optional.ofNullable(raw("requestId") == null ? null : new Network.RequestId((String) raw("requestId")));
+            Object value = raw("requestId");
+            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
         }
         /**
          * Each request the page makes will have a unique id, however if any redirects are encountered while processing that fetch, they will be reported with the same id as the original fetch. Likewise if HTTP authentication is needed then the same fetch id will be used.
@@ -10870,28 +11015,32 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Response> redirectResponse() {
-            return Optional.ofNullable(raw("redirectResponse") == null ? null : Network.Response.fromMap(java.util.Objects.requireNonNull(objectMap(raw("redirectResponse")))));
+            Object value = raw("redirectResponse");
+            return Optional.ofNullable(value == null ? null : Network.Response.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Type of this resource.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceType> type() {
-            return Optional.ofNullable(raw("type") == null ? null : Network.ResourceType.of((String) raw("type")));
+            Object value = raw("type");
+            return Optional.ofNullable(value == null ? null : Network.ResourceType.of((String) value));
         }
         /**
          * Frame identifier.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Whether the request is initiated by a user gesture. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasUserGesture() {
-            return Optional.ofNullable((Boolean) raw("hasUserGesture"));
+            Object value = raw("hasUserGesture");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The render-blocking behavior of the request.
@@ -10899,7 +11048,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RenderBlockingBehavior> renderBlockingBehavior() {
-            return Optional.ofNullable(raw("renderBlockingBehavior") == null ? null : Network.RenderBlockingBehavior.of((String) raw("renderBlockingBehavior")));
+            Object value = raw("renderBlockingBehavior");
+            return Optional.ofNullable(value == null ? null : Network.RenderBlockingBehavior.of((String) value));
         }
         /**
          * Request identifier.
@@ -11226,7 +11376,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Request identifier.
@@ -11372,7 +11523,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return Optional.ofNullable(raw("initiator") == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(raw("initiator")))));
+            Object value = raw("initiator");
+            return Optional.ofNullable(value == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Request identifier.
@@ -11752,7 +11904,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return Optional.ofNullable(raw("initiator") == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(raw("initiator")))));
+            Object value = raw("initiator");
+            return Optional.ofNullable(value == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * WebTransport identifier.
@@ -11934,7 +12087,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return Optional.ofNullable(raw("initiator") == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(raw("initiator")))));
+            Object value = raw("initiator");
+            return Optional.ofNullable(value == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the identifier field.
@@ -12043,7 +12197,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> localAddr() {
-            return Optional.ofNullable((String) raw("localAddr"));
+            Object value = raw("localAddr");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Expected to be unsigned integer.
@@ -12468,7 +12623,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return Optional.ofNullable(raw("initiator") == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(raw("initiator")))));
+            Object value = raw("initiator");
+            return Optional.ofNullable(value == null ? null : Network.Initiator.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Sets the identifier field.
@@ -12559,7 +12715,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteAddr() {
-            return Optional.ofNullable((String) raw("remoteAddr"));
+            Object value = raw("remoteAddr");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Expected to be unsigned integer.
@@ -12906,28 +13063,32 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.DeviceBoundSessionWithUsage>> deviceBoundSessionUsages() {
-            return Optional.ofNullable(list(raw("deviceBoundSessionUsages"), element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionWithUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("deviceBoundSessionUsages");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionWithUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * The client security state set for the request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ClientSecurityState> clientSecurityState() {
-            return Optional.ofNullable(raw("clientSecurityState") == null ? null : Network.ClientSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(raw("clientSecurityState")))));
+            Object value = raw("clientSecurityState");
+            return Optional.ofNullable(value == null ? null : Network.ClientSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether the site has partitioned cookies stored in a partition different than the current one.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> siteHasCookieInOtherPartition() {
-            return Optional.ofNullable((Boolean) raw("siteHasCookieInOtherPartition"));
+            Object value = raw("siteHasCookieInOtherPartition");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The network conditions id if this request was affected by network conditions configured via emulateNetworkConditionsByRule.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> appliedNetworkConditionsId() {
-            return Optional.ofNullable((String) raw("appliedNetworkConditionsId"));
+            Object value = raw("appliedNetworkConditionsId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Request identifier. Used to match this information to an existing requestWillBeSent event.
@@ -13089,7 +13250,8 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> headersText() {
-            return Optional.ofNullable((String) raw("headersText"));
+            Object value = raw("headersText");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The cookie partition key that will be used to store partitioned cookies set in this response. Only sent when partitioned cookies are enabled.
@@ -13097,21 +13259,24 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> cookiePartitionKey() {
-            return Optional.ofNullable(raw("cookiePartitionKey") == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cookiePartitionKey")))));
+            Object value = raw("cookiePartitionKey");
+            return Optional.ofNullable(value == null ? null : Network.CookiePartitionKey.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * True if partitioned cookies are enabled, but the partition key is not serializable to string.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> cookiePartitionKeyOpaque() {
-            return Optional.ofNullable((Boolean) raw("cookiePartitionKeyOpaque"));
+            Object value = raw("cookiePartitionKeyOpaque");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * A list of cookies which should have been blocked by 3PCD but are exempted and stored from the response with the corresponding reason.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.ExemptedSetCookieWithReason>> exemptedCookies() {
-            return Optional.ofNullable(list(raw("exemptedCookies"), element0 -> java.util.Objects.requireNonNull(Network.ExemptedSetCookieWithReason.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("exemptedCookies");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Network.ExemptedSetCookieWithReason.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Request identifier. Used to match this information to another responseReceived event.
@@ -13305,8 +13470,8 @@ public final class Network {
             SITEISSUERLIMIT("SiteIssuerLimit");
             public final String value;
             StatusValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static StatusValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static StatusValues of(String value) {
                 for (StatusValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -13339,14 +13504,16 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> topLevelOrigin() {
-            return Optional.ofNullable((String) raw("topLevelOrigin"));
+            Object value = raw("topLevelOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Origin of the issuer in case of a &quot;Issuance&quot; or &quot;Redemption&quot; operation.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> issuerOrigin() {
-            return Optional.ofNullable((String) raw("issuerOrigin"));
+            Object value = raw("issuerOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The number of obtained Trust Tokens on a successful &quot;Issuance&quot; operation.
@@ -13609,35 +13776,40 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sessionId() {
-            return Optional.ofNullable((String) raw("sessionId"));
+            Object value = raw("sessionId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The below are the different session event type details. Exactly one is populated.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CreationEventDetails> creationEventDetails() {
-            return Optional.ofNullable(raw("creationEventDetails") == null ? null : Network.CreationEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("creationEventDetails")))));
+            Object value = raw("creationEventDetails");
+            return Optional.ofNullable(value == null ? null : Network.CreationEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the refreshEventDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RefreshEventDetails> refreshEventDetails() {
-            return Optional.ofNullable(raw("refreshEventDetails") == null ? null : Network.RefreshEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("refreshEventDetails")))));
+            Object value = raw("refreshEventDetails");
+            return Optional.ofNullable(value == null ? null : Network.RefreshEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the terminationEventDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TerminationEventDetails> terminationEventDetails() {
-            return Optional.ofNullable(raw("terminationEventDetails") == null ? null : Network.TerminationEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("terminationEventDetails")))));
+            Object value = raw("terminationEventDetails");
+            return Optional.ofNullable(value == null ? null : Network.TerminationEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the challengeEventDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ChallengeEventDetails> challengeEventDetails() {
-            return Optional.ofNullable(raw("challengeEventDetails") == null ? null : Network.ChallengeEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(raw("challengeEventDetails")))));
+            Object value = raw("challengeEventDetails");
+            return Optional.ofNullable(value == null ? null : Network.ChallengeEventDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * A unique identifier for this session event.
@@ -13769,7 +13941,7 @@ public final class Network {
         public CompletionStage<Void> setAcceptedEncodings(java.util.List<Network.ContentEncoding> encodings) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("encodings", CdpObject.json(encodings));
-            return client.call("Network.setAcceptedEncodings", params, result_ -> null);
+            return client.call("Network.setAcceptedEncodings", params);
         }
         /**
          * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
@@ -13778,7 +13950,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAcceptedEncodings(SetAcceptedEncodingsRequest request) {
-            return client.call("Network.setAcceptedEncodings", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setAcceptedEncodings", request == null ? null : request.toMap());
         }
         /**
          * Clears accepted encodings set by setAcceptedEncodings
@@ -13786,7 +13958,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearAcceptedEncodingsOverride() {
-            return client.call("Network.clearAcceptedEncodingsOverride", null, result_ -> null);
+            return client.call("Network.clearAcceptedEncodingsOverride", null);
         }
         /**
          * Tells whether clearing browser cache is supported.
@@ -13820,14 +13992,14 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearBrowserCache() {
-            return client.call("Network.clearBrowserCache", null, result_ -> null);
+            return client.call("Network.clearBrowserCache", null);
         }
         /**
          * Clears browser cookies.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearBrowserCookies() {
-            return client.call("Network.clearBrowserCookies", null, result_ -> null);
+            return client.call("Network.clearBrowserCookies", null);
         }
         /**
          * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
@@ -13854,7 +14026,7 @@ public final class Network {
             postData.ifPresent(value_ -> params.put("postData", CdpObject.json(value_)));
             headers.ifPresent(value_ -> params.put("headers", CdpObject.json(value_)));
             authChallengeResponse.ifPresent(value_ -> params.put("authChallengeResponse", CdpObject.json(value_)));
-            return client.call("Network.continueInterceptedRequest", params, result_ -> null);
+            return client.call("Network.continueInterceptedRequest", params);
         }
         /**
          * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
@@ -13876,7 +14048,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> continueInterceptedRequest(ContinueInterceptedRequestRequest request) {
-            return client.call("Network.continueInterceptedRequest", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.continueInterceptedRequest", request == null ? null : request.toMap());
         }
         /**
          * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
@@ -13894,7 +14066,7 @@ public final class Network {
             domain.ifPresent(value_ -> params.put("domain", CdpObject.json(value_)));
             path.ifPresent(value_ -> params.put("path", CdpObject.json(value_)));
             partitionKey.ifPresent(value_ -> params.put("partitionKey", CdpObject.json(value_)));
-            return client.call("Network.deleteCookies", params, result_ -> null);
+            return client.call("Network.deleteCookies", params);
         }
         /**
          * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
@@ -13910,14 +14082,14 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteCookies(DeleteCookiesRequest request) {
-            return client.call("Network.deleteCookies", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.deleteCookies", request == null ? null : request.toMap());
         }
         /**
          * Disables network tracking, prevents network events from being sent to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Network.disable", null, result_ -> null);
+            return client.call("Network.disable", null);
         }
         /**
          * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
@@ -13943,7 +14115,7 @@ public final class Network {
             packetLoss.ifPresent(value_ -> params.put("packetLoss", value_));
             packetQueueLength.ifPresent(value_ -> params.put("packetQueueLength", value_));
             packetReordering.ifPresent(value_ -> params.put("packetReordering", value_));
-            return client.call("Network.emulateNetworkConditions", params, result_ -> null);
+            return client.call("Network.emulateNetworkConditions", params);
         }
         /**
          * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
@@ -13966,7 +14138,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> emulateNetworkConditions(EmulateNetworkConditionsRequest request) {
-            return client.call("Network.emulateNetworkConditions", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.emulateNetworkConditions", request == null ? null : request.toMap());
         }
         /**
          * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
@@ -14018,7 +14190,7 @@ public final class Network {
             params.put("downloadThroughput", CdpObject.json(downloadThroughput));
             params.put("uploadThroughput", CdpObject.json(uploadThroughput));
             connectionType.ifPresent(value_ -> params.put("connectionType", CdpObject.json(value_)));
-            return client.call("Network.overrideNetworkState", params, result_ -> null);
+            return client.call("Network.overrideNetworkState", params);
         }
         /**
          * Override the state of navigator.onLine and navigator.connection.
@@ -14039,7 +14211,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideNetworkState(OverrideNetworkStateRequest request) {
-            return client.call("Network.overrideNetworkState", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.overrideNetworkState", request == null ? null : request.toMap());
         }
         /**
          * Enables network tracking, network events will now be delivered to the client.
@@ -14057,7 +14229,7 @@ public final class Network {
             maxPostDataSize.ifPresent(value_ -> params.put("maxPostDataSize", value_));
             reportDirectSocketTraffic.ifPresent(value_ -> params.put("reportDirectSocketTraffic", value_));
             enableDurableMessages.ifPresent(value_ -> params.put("enableDurableMessages", value_));
-            return client.call("Network.enable", params, result_ -> null);
+            return client.call("Network.enable", params);
         }
         /**
          * Enables network tracking, network events will now be delivered to the client.
@@ -14072,7 +14244,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Network.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.enable", request == null ? null : request.toMap());
         }
         /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
@@ -14085,7 +14257,7 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             maxTotalBufferSize.ifPresent(value_ -> params.put("maxTotalBufferSize", value_));
             maxResourceBufferSize.ifPresent(value_ -> params.put("maxResourceBufferSize", value_));
-            return client.call("Network.configureDurableMessages", params, result_ -> null);
+            return client.call("Network.configureDurableMessages", params);
         }
         /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
@@ -14102,7 +14274,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> configureDurableMessages(ConfigureDurableMessagesRequest request) {
-            return client.call("Network.configureDurableMessages", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.configureDurableMessages", request == null ? null : request.toMap());
         }
         /**
          * Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the {@code cookies} field. Deprecated. Use Storage.getCookies instead.
@@ -14243,7 +14415,7 @@ public final class Network {
         public CompletionStage<Void> replayXHR(Network.RequestId requestId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
-            return client.call("Network.replayXHR", params, result_ -> null);
+            return client.call("Network.replayXHR", params);
         }
         /**
          * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
@@ -14252,7 +14424,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> replayXHR(ReplayXHRRequest request) {
-            return client.call("Network.replayXHR", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.replayXHR", request == null ? null : request.toMap());
         }
         /**
          * Searches for given string in response content.
@@ -14301,7 +14473,7 @@ public final class Network {
             Map<String, Object> params = new LinkedHashMap<>();
             urlPatterns.ifPresent(value_ -> params.put("urlPatterns", CdpObject.json(value_)));
             urls.ifPresent(value_ -> params.put("urls", CdpObject.json(value_)));
-            return client.call("Network.setBlockedURLs", params, result_ -> null);
+            return client.call("Network.setBlockedURLs", params);
         }
         /**
          * Blocks URLs from loading.
@@ -14318,7 +14490,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlockedURLs(SetBlockedURLsRequest request) {
-            return client.call("Network.setBlockedURLs", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setBlockedURLs", request == null ? null : request.toMap());
         }
         /**
          * Toggles ignoring of service worker for each request.
@@ -14328,7 +14500,7 @@ public final class Network {
         public CompletionStage<Void> setBypassServiceWorker(boolean bypass) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("bypass", CdpObject.json(bypass));
-            return client.call("Network.setBypassServiceWorker", params, result_ -> null);
+            return client.call("Network.setBypassServiceWorker", params);
         }
         /**
          * Toggles ignoring of service worker for each request.
@@ -14336,7 +14508,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBypassServiceWorker(SetBypassServiceWorkerRequest request) {
-            return client.call("Network.setBypassServiceWorker", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setBypassServiceWorker", request == null ? null : request.toMap());
         }
         /**
          * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
@@ -14346,7 +14518,7 @@ public final class Network {
         public CompletionStage<Void> setCacheDisabled(boolean cacheDisabled) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheDisabled", CdpObject.json(cacheDisabled));
-            return client.call("Network.setCacheDisabled", params, result_ -> null);
+            return client.call("Network.setCacheDisabled", params);
         }
         /**
          * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
@@ -14354,7 +14526,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCacheDisabled(SetCacheDisabledRequest request) {
-            return client.call("Network.setCacheDisabled", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setCacheDisabled", request == null ? null : request.toMap());
         }
         /**
          * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
@@ -14415,7 +14587,7 @@ public final class Network {
         public CompletionStage<Void> setCookies(java.util.List<Network.CookieParam> cookies) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("cookies", CdpObject.json(cookies));
-            return client.call("Network.setCookies", params, result_ -> null);
+            return client.call("Network.setCookies", params);
         }
         /**
          * Sets given cookies.
@@ -14423,7 +14595,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(SetCookiesRequest request) {
-            return client.call("Network.setCookies", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setCookies", request == null ? null : request.toMap());
         }
         /**
          * Specifies whether to always send extra HTTP headers with the requests from this page.
@@ -14433,7 +14605,7 @@ public final class Network {
         public CompletionStage<Void> setExtraHTTPHeaders(java.util.Map<String, Object> headers) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("headers", CdpObject.json(headers));
-            return client.call("Network.setExtraHTTPHeaders", params, result_ -> null);
+            return client.call("Network.setExtraHTTPHeaders", params);
         }
         /**
          * Specifies whether to always send extra HTTP headers with the requests from this page.
@@ -14441,7 +14613,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setExtraHTTPHeaders(SetExtraHTTPHeadersRequest request) {
-            return client.call("Network.setExtraHTTPHeaders", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setExtraHTTPHeaders", request == null ? null : request.toMap());
         }
         /**
          * Specifies whether to attach a page script stack id in requests
@@ -14452,7 +14624,7 @@ public final class Network {
         public CompletionStage<Void> setAttachDebugStack(boolean enabled) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
-            return client.call("Network.setAttachDebugStack", params, result_ -> null);
+            return client.call("Network.setAttachDebugStack", params);
         }
         /**
          * Specifies whether to attach a page script stack id in requests
@@ -14461,7 +14633,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttachDebugStack(SetAttachDebugStackRequest request) {
-            return client.call("Network.setAttachDebugStack", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setAttachDebugStack", request == null ? null : request.toMap());
         }
         /**
          * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
@@ -14474,7 +14646,7 @@ public final class Network {
         public CompletionStage<Void> setRequestInterception(java.util.List<Network.RequestPattern> patterns) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("patterns", CdpObject.json(patterns));
-            return client.call("Network.setRequestInterception", params, result_ -> null);
+            return client.call("Network.setRequestInterception", params);
         }
         /**
          * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
@@ -14485,7 +14657,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> setRequestInterception(SetRequestInterceptionRequest request) {
-            return client.call("Network.setRequestInterception", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setRequestInterception", request == null ? null : request.toMap());
         }
         /**
          * Allows overriding user agent with the given string.
@@ -14501,7 +14673,7 @@ public final class Network {
             acceptLanguage.ifPresent(value_ -> params.put("acceptLanguage", CdpObject.json(value_)));
             platform.ifPresent(value_ -> params.put("platform", CdpObject.json(value_)));
             userAgentMetadata.ifPresent(value_ -> params.put("userAgentMetadata", CdpObject.json(value_)));
-            return client.call("Network.setUserAgentOverride", params, result_ -> null);
+            return client.call("Network.setUserAgentOverride", params);
         }
         /**
          * Allows overriding user agent with the given string.
@@ -14517,7 +14689,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setUserAgentOverride(SetUserAgentOverrideRequest request) {
-            return client.call("Network.setUserAgentOverride", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setUserAgentOverride", request == null ? null : request.toMap());
         }
         /**
          * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
@@ -14576,7 +14748,7 @@ public final class Network {
         public CompletionStage<Void> enableReportingApi(boolean enable) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
-            return client.call("Network.enableReportingApi", params, result_ -> null);
+            return client.call("Network.enableReportingApi", params);
         }
         /**
          * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
@@ -14585,7 +14757,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enableReportingApi(EnableReportingApiRequest request) {
-            return client.call("Network.enableReportingApi", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.enableReportingApi", request == null ? null : request.toMap());
         }
         /**
          * Sets up tracking device bound sessions and fetching of initial set of sessions.
@@ -14596,7 +14768,7 @@ public final class Network {
         public CompletionStage<Void> enableDeviceBoundSessions(boolean enable) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
-            return client.call("Network.enableDeviceBoundSessions", params, result_ -> null);
+            return client.call("Network.enableDeviceBoundSessions", params);
         }
         /**
          * Sets up tracking device bound sessions and fetching of initial set of sessions.
@@ -14605,7 +14777,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enableDeviceBoundSessions(EnableDeviceBoundSessionsRequest request) {
-            return client.call("Network.enableDeviceBoundSessions", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.enableDeviceBoundSessions", request == null ? null : request.toMap());
         }
         /**
          * Deletes a device bound session.
@@ -14616,7 +14788,7 @@ public final class Network {
         public CompletionStage<Void> deleteDeviceBoundSession(Network.DeviceBoundSessionKey key) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("key", CdpObject.json(key));
-            return client.call("Network.deleteDeviceBoundSession", params, result_ -> null);
+            return client.call("Network.deleteDeviceBoundSession", params);
         }
         /**
          * Deletes a device bound session.
@@ -14625,7 +14797,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteDeviceBoundSession(DeleteDeviceBoundSessionRequest request) {
-            return client.call("Network.deleteDeviceBoundSession", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.deleteDeviceBoundSession", request == null ? null : request.toMap());
         }
         /**
          * Fetches the schemeful site for a specific origin.
@@ -14690,7 +14862,7 @@ public final class Network {
         public CompletionStage<Void> setCookieControls(boolean enableThirdPartyCookieRestriction) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enableThirdPartyCookieRestriction", CdpObject.json(enableThirdPartyCookieRestriction));
-            return client.call("Network.setCookieControls", params, result_ -> null);
+            return client.call("Network.setCookieControls", params);
         }
         /**
          * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
@@ -14699,7 +14871,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookieControls(SetCookieControlsRequest request) {
-            return client.call("Network.setCookieControls", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Network.setCookieControls", request == null ? null : request.toMap());
         }
         /**
          * Fired when data chunk was received over the network.

@@ -11,6 +11,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.test.LocalTestServer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -29,8 +30,8 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
                                 + "setTimeout(function() { window.resizeTo(420, 320); }, 80);"
                                 + "</script></body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<Rectangle2D> latestBounds = new AtomicReference<>();
-            AtomicReference<WebView> popupRef = new AtomicReference<>();
+            AtomicReference<@Nullable Rectangle2D> latestBounds = new AtomicReference<>();
+            AtomicReference<@Nullable WebView> popupRef = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = new WebView();
@@ -71,8 +72,8 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
                                 + "setTimeout(function() { window.resizeTo(520, 410); }, 200);"
                                 + "</script></body></html>"))) {
             WebView view = createAttachedWebView();
-            AtomicReference<Rectangle2D> latestBounds = new AtomicReference<>();
-            AtomicReference<WebView> popupRef = new AtomicReference<>();
+            AtomicReference<@Nullable Rectangle2D> latestBounds = new AtomicReference<>();
+            AtomicReference<@Nullable WebView> popupRef = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = new WebView();

@@ -2,7 +2,6 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -37,7 +36,7 @@ public interface CefCookieVisitor extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:136</a>
      */
-    default boolean visit(@Nonnull CefCookie cookie, int count, int total, int[] deleteCookie) {
+    default boolean visit(CefCookie cookie, int count, int total, int[] deleteCookie) {
         return false;
     }
     /**
@@ -54,7 +53,7 @@ public interface CefCookieVisitor extends CefClientHandler {
         }
 
         @Override
-        public boolean visit(@Nonnull CefCookie cookie, int count, int total, int[] deleteCookie) {
+        public boolean visit(CefCookie cookie, int count, int total, int[] deleteCookie) {
             for (CefCookieVisitor d : delegates) {
                 if (d.visit(cookie, count, total, deleteCookie)) return true;
             }

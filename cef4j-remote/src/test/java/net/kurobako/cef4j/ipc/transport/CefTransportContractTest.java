@@ -88,63 +88,78 @@ public abstract class CefTransportContractTest {
 
     @Test
     void largeMessageRoundTrips() throws Exception {
+        try (Pair p = newPair()) {
+            assertLargeMessage(p.a, p.b);
+            assertLargeMessage(p.b, p.a);
+        }
+    }
+
+    private static void assertLargeMessage(CefTransport sender, CefTransport receiver) throws Exception {
         byte[] payload = new byte[2 * 1024 * 1024];
         new Random(42).nextBytes(payload);
-        try (Pair p = newPair()) {
-            CountDownLatch arrived = new CountDownLatch(1);
-            byte[][] received = new byte[1][];
-            p.b.onReceive(f -> {
-                received[0] = drain(f);
-                arrived.countDown();
-            });
-            p.a.send(ByteBuffer.wrap(payload));
-            assertThat(arrived.await(30, TimeUnit.SECONDS)).isTrue();
-            assertThat(received[0]).isEqualTo(payload);
-        }
+        CountDownLatch arrived = new CountDownLatch(1);
+        byte[][] received = new byte[1][];
+        receiver.onReceive(f -> {
+            received[0] = drain(f);
+            arrived.countDown();
+        });
+        sender.send(ByteBuffer.wrap(payload));
+        assertThat(arrived.await(30, TimeUnit.SECONDS)).isTrue();
+        assertThat(received[0]).isEqualTo(payload);
     }
 
     @Test
     void manyMessagesPreserveOrder() throws Exception {
-        int n = 1000;
         try (Pair p = newPair()) {
-            ConcurrentLinkedQueue<Integer> received = new ConcurrentLinkedQueue<>();
-            CountDownLatch done = new CountDownLatch(n);
-            p.b.onReceive(f -> {
-                ByteBuffer view = f.duplicate();
-                received.add(view.getInt());
-                done.countDown();
-            });
-            for (int i = 0; i < n; i++) {
-                ByteBuffer m = ByteBuffer.allocate(4).putInt(i);
-                m.flip();
-                p.a.send(m);
-            }
-            assertThat(done.await(30, TimeUnit.SECONDS))
-                    .as("all %d frames received", n)
-                    .isTrue();
-            List<Integer> got = new ArrayList<>(received);
-            for (int i = 0; i < n; i++) {
-                assertThat(got.get(i)).as("frame %d", i).isEqualTo(i);
-            }
+            assertOrderedDelivery(p.a, p.b);
+            assertOrderedDelivery(p.b, p.a);
+        }
+    }
+
+    private static void assertOrderedDelivery(CefTransport sender, CefTransport receiver) throws Exception {
+        int n = 1000;
+        ConcurrentLinkedQueue<Integer> received = new ConcurrentLinkedQueue<>();
+        CountDownLatch done = new CountDownLatch(n);
+        receiver.onReceive(f -> {
+            ByteBuffer view = f.duplicate();
+            received.add(view.getInt());
+            done.countDown();
+        });
+        for (int i = 0; i < n; i++) {
+            ByteBuffer m = ByteBuffer.allocate(4).putInt(i);
+            m.flip();
+            sender.send(m);
+        }
+        assertThat(done.await(30, TimeUnit.SECONDS))
+                .as("all %d frames received", n)
+                .isTrue();
+        List<Integer> got = new ArrayList<>(received);
+        for (int i = 0; i < n; i++) {
+            assertThat(got.get(i)).as("frame %d", i).isEqualTo(i);
         }
     }
 
     @Test
     void framesArrivingBeforeReceiverIsRegisteredAreBuffered() throws Exception {
         try (Pair p = newPair()) {
-            p.a.send(buf("one"));
-            p.a.send(buf("two"));
-            p.a.send(buf("three"));
-
-            ConcurrentLinkedQueue<String> received = new ConcurrentLinkedQueue<>();
-            CountDownLatch done = new CountDownLatch(3);
-            p.b.onReceive(f -> {
-                received.add(new String(drain(f), StandardCharsets.UTF_8));
-                done.countDown();
-            });
-            assertThat(done.await(30, TimeUnit.SECONDS)).isTrue();
-            assertThat(received).containsExactly("one", "two", "three");
+            assertBufferedUntilRegistered(p.a, p.b);
+            assertBufferedUntilRegistered(p.b, p.a);
         }
+    }
+
+    private static void assertBufferedUntilRegistered(CefTransport sender, CefTransport receiver) throws Exception {
+        sender.send(buf("one"));
+        sender.send(buf("two"));
+        sender.send(buf("three"));
+
+        ConcurrentLinkedQueue<String> received = new ConcurrentLinkedQueue<>();
+        CountDownLatch done = new CountDownLatch(3);
+        receiver.onReceive(f -> {
+            received.add(new String(drain(f), StandardCharsets.UTF_8));
+            done.countDown();
+        });
+        assertThat(done.await(30, TimeUnit.SECONDS)).isTrue();
+        assertThat(received).containsExactly("one", "two", "three");
     }
 
     @Test

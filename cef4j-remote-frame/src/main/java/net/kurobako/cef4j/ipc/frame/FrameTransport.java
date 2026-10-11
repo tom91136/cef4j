@@ -1,9 +1,8 @@
 package net.kurobako.cef4j.ipc.frame;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Per-browser pixel-frame channel, independent of the storage or network mechanism used to deliver pixels.
@@ -41,11 +40,11 @@ public interface FrameTransport extends AutoCloseable {
     @FunctionalInterface
     interface FrameConsumer {
         /** Fires once per delivered paint on a transport-owned thread. */
-        void accept(int width, int height, @Nonnull ByteBuffer pixels, @Nonnull FrameMetadata meta);
+        void accept(int width, int height, ByteBuffer pixels, FrameMetadata meta);
     }
 
     @FunctionalInterface
     interface RawFrameConsumer {
-        void accept(@Nonnull RawFrame frame);
+        void accept(RawFrame frame);
     }
 }

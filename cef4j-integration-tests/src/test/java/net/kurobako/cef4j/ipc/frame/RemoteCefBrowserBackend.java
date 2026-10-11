@@ -14,7 +14,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
@@ -31,11 +30,11 @@ import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.jspecify.annotations.Nullable;
 
 public final class RemoteCefBrowserBackend implements BrowserBackend {
 
     @Override
-    @Nonnull
     public String name() {
         return BrowserBackend.IPC_NAME;
     }
@@ -47,14 +46,12 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
     }
 
     @Override
-    @Nonnull
     public Set<Capability> capabilities() {
         return java.util.Collections.singleton(Capability.VIEWPORT_RESIZE);
     }
 
     @Override
-    @Nonnull
-    public BrowserSession openSession(@Nonnull SessionConfig config) {
+    public BrowserSession openSession(SessionConfig config) {
         try {
             return new IpcSession(config);
         } catch (Exception e) {
@@ -154,15 +151,13 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+        public CompletableFuture<Void> loadUrl(String url) {
             return navigation.load(
                     url, navigationTimeout, () -> browser.getMainFrame().thenCompose(frame -> frame.loadUrl(url)));
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+        public CompletableFuture<String> evaluateJavascript(String script) {
             return browser.getMainFrame()
                     .thenCompose(frame -> session.request(
                                     new EvaluateJavascriptRequest(frame.handle(), script, false),
@@ -178,15 +173,13 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
-        public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+        public PaintInfo awaitNextPaint(Duration timeout) throws InterruptedException, TimeoutException {
             PaintInfo p = paintQueue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (p == null) throw new TimeoutException("no paint within " + timeout);
             return p;
         }
 
         @Override
-        @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
             return session.request(
                             new SetViewportSizeRequest(browserHandle, width, height), SetViewportSizeResponse.DECODER)
@@ -205,8 +198,8 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         }
     }
 
-    @javax.annotation.Nullable
-    private static RuntimeException close(@javax.annotation.Nullable RuntimeException failure, AutoCloseable resource) {
+    @Nullable
+    private static RuntimeException close(@Nullable RuntimeException failure, AutoCloseable resource) {
         try {
             resource.close();
         } catch (Exception cleanupFailure) {
@@ -219,13 +212,13 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         return failure;
     }
 
-    public static RuntimeServerProcess launchServer(
-            @Nonnull Path serverBinary, @Nonnull Path cefResources, @Nonnull Duration timeout) throws IOException {
+    public static RuntimeServerProcess launchServer(Path serverBinary, Path cefResources, Duration timeout)
+            throws IOException {
         return RuntimeServerProcess.spawn(
                 serverBinary, "zmq", "tcp://127.0.0.1:0", "shared-file", timeout, runtimeEnvironment(cefResources));
     }
 
-    public static Map<String, String> runtimeEnvironment(@Nonnull Path cefRuntime) {
+    public static Map<String, String> runtimeEnvironment(Path cefRuntime) {
         Map<String, String> environment = new LinkedHashMap<>();
         String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
         if (os.contains("win")) {

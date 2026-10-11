@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for {@link net.kurobako.cef4j.gen.CefRequestContext#resolveHost(String, CefResolveCallback)}.
@@ -40,7 +39,7 @@ public interface CefResolveCallback extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:59</a>
      */
-    default void onResolveCompleted(@Nonnull CefErrorCode result, @Nullable List<String> resolvedIps) {}
+    default void onResolveCompleted(CefErrorCode result, @Nullable List<String> resolvedIps) {}
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
@@ -55,7 +54,7 @@ public interface CefResolveCallback extends CefClientHandler {
         }
 
         @Override
-        public void onResolveCompleted(@Nonnull CefErrorCode result, @Nullable List<String> resolvedIps) {
+        public void onResolveCompleted(CefErrorCode result, @Nullable List<String> resolvedIps) {
             for (CefResolveCallback d : delegates) d.onResolveCompleted(result, resolvedIps);
         }
     }

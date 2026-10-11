@@ -331,6 +331,11 @@ jobs:
             exit 1
           }
 
+      - name: Check native naming
+        if: ${{ success() && matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}
+        shell: bash
+        run: bash .github/ci/clang-tidy.sh
+
       - name: Verify checked-in generated sources
         if: ${{ success() && matrix.os.label == 'Linux x64' && matrix.cef.api == '150' }}
         shell: bash
@@ -377,9 +382,11 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: java-coverage
-          path: '**/target/site/jacoco/**'
+          path: |
+            **/target/site/jacoco/**
+            cef4j-integration-tests/target/site/jacoco-aggregate/**
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
 
   consumer:
     name: Consumer examples

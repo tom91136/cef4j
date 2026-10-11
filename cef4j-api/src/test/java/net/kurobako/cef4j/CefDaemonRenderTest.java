@@ -12,12 +12,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestTempDirs;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -72,7 +71,7 @@ class CefDaemonRenderTest {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -83,10 +82,10 @@ class CefDaemonRenderTest {
                     @Override
                     public void onPaint(
                             @Nullable CefBrowser browser,
-                            @Nonnull CefPaintElementType type,
+                            CefPaintElementType type,
                             long dirtyRectsCount,
-                            @Nonnull CefRect[] dirtyRects,
-                            @Nonnull ByteBuffer buffer,
+                            CefRect[] dirtyRects,
+                            ByteBuffer buffer,
                             int width,
                             int height) {
                         if (!firstPaint.isDone()) {
@@ -305,7 +304,7 @@ class CefDaemonRenderTest {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -313,8 +312,7 @@ class CefDaemonRenderTest {
                     }
 
                     @Override
-                    public boolean getScreenInfo(
-                            @Nullable CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
+                    public boolean getScreenInfo(@Nullable CefBrowser browser, CefScreenInfo.Mutable screenInfo) {
                         screenInfo.deviceScaleFactor = 1.0f;
                         screenInfo.depth = 32;
                         screenInfo.depthPerComponent = 8;
@@ -326,10 +324,10 @@ class CefDaemonRenderTest {
                     @Override
                     public void onPaint(
                             @Nullable CefBrowser browser,
-                            @Nonnull CefPaintElementType type,
+                            CefPaintElementType type,
                             long dirtyRectsCount,
-                            @Nonnull CefRect[] dirtyRects,
-                            @Nonnull ByteBuffer buffer,
+                            CefRect[] dirtyRects,
+                            ByteBuffer buffer,
                             int width,
                             int height) {
                         if (!paintFuture.isDone() && width == viewWidth && height == viewHeight) {

@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -239,8 +238,8 @@ public final class Autofill {
         AUTOFILLINFERRED("autofillInferred");
         public final String value;
         FillingStrategy(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static FillingStrategy of(@Nonnull String value) {
+        public String value() { return value; }
+        public static FillingStrategy of(String value) {
             for (FillingStrategy constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -413,21 +412,24 @@ public final class Autofill {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Autofill.CreditCard> card() {
-            return Optional.ofNullable(raw("card") == null ? null : Autofill.CreditCard.fromMap(java.util.Objects.requireNonNull(objectMap(raw("card")))));
+            Object value = raw("card");
+            return Optional.ofNullable(value == null ? null : Autofill.CreditCard.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Autofill.Address> address() {
-            return Optional.ofNullable(raw("address") == null ? null : Autofill.Address.fromMap(java.util.Objects.requireNonNull(objectMap(raw("address")))));
+            Object value = raw("address");
+            return Optional.ofNullable(value == null ? null : Autofill.Address.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifies a field that serves as an anchor for autofill.
@@ -586,7 +588,7 @@ public final class Autofill {
             frameId.ifPresent(value_ -> params.put("frameId", CdpObject.json(value_)));
             card.ifPresent(value_ -> params.put("card", CdpObject.json(value_)));
             address.ifPresent(value_ -> params.put("address", CdpObject.json(value_)));
-            return client.call("Autofill.trigger", params, result_ -> null);
+            return client.call("Autofill.trigger", params);
         }
         /**
          * Trigger autofill on a form identified by the fieldId. If the field and related form cannot be autofilled, returns an error.
@@ -602,7 +604,7 @@ public final class Autofill {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trigger(TriggerRequest request) {
-            return client.call("Autofill.trigger", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Autofill.trigger", request == null ? null : request.toMap());
         }
         /**
          * Set addresses so that developers can verify their forms implementation.
@@ -612,7 +614,7 @@ public final class Autofill {
         public CompletionStage<Void> setAddresses(java.util.List<Autofill.Address> addresses) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("addresses", CdpObject.json(addresses));
-            return client.call("Autofill.setAddresses", params, result_ -> null);
+            return client.call("Autofill.setAddresses", params);
         }
         /**
          * Set addresses so that developers can verify their forms implementation.
@@ -620,21 +622,21 @@ public final class Autofill {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAddresses(SetAddressesRequest request) {
-            return client.call("Autofill.setAddresses", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Autofill.setAddresses", request == null ? null : request.toMap());
         }
         /**
          * Disables autofill domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Autofill.disable", null, result_ -> null);
+            return client.call("Autofill.disable", null);
         }
         /**
          * Enables autofill domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Autofill.enable", null, result_ -> null);
+            return client.call("Autofill.enable", null);
         }
         /**
          * Emitted when an address form is filled.

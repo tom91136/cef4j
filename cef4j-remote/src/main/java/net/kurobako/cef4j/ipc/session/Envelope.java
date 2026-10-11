@@ -2,7 +2,6 @@ package net.kurobako.cef4j.ipc.session;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import javax.annotation.Nonnull;
 
 /**
  * Codec for the 14-byte fixed envelope that prefixes every IPC frame.
@@ -76,8 +75,7 @@ public final class Envelope {
      * buffer's byte order is preserved on return; bytes are always written in little-endian regardless of the caller's
      * setting.
      */
-    public static void writeHeader(
-            @Nonnull ByteBuffer dst, @Nonnull Kind kind, int flags, int corrId, int messageId, int payloadLength) {
+    public static void writeHeader(ByteBuffer dst, Kind kind, int flags, int corrId, int messageId, int payloadLength) {
         if (payloadLength < 0) throw new IllegalArgumentException("payloadLength must be >= 0, got " + payloadLength);
         if ((flags & ~0xFF) != 0)
             throw new IllegalArgumentException("flags must fit in a byte, got 0x" + Integer.toHexString(flags));
@@ -102,8 +100,7 @@ public final class Envelope {
      * Read a header from {@code src} starting at its current position. Advances position by {@link #HEADER_SIZE}. The
      * buffer's byte order is preserved on return.
      */
-    @Nonnull
-    public static Header readHeader(@Nonnull ByteBuffer src) {
+    public static Header readHeader(ByteBuffer src) {
         if (src.remaining() < HEADER_SIZE) {
             throw new IllegalArgumentException(
                     "buffer has " + src.remaining() + " bytes remaining, need " + HEADER_SIZE);

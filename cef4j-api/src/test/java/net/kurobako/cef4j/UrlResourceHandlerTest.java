@@ -32,7 +32,7 @@ class UrlResourceHandlerTest {
     }
 
     @Test
-    void closesStreamAtEof() throws Exception {
+    void closesStreamAtEof() {
         CloseTrackingStream stream = new CloseTrackingStream(new byte[] {1});
         UrlResourceHandler handler = handler(stream);
 
@@ -46,7 +46,7 @@ class UrlResourceHandlerTest {
     }
 
     @Test
-    void closesStreamAfterReadFailure() throws Exception {
+    void closesStreamAfterReadFailure() {
         CloseTrackingStream stream = new CloseTrackingStream(new byte[] {1}) {
             @Override
             public int read(byte[] bytes) throws IOException {
@@ -63,7 +63,7 @@ class UrlResourceHandlerTest {
     }
 
     @Test
-    void closesPreviousStreamBeforeReopenAndClosesOnCancel() throws Exception {
+    void closesPreviousStreamBeforeReopenAndClosesOnCancel() {
         CloseTrackingStream first = new CloseTrackingStream(new byte[] {1});
         CloseTrackingStream second = new CloseTrackingStream(new byte[] {2});
         AtomicInteger opens = new AtomicInteger();

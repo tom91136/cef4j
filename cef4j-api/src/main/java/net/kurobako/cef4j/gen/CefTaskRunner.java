@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class that asynchronously executes tasks on the associated thread. It is safe to call the methods of this class on
@@ -59,7 +58,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:101</a>
      */
-    boolean belongsToThread(@Nonnull CefThreadId threadId);
+    boolean belongsToThread(CefThreadId threadId);
 
     /**
      * Post a task for execution on the thread associated with this task runner. Execution will occur asynchronously.
@@ -109,7 +108,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:82</a>
      */
-    static Optional<CefTaskRunner> getForThread(@Nonnull CefThreadId threadId) {
+    static Optional<CefTaskRunner> getForThread(CefThreadId threadId) {
         return Optional.ofNullable(NativePeer.getForThread0(threadId));
     }
 
@@ -170,7 +169,7 @@ public interface CefTaskRunner extends CefLibraryObject {
         }
 
         @Override
-        public boolean belongsToThread(@Nonnull CefThreadId threadId) {
+        public boolean belongsToThread(CefThreadId threadId) {
             checkNotClosed();
             return belongsToThread0(nativePtr, threadId);
         }
@@ -191,7 +190,7 @@ public interface CefTaskRunner extends CefLibraryObject {
 
         static native boolean belongsToCurrentThread0(long self);
 
-        static native boolean belongsToThread0(long self, @Nonnull CefThreadId threadId);
+        static native boolean belongsToThread0(long self, CefThreadId threadId);
 
         static native boolean postTask0(long self, @Nullable CefTask task);
 
@@ -199,10 +198,10 @@ public interface CefTaskRunner extends CefLibraryObject {
 
         static native CefTaskRunner getForCurrentThread0();
 
-        static native CefTaskRunner getForThread0(@Nonnull CefThreadId threadId);
+        static native CefTaskRunner getForThread0(CefThreadId threadId);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

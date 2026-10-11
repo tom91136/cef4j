@@ -16,9 +16,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 @NullableBoundary("HttpURLConnection uses null for absent response metadata and error streams")
 final class CefHttpURLConnection extends HttpURLConnection implements AutoCloseable {
@@ -36,14 +35,13 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     private final ByteArrayOutputStream reqBody = new ByteArrayOutputStream();
     private volatile Attempt attempt;
 
-    @Nullable
-    private volatile CefHttpEngine.Cancellation cancellation;
+    private volatile CefHttpEngine.@Nullable Cancellation cancellation;
 
     private Map<String, List<String>> requestHeaders = Map.of();
     private String requestMethod = "GET";
     private byte[] requestBody = new byte[0];
 
-    CefHttpURLConnection(@Nonnull URL url, @Nonnull CefHttpEngine engine) {
+    CefHttpURLConnection(URL url, CefHttpEngine engine) {
         this(
                 url,
                 engine,
@@ -52,7 +50,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
                 DEFAULT_MAX_BUFFERED_RESPONSE_CHUNKS);
     }
 
-    CefHttpURLConnection(@Nonnull URL url, @Nonnull CefHttpEngine engine, int maxRequestBodyBytes) {
+    CefHttpURLConnection(URL url, CefHttpEngine engine, int maxRequestBodyBytes) {
         this(
                 url,
                 engine,
@@ -62,8 +60,8 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     CefHttpURLConnection(
-            @Nonnull URL url,
-            @Nonnull CefHttpEngine engine,
+            URL url,
+            CefHttpEngine engine,
             int maxRequestBodyBytes,
             int maxBufferedResponseBytes,
             int maxBufferedResponseChunks) {
@@ -227,7 +225,6 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     @Override
-    @Nonnull
     public OutputStream getOutputStream() throws IOException {
         if (connected) throw new ProtocolException("Cannot write after connect");
         if (!doOutput) throw new ProtocolException("setDoOutput(true) required before getOutputStream");
@@ -235,7 +232,6 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     @Override
-    @Nonnull
     public InputStream getInputStream() throws IOException {
         awaitResponse();
         Attempt current = attempt;
@@ -312,7 +308,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
             return true;
         }
 
-        private byte[] take(int timeoutMillis) throws InterruptedException {
+        private byte @Nullable [] take(int timeoutMillis) throws InterruptedException {
             byte[] chunk = timeoutMillis > 0 ? chunks.poll(timeoutMillis, TimeUnit.MILLISECONDS) : chunks.take();
             if (chunk != null && chunk != EOF) {
                 synchronized (this) {
@@ -368,7 +364,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         }
 
         @Override
-        public void onResponse(int status, @Nonnull String statusText0, @Nonnull Map<String, List<String>> headers) {
+        public void onResponse(int status, String statusText0, Map<String, List<String>> headers) {
             target.statusCode = status;
             target.statusText = statusText0;
             target.responseHeaders = Map.copyOf(headers);
@@ -376,7 +372,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         }
 
         @Override
-        public void onData(@Nonnull byte[] chunk) {
+        public void onData(byte[] chunk) {
             if (chunk.length > 0 && !target.offer(chunk)) cancel(target);
         }
 
@@ -386,7 +382,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         }
 
         @Override
-        public void onError(@Nonnull IOException err) {
+        public void onError(IOException err) {
             target.fail(err);
         }
     }
@@ -399,7 +395,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         }
 
         @Override
-        public void write(@Nonnull byte[] b, int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) throws IOException {
             checkCapacity(len);
             reqBody.write(b, off, len);
         }
@@ -430,20 +426,21 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         }
 
         @Override
-        public int read(@Nonnull byte[] b, int off, int len) throws IOException {
+        public int read(byte[] b, int off, int len) throws IOException {
             if (closed) throw new IOException("response body stream is closed");
             if (len == 0) return 0;
             if (eof) return -1;
             while (pos >= current.length) {
                 try {
                     int timeout = getReadTimeout();
-                    current = source.take(timeout);
-                    if (current == null) {
+                    byte[] next = source.take(timeout);
+                    if (next == null) {
                         SocketTimeoutException failure = new SocketTimeoutException("timed out reading response body");
                         source.fail(failure, true);
                         cancel(source);
                         throw failure;
                     }
+                    current = next;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new IOException("interrupted while reading body", e);

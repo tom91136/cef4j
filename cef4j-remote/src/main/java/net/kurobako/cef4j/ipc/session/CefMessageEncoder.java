@@ -1,7 +1,6 @@
 package net.kurobako.cef4j.ipc.session;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
 
 /** Writes one complete message payload into a destination buffer. */
 public interface CefMessageEncoder {
@@ -13,5 +12,5 @@ public interface CefMessageEncoder {
     int encodedSize();
 
     /** Append exactly {@link #encodedSize} bytes to {@code dst}, advancing its position. */
-    void encodeInto(@Nonnull ByteBuffer dst);
+    void encodeInto(ByteBuffer dst);
 }

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.transport;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +20,13 @@ public final class RecordingTransport implements CefTransport {
     private final CefTransport delegate;
     private final MessageLog.Writer log;
 
-    public RecordingTransport(@Nonnull CefTransport delegate, @Nonnull MessageLog.Writer log) {
+    public RecordingTransport(CefTransport delegate, MessageLog.Writer log) {
         this.delegate = delegate;
         this.log = log;
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         ByteBuffer view = frame.duplicate();
         byte[] copy = new byte[view.remaining()];
         view.get(copy);
@@ -40,7 +39,7 @@ public final class RecordingTransport implements CefTransport {
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+    public void onReceive(Consumer<ByteBuffer> handler) {
         delegate.onReceive(frame -> {
             ByteBuffer view = frame.duplicate();
             byte[] copy = new byte[view.remaining()];
@@ -56,7 +55,7 @@ public final class RecordingTransport implements CefTransport {
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable handler) {
+    public void onDisconnect(Runnable handler) {
         delegate.onDisconnect(handler);
     }
 

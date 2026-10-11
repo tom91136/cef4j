@@ -18,10 +18,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -49,7 +48,7 @@ class CefInteropTest extends CefTestBase {
 
         CountDownLatch createdLatch = new CountDownLatch(1);
         CountDownLatch loadEndLatch = new CountDownLatch(1);
-        AtomicReference<CefBrowser> browserRef = new AtomicReference<>();
+        AtomicReference<@Nullable CefBrowser> browserRef = new AtomicReference<>();
         AtomicInteger httpStatus = new AtomicInteger(-1);
 
         CefClient client = new CefClient() {
@@ -108,14 +107,14 @@ class CefInteropTest extends CefTestBase {
         CountDownLatch paintLatch = new CountDownLatch(1);
         AtomicInteger paintWidth = new AtomicInteger();
         AtomicInteger paintHeight = new AtomicInteger();
-        AtomicReference<byte[]> pixelBuffer = new AtomicReference<>();
+        AtomicReference<byte @Nullable []> pixelBuffer = new AtomicReference<>();
 
         CefClient client = new CefClient() {
             @Override
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -126,10 +125,10 @@ class CefInteropTest extends CefTestBase {
                     @Override
                     public void onPaint(
                             @Nullable CefBrowser browser,
-                            @Nonnull CefPaintElementType type,
+                            CefPaintElementType type,
                             long dirtyRectsCount,
-                            @Nonnull CefRect[] dirtyRects,
-                            @Nonnull ByteBuffer buffer,
+                            CefRect[] dirtyRects,
+                            ByteBuffer buffer,
                             int width,
                             int height) {
                         if (paintLatch.getCount() > 0) {
@@ -170,7 +169,7 @@ class CefInteropTest extends CefTestBase {
     void displayHandlerOnTitleChangeMarshalsString() throws Exception {
 
         CountDownLatch titleLatch = new CountDownLatch(1);
-        AtomicReference<String> receivedTitle = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedTitle = new AtomicReference<>();
 
         CefClient client = new CefClient() {
             @Override
@@ -305,8 +304,8 @@ class CefInteropTest extends CefTestBase {
     void displayHandlerConsoleMessageFromJavaScript() throws Exception {
 
         CountDownLatch consoleLatch = new CountDownLatch(1);
-        AtomicReference<String> consoleMsg = new AtomicReference<>();
-        AtomicReference<CefLogSeverity> consoleSeverity = new AtomicReference<>();
+        AtomicReference<@Nullable String> consoleMsg = new AtomicReference<>();
+        AtomicReference<@Nullable CefLogSeverity> consoleSeverity = new AtomicReference<>();
         CountDownLatch loadLatch = new CountDownLatch(1);
 
         CefClient client = new CefClient() {
@@ -606,7 +605,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(14)
-    void globalsStringUtilities() throws Exception {
+    void globalsStringUtilities() {
         assertThat(CefGlobals.getMimeType("html")).hasValue("text/html");
         assertThat(CefGlobals.getMimeType("json")).hasValue("application/json");
         assertThat(CefGlobals.getMimeType("png")).hasValue("image/png");
@@ -789,7 +788,7 @@ class CefInteropTest extends CefTestBase {
 
         CountDownLatch createdLatch = new CountDownLatch(1);
         CountDownLatch loadLatch = new CountDownLatch(1);
-        AtomicReference<CefKeyEvent> capturedEvent = new AtomicReference<>();
+        AtomicReference<@Nullable CefKeyEvent> capturedEvent = new AtomicReference<>();
         CountDownLatch keyLatch = new CountDownLatch(1);
 
         CefClient client = new CefClient() {
@@ -928,7 +927,7 @@ class CefInteropTest extends CefTestBase {
     @Order(27)
     void renderHandlerGetScreenInfoWithNestedRect() throws Exception {
         AtomicBoolean screenInfoCalled = new AtomicBoolean(false);
-        AtomicReference<CefScreenInfo.Mutable> captured = new AtomicReference<>();
+        AtomicReference<CefScreenInfo.@Nullable Mutable> captured = new AtomicReference<>();
         CountDownLatch paintLatch = new CountDownLatch(1);
 
         CefClient client = new CefClient() {
@@ -936,7 +935,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = 200;
@@ -944,8 +943,7 @@ class CefInteropTest extends CefTestBase {
                     }
 
                     @Override
-                    public boolean getScreenInfo(
-                            @Nullable CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
+                    public boolean getScreenInfo(@Nullable CefBrowser browser, CefScreenInfo.Mutable screenInfo) {
                         screenInfo.deviceScaleFactor = 2.0f;
                         screenInfo.depth = 32;
                         screenInfo.depthPerComponent = 8;
@@ -959,10 +957,10 @@ class CefInteropTest extends CefTestBase {
                     @Override
                     public void onPaint(
                             @Nullable CefBrowser browser,
-                            @Nonnull CefPaintElementType type,
+                            CefPaintElementType type,
                             long dirtyRectsCount,
-                            @Nonnull CefRect[] dirtyRects,
-                            @Nonnull ByteBuffer buffer,
+                            CefRect[] dirtyRects,
+                            ByteBuffer buffer,
                             int width,
                             int height) {
                         paintLatch.countDown();
@@ -1051,7 +1049,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = 200;
@@ -1061,10 +1059,10 @@ class CefInteropTest extends CefTestBase {
                     @Override
                     public void onPaint(
                             @Nullable CefBrowser browser,
-                            @Nonnull CefPaintElementType type,
+                            CefPaintElementType type,
                             long dirtyRectsCount,
-                            @Nonnull CefRect[] dirtyRects,
-                            @Nonnull java.nio.ByteBuffer buffer,
+                            CefRect[] dirtyRects,
+                            java.nio.ByteBuffer buffer,
                             int width,
                             int height) {
                         paintLatch.countDown();
@@ -1112,7 +1110,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(34)
-    void generatedSignaturesUseTypedMappings() throws Exception {
+    void generatedSignaturesUseTypedMappings() {
         Method popupMethod = findSingleMethod(CefLifeSpanHandler.class, "onBeforePopup");
         Class<?>[] popupParams = popupMethod.getParameterTypes();
         int popupFeaturesIndex = popupParams.length == 13 ? 7 : 6;
@@ -1167,22 +1165,21 @@ class CefInteropTest extends CefTestBase {
 
     @NullableBoundary("compatibility overloads mirror nullable generated CEF callbacks")
     static final class CompatibleKeyboardHandler implements CefKeyboardHandler {
-        private final AtomicReference<CefKeyEvent> capturedEvent;
+        private final AtomicReference<@Nullable CefKeyEvent> capturedEvent;
         private final CountDownLatch keyLatch;
 
-        CompatibleKeyboardHandler(AtomicReference<CefKeyEvent> capturedEvent, CountDownLatch keyLatch) {
+        CompatibleKeyboardHandler(AtomicReference<@Nullable CefKeyEvent> capturedEvent, CountDownLatch keyLatch) {
             this.capturedEvent = capturedEvent;
             this.keyLatch = keyLatch;
         }
 
         @SuppressWarnings("MissingOverride")
-        public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
+        public boolean onKeyEvent(@Nullable CefBrowser browser, CefKeyEvent event, long osEvent) {
             return capture(event);
         }
 
         @SuppressWarnings("MissingOverride")
-        public boolean onKeyEvent(
-                @Nullable CefBrowser browser, @Nonnull CefKeyEvent event, @Nullable NativePointer osEvent) {
+        public boolean onKeyEvent(@Nullable CefBrowser browser, CefKeyEvent event, @Nullable NativePointer osEvent) {
             return capture(event);
         }
 
@@ -1210,12 +1207,12 @@ class CefInteropTest extends CefTestBase {
                 int popupId,
                 @Nullable String targetUrl,
                 @Nullable String targetFrameName,
-                @Nonnull CefWindowOpenDisposition targetDisposition,
+                CefWindowOpenDisposition targetDisposition,
                 boolean userGesture,
                 @Nullable CefPopupFeatures popupFeatures,
-                @Nonnull CefWindowInfo.Mutable windowInfo,
+                CefWindowInfo.Mutable windowInfo,
                 @Nullable AtomicReference<CefClient> client,
-                @Nonnull CefBrowserSettings.Mutable settings,
+                CefBrowserSettings.Mutable settings,
                 @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                 int[] noJavascriptAccess) {
             return cancelPopup();
@@ -1227,12 +1224,12 @@ class CefInteropTest extends CefTestBase {
                 @Nullable CefFrame frame,
                 @Nullable String targetUrl,
                 @Nullable String targetFrameName,
-                @Nonnull CefWindowOpenDisposition targetDisposition,
+                CefWindowOpenDisposition targetDisposition,
                 boolean userGesture,
                 @Nullable CefPopupFeatures popupFeatures,
-                @Nonnull CefWindowInfo.Mutable windowInfo,
+                CefWindowInfo.Mutable windowInfo,
                 @Nullable AtomicReference<CefClient> client,
-                @Nonnull CefBrowserSettings.Mutable settings,
+                CefBrowserSettings.Mutable settings,
                 @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                 int[] noJavascriptAccess) {
             return cancelPopup();
@@ -1244,12 +1241,12 @@ class CefInteropTest extends CefTestBase {
                 @Nullable CefFrame frame,
                 @Nullable String targetUrl,
                 @Nullable String targetFrameName,
-                @Nonnull CefWindowOpenDisposition targetDisposition,
+                CefWindowOpenDisposition targetDisposition,
                 boolean userGesture,
                 @Nullable CefPopupFeatures popupFeatures,
-                @Nonnull CefWindowInfo.Mutable windowInfo,
+                CefWindowInfo.Mutable windowInfo,
                 @Nullable AtomicReference<CefClient> client,
-                @Nonnull CefBrowserSettings.Mutable settings,
+                CefBrowserSettings.Mutable settings,
                 int[] noJavascriptAccess) {
             return cancelPopup();
         }
@@ -1271,7 +1268,7 @@ class CefInteropTest extends CefTestBase {
         }
 
         @Override
-        public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+        public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
             rect.x = 0;
             rect.y = 0;
             rect.width = width;

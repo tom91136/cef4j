@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent drag data. The methods of this class may be called on any thread.
@@ -184,7 +183,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
      */
-    boolean getFileNames(@Nonnull List<String> names);
+    boolean getFileNames(List<String> names);
 
     /**
      * Retrieve the list of file paths that are being dragged into the browser window.
@@ -195,7 +194,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
      */
-    boolean getFilePaths(@Nonnull List<String> paths);
+    boolean getFilePaths(List<String> paths);
 
     /**
      * Set the link URL that is being dragged.
@@ -476,13 +475,13 @@ public interface CefDragData extends CefLibraryObject {
         }
 
         @Override
-        public boolean getFileNames(@Nonnull List<String> names) {
+        public boolean getFileNames(List<String> names) {
             checkNotClosed();
             return getFileNames0(nativePtr, names);
         }
 
         @Override
-        public boolean getFilePaths(@Nonnull List<String> paths) {
+        public boolean getFilePaths(List<String> paths) {
             checkNotClosed();
             return getFilePaths0(nativePtr, paths);
         }
@@ -585,9 +584,9 @@ public interface CefDragData extends CefLibraryObject {
 
         static native long getFileContents0(long self, @Nullable CefStreamWriter writer);
 
-        static native boolean getFileNames0(long self, @Nonnull List<String> names);
+        static native boolean getFileNames0(long self, List<String> names);
 
-        static native boolean getFilePaths0(long self, @Nonnull List<String> paths);
+        static native boolean getFilePaths0(long self, List<String> paths);
 
         static native void setLinkUrl0(long self, @Nullable String url);
 
@@ -616,7 +615,7 @@ public interface CefDragData extends CefLibraryObject {
         static native CefDragData create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

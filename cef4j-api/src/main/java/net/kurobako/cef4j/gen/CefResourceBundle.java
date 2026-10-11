@@ -3,7 +3,6 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -76,7 +75,7 @@ public interface CefResourceBundle extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
      */
-    Optional<CefBinaryValue> getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor);
+    Optional<CefBinaryValue> getDataResourceForScale(int resourceId, CefScaleFactor scaleFactor);
     /**
      * Returns the global resource bundle instance.
      *
@@ -147,7 +146,7 @@ public interface CefResourceBundle extends CefLibraryObject {
         }
 
         @Override
-        public Optional<CefBinaryValue> getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor) {
+        public Optional<CefBinaryValue> getDataResourceForScale(int resourceId, CefScaleFactor scaleFactor) {
             checkNotClosed();
             return Optional.ofNullable(getDataResourceForScale0(nativePtr, resourceId, scaleFactor));
         }
@@ -156,13 +155,12 @@ public interface CefResourceBundle extends CefLibraryObject {
 
         static native CefBinaryValue getDataResource0(long self, int resourceId);
 
-        static native CefBinaryValue getDataResourceForScale0(
-                long self, int resourceId, @Nonnull CefScaleFactor scaleFactor);
+        static native CefBinaryValue getDataResourceForScale0(long self, int resourceId, CefScaleFactor scaleFactor);
 
         static native CefResourceBundle getGlobal0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

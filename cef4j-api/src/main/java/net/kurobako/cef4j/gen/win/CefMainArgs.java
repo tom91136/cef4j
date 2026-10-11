@@ -33,7 +33,7 @@ public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMainArgs)) return false;
         CefMainArgs other = (CefMainArgs) obj;
@@ -74,7 +74,7 @@ public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;

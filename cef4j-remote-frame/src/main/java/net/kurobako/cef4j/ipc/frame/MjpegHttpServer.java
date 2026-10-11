@@ -28,9 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +50,8 @@ public final class MjpegHttpServer implements AutoCloseable {
     private final Object attachLock = new Object();
     private final Object sourceLock = new Object();
     private final AtomicBoolean closed = new AtomicBoolean();
-    private final AtomicReference<FrameTransport> source = new AtomicReference<>();
-    private final AtomicReference<byte[]> latestPart = new AtomicReference<>();
+    private final AtomicReference<@Nullable FrameTransport> source = new AtomicReference<>();
+    private final AtomicReference<byte @Nullable []> latestPart = new AtomicReference<>();
     private final Supplier<FrameCodec> codecFactory;
 
     @Nullable
@@ -116,21 +115,18 @@ public final class MjpegHttpServer implements AutoCloseable {
         }
     }
 
-    @Nonnull
-    public static MjpegHttpServer start(@Nonnull Configuration configuration) throws IOException {
+    public static MjpegHttpServer start(Configuration configuration) throws IOException {
         return new MjpegHttpServer(Objects.requireNonNull(configuration, "configuration"));
     }
 
-    @Nonnull
-    public static MjpegHttpServer start(@Nonnull Configuration configuration, @Nonnull Executor executor)
-            throws IOException {
+    public static MjpegHttpServer start(Configuration configuration, Executor executor) throws IOException {
         Objects.requireNonNull(configuration, "configuration");
         return new MjpegHttpServer(
                 configuration, codecFactory(configuration), Objects.requireNonNull(executor, "executor"));
     }
 
     /** Atomically swaps frame sources, useful when a supervised runtime server starts a new generation. */
-    public void attach(@Nonnull FrameTransport next) {
+    public void attach(FrameTransport next) {
         Objects.requireNonNull(next, "next");
         synchronized (attachLock) {
             if (closed.get()) throw new IllegalStateException("MJPEG server is closed");
@@ -196,7 +192,6 @@ public final class MjpegHttpServer implements AutoCloseable {
         }
     }
 
-    @Nonnull
     public URI endpoint() {
         InetSocketAddress bound = server.getAddress();
         String scheme = server instanceof HttpsServer ? "https" : "http";
@@ -413,8 +408,8 @@ public final class MjpegHttpServer implements AutoCloseable {
         private final Duration clientStallTimeout;
 
         public Configuration(
-                @Nonnull InetSocketAddress bindAddress,
-                @Nonnull String path,
+                InetSocketAddress bindAddress,
+                String path,
                 int backlog,
                 float quality,
                 boolean allowRemote,
@@ -448,8 +443,7 @@ public final class MjpegHttpServer implements AutoCloseable {
             this.clientStallTimeout = clientStallTimeout;
         }
 
-        @Nonnull
-        public Configuration withClientStallTimeout(@Nonnull Duration timeout) {
+        public Configuration withClientStallTimeout(Duration timeout) {
             return new Configuration(
                     bearerToken,
                     Objects.requireNonNull(timeout, "timeout"),
@@ -461,7 +455,6 @@ public final class MjpegHttpServer implements AutoCloseable {
                     sslContext);
         }
 
-        @Nonnull
         public static Configuration loopback(int port) {
             return new Configuration(
                     new InetSocketAddress(InetAddress.getLoopbackAddress(), port),

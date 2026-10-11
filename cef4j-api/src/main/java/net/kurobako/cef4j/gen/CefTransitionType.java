@@ -207,7 +207,7 @@ public final class CefTransitionType implements CefEnum<CefTransitionType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTransitionType)) return false;
         return this.value == ((CefTransitionType) obj).value;

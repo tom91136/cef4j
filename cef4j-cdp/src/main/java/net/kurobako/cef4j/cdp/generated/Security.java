@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,8 +28,8 @@ public final class Security {
     public static final class CertificateId implements CdpValue<Long> {
         public final long value;
         public CertificateId(long value) { this.value = value; }
-        @Nonnull public Long value() { return value; }
-        @Override public boolean equals(Object other) {
+        public Long value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof CertificateId)) return false;
             return value == ((CertificateId) other).value;
@@ -47,8 +46,8 @@ public final class Security {
         NONE("none");
         public final String value;
         MixedContentType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static MixedContentType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static MixedContentType of(String value) {
             for (MixedContentType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -67,8 +66,8 @@ public final class Security {
         INSECURE_BROKEN("insecure-broken");
         public final String value;
         SecurityState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SecurityState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SecurityState of(String value) {
             for (SecurityState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -104,7 +103,8 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyExchangeGroup() {
-            return Optional.ofNullable((String) raw("keyExchangeGroup"));
+            Object value = raw("keyExchangeGroup");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Cipher name.
@@ -118,7 +118,8 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> mac() {
-            return Optional.ofNullable((String) raw("mac"));
+            Object value = raw("mac");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Page certificate.
@@ -160,7 +161,8 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certificateNetworkError() {
-            return Optional.ofNullable((String) raw("certificateNetworkError"));
+            Object value = raw("certificateNetworkError");
+            return Optional.ofNullable((String) value);
         }
         /**
          * True if the certificate uses a weak signature algorithm.
@@ -410,8 +412,8 @@ public final class Security {
         LOOKALIKE("lookalike");
         public final String value;
         SafetyTipStatus(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SafetyTipStatus of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SafetyTipStatus of(String value) {
             for (SafetyTipStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -439,7 +441,8 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> safeUrl() {
-            return Optional.ofNullable((String) raw("safeUrl"));
+            Object value = raw("safeUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Describes whether the page triggers any safety tips or reputation warnings. Default is unknown.
@@ -491,14 +494,16 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.CertificateSecurityState> certificateSecurityState() {
-            return Optional.ofNullable(raw("certificateSecurityState") == null ? null : Security.CertificateSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(raw("certificateSecurityState")))));
+            Object value = raw("certificateSecurityState");
+            return Optional.ofNullable(value == null ? null : Security.CertificateSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The type of Safety Tip triggered on the page. Note that this field will be set even if the Safety Tip UI was not actually shown.
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.SafetyTipInfo> safetyTipInfo() {
-            return Optional.ofNullable(raw("safetyTipInfo") == null ? null : Security.SafetyTipInfo.fromMap(java.util.Objects.requireNonNull(objectMap(raw("safetyTipInfo")))));
+            Object value = raw("safetyTipInfo");
+            return Optional.ofNullable(value == null ? null : Security.SafetyTipInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Array of security state issues ids.
@@ -618,7 +623,8 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> recommendations() {
-            return Optional.ofNullable(list(raw("recommendations"), element0 -> (String) element0));
+            Object value = raw("recommendations");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Security state representing the severity of the factor being explained.
@@ -825,8 +831,8 @@ public final class Security {
         CANCEL("cancel");
         public final String value;
         CertificateErrorAction(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CertificateErrorAction of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CertificateErrorAction of(String value) {
             for (CertificateErrorAction constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1100,7 +1106,8 @@ public final class Security {
          */
         @Deprecated
         public Optional<String> summary() {
-            return Optional.ofNullable((String) raw("summary"));
+            Object value = raw("summary");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Security state.
@@ -1175,14 +1182,14 @@ public final class Security {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Security.disable", null, result_ -> null);
+            return client.call("Security.disable", null);
         }
         /**
          * Enables tracking security state changes.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Security.enable", null, result_ -> null);
+            return client.call("Security.enable", null);
         }
         /**
          * Enable/disable whether all certificate errors should be ignored.
@@ -1192,7 +1199,7 @@ public final class Security {
         public CompletionStage<Void> setIgnoreCertificateErrors(boolean ignore) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("ignore", CdpObject.json(ignore));
-            return client.call("Security.setIgnoreCertificateErrors", params, result_ -> null);
+            return client.call("Security.setIgnoreCertificateErrors", params);
         }
         /**
          * Enable/disable whether all certificate errors should be ignored.
@@ -1200,7 +1207,7 @@ public final class Security {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreCertificateErrors(SetIgnoreCertificateErrorsRequest request) {
-            return client.call("Security.setIgnoreCertificateErrors", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Security.setIgnoreCertificateErrors", request == null ? null : request.toMap());
         }
         /**
          * Handles a certificate error that fired a certificateError event.
@@ -1214,7 +1221,7 @@ public final class Security {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventId", CdpObject.json(eventId));
             params.put("action", CdpObject.json(action));
-            return client.call("Security.handleCertificateError", params, result_ -> null);
+            return client.call("Security.handleCertificateError", params);
         }
         /**
          * Handles a certificate error that fired a certificateError event.
@@ -1224,7 +1231,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> handleCertificateError(HandleCertificateErrorRequest request) {
-            return client.call("Security.handleCertificateError", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Security.handleCertificateError", request == null ? null : request.toMap());
         }
         /**
          * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
@@ -1236,7 +1243,7 @@ public final class Security {
         public CompletionStage<Void> setOverrideCertificateErrors(boolean override) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("override", CdpObject.json(override));
-            return client.call("Security.setOverrideCertificateErrors", params, result_ -> null);
+            return client.call("Security.setOverrideCertificateErrors", params);
         }
         /**
          * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
@@ -1246,7 +1253,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> setOverrideCertificateErrors(SetOverrideCertificateErrorsRequest request) {
-            return client.call("Security.setOverrideCertificateErrors", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Security.setOverrideCertificateErrors", request == null ? null : request.toMap());
         }
         /**
          * There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the {@code handleCertificateError} command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.

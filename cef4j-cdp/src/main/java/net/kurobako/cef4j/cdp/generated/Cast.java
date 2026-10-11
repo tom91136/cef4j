@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -51,7 +50,8 @@ public final class Cast {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> session() {
-            return Optional.ofNullable((String) raw("session"));
+            Object value = raw("session");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the name field.
@@ -105,7 +105,8 @@ public final class Cast {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> presentationUrl() {
-            return Optional.ofNullable((String) raw("presentationUrl"));
+            Object value = raw("presentationUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the presentationUrl field.
@@ -325,7 +326,7 @@ public final class Cast {
         public CompletionStage<Void> enable(Optional<String> presentationUrl) {
             Map<String, Object> params = new LinkedHashMap<>();
             presentationUrl.ifPresent(value_ -> params.put("presentationUrl", CdpObject.json(value_)));
-            return client.call("Cast.enable", params, result_ -> null);
+            return client.call("Cast.enable", params);
         }
         /**
          * Starts observing for sinks that can be used for tab mirroring, and if set, sinks compatible with |presentationUrl| as well. When sinks are found, a |sinksUpdated| event is fired. Also starts observing for issue messages. When an issue is added or removed, an |issueUpdated| event is fired.
@@ -340,14 +341,14 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Cast.enable", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Cast.enable", request == null ? null : request.toMap());
         }
         /**
          * Stops observing for sinks and issues.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Cast.disable", null, result_ -> null);
+            return client.call("Cast.disable", null);
         }
         /**
          * Sets a sink to be used when the web page requests the browser to choose a sink via Presentation API, Remote Playback API, or Cast SDK.
@@ -357,7 +358,7 @@ public final class Cast {
         public CompletionStage<Void> setSinkToUse(String sinkName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.setSinkToUse", params, result_ -> null);
+            return client.call("Cast.setSinkToUse", params);
         }
         /**
          * Sets a sink to be used when the web page requests the browser to choose a sink via Presentation API, Remote Playback API, or Cast SDK.
@@ -365,7 +366,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSinkToUse(SetSinkToUseRequest request) {
-            return client.call("Cast.setSinkToUse", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Cast.setSinkToUse", request == null ? null : request.toMap());
         }
         /**
          * Starts mirroring the desktop to the sink.
@@ -375,7 +376,7 @@ public final class Cast {
         public CompletionStage<Void> startDesktopMirroring(String sinkName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.startDesktopMirroring", params, result_ -> null);
+            return client.call("Cast.startDesktopMirroring", params);
         }
         /**
          * Starts mirroring the desktop to the sink.
@@ -383,7 +384,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startDesktopMirroring(StartDesktopMirroringRequest request) {
-            return client.call("Cast.startDesktopMirroring", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Cast.startDesktopMirroring", request == null ? null : request.toMap());
         }
         /**
          * Starts mirroring the tab to the sink.
@@ -393,7 +394,7 @@ public final class Cast {
         public CompletionStage<Void> startTabMirroring(String sinkName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.startTabMirroring", params, result_ -> null);
+            return client.call("Cast.startTabMirroring", params);
         }
         /**
          * Starts mirroring the tab to the sink.
@@ -401,7 +402,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTabMirroring(StartTabMirroringRequest request) {
-            return client.call("Cast.startTabMirroring", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Cast.startTabMirroring", request == null ? null : request.toMap());
         }
         /**
          * Stops the active Cast session on the sink.
@@ -411,7 +412,7 @@ public final class Cast {
         public CompletionStage<Void> stopCasting(String sinkName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.stopCasting", params, result_ -> null);
+            return client.call("Cast.stopCasting", params);
         }
         /**
          * Stops the active Cast session on the sink.
@@ -419,7 +420,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopCasting(StopCastingRequest request) {
-            return client.call("Cast.stopCasting", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Cast.stopCasting", request == null ? null : request.toMap());
         }
         /**
          * This is fired whenever the list of available sinks changes. A sink is a device or a software surface that you can cast to.

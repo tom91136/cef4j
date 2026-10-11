@@ -5,8 +5,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.webdriver.AutomationBackend;
 import net.kurobako.cef4j.webdriver.AutomationBackendFactory;
@@ -14,30 +12,30 @@ import net.kurobako.cef4j.webdriver.CdpAutomationBackend;
 import net.kurobako.cef4j.webdriver.JsonCdpBrowser;
 import net.kurobako.cef4j.webdriver.JsonObject;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
+import org.jspecify.annotations.Nullable;
 
 /** Adapts an owned in-process {@link CefBrowser} to the runtime-neutral WebDriver implementation. */
 public final class InProcessCefAutomationBackendFactory implements AutomationBackendFactory {
     private final InProcessBrowserRuntimeFactory runtimeFactory;
     private final WebDriverJsonCodec jsonCodec;
 
-    public InProcessCefAutomationBackendFactory(@Nonnull InProcessBrowserRuntimeFactory runtimeFactory) {
+    public InProcessCefAutomationBackendFactory(InProcessBrowserRuntimeFactory runtimeFactory) {
         this(runtimeFactory, WebDriverJsonCodec.installed());
     }
 
     public InProcessCefAutomationBackendFactory(
-            @Nonnull InProcessBrowserRuntimeFactory runtimeFactory, @Nonnull WebDriverJsonCodec jsonCodec) {
+            InProcessBrowserRuntimeFactory runtimeFactory, WebDriverJsonCodec jsonCodec) {
         this.runtimeFactory = Objects.requireNonNull(runtimeFactory, "runtimeFactory");
         this.jsonCodec = Objects.requireNonNull(jsonCodec, "jsonCodec");
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<? extends AutomationBackend> create(@Nonnull JsonObject requestedCapabilities) {
+    public CompletableFuture<? extends AutomationBackend> create(JsonObject requestedCapabilities) {
         return flatMap(
                 runtimeFactory.create(),
                 runtime -> flatMap(InProcessCdpBrowser.attach(runtime, jsonCodec), adapter -> {
-                    CompletableFuture<AutomationBackend> backend = flatMap(
-                            CdpAutomationBackend.create(adapter), value -> CompletableFuture.completedFuture(value));
+                    CompletableFuture<AutomationBackend> backend =
+                            flatMap(CdpAutomationBackend.create(adapter), CompletableFuture::completedFuture);
                     observeFailure(backend, failure -> adapter.close());
                     return backend;
                 }));
@@ -121,7 +119,7 @@ public final class InProcessCefAutomationBackendFactory implements AutomationBac
         }
 
         @Override
-        public CompletableFuture<byte[]> execute(String method, @Nullable byte[] params) {
+        public CompletableFuture<byte[]> execute(String method, byte @Nullable [] params) {
             return devTools.execute(method, params);
         }
 

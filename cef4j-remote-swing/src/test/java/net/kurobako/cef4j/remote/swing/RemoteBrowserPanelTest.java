@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
@@ -23,6 +22,7 @@ import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.test.DisplayLock;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -92,7 +92,7 @@ class RemoteBrowserPanelTest {
         panel.setSize(640, 480);
         panel.attach(session);
         session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
-        AtomicReference<CompletableFuture<Void>> resized = new AtomicReference<>();
+        AtomicReference<@Nullable CompletableFuture<Void>> resized = new AtomicReference<>();
 
         SwingUtilities.invokeAndWait(() -> {
             SwingUtilities.invokeLater(() -> panel.dispatchEvent(

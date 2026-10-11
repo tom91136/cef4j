@@ -37,7 +37,7 @@ class CefV144PlusInteropTest extends CefTestBase {
     }
 
     @Test
-    void renderHandlerOnAcceleratedPaintUsesTypedInfo() throws Exception {
+    void renderHandlerOnAcceleratedPaintUsesTypedInfo() {
         Method acceleratedPaintMethod = Arrays.stream(CefRenderHandler.class.getMethods())
                 .filter(method -> method.getName().equals("onAcceleratedPaint"))
                 .findFirst()

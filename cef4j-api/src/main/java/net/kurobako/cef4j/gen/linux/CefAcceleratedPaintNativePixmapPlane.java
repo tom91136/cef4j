@@ -23,7 +23,7 @@ public final class CefAcceleratedPaintNativePixmapPlane {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefAcceleratedPaintNativePixmapPlane)) return false;
         CefAcceleratedPaintNativePixmapPlane other = (CefAcceleratedPaintNativePixmapPlane) obj;

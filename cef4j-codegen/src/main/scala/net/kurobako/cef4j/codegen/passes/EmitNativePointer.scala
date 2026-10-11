@@ -31,7 +31,7 @@ public class NativePointer {
     public static NativePointer NULL = new NativePointer(0);
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof NativePointer)) return false;
         return this.address == ((NativePointer) obj).address;

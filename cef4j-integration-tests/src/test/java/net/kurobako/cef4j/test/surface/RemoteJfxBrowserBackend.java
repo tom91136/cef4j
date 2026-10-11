@@ -17,19 +17,18 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.remote.jfx.RemoteWebView;
 import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.jspecify.annotations.Nullable;
 
 final class RemoteJfxBrowserBackend implements BrowserBackend {
     private static final AtomicBoolean FX_STARTED = new AtomicBoolean();
 
     @Override
-    @Nonnull
     public String name() {
         return "remote-jfx";
     }
@@ -40,14 +39,12 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
     }
 
     @Override
-    @Nonnull
     public Set<Capability> capabilities() {
         return Collections.singleton(Capability.VIEWPORT_RESIZE);
     }
 
     @Override
-    @Nonnull
-    public BrowserSession openSession(@Nonnull SessionConfig config) {
+    public BrowserSession openSession(SessionConfig config) {
         try {
             startJavaFx();
             return new Session(config);
@@ -95,8 +92,8 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             this.width = config.width();
             this.height = config.height();
             this.navigationTimeout = config.startupTimeout();
-            AtomicReference<RemoteWebView> viewRef = new AtomicReference<>();
-            AtomicReference<Stage> stageRef = new AtomicReference<>();
+            AtomicReference<@Nullable RemoteWebView> viewRef = new AtomicReference<>();
+            AtomicReference<@Nullable Stage> stageRef = new AtomicReference<>();
             onFxThread(() -> {
                 RemoteWebView nextView = new RemoteWebView((session, browser) -> frames.bind(session));
                 // XXX: Remove the pre-attach resize when JavaFX no longer defers the first macOS stage pulse past
@@ -120,13 +117,11 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
                 closeSurface(failure);
                 throw failure;
             }
-            AtomicReference<RemoteHandle> handleRef = new AtomicReference<>();
+            AtomicReference<@Nullable RemoteHandle> handleRef = new AtomicReference<>();
             this.navigation = new RemoteNavigationProbe(runtime.session, handleRef::get);
             try {
                 view.attach(runtime.session);
-                onFxThread(() -> {
-                    stage.show();
-                });
+                onFxThread(stage::show);
                 handleRef.set(view.awaitBrowserHandle(config.startupTimeout()));
                 Objects.requireNonNull(handleRef.get(), "remote JavaFX browser");
                 if (!config.initialUrl().isEmpty()) {
@@ -141,26 +136,22 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+        public CompletableFuture<Void> loadUrl(String url) {
             return navigation.load(url, navigationTimeout, () -> view.loadUrl(url));
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+        public CompletableFuture<String> evaluateJavascript(String script) {
             return view.evaluateJavascript(script);
         }
 
         @Override
-        @Nonnull
-        public PaintInfo awaitNextPaint(@Nonnull Duration timeout)
+        public PaintInfo awaitNextPaint(Duration timeout)
                 throws InterruptedException, java.util.concurrent.TimeoutException {
             return frames.await(width, height, timeout);
         }
 
         @Override
-        @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
             try {
                 onFxThread(() -> {
@@ -196,7 +187,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             if (failure != null) throw failure;
         }
 
-        private void closeSurface(@javax.annotation.Nullable Exception original) {
+        private void closeSurface(@Nullable Exception original) {
             try {
                 onFxThread(() -> {
                     try {
@@ -232,8 +223,10 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
                             Duration.ofMillis(10),
                             "JavaFX view resize");
         } catch (TimeoutException timedOut) {
-            throw new TimeoutException("JavaFX view did not resize to " + width + "x" + height + "; last was "
-                    + actual[0] + "x" + actual[1]);
+            TimeoutException failure = new TimeoutException("JavaFX view did not resize to " + width + "x" + height
+                    + "; last was " + actual[0] + "x" + actual[1]);
+            failure.initCause(timedOut);
+            throw failure;
         }
     }
 }

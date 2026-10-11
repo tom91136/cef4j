@@ -106,7 +106,7 @@ public final class CefMessageLoopType implements CefEnum<CefMessageLoopType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMessageLoopType)) return false;
         return this.value == ((CefMessageLoopType) obj).value;

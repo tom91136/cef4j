@@ -53,7 +53,7 @@ class RuntimeServerProcessTest {
             String command = (replaceLauncherProcess ? "exec " : "") + "\"" + javaExe + "\"";
             String content = "#!/bin/sh\n" + command + " -cp \"" + classpath + "\" " + mainClass + " \"$@\"\n";
             Files.writeString(script, content);
-            script.toFile().setExecutable(true);
+            assertThat(script.toFile().setExecutable(true)).isTrue();
         }
         return script;
     }

@@ -5,21 +5,21 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.Nullable;
 
 /** Coalesces a burst of values into at most one pending executor task, retaining only the newest value. */
 public final class LatestOnlyDispatcher<T> {
     private final Executor executor;
     private final Consumer<T> consumer;
-    private final AtomicReference<T> latest = new AtomicReference<>();
+    private final AtomicReference<@Nullable T> latest = new AtomicReference<>();
     private final AtomicBoolean scheduled = new AtomicBoolean();
 
-    public LatestOnlyDispatcher(@Nonnull Executor executor, @Nonnull Consumer<T> consumer) {
+    public LatestOnlyDispatcher(Executor executor, Consumer<T> consumer) {
         this.executor = Objects.requireNonNull(executor, "executor");
         this.consumer = Objects.requireNonNull(consumer, "consumer");
     }
 
-    public void submit(@Nonnull T value) {
+    public void submit(T value) {
         latest.set(Objects.requireNonNull(value, "value"));
         schedule();
     }

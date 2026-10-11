@@ -142,7 +142,7 @@ public final class CefDomFormControlType implements CefEnum<CefDomFormControlTyp
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefDomFormControlType)) return false;
         return this.value == ((CefDomFormControlType) obj).value;

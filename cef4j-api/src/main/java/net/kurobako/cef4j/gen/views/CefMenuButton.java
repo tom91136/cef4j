@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefButtonState;
 import net.kurobako.cef4j.gen.CefHorizontalAlignment;
@@ -17,6 +15,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * MenuButton is a button with optional text, icon and/or menu marker that shows a menu when clicked with the left mouse
@@ -53,10 +52,7 @@ public interface CefMenuButton extends CefLabelButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__button_8h.html">views/cef_menu_button.h:69</a>
      */
-    void showMenu(
-            @Nullable CefMenuModel menuModel,
-            @Nonnull CefPoint screenPoint,
-            @Nonnull CefMenuAnchorPosition anchorPosition);
+    void showMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint, CefMenuAnchorPosition anchorPosition);
 
     /**
      * Show the menu for this button. Results in a call to
@@ -136,9 +132,7 @@ public interface CefMenuButton extends CefLabelButton {
 
         @Override
         public void showMenu(
-                @Nullable CefMenuModel menuModel,
-                @Nonnull CefPoint screenPoint,
-                @Nonnull CefMenuAnchorPosition anchorPosition) {
+                @Nullable CefMenuModel menuModel, CefPoint screenPoint, CefMenuAnchorPosition anchorPosition) {
             checkNotClosed();
             CefLibraryObject.requireOpen(menuModel, "CefMenuModel");
             showMenu0(nativePtr, menuModel, screenPoint, anchorPosition);
@@ -169,20 +163,20 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setImage(@Nonnull CefButtonState buttonState, @Nullable CefImage image) {
+        public void setImage(CefButtonState buttonState, @Nullable CefImage image) {
             checkNotClosed();
             CefLibraryObject.requireOpen(image, "CefImage");
             CefLabelButton.NativePeer.setImage0(nativePtr, buttonState, image);
         }
 
         @Override
-        public Optional<CefImage> getImage(@Nonnull CefButtonState buttonState) {
+        public Optional<CefImage> getImage(CefButtonState buttonState) {
             checkNotClosed();
             return Optional.ofNullable(CefLabelButton.NativePeer.getImage0(nativePtr, buttonState));
         }
 
         @Override
-        public void setTextColor(@Nonnull CefButtonState forState, int color) {
+        public void setTextColor(CefButtonState forState, int color) {
             checkNotClosed();
             CefLabelButton.NativePeer.setTextColor0(nativePtr, forState, color);
         }
@@ -200,19 +194,19 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setHorizontalAlignment(@Nonnull CefHorizontalAlignment alignment) {
+        public void setHorizontalAlignment(CefHorizontalAlignment alignment) {
             checkNotClosed();
             CefLabelButton.NativePeer.setHorizontalAlignment0(nativePtr, alignment);
         }
 
         @Override
-        public void setMinimumSize(@Nonnull CefSize size) {
+        public void setMinimumSize(CefSize size) {
             checkNotClosed();
             CefLabelButton.NativePeer.setMinimumSize0(nativePtr, size);
         }
 
         @Override
-        public void setMaximumSize(@Nonnull CefSize size) {
+        public void setMaximumSize(CefSize size) {
             checkNotClosed();
             CefLabelButton.NativePeer.setMaximumSize0(nativePtr, size);
         }
@@ -224,7 +218,7 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setState(@Nonnull CefButtonState state) {
+        public void setState(CefButtonState state) {
             checkNotClosed();
             CefButton.NativePeer.setState0(nativePtr, state);
         }
@@ -363,7 +357,7 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -381,7 +375,7 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -393,7 +387,7 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -405,7 +399,7 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -531,38 +525,38 @@ public interface CefMenuButton extends CefLabelButton {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -571,15 +565,15 @@ public interface CefMenuButton extends CefLabelButton {
         static native void showMenu0(
                 long self,
                 @Nullable CefMenuModel menuModel,
-                @Nonnull CefPoint screenPoint,
-                @Nonnull CefMenuAnchorPosition anchorPosition);
+                CefPoint screenPoint,
+                CefMenuAnchorPosition anchorPosition);
 
         static native void triggerMenu0(long self);
 
         static native CefMenuButton create0(@Nullable CefMenuButtonDelegate delegate, @Nullable String text);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

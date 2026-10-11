@@ -5,7 +5,6 @@ package net.kurobako.cef4j.gen.views;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefLibraryObject;
 import net.kurobako.cef4j.gen.CefPoint;
@@ -67,7 +66,7 @@ public interface CefDisplay extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:142</a>
      */
-    void convertPointToPixels(@Nonnull CefPoint.Mutable point);
+    void convertPointToPixels(CefPoint.Mutable point);
 
     /**
      * Convert {@code point} from pixel coordinates to DIP coordinates using this Display's device scale factor.
@@ -78,7 +77,7 @@ public interface CefDisplay extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:149</a>
      */
-    void convertPointFromPixels(@Nonnull CefPoint.Mutable point);
+    void convertPointFromPixels(CefPoint.Mutable point);
 
     /**
      * Returns this Display's bounds in DIP screen coordinates. This is the full size of the display.
@@ -126,11 +125,11 @@ public interface CefDisplay extends CefLibraryObject {
         return Optional.ofNullable(NativePeer.getPrimary0());
     }
 
-    static Optional<CefDisplay> getNearestPoint(@Nonnull CefPoint point, int inputPixelCoords) {
+    static Optional<CefDisplay> getNearestPoint(CefPoint point, int inputPixelCoords) {
         return Optional.ofNullable(NativePeer.getNearestPoint0(point, inputPixelCoords));
     }
 
-    static Optional<CefDisplay> getMatchingBounds(@Nonnull CefRect bounds, int inputPixelCoords) {
+    static Optional<CefDisplay> getMatchingBounds(CefRect bounds, int inputPixelCoords) {
         return Optional.ofNullable(NativePeer.getMatchingBounds0(bounds, inputPixelCoords));
     }
 
@@ -161,7 +160,7 @@ public interface CefDisplay extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:97</a>
      */
-    static CefPoint convertScreenPointToPixels(@Nonnull CefPoint point) {
+    static CefPoint convertScreenPointToPixels(CefPoint point) {
         return NativePeer.convertScreenPointToPixels0(point);
     }
 
@@ -175,7 +174,7 @@ public interface CefDisplay extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:104</a>
      */
-    static CefPoint convertScreenPointFromPixels(@Nonnull CefPoint point) {
+    static CefPoint convertScreenPointFromPixels(CefPoint point) {
         return NativePeer.convertScreenPointFromPixels0(point);
     }
 
@@ -189,7 +188,7 @@ public interface CefDisplay extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:111</a>
      */
-    static CefRect convertScreenRectToPixels(@Nonnull CefRect rect) {
+    static CefRect convertScreenRectToPixels(CefRect rect) {
         return NativePeer.convertScreenRectToPixels0(rect);
     }
 
@@ -203,7 +202,7 @@ public interface CefDisplay extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:118</a>
      */
-    static CefRect convertScreenRectFromPixels(@Nonnull CefRect rect) {
+    static CefRect convertScreenRectFromPixels(CefRect rect) {
         return NativePeer.convertScreenRectFromPixels0(rect);
     }
 
@@ -263,13 +262,13 @@ public interface CefDisplay extends CefLibraryObject {
         }
 
         @Override
-        public void convertPointToPixels(@Nonnull CefPoint.Mutable point) {
+        public void convertPointToPixels(CefPoint.Mutable point) {
             checkNotClosed();
             convertPointToPixels0(nativePtr, point);
         }
 
         @Override
-        public void convertPointFromPixels(@Nonnull CefPoint.Mutable point) {
+        public void convertPointFromPixels(CefPoint.Mutable point) {
             checkNotClosed();
             convertPointFromPixels0(nativePtr, point);
         }
@@ -296,9 +295,9 @@ public interface CefDisplay extends CefLibraryObject {
 
         static native float getDeviceScaleFactor0(long self);
 
-        static native void convertPointToPixels0(long self, @Nonnull CefPoint.Mutable point);
+        static native void convertPointToPixels0(long self, CefPoint.Mutable point);
 
-        static native void convertPointFromPixels0(long self, @Nonnull CefPoint.Mutable point);
+        static native void convertPointFromPixels0(long self, CefPoint.Mutable point);
 
         static native CefRect getBounds0(long self);
 
@@ -308,24 +307,24 @@ public interface CefDisplay extends CefLibraryObject {
 
         static native CefDisplay getPrimary0();
 
-        static native CefDisplay getNearestPoint0(@Nonnull CefPoint point, int inputPixelCoords);
+        static native CefDisplay getNearestPoint0(CefPoint point, int inputPixelCoords);
 
-        static native CefDisplay getMatchingBounds0(@Nonnull CefRect bounds, int inputPixelCoords);
+        static native CefDisplay getMatchingBounds0(CefRect bounds, int inputPixelCoords);
 
         static native long getCount0();
 
         static native CefDisplay[] getAlls0();
 
-        static native CefPoint convertScreenPointToPixels0(@Nonnull CefPoint point);
+        static native CefPoint convertScreenPointToPixels0(CefPoint point);
 
-        static native CefPoint convertScreenPointFromPixels0(@Nonnull CefPoint point);
+        static native CefPoint convertScreenPointFromPixels0(CefPoint point);
 
-        static native CefRect convertScreenRectToPixels0(@Nonnull CefRect rect);
+        static native CefRect convertScreenRectToPixels0(CefRect rect);
 
-        static native CefRect convertScreenRectFromPixels0(@Nonnull CefRect rect);
+        static native CefRect convertScreenRectFromPixels0(CefRect rect);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

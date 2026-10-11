@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent a DOM node. The methods of this class should only be called on the render process main
@@ -284,7 +283,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:307</a>
      */
-    void getElementAttributes(@Nonnull Map<String, String> attrMap);
+    void getElementAttributes(Map<String, String> attrMap);
 
     /**
      * Set the value for the element attribute named {@code attrName}. Returns {@code true} on success.
@@ -498,7 +497,7 @@ public interface CefDomNode extends CefLibraryObject {
         }
 
         @Override
-        public void getElementAttributes(@Nonnull Map<String, String> attrMap) {
+        public void getElementAttributes(Map<String, String> attrMap) {
             checkNotClosed();
             getElementAttributes0(nativePtr, attrMap);
         }
@@ -565,7 +564,7 @@ public interface CefDomNode extends CefLibraryObject {
 
         static native String getElementAttribute0(long self, @Nullable String attrName);
 
-        static native void getElementAttributes0(long self, @Nonnull Map<String, String> attrMap);
+        static native void getElementAttributes0(long self, Map<String, String> attrMap);
 
         static native boolean setElementAttribute0(long self, @Nullable String attrName, @Nullable String value);
 
@@ -574,7 +573,7 @@ public interface CefDomNode extends CefLibraryObject {
         static native CefRect getElementBounds0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

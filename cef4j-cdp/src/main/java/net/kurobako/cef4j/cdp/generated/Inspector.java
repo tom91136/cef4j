@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -89,14 +88,14 @@ public final class Inspector {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Inspector.disable", null, result_ -> null);
+            return client.call("Inspector.disable", null);
         }
         /**
          * Enables inspector domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Inspector.enable", null, result_ -> null);
+            return client.call("Inspector.enable", null);
         }
         /**
          * Fired when remote debugging connection is about to be terminated. Contains detach reason.

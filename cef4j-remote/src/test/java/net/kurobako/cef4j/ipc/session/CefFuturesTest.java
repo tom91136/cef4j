@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class CefFuturesTest {
@@ -40,7 +41,7 @@ class CefFuturesTest {
 
     @Test
     void failureObserversIgnoreSuccessfulCompletion() {
-        AtomicReference<Throwable> observed = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> observed = new AtomicReference<>();
         CompletableFuture<String> success = new CompletableFuture<>();
         CefFutures.observeFailure(success, observed::set);
         success.complete("done");

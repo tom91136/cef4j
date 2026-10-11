@@ -13,8 +13,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
 import org.slf4j.Logger;
@@ -45,8 +44,7 @@ public final class UdsTransport implements CefTransport {
     private volatile boolean disconnected;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
-    @Nonnull
-    public static UdsTransport connect(@Nonnull String endpoint) throws CefTransportException {
+    public static UdsTransport connect(String endpoint) throws CefTransportException {
         Path path = pathOf(endpoint);
         AFUNIXSocket socket = null;
         try {
@@ -65,7 +63,7 @@ public final class UdsTransport implements CefTransport {
         }
     }
 
-    static UdsTransport accepted(@Nonnull Path path, @Nonnull Socket socket) throws IOException {
+    static UdsTransport accepted(Path path, Socket socket) throws IOException {
         return new UdsTransport(endpoint(path), socket);
     }
 
@@ -79,13 +77,12 @@ public final class UdsTransport implements CefTransport {
         reader.start();
     }
 
-    @Nonnull
     public String endpoint() {
         return endpoint;
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(endpoint + ": send on closed transport");
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
         byte[] copy = new byte[frame.remaining()];
@@ -104,7 +101,7 @@ public final class UdsTransport implements CefTransport {
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+    public void onReceive(Consumer<ByteBuffer> handler) {
         synchronized (receiveLock) {
             receiveHandler = handler;
             byte[] frame;
@@ -113,7 +110,7 @@ public final class UdsTransport implements CefTransport {
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable handler) {
+    public void onDisconnect(Runnable handler) {
         disconnectHandler = handler;
         fireDisconnectIfReady();
     }

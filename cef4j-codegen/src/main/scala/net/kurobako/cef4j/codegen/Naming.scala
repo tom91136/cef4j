@@ -52,6 +52,18 @@ object Naming {
       subPackageFromHeader(header).map(structName -> _)
     }
 
+  /** Places JSpecify's type-use {@code @Nullable} on the outermost type: {@code T @Nullable []}, {@code p.@Nullable T}.
+    */
+  def nullableType(javaType: String): String =
+    if (javaType.endsWith("[]")) s"${javaType.dropRight(2)} @Nullable []"
+    else {
+      val head = javaType.takeWhile(_ != '<')
+      head.lastIndexOf('.') match {
+        case -1  => s"@Nullable $javaType"
+        case dot => s"${javaType.take(dot + 1)}@Nullable ${javaType.drop(dot + 1)}"
+      }
+    }
+
   def toCamelCase(snake: String)(using context: Context): String = {
     val name = if (!snake.contains('_')) {
       if (snake.isEmpty) "" else s"${snake.head.toLower}${snake.tail}"

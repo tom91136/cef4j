@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to browser load status. The methods of this class will be called on
@@ -59,7 +58,7 @@ public interface CefLoadHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:69</a>
      */
     default void onLoadStart(
-            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefTransitionType transitionType) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, CefTransitionType transitionType) {}
 
     /**
      * Called when the browser is done loading a frame. The {@code frame} value will never be empty -- call the IsMain()
@@ -96,7 +95,7 @@ public interface CefLoadHandler extends CefClientHandler {
     default void onLoadError(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefErrorCode errorCode,
+            CefErrorCode errorCode,
             @Nullable String errorText,
             @Nullable String failedUrl) {}
     /**
@@ -120,7 +119,7 @@ public interface CefLoadHandler extends CefClientHandler {
 
         @Override
         public void onLoadStart(
-                @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefTransitionType transitionType) {
+                @Nullable CefBrowser browser, @Nullable CefFrame frame, CefTransitionType transitionType) {
             for (CefLoadHandler d : delegates) d.onLoadStart(browser, frame, transitionType);
         }
 
@@ -133,7 +132,7 @@ public interface CefLoadHandler extends CefClientHandler {
         public void onLoadError(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
-                @Nonnull CefErrorCode errorCode,
+                CefErrorCode errorCode,
                 @Nullable String errorText,
                 @Nullable String failedUrl) {
             for (CefLoadHandler d : delegates) d.onLoadError(browser, frame, errorCode, errorText, failedUrl);

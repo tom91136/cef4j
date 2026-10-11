@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestGate;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -372,9 +372,9 @@ final class ZmqTransportTest extends CefTransportContractTest {
         }
 
         private static Socket connect(int port) throws Exception {
-            java.util.concurrent.atomic.AtomicReference<Socket> connected =
+            java.util.concurrent.atomic.AtomicReference<@Nullable Socket> connected =
                     new java.util.concurrent.atomic.AtomicReference<>();
-            java.util.concurrent.atomic.AtomicReference<IOException> lastFailure =
+            java.util.concurrent.atomic.AtomicReference<@Nullable IOException> lastFailure =
                     new java.util.concurrent.atomic.AtomicReference<>();
             TestDeadline.after(Duration.ofSeconds(5))
                     .until(
@@ -424,7 +424,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
             });
         }
 
-        private static void close(@Nullable java.io.Closeable resource) {
+        private static void close(java.io.@Nullable Closeable resource) {
             if (resource == null) return;
             try {
                 resource.close();

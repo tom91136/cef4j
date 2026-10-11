@@ -18,9 +18,10 @@ import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
+import org.jspecify.annotations.Nullable;
 
 public final class RemoteNavigationProbe implements AutoCloseable {
-    private final AtomicReference<PendingNavigation> pending = new AtomicReference<>();
+    private final AtomicReference<@Nullable PendingNavigation> pending = new AtomicReference<>();
     private final AtomicBoolean closed = new AtomicBoolean();
     private final CefSession.HandlerRegistration contextRegistration;
     private final CefSession.HandlerRegistration loadEndRegistration;

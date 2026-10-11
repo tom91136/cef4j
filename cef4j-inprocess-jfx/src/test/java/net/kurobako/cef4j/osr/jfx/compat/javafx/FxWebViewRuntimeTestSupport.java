@@ -42,7 +42,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefGlobals;
@@ -52,6 +51,7 @@ import net.kurobako.cef4j.osr.jfx.CefWebViewTestDiagnostics;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.UncaughtExceptionTracker;
 import net.kurobako.cef4j.test.backend.CefTestCompatibility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -75,7 +75,7 @@ final class FxWebViewRuntimeTestSupport {
                 System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
                 "Runtime WebView compatibility tests require a display server; set DISPLAY or run with: xvfb-run -a mvn test");
         CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<Throwable> error = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> error = new AtomicReference<>();
         try {
             Platform.startup(() -> {
                 try {
@@ -223,8 +223,8 @@ final class FxWebViewRuntimeTestSupport {
             return task.call();
         }
         CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<T> result = new AtomicReference<>();
-        AtomicReference<Throwable> error = new AtomicReference<>();
+        AtomicReference<@Nullable T> result = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> error = new AtomicReference<>();
         Platform.runLater(() -> {
             try {
                 result.set(task.call());

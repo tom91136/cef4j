@@ -16,12 +16,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,16 +52,15 @@ public final class ReplayCefSession implements CefSession {
     @Nullable
     private ScheduledFuture<?> timedTask;
 
-    public static ReplayCefSession fromFile(@Nonnull Path file, @Nonnull ReplayMode mode) throws IOException {
+    public static ReplayCefSession fromFile(Path file, ReplayMode mode) throws IOException {
         return new ReplayCefSession(SessionTrace.read(file), mode);
     }
 
-    public static ReplayCefSession fromFile(
-            @Nonnull Path file, @Nonnull SessionTraceCodec codec, @Nonnull ReplayMode mode) throws IOException {
+    public static ReplayCefSession fromFile(Path file, SessionTraceCodec codec, ReplayMode mode) throws IOException {
         return new ReplayCefSession(SessionTrace.read(file, codec), mode);
     }
 
-    public ReplayCefSession(@Nonnull SessionTrace.Recording recording, @Nonnull ReplayMode mode) {
+    public ReplayCefSession(SessionTrace.Recording recording, ReplayMode mode) {
         this.entries = Objects.requireNonNull(recording, "recording").entries();
         this.mode = Objects.requireNonNull(mode, "mode");
         this.scheduler = mode == ReplayMode.TIMED
@@ -112,9 +110,8 @@ public final class ReplayCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
     public <R extends CefMessageView> CompletableFuture<R> request(
-            @Nonnull CefMessageEncoder request, @Nonnull CefMessageDecoder<R> decoder) {
+            CefMessageEncoder request, CefMessageDecoder<R> decoder) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(decoder, "decoder");
         synchronized (lock) {
@@ -134,16 +131,14 @@ public final class ReplayCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
     public <E extends CefMessageView> HandlerRegistration on(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
         return subscribe(SessionTrace.Kind.SUBSCRIBE, messageId, decoder, handler);
     }
 
     @Override
-    @Nonnull
     public <E extends CefMessageView> HandlerRegistration onLatest(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
         return subscribe(SessionTrace.Kind.SUBSCRIBE_LATEST, messageId, decoder, handler);
     }
 
@@ -161,9 +156,8 @@ public final class ReplayCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
     public <E extends CefMessageView> HandlerRegistration intercept(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
         synchronized (lock) {
             requireOpen();
             prepareForActionLocked();
@@ -175,8 +169,7 @@ public final class ReplayCefSession implements CefSession {
     }
 
     @Override
-    @Nonnull
-    public HandlerRegistration onClose(@Nonnull Runnable handler) {
+    public HandlerRegistration onClose(Runnable handler) {
         Objects.requireNonNull(handler, "handler");
         synchronized (lock) {
             if (!closed) {

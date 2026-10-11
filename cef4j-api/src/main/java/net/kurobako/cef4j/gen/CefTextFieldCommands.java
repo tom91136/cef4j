@@ -112,7 +112,7 @@ public final class CefTextFieldCommands implements CefEnum<CefTextFieldCommands>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTextFieldCommands)) return false;
         return this.value == ((CefTextFieldCommands) obj).value;

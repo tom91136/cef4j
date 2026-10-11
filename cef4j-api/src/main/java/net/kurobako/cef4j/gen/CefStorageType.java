@@ -99,7 +99,7 @@ public final class CefStorageType implements CefEnum<CefStorageType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefStorageType)) return false;
         return this.value == ((CefStorageType) obj).value;

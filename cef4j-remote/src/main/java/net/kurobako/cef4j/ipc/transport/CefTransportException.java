@@ -1,8 +1,8 @@
 package net.kurobako.cef4j.ipc.transport;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Raised when a {@link CefTransport} send fails or the transport is no longer usable. Callers treat this as an

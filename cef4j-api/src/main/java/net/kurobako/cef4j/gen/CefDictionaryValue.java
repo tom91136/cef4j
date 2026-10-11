@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class representing a dictionary value. Can be used on any process and thread.
@@ -143,7 +142,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:382</a>
      */
-    boolean getKeys(@Nonnull List<String> keys);
+    boolean getKeys(List<String> keys);
 
     /**
      * Removes the value at the specified key. Returns {@code true} is the value was removed successfully.
@@ -504,7 +503,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
         }
 
         @Override
-        public boolean getKeys(@Nonnull List<String> keys) {
+        public boolean getKeys(List<String> keys) {
             checkNotClosed();
             return getKeys0(nativePtr, keys);
         }
@@ -645,7 +644,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
 
         static native boolean hasKey0(long self, @Nullable String key);
 
-        static native boolean getKeys0(long self, @Nonnull List<String> keys);
+        static native boolean getKeys0(long self, List<String> keys);
 
         static native boolean remove0(long self, @Nullable String key);
 
@@ -688,7 +687,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
         static native CefDictionaryValue create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

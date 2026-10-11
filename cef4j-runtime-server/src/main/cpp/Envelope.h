@@ -5,49 +5,41 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace cef4j {
-namespace ipc {
+namespace cef4j { namespace ipc {
 
-constexpr std::size_t kHeaderSize = 14;
-constexpr std::int32_t kNoCorrId = -1;
+constexpr size_t HeaderSize = 14;
+constexpr int32_t NoCorrId = -1;
 
-enum class Kind : std::uint8_t {
-    Request = 1,
-    Response = 2,
-    Event = 3,
-    Intercept = 4,
-    InterceptResponse = 5,
-    Error = 6,
+enum class Kind : uint8_t {
+  Request = 1,
+  Response = 2,
+  Event = 3,
+  Intercept = 4,
+  InterceptResponse = 5,
+  Error = 6,
 };
 
 // Structured error codes carried in Kind::Error payload (matches CefRemoteException on the JVM side).
 namespace ErrorCode {
-    constexpr std::int32_t ReceiverGone = 1;
-    constexpr std::int32_t MalformedRequest = 2;
-    constexpr std::int32_t TaskRejected = 3;
-    constexpr std::int32_t UnsupportedFeature = 4;
-}
+constexpr int32_t ReceiverGone = 1;
+constexpr int32_t MalformedRequest = 2;
+constexpr int32_t TaskRejected = 3;
+constexpr int32_t UnsupportedFeature = 4;
+} // namespace ErrorCode
 
 struct Header {
-    std::int32_t payloadLength;
-    Kind kind;
-    std::uint8_t flags;
-    std::int32_t corrId;
-    std::int32_t messageId;
+  int32_t payloadLength;
+  Kind kind;
+  uint8_t flags;
+  int32_t corrId;
+  int32_t messageId;
 };
 
-// dst must point to at least kHeaderSize writable bytes.
-void writeHeader(
-        std::uint8_t* dst,
-        Kind kind,
-        std::uint8_t flags,
-        std::int32_t corrId,
-        std::int32_t messageId,
-        std::int32_t payloadLength);
+// dst must point to at least HeaderSize writable bytes.
+void writeHeader(uint8_t *dst, Kind kind, uint8_t flags, int32_t corrId, int32_t messageId, int32_t payloadLength);
 
-// src must point to at least kHeaderSize readable bytes.
+// src must point to at least HeaderSize readable bytes.
 // Returns false if the kind byte is unknown.
-bool readHeader(const std::uint8_t* src, std::size_t frameSize, Header& out);
+bool readHeader(const uint8_t *src, size_t frameSize, Header &out);
 
-} // namespace ipc
-} // namespace cef4j
+}} // namespace cef4j::ipc

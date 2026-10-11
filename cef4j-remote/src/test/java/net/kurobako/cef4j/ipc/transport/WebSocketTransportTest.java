@@ -21,15 +21,15 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class WebSocketTransportTest extends CefTransportContractTest {
@@ -58,6 +58,30 @@ final class WebSocketTransportTest extends CefTransportContractTest {
     }
 
     @Test
+    void bearerTokenIsSentOnUpgrade() throws Exception {
+        try (ServerSocket server = new ServerSocket(0);
+                TestExecutor executor = TestExecutor.single("websocket-test-accept")) {
+            CompletableFuture<RawWebSocketPeer> accepted = CompletableFuture.supplyAsync(
+                    () -> {
+                        try {
+                            return RawWebSocketPeer.accept(server.accept());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    executor);
+            try (WebSocketTransport client = WebSocketTransport.connect(
+                            "ws://127.0.0.1:" + server.getLocalPort() + "/cef4j",
+                            Optional.of("secret-token"),
+                            Optional.empty());
+                    RawWebSocketPeer peer = accepted.get(10, TimeUnit.SECONDS)) {
+                assertThat(client.isConnected()).isTrue();
+                assertThat(peer.headers).containsEntry("authorization", "Bearer secret-token");
+            }
+        }
+    }
+
+    @Test
     void providerIsDiscoverable() {
         assertThat(CefTransports.available()).contains("websocket");
     }
@@ -67,6 +91,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         private static final String ACCEPT_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
         private final Socket socket;
+        private final Map<String, String> headers;
         private final DataInputStream input;
         private final OutputStream output;
         private final Thread reader;
@@ -84,8 +109,9 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         private volatile boolean closed;
         private volatile boolean disconnected;
 
-        private RawWebSocketPeer(Socket socket, InputStream input, OutputStream output) {
+        private RawWebSocketPeer(Socket socket, Map<String, String> headers, InputStream input, OutputStream output) {
             this.socket = socket;
+            this.headers = headers;
             this.input = new DataInputStream(input);
             this.output = output;
             reader = new Thread(this::readLoop, "raw-websocket-test-peer");
@@ -128,11 +154,11 @@ final class WebSocketTransportTest extends CefTransportContractTest {
                             + "\r\n\r\n")
                     .getBytes(StandardCharsets.US_ASCII));
             output.flush();
-            return new RawWebSocketPeer(socket, input, output);
+            return new RawWebSocketPeer(socket, headers, input, output);
         }
 
         @Override
-        public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+        public void send(ByteBuffer frame) throws CefTransportException {
             if (closed) throw new CefTransportException("send on closed test peer");
             if (disconnected) throw new CefTransportException("client disconnected");
             byte[] copy = new byte[frame.remaining()];
@@ -149,7 +175,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         }
 
         @Override
-        public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+        public void onReceive(Consumer<ByteBuffer> handler) {
             synchronized (receiveLock) {
                 receiveHandler = handler;
                 byte[] frame;
@@ -158,7 +184,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         }
 
         @Override
-        public void onDisconnect(@Nonnull Runnable handler) {
+        public void onDisconnect(Runnable handler) {
             disconnectHandler = handler;
             fireDisconnectIfReady();
         }

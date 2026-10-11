@@ -2,19 +2,25 @@ package net.kurobako.cef4j.ipc.frame;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.data.Offset.offset;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class FrameCodecTest {
@@ -72,6 +78,11 @@ final class FrameCodecTest {
         assertThatThrownBy(() -> new RawFrame(Integer.MAX_VALUE, 1, 1, ByteBuffer.allocate(1), metadata))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("dimensions");
+        assertThatThrownBy(() -> new RawFrame(2, 2, 7, ByteBuffer.allocate(16), metadata))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("dimensions");
+        assertThat(new RawFrame(2, 2, 8, ByteBuffer.allocate(16), metadata).stride())
+                .isEqualTo(8);
     }
 
     @Test
@@ -81,6 +92,15 @@ final class FrameCodecTest {
                         descriptor, 1, EncodedFrame.NO_BASE_SEQUENCE, true, 32_768, 32_768, ByteBuffer.allocate(0)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("dimensions");
+        assertThatThrownBy(() -> new EncodedFrame(descriptor, 1, 0, true, 1, 1, ByteBuffer.allocate(0)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("key frames");
+        assertThatThrownBy(() -> new EncodedFrame(
+                        descriptor, 1, EncodedFrame.NO_BASE_SEQUENCE, false, 1, 1, ByteBuffer.allocate(0)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("base sequence");
+        assertThat(new EncodedFrame(descriptor, 0, 0, false, 1, 1, ByteBuffer.allocate(0)).keyFrame())
+                .isFalse();
     }
 
     @Test
@@ -159,10 +179,59 @@ final class FrameCodecTest {
             ByteBuffer payload = encoded.payload();
             byte[] bytes = new byte[payload.remaining()];
             payload.get(bytes);
-            java.awt.image.BufferedImage decoded = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(bytes));
+            BufferedImage decoded = ImageIO.read(new ByteArrayInputStream(bytes));
             assertThat(decoded.getWidth()).isEqualTo(2);
             assertThat(decoded.getHeight()).isEqualTo(1);
         }
+    }
+
+    @Test
+    void jpegPreservesBgraChannelOrderAcrossPaddedRows() throws Exception {
+        int width = 32;
+        int height = 32;
+        int stride = width * 4 + 16;
+        byte[] pixels = new byte[stride * height];
+        Arrays.fill(pixels, (byte) 0xff);
+        for (int y = 0; y < height; y++) {
+            int[] bgr = y < height / 2 ? new int[] {40, 120, 200} : new int[] {220, 90, 30};
+            for (int x = 0; x < width; x++) {
+                int p = y * stride + x * 4;
+                pixels[p] = (byte) bgr[0];
+                pixels[p + 1] = (byte) bgr[1];
+                pixels[p + 2] = (byte) bgr[2];
+            }
+        }
+        FrameMetadata metadata = new FrameMetadata(
+                1, 1, System.nanoTime(), PixelFormat.BGRA, Collections.singletonList(new Rect(0, 0, width, height)));
+        RawFrame source = new RawFrame(width, height, stride, ByteBuffer.wrap(pixels), metadata);
+
+        BufferedImage decoded = decode(new JpegFrameCodec(0.95f).encode(source));
+        assertRgbNear(decoded.getRGB(width / 2, height / 4), 200, 120, 40);
+        assertRgbNear(decoded.getRGB(width / 2, height * 3 / 4), 30, 90, 220);
+    }
+
+    @Test
+    void jpegQualityControlsPayloadSize() throws Exception {
+        byte[] noise = new byte[64 * 64 * 4];
+        new Random(1).nextBytes(noise);
+        RawFrame source = frame(1L, 64, 64, noise);
+        int low = new JpegFrameCodec(0.2f).encode(source).payload().remaining();
+        int high = new JpegFrameCodec(1.0f).encode(source).payload().remaining();
+        assertThat(low).isLessThan(high);
+        assertThatThrownBy(() -> new JpegFrameCodec(0.0f)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private static BufferedImage decode(EncodedFrame encoded) throws IOException {
+        ByteBuffer payload = encoded.payload();
+        byte[] bytes = new byte[payload.remaining()];
+        payload.get(bytes);
+        return ImageIO.read(new ByteArrayInputStream(bytes));
+    }
+
+    private static void assertRgbNear(int rgb, int r, int g, int b) {
+        assertThat((rgb >> 16) & 0xff).isCloseTo(r, offset(8));
+        assertThat((rgb >> 8) & 0xff).isCloseTo(g, offset(8));
+        assertThat(rgb & 0xff).isCloseTo(b, offset(8));
     }
 
     @Test

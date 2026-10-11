@@ -13,13 +13,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpSchema;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.cdp.CdpVersionMismatchException;
 import net.kurobako.cef4j.cdp.generated.Runtime;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class GsonCdpCodecTest {
@@ -101,8 +101,7 @@ final class GsonCdpCodecTest {
         @Nullable
         private String method;
 
-        @Nullable
-        private byte[] params;
+        private byte @Nullable [] params;
 
         @Nullable
         private String subscribedMethod;
@@ -117,7 +116,7 @@ final class GsonCdpCodecTest {
         }
 
         @Override
-        public CompletionStage<byte[]> execute(String method, @Nullable byte[] params) {
+        public CompletionStage<byte[]> execute(String method, byte @Nullable [] params) {
             this.method = method;
             this.params = params;
             return CompletableFuture.completedFuture(response);

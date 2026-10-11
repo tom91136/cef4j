@@ -106,7 +106,7 @@ public final class CefChromeToolbarType implements CefEnum<CefChromeToolbarType>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefChromeToolbarType)) return false;
         return this.value == ((CefChromeToolbarType) obj).value;

@@ -4,7 +4,6 @@ package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -100,7 +99,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
      */
-    void getOrganizationNames(@Nonnull List<String> names);
+    void getOrganizationNames(List<String> names);
 
     /**
      * Retrieve the list of organization unit names.
@@ -114,7 +113,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
      */
-    void getOrganizationUnitNames(@Nonnull List<String> names);
+    void getOrganizationUnitNames(List<String> names);
 
     final class NativePeer implements CefX509CertPrincipal, AutoCloseable {
         private final long nativePtr;
@@ -190,13 +189,13 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
         }
 
         @Override
-        public void getOrganizationNames(@Nonnull List<String> names) {
+        public void getOrganizationNames(List<String> names) {
             checkNotClosed();
             getOrganizationNames0(nativePtr, names);
         }
 
         @Override
-        public void getOrganizationUnitNames(@Nonnull List<String> names) {
+        public void getOrganizationUnitNames(List<String> names) {
             checkNotClosed();
             getOrganizationUnitNames0(nativePtr, names);
         }
@@ -211,12 +210,12 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
 
         static native String getCountryName0(long self);
 
-        static native void getOrganizationNames0(long self, @Nonnull List<String> names);
+        static native void getOrganizationNames0(long self, List<String> names);
 
-        static native void getOrganizationUnitNames0(long self, @Nonnull List<String> names);
+        static native void getOrganizationUnitNames0(long self, List<String> names);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

@@ -3,10 +3,10 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefLibraryObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A Layout manager that arranges child views vertically or horizontally in a side-by-side fashion with spacing around
@@ -137,7 +137,7 @@ public interface CefBoxLayout extends CefLayout {
         static native void clearFlexForView0(long self, @Nullable CefView view);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

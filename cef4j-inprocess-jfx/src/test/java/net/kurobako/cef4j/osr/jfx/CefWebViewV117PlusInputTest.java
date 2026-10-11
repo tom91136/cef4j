@@ -14,9 +14,9 @@ import javafx.scene.input.PickResult;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.test.DisplayLock;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -119,8 +119,7 @@ class CefWebViewV117PlusInputTest {
                 new PickResult(view, x, y)));
     }
 
-    @Nullable
-    private static Worker.State workerState(CefWebView view) {
+    private static Worker.@Nullable State workerState(CefWebView view) {
         return onFxThreadUnchecked(() -> view.getEngine().getLoadWorker().getState());
     }
 

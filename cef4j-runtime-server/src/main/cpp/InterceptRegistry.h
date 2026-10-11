@@ -27,70 +27,64 @@
 
 #include "IntIdAllocator.h"
 
-namespace cef4j {
-namespace ipc {
+namespace cef4j { namespace ipc {
 
 class InterceptRegistry {
 public:
-    InterceptRegistry() = default;
-    InterceptRegistry(const InterceptRegistry&) = delete;
-    InterceptRegistry& operator=(const InterceptRegistry&) = delete;
+  InterceptRegistry() = default;
+  InterceptRegistry(const InterceptRegistry &) = delete;
+  InterceptRegistry &operator=(const InterceptRegistry &) = delete;
 
-    // Reserves a fresh corrId for a pending intercept. Must be paired with awaitResponse on
-    // the same thread, or the runtime server leaks an entry until shutdown.
-    std::int32_t allocateCorrId() {
-        std::lock_guard<std::mutex> g(mu_);
-        std::int32_t id = ids_.allocate([this](std::int32_t candidate) {
-            return waiters_.find(candidate) != waiters_.end();
-        });
-        waiters_.try_emplace(id);
-        return id;
-    }
+  // Reserves a fresh corrId for a pending intercept. Must be paired with awaitResponse on
+  // the same thread, or the runtime server leaks an entry until shutdown.
+  int32_t allocateCorrId() {
+    std::lock_guard<std::mutex> g(mu_);
+    int32_t id = ids_.allocate([this](int32_t candidate) { return waiters_.find(candidate) != waiters_.end(); });
+    waiters_.try_emplace(id);
+    return id;
+  }
 
-    // Blocks for up to `timeout`. Returns true if a response arrived, false on timeout.
-    // Either way the slot is removed; calling awaitResponse twice on the same corrId is a bug.
-    bool awaitResponse(std::int32_t corrId,
-                       std::chrono::milliseconds timeout,
-                       std::vector<std::uint8_t>& out) {
-        std::unique_lock<std::mutex> g(mu_);
-        auto it = waiters_.find(corrId);
-        if (it == waiters_.end()) return false;
-        Slot& slot = it->second;
-        bool got = slot.cv.wait_for(g, timeout, [&] { return slot.done; });
-        if (got) out = std::move(slot.payload);
-        waiters_.erase(it);
-        return got;
-    }
+  // Blocks for up to `timeout`. Returns true if a response arrived, false on timeout.
+  // Either way the slot is removed; calling awaitResponse twice on the same corrId is a bug.
+  bool awaitResponse(int32_t corrId, std::chrono::milliseconds timeout, std::vector<uint8_t> &out) {
+    std::unique_lock<std::mutex> g(mu_);
+    auto it = waiters_.find(corrId);
+    if (it == waiters_.end()) return false;
+    Slot &slot = it->second;
+    bool got = slot.cv.wait_for(g, timeout, [&] { return slot.done; });
+    if (got) out = std::move(slot.payload);
+    waiters_.erase(it);
+    return got;
+  }
 
-    // Called by the IpcServer worker when a Kind::InterceptResponse arrives. If the corrId
-    // doesn't match any waiter (already timed out, or unknown), the payload is dropped.
-    void deliverResponse(std::int32_t corrId, std::vector<std::uint8_t> payload) {
-        std::lock_guard<std::mutex> g(mu_);
-        auto it = waiters_.find(corrId);
-        if (it == waiters_.end()) return;
-        it->second.payload = std::move(payload);
-        it->second.done = true;
-        it->second.cv.notify_one();
-    }
+  // Called by the IpcServer worker when a Kind::InterceptResponse arrives. If the corrId
+  // doesn't match any waiter (already timed out, or unknown), the payload is dropped.
+  void deliverResponse(int32_t corrId, std::vector<uint8_t> payload) {
+    std::lock_guard<std::mutex> g(mu_);
+    auto it = waiters_.find(corrId);
+    if (it == waiters_.end()) return;
+    it->second.payload = std::move(payload);
+    it->second.done = true;
+    it->second.cv.notify_one();
+  }
 
 private:
-    struct Slot {
-        std::condition_variable cv;
-        std::vector<std::uint8_t> payload;
-        bool done = false;
-    };
+  struct Slot {
+    std::condition_variable cv;
+    std::vector<uint8_t> payload;
+    bool done = false;
+  };
 
-    std::mutex mu_;
-    std::unordered_map<std::int32_t, Slot> waiters_;
-    IntIdAllocator ids_;
+  std::mutex mu_;
+  std::unordered_map<int32_t, Slot> waiters_;
+  IntIdAllocator ids_;
 };
 
 /** Process-wide singleton accessor — main.cpp's hand-written code, generated handler forwarders, and any
-  * future intercept use sites all share one waiter map so corrIds don't collide. */
-inline InterceptRegistry& intercepts() {
-    static InterceptRegistry instance;
-    return instance;
+ * future intercept use sites all share one waiter map so corrIds don't collide. */
+inline InterceptRegistry &intercepts() {
+  static InterceptRegistry instance;
+  return instance;
 }
 
-} // namespace ipc
-} // namespace cef4j
+}} // namespace cef4j::ipc

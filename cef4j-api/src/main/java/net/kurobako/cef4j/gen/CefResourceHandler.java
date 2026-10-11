@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to implement a custom request handler interface. The methods of this class will be called on the IO thread
@@ -139,7 +138,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:159</a>
      */
-    default boolean read(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
+    default boolean read(ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
         bytesRead[0] = -1;
         return false;
     }
@@ -168,7 +167,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:181</a>
      */
-    default boolean readResponse(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
+    default boolean readResponse(ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
         return false;
     }
 
@@ -230,7 +229,7 @@ public interface CefResourceHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean read(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
+        public boolean read(ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
             for (CefResourceHandler d : delegates) {
                 if (d.read(dataOut, bytesRead, callback)) return true;
             }
@@ -240,7 +239,7 @@ public interface CefResourceHandler extends CefClientHandler {
         }
 
         @Override
-        public boolean readResponse(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
+        public boolean readResponse(ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
             for (CefResourceHandler d : delegates) {
                 if (d.readResponse(dataOut, bytesRead, callback)) return true;
             }

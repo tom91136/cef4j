@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -21,10 +20,10 @@ import net.kurobako.cef4j.remote.swing.RemoteBrowserPanel;
 import net.kurobako.cef4j.test.RemoteNavigationProbe;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.jspecify.annotations.Nullable;
 
 final class RemoteSwingBrowserBackend implements BrowserBackend {
     @Override
-    @Nonnull
     public String name() {
         return "remote-swing";
     }
@@ -35,14 +34,12 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
     }
 
     @Override
-    @Nonnull
     public Set<Capability> capabilities() {
         return Collections.singleton(Capability.VIEWPORT_RESIZE);
     }
 
     @Override
-    @Nonnull
-    public BrowserSession openSession(@Nonnull SessionConfig config) {
+    public BrowserSession openSession(SessionConfig config) {
         try {
             return new Session(config);
         } catch (Exception e) {
@@ -72,8 +69,8 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             this.width = config.width();
             this.height = config.height();
             this.navigationTimeout = config.startupTimeout();
-            AtomicReference<RemoteBrowserPanel> panelRef = new AtomicReference<>();
-            AtomicReference<JFrame> frameRef = new AtomicReference<>();
+            AtomicReference<@Nullable RemoteBrowserPanel> panelRef = new AtomicReference<>();
+            AtomicReference<@Nullable JFrame> frameRef = new AtomicReference<>();
             onEdt(() -> {
                 RemoteBrowserPanel nextPanel = new RemoteBrowserPanel((session, browser) -> frames.bind(session));
                 nextPanel.setPreferredSize(new Dimension(width, height));
@@ -94,13 +91,11 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
                 closeSurface(failure);
                 throw failure;
             }
-            AtomicReference<RemoteHandle> handleRef = new AtomicReference<>();
+            AtomicReference<@Nullable RemoteHandle> handleRef = new AtomicReference<>();
             this.navigation = new RemoteNavigationProbe(runtime.session, handleRef::get);
             try {
                 panel.attach(runtime.session);
-                onEdt(() -> {
-                    frame.setVisible(true);
-                });
+                onEdt(() -> frame.setVisible(true));
                 handleRef.set(panel.awaitBrowserHandle(config.startupTimeout()));
                 Objects.requireNonNull(handleRef.get(), "remote Swing browser");
                 if (!config.initialUrl().isEmpty()) {
@@ -115,28 +110,24 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+        public CompletableFuture<Void> loadUrl(String url) {
             return navigation.load(url, navigationTimeout, () -> panel.loadUrl(url));
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+        public CompletableFuture<String> evaluateJavascript(String script) {
             return panel.evaluateJavascript(script);
         }
 
         @Override
-        @Nonnull
-        public PaintInfo awaitNextPaint(@Nonnull Duration timeout)
+        public PaintInfo awaitNextPaint(Duration timeout)
                 throws InterruptedException, java.util.concurrent.TimeoutException {
             return frames.await(width, height, timeout);
         }
 
         @Override
-        @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
-            AtomicReference<CompletableFuture<Void>> result = new AtomicReference<>();
+            AtomicReference<@Nullable CompletableFuture<Void>> result = new AtomicReference<>();
             try {
                 onEdt(() -> {
                     panel.setPreferredSize(new Dimension(width, height));
@@ -172,7 +163,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             if (failure != null) throw failure;
         }
 
-        private void closeSurface(@javax.annotation.Nullable Exception original) {
+        private void closeSurface(@Nullable Exception original) {
             try {
                 onEdt(() -> {
                     try {

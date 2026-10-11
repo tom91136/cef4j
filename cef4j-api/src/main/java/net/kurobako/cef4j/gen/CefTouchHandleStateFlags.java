@@ -106,7 +106,7 @@ public final class CefTouchHandleStateFlags implements CefEnum<CefTouchHandleSta
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTouchHandleStateFlags)) return false;
         return this.value == ((CefTouchHandleStateFlags) obj).value;

@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.ipc.session;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A typed wrapper around an int32 handle id that identifies a ref-counted CEF object owned by the runtime server. The
  * server maintains a {@code HandleTable} mapping ids back to native CEF struct pointers; this is the client's view.
@@ -27,7 +29,7 @@ public final class RemoteHandle {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (!(o instanceof RemoteHandle)) return false;
         return id == ((RemoteHandle) o).id;

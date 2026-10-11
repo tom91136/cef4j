@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javafx.application.Platform;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
@@ -25,6 +24,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -57,8 +57,8 @@ class RemoteWebViewTest {
     void explicitViewportResizeFollowsPendingFxResize() throws Exception {
         startJavaFx();
         FakeSession session = new FakeSession();
-        AtomicReference<RemoteWebView> viewRef = new AtomicReference<>();
-        AtomicReference<CompletableFuture<Void>> resizeRef = new AtomicReference<>();
+        AtomicReference<@Nullable RemoteWebView> viewRef = new AtomicReference<>();
+        AtomicReference<@Nullable CompletableFuture<Void>> resizeRef = new AtomicReference<>();
 
         onFxThread(() -> {
             RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
@@ -87,7 +87,7 @@ class RemoteWebViewTest {
     void explicitViewportResizeOffFxThreadFollowsPendingFxResize() throws Exception {
         startJavaFx();
         FakeSession session = new FakeSession();
-        AtomicReference<RemoteWebView> viewRef = new AtomicReference<>();
+        AtomicReference<@Nullable RemoteWebView> viewRef = new AtomicReference<>();
 
         onFxThread(() -> {
             RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());

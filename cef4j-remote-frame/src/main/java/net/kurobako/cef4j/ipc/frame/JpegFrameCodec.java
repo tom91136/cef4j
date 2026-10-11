@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
-import javax.annotation.Nonnull;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -25,14 +24,12 @@ public final class JpegFrameCodec implements FrameCodec {
     }
 
     @Override
-    @Nonnull
     public CodecDescriptor descriptor() {
         return DESCRIPTOR;
     }
 
     @Override
-    @Nonnull
-    public EncodedFrame encode(@Nonnull RawFrame frame) throws IOException {
+    public EncodedFrame encode(RawFrame frame) throws IOException {
         BufferedImage image = new BufferedImage(frame.width(), frame.height(), BufferedImage.TYPE_INT_RGB);
         int[] row = new int[frame.width()];
         ByteBuffer pixels = frame.pixels();

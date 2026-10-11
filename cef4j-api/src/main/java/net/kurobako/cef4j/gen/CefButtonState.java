@@ -106,7 +106,7 @@ public final class CefButtonState implements CefEnum<CefButtonState> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefButtonState)) return false;
         return this.value == ((CefButtonState) obj).value;

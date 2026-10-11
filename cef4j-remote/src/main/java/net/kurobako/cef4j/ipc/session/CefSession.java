@@ -5,9 +5,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Correlation, routing, and intercept layer above {@link net.kurobako.cef4j.ipc.transport.CefTransport}. Hides the
@@ -23,26 +22,21 @@ public interface CefSession extends Closeable {
      * default timeout, and with a {@link net.kurobako.cef4j.ipc.transport.CefTransportException} cause if the transport
      * disconnects or the session is closed.
      */
-    @Nonnull
-    <R extends CefMessageView> CompletableFuture<R> request(
-            @Nonnull CefMessageEncoder request, @Nonnull CefMessageDecoder<R> decoder);
+    <R extends CefMessageView> CompletableFuture<R> request(CefMessageEncoder request, CefMessageDecoder<R> decoder);
 
     /**
      * Subscribe to events of a specific {@code messageId}. Multiple subscribers per id are allowed; all are invoked in
      * registration order. Callbacks fire on the transport's reader thread; subscribers must not block.
      */
-    @Nonnull
-    <E extends CefMessageView> HandlerRegistration on(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler);
+    <E extends CefMessageView> HandlerRegistration on(int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler);
 
     /**
      * Subscribe and immediately replay the most recently received event for this message id, if any. Replay is
      * session-wide, not partitioned by browser or frame. Use it only for session-global state announcements or when the
      * handler deliberately accepts every source; scoped and edge-triggered events should use {@link #on}.
      */
-    @Nonnull
     default <E extends CefMessageView> HandlerRegistration onLatest(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull Consumer<E> handler) {
+            int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
         return on(messageId, decoder, handler);
     }
 
@@ -51,13 +45,11 @@ public interface CefSession extends Closeable {
      * replace earlier ones (a warning is logged). The handler runs on the transport's reader thread; the server is
      * synchronously parked waiting for the reply, so handlers must complete promptly.
      */
-    @Nonnull
     <E extends CefMessageView> HandlerRegistration intercept(
-            int messageId, @Nonnull CefMessageDecoder<E> decoder, @Nonnull InterceptHandler<E> handler);
+            int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler);
 
     /** Register a callback invoked once when this session closes locally or loses its transport. */
-    @Nonnull
-    default HandlerRegistration onClose(@Nonnull Runnable handler) {
+    default HandlerRegistration onClose(Runnable handler) {
         return () -> {};
     }
 
@@ -66,7 +58,7 @@ public interface CefSession extends Closeable {
 
     /** Returned from {@link #on}/{@link #intercept}; call {@link #unregister} to stop delivery. */
     interface HandlerRegistration extends AutoCloseable {
-        static HandlerRegistration combine(@Nonnull HandlerRegistration... registrations) {
+        static HandlerRegistration combine(HandlerRegistration... registrations) {
             HandlerRegistration[] owned = registrations.clone();
             for (HandlerRegistration registration : owned) Objects.requireNonNull(registration, "registration");
             AtomicBoolean closed = new AtomicBoolean();
@@ -98,6 +90,6 @@ public interface CefSession extends Closeable {
     interface InterceptHandler<E extends CefMessageView> {
         @NullableBoundary("null selects the CEF default action")
         @Nullable
-        CefMessageEncoder onIntercept(@Nonnull E event);
+        CefMessageEncoder onIntercept(E event);
     }
 }

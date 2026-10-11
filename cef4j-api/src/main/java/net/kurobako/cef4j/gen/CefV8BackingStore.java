@@ -136,7 +136,7 @@ public interface CefV8BackingStore extends CefLibraryObject {
         static native CefV8BackingStore create0(long byteLength);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

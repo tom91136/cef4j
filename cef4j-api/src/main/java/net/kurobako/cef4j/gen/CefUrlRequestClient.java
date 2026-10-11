@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface that should be implemented by the CefURLRequest client. The methods of this class will be called on the
@@ -87,7 +86,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:168</a>
      */
-    default void onDownloadData(@Nullable CefUrlRequest request, @Nonnull ByteBuffer data) {}
+    default void onDownloadData(@Nullable CefUrlRequest request, ByteBuffer data) {}
 
     /**
      * Called on the IO thread when the browser needs credentials from the user. {@code isProxy} indicates whether the
@@ -145,7 +144,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
         }
 
         @Override
-        public void onDownloadData(@Nullable CefUrlRequest request, @Nonnull ByteBuffer data) {
+        public void onDownloadData(@Nullable CefUrlRequest request, ByteBuffer data) {
             for (CefUrlRequestClient d : delegates) d.onDownloadData(request, data);
         }
 

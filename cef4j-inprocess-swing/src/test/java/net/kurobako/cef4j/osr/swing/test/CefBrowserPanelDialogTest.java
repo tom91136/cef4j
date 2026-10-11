@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefClient;
@@ -22,6 +21,7 @@ import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -39,7 +39,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
     }
 
     private CefBrowserPanel createPanelWithDialogHandler(DialogHandler handler) throws Exception {
-        AtomicReference<CefBrowserPanel> panelRef = new AtomicReference<>();
+        AtomicReference<@Nullable CefBrowserPanel> panelRef = new AtomicReference<>();
         PanelState state = new PanelState();
         CountDownLatch ready = state.browserReady;
 
@@ -114,7 +114,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                                 @Nullable String messageText,
                                 @Nullable String defaultPromptText,
                                 @Nullable CefJsDialogCallback callback,
-                                @Nullable int[] suppressMessage) {
+                                int @Nullable [] suppressMessage) {
                             if (dialogType == null || callback == null) return false;
                             return handler.handle(
                                     dialogType,
@@ -159,7 +159,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
 
     @Test
     void alertHandlerFires() throws Exception {
-        AtomicReference<String> alertText = new AtomicReference<>();
+        AtomicReference<@Nullable String> alertText = new AtomicReference<>();
 
         CefBrowserPanel panel = createPanelWithDialogHandler((type, message, defaultPrompt, callback, suppress) -> {
             if (type.kind().orElse(null) == CefJsDialogType.Kind.ALERT) {
@@ -178,7 +178,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
 
     @Test
     void confirmHandlerReceivesMessageAndReturnsResult() throws Exception {
-        AtomicReference<String> receivedMessage = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedMessage = new AtomicReference<>();
 
         CefBrowserPanel panel = createPanelWithDialogHandler((type, message, defaultPrompt, callback, suppress) -> {
             if (type.kind().orElse(null) == CefJsDialogType.Kind.CONFIRM) {
@@ -221,8 +221,8 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
 
     @Test
     void promptHandlerReceivesMessageAndDefaultValue() throws Exception {
-        AtomicReference<String> receivedMessage = new AtomicReference<>();
-        AtomicReference<String> receivedDefault = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedMessage = new AtomicReference<>();
+        AtomicReference<@Nullable String> receivedDefault = new AtomicReference<>();
 
         CefBrowserPanel panel = createPanelWithDialogHandler((type, message, defaultPrompt, callback, suppress) -> {
             if (type.kind().orElse(null) == CefJsDialogType.Kind.PROMPT) {

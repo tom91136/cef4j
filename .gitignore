@@ -45,3 +45,6 @@ sysroot/out/
 # Python tooling
 __pycache__/
 *.py[cod]
+
+# Pinned build tools
+.cache/

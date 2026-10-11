@@ -18,14 +18,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private final AtomicLong lastFrameSequence = new AtomicLong(-1L);
     private final AtomicReference<String> lastReject = new AtomicReference<>("none");
 
-    private final AtomicReference<OsrPaintEvent> pendingPaint = new AtomicReference<>();
+    private final AtomicReference<@Nullable OsrPaintEvent> pendingPaint = new AtomicReference<>();
 
     private final AtomicBoolean deliveryScheduled = new AtomicBoolean();
     private final AtomicBoolean repaintRequested = new AtomicBoolean();
@@ -89,8 +88,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
     @Nullable
     private FileChannel mappedChannel;
 
-    @Nullable
-    private MappedBufferCleaner.Mapping mappedMapping;
+    private MappedBufferCleaner.@Nullable Mapping mappedMapping;
 
     private long mappedSize;
 
@@ -100,7 +98,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
      * Subscribe to paint events for the given browser. The session retains the subscription; the returned transport
      * owns it and unsubscribes on {@link #close()}.
      */
-    public static SharedFileFrameTransport bind(@Nonnull CefSession session, @Nonnull RemoteHandle browser) {
+    public static SharedFileFrameTransport bind(CefSession session, RemoteHandle browser) {
         SharedFileFrameTransport t = new SharedFileFrameTransport(browser);
         t.subscribe(session);
         return t;
@@ -112,7 +110,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
      * arrives, so a late {@link #bind} misses it). The consumer will be called for every browser that paints; for
      * multi-browser sessions wrap this in your own dispatch.
      */
-    public static SharedFileFrameTransport bindAll(@Nonnull CefSession session) {
+    public static SharedFileFrameTransport bindAll(CefSession session) {
         SharedFileFrameTransport t = new SharedFileFrameTransport(null);
         t.subscribe(session);
         return t;
@@ -128,7 +126,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
     @Nullable
     private CefSession session;
 
-    private final AtomicReference<CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
+    private final AtomicReference<@Nullable CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
 
     private void subscribe(CefSession session) {
         this.session = session;

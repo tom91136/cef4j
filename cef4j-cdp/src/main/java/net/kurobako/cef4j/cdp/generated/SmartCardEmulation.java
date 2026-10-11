@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -63,8 +62,8 @@ public final class SmartCardEmulation {
         UNKNOWN("unknown");
         public final String value;
         ResultCode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ResultCode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ResultCode of(String value) {
             for (ResultCode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -80,8 +79,8 @@ public final class SmartCardEmulation {
         DIRECT("direct");
         public final String value;
         ShareMode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ShareMode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ShareMode of(String value) {
             for (ShareMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -98,8 +97,8 @@ public final class SmartCardEmulation {
         EJECT_CARD("eject-card");
         public final String value;
         Disposition(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static Disposition of(@Nonnull String value) {
+        public String value() { return value; }
+        public static Disposition of(String value) {
             for (Disposition constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -118,8 +117,8 @@ public final class SmartCardEmulation {
         SPECIFIC("specific");
         public final String value;
         ConnectionState(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ConnectionState of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ConnectionState of(String value) {
             for (ConnectionState constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -140,77 +139,88 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unaware() {
-            return Optional.ofNullable((Boolean) raw("unaware"));
+            Object value = raw("unaware");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the ignore field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignore() {
-            return Optional.ofNullable((Boolean) raw("ignore"));
+            Object value = raw("ignore");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the changed field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> changed() {
-            return Optional.ofNullable((Boolean) raw("changed"));
+            Object value = raw("changed");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the unknown field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unknown() {
-            return Optional.ofNullable((Boolean) raw("unknown"));
+            Object value = raw("unknown");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the unavailable field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unavailable() {
-            return Optional.ofNullable((Boolean) raw("unavailable"));
+            Object value = raw("unavailable");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the empty field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> empty() {
-            return Optional.ofNullable((Boolean) raw("empty"));
+            Object value = raw("empty");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the present field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> present() {
-            return Optional.ofNullable((Boolean) raw("present"));
+            Object value = raw("present");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the exclusive field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exclusive() {
-            return Optional.ofNullable((Boolean) raw("exclusive"));
+            Object value = raw("exclusive");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the inuse field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> inuse() {
-            return Optional.ofNullable((Boolean) raw("inuse"));
+            Object value = raw("inuse");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the mute field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> mute() {
-            return Optional.ofNullable((Boolean) raw("mute"));
+            Object value = raw("mute");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the unpowered field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unpowered() {
-            return Optional.ofNullable((Boolean) raw("unpowered"));
+            Object value = raw("unpowered");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the unaware field.
@@ -425,21 +435,24 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> t0() {
-            return Optional.ofNullable((Boolean) raw("t0"));
+            Object value = raw("t0");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the t1 field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> t1() {
-            return Optional.ofNullable((Boolean) raw("t1"));
+            Object value = raw("t1");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Returns the raw field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> raw() {
-            return Optional.ofNullable((Boolean) raw("raw"));
+            Object value = raw("raw");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the t0 field.
@@ -505,8 +518,8 @@ public final class SmartCardEmulation {
         RAW("raw");
         public final String value;
         Protocol(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static Protocol of(@Nonnull String value) {
+        public String value() { return value; }
+        public static Protocol of(String value) {
             for (Protocol constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -977,7 +990,8 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SmartCardEmulation.Protocol> activeProtocol() {
-            return Optional.ofNullable(raw("activeProtocol") == null ? null : SmartCardEmulation.Protocol.of((String) raw("activeProtocol")));
+            Object value = raw("activeProtocol");
+            return Optional.ofNullable(value == null ? null : SmartCardEmulation.Protocol.of((String) value));
         }
         /**
          * Sets the requestId field.
@@ -1132,7 +1146,8 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SmartCardEmulation.Protocol> protocol() {
-            return Optional.ofNullable(raw("protocol") == null ? null : SmartCardEmulation.Protocol.of((String) raw("protocol")));
+            Object value = raw("protocol");
+            return Optional.ofNullable(value == null ? null : SmartCardEmulation.Protocol.of((String) value));
         }
         /**
          * Sets the requestId field.
@@ -1668,7 +1683,8 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SmartCardEmulation.Protocol> protocol() {
-            return Optional.ofNullable(raw("protocol") == null ? null : SmartCardEmulation.Protocol.of((String) raw("protocol")));
+            Object value = raw("protocol");
+            return Optional.ofNullable(value == null ? null : SmartCardEmulation.Protocol.of((String) value));
         }
         /**
          * Sets the requestId field.
@@ -2078,14 +2094,14 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("SmartCardEmulation.enable", null, result_ -> null);
+            return client.call("SmartCardEmulation.enable", null);
         }
         /**
          * Disables the |SmartCardEmulation| domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("SmartCardEmulation.disable", null, result_ -> null);
+            return client.call("SmartCardEmulation.disable", null);
         }
         /**
          * Reports the successful result of a |SCardEstablishContext| call.
@@ -2098,7 +2114,7 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("contextId", CdpObject.json(contextId));
-            return client.call("SmartCardEmulation.reportEstablishContextResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportEstablishContextResult", params);
         }
         /**
          * Reports the successful result of a |SCardEstablishContext| call.
@@ -2107,7 +2123,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportEstablishContextResult(ReportEstablishContextResultRequest request) {
-            return client.call("SmartCardEmulation.reportEstablishContextResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportEstablishContextResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a |SCardReleaseContext| call.
@@ -2118,7 +2134,7 @@ public final class SmartCardEmulation {
         public CompletionStage<Void> reportReleaseContextResult(String requestId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
-            return client.call("SmartCardEmulation.reportReleaseContextResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportReleaseContextResult", params);
         }
         /**
          * Reports the successful result of a |SCardReleaseContext| call.
@@ -2127,7 +2143,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportReleaseContextResult(ReportReleaseContextResultRequest request) {
-            return client.call("SmartCardEmulation.reportReleaseContextResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportReleaseContextResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a |SCardListReaders| call.
@@ -2140,7 +2156,7 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("readers", CdpObject.json(readers));
-            return client.call("SmartCardEmulation.reportListReadersResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportListReadersResult", params);
         }
         /**
          * Reports the successful result of a |SCardListReaders| call.
@@ -2149,7 +2165,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportListReadersResult(ReportListReadersResultRequest request) {
-            return client.call("SmartCardEmulation.reportListReadersResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportListReadersResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a |SCardGetStatusChange| call.
@@ -2162,7 +2178,7 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("readerStates", CdpObject.json(readerStates));
-            return client.call("SmartCardEmulation.reportGetStatusChangeResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportGetStatusChangeResult", params);
         }
         /**
          * Reports the successful result of a |SCardGetStatusChange| call.
@@ -2171,7 +2187,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportGetStatusChangeResult(ReportGetStatusChangeResultRequest request) {
-            return client.call("SmartCardEmulation.reportGetStatusChangeResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportGetStatusChangeResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the result of a |SCardBeginTransaction| call. On success, this creates a new transaction object.
@@ -2184,7 +2200,7 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("handle", CdpObject.json(handle));
-            return client.call("SmartCardEmulation.reportBeginTransactionResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportBeginTransactionResult", params);
         }
         /**
          * Reports the result of a |SCardBeginTransaction| call. On success, this creates a new transaction object.
@@ -2193,7 +2209,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportBeginTransactionResult(ReportBeginTransactionResultRequest request) {
-            return client.call("SmartCardEmulation.reportBeginTransactionResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportBeginTransactionResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a call that returns only a result code. Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
@@ -2207,7 +2223,7 @@ public final class SmartCardEmulation {
         public CompletionStage<Void> reportPlainResult(String requestId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
-            return client.call("SmartCardEmulation.reportPlainResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportPlainResult", params);
         }
         /**
          * Reports the successful result of a call that returns only a result code. Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
@@ -2219,7 +2235,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportPlainResult(ReportPlainResultRequest request) {
-            return client.call("SmartCardEmulation.reportPlainResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportPlainResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a |SCardConnect| call.
@@ -2234,7 +2250,7 @@ public final class SmartCardEmulation {
             params.put("requestId", CdpObject.json(requestId));
             params.put("handle", CdpObject.json(handle));
             activeProtocol.ifPresent(value_ -> params.put("activeProtocol", CdpObject.json(value_)));
-            return client.call("SmartCardEmulation.reportConnectResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportConnectResult", params);
         }
         /**
          * Reports the successful result of a |SCardConnect| call.
@@ -2253,7 +2269,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportConnectResult(ReportConnectResultRequest request) {
-            return client.call("SmartCardEmulation.reportConnectResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportConnectResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a call that sends back data on success. Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
@@ -2268,7 +2284,7 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("data", CdpObject.json(data));
-            return client.call("SmartCardEmulation.reportDataResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportDataResult", params);
         }
         /**
          * Reports the successful result of a call that sends back data on success. Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
@@ -2279,7 +2295,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportDataResult(ReportDataResultRequest request) {
-            return client.call("SmartCardEmulation.reportDataResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportDataResult", request == null ? null : request.toMap());
         }
         /**
          * Reports the successful result of a |SCardStatus| call.
@@ -2298,7 +2314,7 @@ public final class SmartCardEmulation {
             params.put("state", CdpObject.json(state));
             params.put("atr", CdpObject.json(atr));
             protocol.ifPresent(value_ -> params.put("protocol", CdpObject.json(value_)));
-            return client.call("SmartCardEmulation.reportStatusResult", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportStatusResult", params);
         }
         /**
          * Reports the successful result of a |SCardStatus| call.
@@ -2319,7 +2335,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportStatusResult(ReportStatusResultRequest request) {
-            return client.call("SmartCardEmulation.reportStatusResult", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportStatusResult", request == null ? null : request.toMap());
         }
         /**
          * Reports an error result for the given request.
@@ -2331,7 +2347,7 @@ public final class SmartCardEmulation {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("resultCode", CdpObject.json(resultCode));
-            return client.call("SmartCardEmulation.reportError", params, result_ -> null);
+            return client.call("SmartCardEmulation.reportError", params);
         }
         /**
          * Reports an error result for the given request.
@@ -2339,7 +2355,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportError(ReportErrorRequest request) {
-            return client.call("SmartCardEmulation.reportError", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("SmartCardEmulation.reportError", request == null ? null : request.toMap());
         }
         /**
          * Fired when |SCardEstablishContext| is called.

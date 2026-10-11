@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to provide handler implementations.
@@ -276,7 +275,7 @@ public interface CefClient extends CefClientHandler {
     default boolean onProcessMessageReceived(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefProcessId sourceProcess,
+            CefProcessId sourceProcess,
             @Nullable CefProcessMessage message) {
         return false;
     }
@@ -425,7 +424,7 @@ public interface CefClient extends CefClientHandler {
         public boolean onProcessMessageReceived(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
-                @Nonnull CefProcessId sourceProcess,
+                CefProcessId sourceProcess,
                 @Nullable CefProcessMessage message) {
             for (CefClient d : delegates) {
                 if (d.onProcessMessageReceived(browser, frame, sourceProcess, message)) return true;

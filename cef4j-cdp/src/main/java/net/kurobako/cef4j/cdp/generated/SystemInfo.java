@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -365,8 +364,8 @@ public final class SystemInfo {
         YUV444("yuv444");
         public final String value;
         SubsamplingFormat(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SubsamplingFormat of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SubsamplingFormat of(String value) {
             for (SubsamplingFormat constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -382,8 +381,8 @@ public final class SystemInfo {
         UNKNOWN("unknown");
         public final String value;
         ImageType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ImageType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ImageType of(String value) {
             for (ImageType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -411,14 +410,16 @@ public final class SystemInfo {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> auxAttributes() {
-            return Optional.ofNullable(objectMap(raw("auxAttributes")));
+            Object value = raw("auxAttributes");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * An optional dictionary of graphics features and their status.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> featureStatus() {
-            return Optional.ofNullable(objectMap(raw("featureStatus")));
+            Object value = raw("featureStatus");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * An optional array of GPU driver bug workarounds.

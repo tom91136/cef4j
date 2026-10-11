@@ -15,6 +15,7 @@ import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class InlineFrameTransportTest {
@@ -26,8 +27,8 @@ final class InlineFrameTransportTest {
             byte[] pixels = new byte[] {1, 2, 3, 4, 5, 6, 7, 8};
             InlinePaintEvent event = new InlinePaintEvent(new RemoteHandle(7), 42L, 2, 1, 0, 1, 0, 1, 1, pixels);
             CountDownLatch arrived = new CountDownLatch(1);
-            AtomicReference<byte[]> received = new AtomicReference<>();
-            AtomicReference<FrameMetadata> metadata = new AtomicReference<>();
+            AtomicReference<byte @Nullable []> received = new AtomicReference<>();
+            AtomicReference<@Nullable FrameMetadata> metadata = new AtomicReference<>();
             frames.onFrame((width, height, buffer, meta) -> {
                 assertThat(width).isEqualTo(2);
                 assertThat(height).isEqualTo(1);

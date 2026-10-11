@@ -14,14 +14,18 @@
     <name>cef4j-http</name>
     <description>Opt-in java.net.URL http/https handlers backed by CEF's network stack</description>
 
+    <properties>
+        <cef4j.module.name>net.kurobako.cef4j.http</cef4j.module.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>

@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Container for a single image represented at different scale factors. All image representations should be the same
@@ -76,9 +75,9 @@ public interface CefImage extends CefLibraryObject {
             float scaleFactor,
             int pixelWidth,
             int pixelHeight,
-            @Nonnull CefColorType colorType,
-            @Nonnull CefAlphaType alphaType,
-            @Nonnull ByteBuffer pixelData);
+            CefColorType colorType,
+            CefAlphaType alphaType,
+            ByteBuffer pixelData);
 
     /**
      * Add a PNG image representation for {@code scale_factor}. {@code png_data} is the image data of size
@@ -98,7 +97,7 @@ public interface CefImage extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:91</a>
      */
-    boolean addPng(float scaleFactor, @Nonnull ByteBuffer pngData);
+    boolean addPng(float scaleFactor, ByteBuffer pngData);
 
     /**
      * Create a JPEG image representation for {@code scale_factor}. {@code jpeg_data} is the image data of size
@@ -119,7 +118,7 @@ public interface CefImage extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:101</a>
      */
-    boolean addJpeg(float scaleFactor, @Nonnull ByteBuffer jpegData);
+    boolean addJpeg(float scaleFactor, ByteBuffer jpegData);
 
     /**
      * Returns the image width in density independent pixel (DIP) units.
@@ -195,11 +194,7 @@ public interface CefImage extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:147</a>
      */
     Optional<CefBinaryValue> getAsBitmap(
-            float scaleFactor,
-            @Nonnull CefColorType colorType,
-            @Nonnull CefAlphaType alphaType,
-            int[] pixelWidth,
-            int[] pixelHeight);
+            float scaleFactor, CefColorType colorType, CefAlphaType alphaType, int[] pixelWidth, int[] pixelHeight);
 
     /**
      * Returns the PNG representation that most closely matches {@code scale_factor}. If {@code with_transparency} is
@@ -308,21 +303,21 @@ public interface CefImage extends CefLibraryObject {
                 float scaleFactor,
                 int pixelWidth,
                 int pixelHeight,
-                @Nonnull CefColorType colorType,
-                @Nonnull CefAlphaType alphaType,
-                @Nonnull ByteBuffer pixelData) {
+                CefColorType colorType,
+                CefAlphaType alphaType,
+                ByteBuffer pixelData) {
             checkNotClosed();
             return addBitmap0(nativePtr, scaleFactor, pixelWidth, pixelHeight, colorType, alphaType, pixelData);
         }
 
         @Override
-        public boolean addPng(float scaleFactor, @Nonnull ByteBuffer pngData) {
+        public boolean addPng(float scaleFactor, ByteBuffer pngData) {
             checkNotClosed();
             return addPng0(nativePtr, scaleFactor, pngData);
         }
 
         @Override
-        public boolean addJpeg(float scaleFactor, @Nonnull ByteBuffer jpegData) {
+        public boolean addJpeg(float scaleFactor, ByteBuffer jpegData) {
             checkNotClosed();
             return addJpeg0(nativePtr, scaleFactor, jpegData);
         }
@@ -361,8 +356,8 @@ public interface CefImage extends CefLibraryObject {
         @Override
         public Optional<CefBinaryValue> getAsBitmap(
                 float scaleFactor,
-                @Nonnull CefColorType colorType,
-                @Nonnull CefAlphaType alphaType,
+                CefColorType colorType,
+                CefAlphaType alphaType,
                 int[] pixelWidth,
                 int[] pixelHeight) {
             checkNotClosed();
@@ -392,13 +387,13 @@ public interface CefImage extends CefLibraryObject {
                 float scaleFactor,
                 int pixelWidth,
                 int pixelHeight,
-                @Nonnull CefColorType colorType,
-                @Nonnull CefAlphaType alphaType,
-                @Nonnull ByteBuffer pixelData);
+                CefColorType colorType,
+                CefAlphaType alphaType,
+                ByteBuffer pixelData);
 
-        static native boolean addPng0(long self, float scaleFactor, @Nonnull ByteBuffer pngData);
+        static native boolean addPng0(long self, float scaleFactor, ByteBuffer pngData);
 
-        static native boolean addJpeg0(long self, float scaleFactor, @Nonnull ByteBuffer jpegData);
+        static native boolean addJpeg0(long self, float scaleFactor, ByteBuffer jpegData);
 
         static native long getWidth0(long self);
 
@@ -414,8 +409,8 @@ public interface CefImage extends CefLibraryObject {
         static native CefBinaryValue getAsBitmap0(
                 long self,
                 float scaleFactor,
-                @Nonnull CefColorType colorType,
-                @Nonnull CefAlphaType alphaType,
+                CefColorType colorType,
+                CefAlphaType alphaType,
                 int[] pixelWidth,
                 int[] pixelHeight);
 
@@ -428,7 +423,7 @@ public interface CefImage extends CefLibraryObject {
         static native CefImage create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

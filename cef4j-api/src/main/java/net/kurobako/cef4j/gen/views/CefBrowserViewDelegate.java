@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -14,6 +12,7 @@ import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefGestureCommand;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle BrowserView events. The methods of this class will be called on the browser
@@ -88,7 +87,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      */
     default Optional<CefBrowserViewDelegate> getDelegateForPopupBrowserView(
             @Nullable CefBrowserView browserView,
-            @Nonnull CefBrowserSettings settings,
+            CefBrowserSettings settings,
             @Nullable CefClient client,
             boolean isDevtools) {
         return Optional.empty();
@@ -167,7 +166,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:157</a>
      */
-    default boolean onGestureCommand(@Nullable CefBrowserView browserView, @Nonnull CefGestureCommand gestureCommand) {
+    default boolean onGestureCommand(@Nullable CefBrowserView browserView, CefGestureCommand gestureCommand) {
         return false;
     }
 
@@ -250,7 +249,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         @Override
         public Optional<CefBrowserViewDelegate> getDelegateForPopupBrowserView(
                 @Nullable CefBrowserView browserView,
-                @Nonnull CefBrowserSettings settings,
+                CefBrowserSettings settings,
                 @Nullable CefClient client,
                 boolean isDevtools) {
             java.util.ArrayList<CefBrowserViewDelegate> collected = new java.util.ArrayList<>();
@@ -288,8 +287,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public boolean onGestureCommand(
-                @Nullable CefBrowserView browserView, @Nonnull CefGestureCommand gestureCommand) {
+        public boolean onGestureCommand(@Nullable CefBrowserView browserView, CefGestureCommand gestureCommand) {
             for (CefBrowserViewDelegate d : delegates) {
                 if (d.onGestureCommand(browserView, gestureCommand)) return true;
             }

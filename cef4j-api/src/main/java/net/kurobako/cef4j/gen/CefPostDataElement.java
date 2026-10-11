@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class used to represent a single element in the request post data. The methods of this class may be called on any
@@ -76,7 +75,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:322</a>
      */
-    void setToBytes(@Nonnull ByteBuffer bytes);
+    void setToBytes(ByteBuffer bytes);
 
     /**
      * Return the type of this post data element.
@@ -127,7 +126,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:347</a>
      */
-    long getBytes(@Nonnull ByteBuffer bytes);
+    long getBytes(ByteBuffer bytes);
     /**
      * Create a new CefPostDataElement object.
      *
@@ -203,7 +202,7 @@ public interface CefPostDataElement extends CefLibraryObject {
         }
 
         @Override
-        public void setToBytes(@Nonnull ByteBuffer bytes) {
+        public void setToBytes(ByteBuffer bytes) {
             checkNotClosed();
             setToBytes0(nativePtr, bytes);
         }
@@ -227,7 +226,7 @@ public interface CefPostDataElement extends CefLibraryObject {
         }
 
         @Override
-        public long getBytes(@Nonnull ByteBuffer bytes) {
+        public long getBytes(ByteBuffer bytes) {
             checkNotClosed();
             return getBytes0(nativePtr, bytes);
         }
@@ -238,7 +237,7 @@ public interface CefPostDataElement extends CefLibraryObject {
 
         static native void setToFile0(long self, @Nullable String fileName);
 
-        static native void setToBytes0(long self, @Nonnull ByteBuffer bytes);
+        static native void setToBytes0(long self, ByteBuffer bytes);
 
         static native CefPostDataElementType getType0(long self);
 
@@ -246,12 +245,12 @@ public interface CefPostDataElement extends CefLibraryObject {
 
         static native long getBytesCount0(long self);
 
-        static native long getBytes0(long self, @Nonnull ByteBuffer bytes);
+        static native long getBytes0(long self, ByteBuffer bytes);
 
         static native CefPostDataElement create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

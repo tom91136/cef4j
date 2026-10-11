@@ -13,7 +13,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
-import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.LatestOnlyDispatcher;
 import net.kurobako.cef4j.ipc.frame.RemoteBrowserBinding;
@@ -60,7 +59,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     }
 
     /** Creates a view whose pixels are supplied by the given transport factory when {@link #attach} is called. */
-    public RemoteWebView(@Nonnull RemoteBrowserBinding.FrameTransportFactory frameTransportFactory) {
+    public RemoteWebView(RemoteBrowserBinding.FrameTransportFactory frameTransportFactory) {
         binding = new RemoteBrowserBinding("RemoteWebView", Platform::runLater, frameTransportFactory, this::onFrame);
         getChildren().add(imageView);
         imageView.setManaged(false);
@@ -209,19 +208,17 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * handles and their completion future are session-scoped. The future returned by {@link #browserReady()} resolves
      * once the server publishes its auto-bootstrap browser handle.
      */
-    public void attach(@Nonnull CefSession session) {
+    public void attach(CefSession session) {
         binding.attach(session);
     }
 
     /** Future resolves with the browser handle once the server has reported its auto-created browser. */
-    @Nonnull
     public CompletableFuture<RemoteHandle> browserReady() {
         return binding.browserReady();
     }
 
     /** Future resolves when the load is queued (server-side ack); does not wait for page rendering. */
-    @Nonnull
-    public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+    public CompletableFuture<Void> loadUrl(String url) {
         return binding.loadUrl(url);
     }
 
@@ -229,13 +226,11 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * Evaluate JS in the main frame. Result is JSON-stringified for objects/arrays; primitives come back as their
      * string form. Returns empty string for null/undefined results, throws via the future for JS errors.
      */
-    @Nonnull
-    public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
+    public CompletableFuture<String> evaluateJavascript(String script) {
         return binding.evaluateJavascript(script);
     }
 
     /** Requests a browser viewport resize and completes only after the remote runtime acknowledges it. */
-    @Nonnull
     public CompletableFuture<Void> resizeViewport(int width, int height) {
         return binding.resizeViewport(width, height);
     }
@@ -307,8 +302,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     }
 
     /** Blocking variant of {@link #browserReady()} that fails if no browser is reported within {@code timeout}. */
-    @Nonnull
-    public RemoteHandle awaitBrowserHandle(@Nonnull Duration timeout) throws Exception {
+    public RemoteHandle awaitBrowserHandle(Duration timeout) throws Exception {
         return binding.awaitBrowserHandle(timeout);
     }
 }

@@ -15,6 +15,9 @@
     <description>Scala 3 code generator for CEF Java bindings</description>
 
     <properties>
+
+        <japicmp.skip>true</japicmp.skip>
+        <dependency.hygiene.skip>true</dependency.hygiene.skip>
         <!-- SpotBugs misfires on idiomatic Scala 3 bytecode (closures, inlined values, pattern-match
              lowerings). Not worth chasing; NullAway + Error Prone only run on Java, so this module is
              linted via Scala's own compiler warnings. -->
@@ -51,6 +54,13 @@
         <dependency>
             <groupId>org.scalameta</groupId>
             <artifactId>munit_3</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- munit runs on JUnit 4; surefire 3.6 only discovers it through the vintage engine. -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -186,6 +196,17 @@
                                 <provision-cef url="${cef.codegen.windows.url}"
                                                archive="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2"
                                                distdir="${cef.codegen.windows.dir}"/>
+                                <sequential unless:true="${clang.format.skip}">
+                                    <mkdir dir="${clang.format.dir}"/>
+                                    <get src="${clang.format.url}" dest="${clang.format.exe}" skipexisting="true"/>
+                                    <local name="clang.format.ok"/>
+                                    <checksum file="${clang.format.exe}" algorithm="SHA-256"
+                                              property="${clang.format.sha256}" verifyProperty="clang.format.ok"/>
+                                    <fail message="clang-format checksum mismatch, delete and retry: ${clang.format.exe}">
+                                        <condition><isfalse value="${clang.format.ok}"/></condition>
+                                    </fail>
+                                    <chmod file="${clang.format.exe}" perm="755"/>
+                                </sequential>
                             </target>
                         </configuration>
                     </execution>
@@ -228,14 +249,17 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>@{jacoco.argLine} ${surefire.assertions} ${surefire.argLine} ${codegen.test.argLine}</argLine>
+                    <systemPropertyVariables>
+                        <cef4j.wire.dir>${maven.multiModuleProjectDirectory}/cef4j-runtime-server/src/main/cpp</cef4j.wire.dir>
+                    </systemPropertyVariables>
                     <includes>
-                        <include>**/*Spec.*</include>
-                        <include>**/*Test.*</include>
-                        <include>**/*Suite.*</include>
+                        <include>**/*Spec</include>
+                        <include>**/*Test</include>
+                        <include>**/*Suite</include>
                     </includes>
                     <excludes>
-                        <exclude>**/*IntegrationSpec.*</exclude>
-                        <exclude>**/*IT.*</exclude>
+                        <exclude>**/*IntegrationSpec</exclude>
+                        <exclude>**/*IT</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -263,8 +287,8 @@
                 <configuration>
                     <argLine>@{jacoco.argLine} ${surefire.assertions} ${surefire.argLine} ${codegen.test.argLine}</argLine>
                     <includes>
-                        <include>**/*IT.*</include>
-                        <include>**/*IntegrationSpec.*</include>
+                        <include>**/*IT</include>
+                        <include>**/*IntegrationSpec</include>
                     </includes>
                     <systemPropertyVariables>
                         <cef.root>${cef.dist.dir}</cef.root>

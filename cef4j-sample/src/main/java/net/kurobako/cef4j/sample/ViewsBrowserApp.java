@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBoxLayoutSettings;
@@ -33,6 +32,7 @@ import net.kurobako.cef4j.gen.views.CefTextField;
 import net.kurobako.cef4j.gen.views.CefTextFieldDelegate;
 import net.kurobako.cef4j.gen.views.CefWindow;
 import net.kurobako.cef4j.gen.views.CefWindowDelegate;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -461,7 +461,7 @@ public final class ViewsBrowserApp {
             boolean ctrlPressed,
             boolean altPressed,
             boolean highPriority) {
-        java.lang.reflect.Method accelerator = null;
+        java.lang.reflect.Method accelerator;
         try {
             accelerator = win.getClass()
                     .getMethod(

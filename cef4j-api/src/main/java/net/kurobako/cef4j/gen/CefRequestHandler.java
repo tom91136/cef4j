@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle events related to browser requests. The methods of this class will be called on
@@ -82,7 +81,7 @@ public interface CefRequestHandler extends CefClientHandler {
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
             @Nullable String targetUrl,
-            @Nonnull CefWindowOpenDisposition targetDisposition,
+            CefWindowOpenDisposition targetDisposition,
             boolean userGesture) {
         return false;
     }
@@ -170,7 +169,7 @@ public interface CefRequestHandler extends CefClientHandler {
      */
     default boolean onCertificateError(
             @Nullable CefBrowser browser,
-            @Nonnull CefErrorCode certError,
+            CefErrorCode certError,
             @Nullable String requestUrl,
             @Nullable CefSslInfo sslInfo,
             @Nullable CefCallback callback) {
@@ -204,7 +203,7 @@ public interface CefRequestHandler extends CefClientHandler {
             @Nullable String host,
             int port,
             long certificatesCount,
-            @Nullable CefX509Certificate[] certificates,
+            CefX509Certificate @Nullable [] certificates,
             @Nullable CefSelectClientCertificateCallback callback) {
         return false;
     }
@@ -283,10 +282,7 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:261</a>
      */
     default void onRenderProcessTerminated(
-            @Nullable CefBrowser browser,
-            @Nonnull CefTerminationStatus status,
-            int errorCode,
-            @Nullable String errorString) {}
+            @Nullable CefBrowser browser, CefTerminationStatus status, int errorCode, @Nullable String errorString) {}
 
     /**
      * Called on the browser process UI thread when the window.document object of the main frame has been created.
@@ -333,7 +329,7 @@ public interface CefRequestHandler extends CefClientHandler {
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
                 @Nullable String targetUrl,
-                @Nonnull CefWindowOpenDisposition targetDisposition,
+                CefWindowOpenDisposition targetDisposition,
                 boolean userGesture) {
             for (CefRequestHandler d : delegates) {
                 if (d.onOpenUrlFromTab(browser, frame, targetUrl, targetDisposition, userGesture)) return true;
@@ -387,7 +383,7 @@ public interface CefRequestHandler extends CefClientHandler {
         @Override
         public boolean onCertificateError(
                 @Nullable CefBrowser browser,
-                @Nonnull CefErrorCode certError,
+                CefErrorCode certError,
                 @Nullable String requestUrl,
                 @Nullable CefSslInfo sslInfo,
                 @Nullable CefCallback callback) {
@@ -405,7 +401,7 @@ public interface CefRequestHandler extends CefClientHandler {
                 @Nullable String host,
                 int port,
                 long certificatesCount,
-                @Nullable CefX509Certificate[] certificates,
+                CefX509Certificate @Nullable [] certificates,
                 @Nullable CefSelectClientCertificateCallback callback) {
             for (CefRequestHandler d : delegates) {
                 if (d.onSelectClientCertificate(
@@ -438,7 +434,7 @@ public interface CefRequestHandler extends CefClientHandler {
         @Override
         public void onRenderProcessTerminated(
                 @Nullable CefBrowser browser,
-                @Nonnull CefTerminationStatus status,
+                CefTerminationStatus status,
                 int errorCode,
                 @Nullable String errorString) {
             for (CefRequestHandler d : delegates) d.onRenderProcessTerminated(browser, status, errorCode, errorString);

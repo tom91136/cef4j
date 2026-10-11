@@ -18,7 +18,7 @@ abstract class SwingBrowserPanelTestBase {
     static Path tempDir;
 
     @BeforeAll
-    static void initCef() throws Exception {
+    static void initCef() {
         ensureCefStarted(tempDir);
     }
 

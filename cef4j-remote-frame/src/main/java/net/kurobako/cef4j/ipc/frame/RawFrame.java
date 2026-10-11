@@ -2,7 +2,6 @@ package net.kurobako.cef4j.ipc.frame;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import javax.annotation.Nonnull;
 
 /** A zero-copy view of one decoded CEF paint. Its pixels are valid only for the delivering callback. */
 public final class RawFrame {
@@ -12,7 +11,7 @@ public final class RawFrame {
     private final ByteBuffer pixels;
     private final FrameMetadata metadata;
 
-    public RawFrame(int width, int height, int stride, @Nonnull ByteBuffer pixels, @Nonnull FrameMetadata metadata) {
+    public RawFrame(int width, int height, int stride, ByteBuffer pixels, FrameMetadata metadata) {
         long rowBytes = (long) width * 4L;
         long requiredBytes = (long) stride * height;
         if (width <= 0 || height <= 0 || stride < rowBytes || requiredBytes > Integer.MAX_VALUE) {
@@ -42,18 +41,15 @@ public final class RawFrame {
         return stride;
     }
 
-    @Nonnull
     public ByteBuffer pixels() {
         return pixels.asReadOnlyBuffer();
     }
 
-    @Nonnull
     public FrameMetadata metadata() {
         return metadata;
     }
 
     /** Makes an explicitly owned snapshot suitable for retaining beyond the callback. */
-    @Nonnull
     public RawFrame snapshot() {
         ByteBuffer source = pixels();
         ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining());

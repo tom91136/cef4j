@@ -111,7 +111,7 @@ public final class CefMediaAccessPermissionTypes implements CefEnum<CefMediaAcce
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMediaAccessPermissionTypes)) return false;
         return this.value == ((CefMediaAccessPermissionTypes) obj).value;

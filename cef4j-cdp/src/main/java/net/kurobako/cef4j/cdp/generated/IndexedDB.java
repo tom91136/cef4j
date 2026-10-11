@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -249,8 +248,8 @@ public final class IndexedDB {
             ARRAY("array");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -277,7 +276,8 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> string() {
-            return Optional.ofNullable((String) raw("string"));
+            Object value = raw("string");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Date value.
@@ -292,7 +292,8 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<IndexedDB.Key>> array() {
-            return Optional.ofNullable(list(raw("array"), element0 -> java.util.Objects.requireNonNull(IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("array");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Key type.
@@ -390,14 +391,16 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<IndexedDB.Key> lower() {
-            return Optional.ofNullable(raw("lower") == null ? null : IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(objectMap(raw("lower")))));
+            Object value = raw("lower");
+            return Optional.ofNullable(value == null ? null : IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Upper bound.
          * @return the protocol field value, empty when absent
          */
         public Optional<IndexedDB.Key> upper() {
-            return Optional.ofNullable(raw("upper") == null ? null : IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(objectMap(raw("upper")))));
+            Object value = raw("upper");
+            return Optional.ofNullable(value == null ? null : IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * If true lower bound is open.
@@ -544,8 +547,8 @@ public final class IndexedDB {
             ARRAY("array");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static TypeValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -564,14 +567,16 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> string() {
-            return Optional.ofNullable((String) raw("string"));
+            Object value = raw("string");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Array value.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> array() {
-            return Optional.ofNullable(list(raw("array"), element0 -> (String) element0));
+            Object value = raw("array");
+            return Optional.ofNullable(list(value, element0 -> (String) element0));
         }
         /**
          * Key path type.
@@ -643,21 +648,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Database name.
@@ -768,21 +776,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Database name.
@@ -881,21 +892,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Returns the databaseName field.
@@ -1028,21 +1042,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Database name.
@@ -1063,7 +1080,8 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> indexName() {
-            return Optional.ofNullable((String) raw("indexName"));
+            Object value = raw("indexName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Number of records to skip.
@@ -1084,7 +1102,8 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<IndexedDB.KeyRange> keyRange() {
-            return Optional.ofNullable(raw("keyRange") == null ? null : IndexedDB.KeyRange.fromMap(java.util.Objects.requireNonNull(objectMap(raw("keyRange")))));
+            Object value = raw("keyRange");
+            return Optional.ofNullable(value == null ? null : IndexedDB.KeyRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
@@ -1237,21 +1256,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Database name.
@@ -1362,21 +1384,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Database name.
@@ -1464,21 +1489,24 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            return Optional.ofNullable((String) raw("storageKey"));
+            Object value = raw("storageKey");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
+            Object value = raw("storageBucket");
+            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
@@ -1638,7 +1666,7 @@ public final class IndexedDB {
             storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
             params.put("databaseName", CdpObject.json(databaseName));
             params.put("objectStoreName", CdpObject.json(objectStoreName));
-            return client.call("IndexedDB.clearObjectStore", params, result_ -> null);
+            return client.call("IndexedDB.clearObjectStore", params);
         }
         /**
          * Clears all entries from an object store.
@@ -1655,7 +1683,7 @@ public final class IndexedDB {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearObjectStore(ClearObjectStoreRequest request) {
-            return client.call("IndexedDB.clearObjectStore", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("IndexedDB.clearObjectStore", request == null ? null : request.toMap());
         }
         /**
          * Deletes a database.
@@ -1671,7 +1699,7 @@ public final class IndexedDB {
             storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
             storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
             params.put("databaseName", CdpObject.json(databaseName));
-            return client.call("IndexedDB.deleteDatabase", params, result_ -> null);
+            return client.call("IndexedDB.deleteDatabase", params);
         }
         /**
          * Deletes a database.
@@ -1687,7 +1715,7 @@ public final class IndexedDB {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteDatabase(DeleteDatabaseRequest request) {
-            return client.call("IndexedDB.deleteDatabase", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("IndexedDB.deleteDatabase", request == null ? null : request.toMap());
         }
         /**
          * Delete a range of entries from an object store
@@ -1707,7 +1735,7 @@ public final class IndexedDB {
             params.put("databaseName", CdpObject.json(databaseName));
             params.put("objectStoreName", CdpObject.json(objectStoreName));
             params.put("keyRange", CdpObject.json(keyRange));
-            return client.call("IndexedDB.deleteObjectStoreEntries", params, result_ -> null);
+            return client.call("IndexedDB.deleteObjectStoreEntries", params);
         }
         /**
          * Delete a range of entries from an object store
@@ -1725,21 +1753,21 @@ public final class IndexedDB {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteObjectStoreEntries(DeleteObjectStoreEntriesRequest request) {
-            return client.call("IndexedDB.deleteObjectStoreEntries", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("IndexedDB.deleteObjectStoreEntries", request == null ? null : request.toMap());
         }
         /**
          * Disables events from backend.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("IndexedDB.disable", null, result_ -> null);
+            return client.call("IndexedDB.disable", null);
         }
         /**
          * Enables events from backend.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("IndexedDB.enable", null, result_ -> null);
+            return client.call("IndexedDB.enable", null);
         }
         /**
          * Requests data from object store or index.

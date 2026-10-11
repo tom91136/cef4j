@@ -13,9 +13,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +44,13 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     private volatile boolean closed;
     private volatile boolean disconnected;
 
-    @Nonnull
-    public static WebSocketTransport connect(@Nonnull String endpoint) throws CefTransportException {
+    public static WebSocketTransport connect(String endpoint) throws CefTransportException {
         return connect(endpoint, Optional.empty(), Optional.empty());
     }
 
     /** Connects with optional bearer authentication and an explicit TLS context for {@code wss://}. */
-    @Nonnull
     public static WebSocketTransport connect(
-            @Nonnull String endpoint, Optional<String> bearerToken, Optional<SSLContext> sslContext)
+            String endpoint, Optional<String> bearerToken, Optional<SSLContext> sslContext)
             throws CefTransportException {
         URI uri;
         try {
@@ -96,10 +93,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
             transport.closed = true;
             Thread.currentThread().interrupt();
             throw new CefTransportException(endpoint + ": connect interrupted", e);
-        } catch (ExecutionException | TimeoutException e) {
-            transport.closed = true;
-            throw new CefTransportException(endpoint + ": connect failed", e);
-        } catch (RuntimeException e) {
+        } catch (ExecutionException | TimeoutException | RuntimeException e) {
             transport.closed = true;
             throw new CefTransportException(endpoint + ": connect failed", e);
         }
@@ -109,13 +103,12 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
         this.endpoint = endpoint;
     }
 
-    @Nonnull
     public String endpoint() {
         return endpoint;
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(endpoint + ": send on closed transport");
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
         byte[] copy = new byte[frame.remaining()];
@@ -139,7 +132,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+    public void onReceive(Consumer<ByteBuffer> handler) {
         synchronized (receiveLock) {
             receiveHandler = handler;
             byte[] frame;
@@ -148,7 +141,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable handler) {
+    public void onDisconnect(Runnable handler) {
         disconnectHandler = handler;
         fireDisconnectIfReady();
     }

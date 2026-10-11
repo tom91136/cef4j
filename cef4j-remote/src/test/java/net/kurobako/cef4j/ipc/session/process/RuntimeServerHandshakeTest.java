@@ -40,4 +40,22 @@ class RuntimeServerHandshakeTest {
                         "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=14600 transport=zmq frame=shared-file "
                                 + "endpoint=tcp://127.0.0.1:1 capabilities=devtools,osr,input"));
     }
+
+    @Test
+    void rejectsMalformedAndDuplicateFields() {
+        String valid = "protocol=1 api=remote-cef cef-api=14600 transport=uds frame=inline "
+                + "endpoint=unix:///tmp/cef4j.sock capabilities=remote-cef-api";
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> RuntimeServerHandshake.parse("CEF4J_RUNTIME_SERVER =x " + valid))
+                .withMessageContaining("malformed");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> RuntimeServerHandshake.parse("CEF4J_RUNTIME_SERVER x= " + valid))
+                .withMessageContaining("malformed");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> RuntimeServerHandshake.parse("CEF4J_RUNTIME_SERVER transport=zmq " + valid))
+                .withMessageContaining("duplicate");
+        assertThat(RuntimeServerHandshake.parse("CEF4J_RUNTIME_SERVER x=y " + valid)
+                        .transport())
+                .isEqualTo("uds");
+    }
 }

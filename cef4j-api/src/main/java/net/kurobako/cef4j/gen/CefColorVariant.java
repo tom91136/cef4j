@@ -110,7 +110,7 @@ public final class CefColorVariant implements CefEnum<CefColorVariant> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefColorVariant)) return false;
         return this.value == ((CefColorVariant) obj).value;

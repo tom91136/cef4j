@@ -1,15 +1,18 @@
 #pragma once
 
-#include <jni.h>
 #include <atomic>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <string>
-#include <vector>
 #include <type_traits>
-#include "include/capi/cef_base_capi.h"
+#include <vector>
+
+#include <jni.h>
+
 #include "include/capi/cef_app_capi.h"
+#include "include/capi/cef_base_capi.h"
 #include "include/internal/cef_string.h"
+
 #include "cef_compat.h"
 
 // JNI export signature macros.
@@ -27,21 +30,18 @@
 #define CEF4J_PEER(cls) cls##_00024NativePeer
 
 // Indirection layer so CEF4J_PEER() expands before token-paste
-#define CEF4J_JNI_EXPORT_(ret, cls, name) \
-    extern "C" JNIEXPORT ret JNICALL Java_net_kurobako_cef4j_gen_##cls##_##name
+#define CEF4J_JNI_EXPORT_(ret, cls, name) extern "C" JNIEXPORT ret JNICALL Java_net_kurobako_cef4j_gen_##cls##_##name
 #define CEF4J_JNI_EXPORT(ret, cls, name) CEF4J_JNI_EXPORT_(ret, cls, name)
 
 // Variant for hand-written runtime code (net.kurobako.cef4j package, no .gen)
-#define CEF4J_JNI_EXPORT_RT_(ret, cls, name) \
-    extern "C" JNIEXPORT ret JNICALL Java_net_kurobako_cef4j_##cls##_##name
+#define CEF4J_JNI_EXPORT_RT_(ret, cls, name) extern "C" JNIEXPORT ret JNICALL Java_net_kurobako_cef4j_##cls##_##name
 #define CEF4J_JNI_EXPORT_RT(ret, cls, name) CEF4J_JNI_EXPORT_RT_(ret, cls, name)
 
 // Compatibility wrapper for cef_initialize(). CEF versions before the
 // disable_signal_handlers setting overwrite HotSpot's fatal-signal handlers,
 // turning recoverable JVM guard-page faults into SIGBUS/SIGSEGV process exits.
 // The implementation preserves the host handlers active immediately before CEF initialization.
-int Cef4jInitialize(const cef_main_args_t* args, const cef_settings_t* settings,
-                    cef_app_t* application, void* windowsSandboxInfo);
+int Cef4jInitialize(const cef_main_args_t *args, const cef_settings_t *settings, cef_app_t *application, void *windowsSandboxInfo);
 
 // ScopedJNIEnv: Ensures a JNIEnv* is available on the current thread.
 //
@@ -51,115 +51,105 @@ int Cef4jInitialize(const cef_main_args_t* args, const cef_settings_t* settings,
 // (only if it was the one that attached).
 class ScopedJNIEnv {
 public:
-    explicit ScopedJNIEnv(JavaVM* jvm) : jvm_(jvm), env_(nullptr), didAttach_(false) {
-        jint rc = jvm_->GetEnv(reinterpret_cast<void**>(&env_), JNI_VERSION_1_8);
-        if (rc == JNI_EDETACHED) {
-            JavaVMAttachArgs args{JNI_VERSION_1_8, nullptr, nullptr};
-            jvm_->AttachCurrentThread(reinterpret_cast<void**>(&env_), &args);
-            didAttach_ = true;
-        }
+  explicit ScopedJNIEnv(JavaVM *jvm) : jvm_(jvm), env_(nullptr), didAttach_(false) {
+    jint rc = jvm_->GetEnv(reinterpret_cast<void **>(&env_), JNI_VERSION_1_8);
+    if (rc == JNI_EDETACHED) {
+      JavaVMAttachArgs args{JNI_VERSION_1_8, nullptr, nullptr};
+      jvm_->AttachCurrentThread(reinterpret_cast<void **>(&env_), &args);
+      didAttach_ = true;
     }
+  }
 
-    ~ScopedJNIEnv() {
-        if (didAttach_) {
-            jvm_->DetachCurrentThread();
-        }
+  ~ScopedJNIEnv() {
+    if (didAttach_) {
+      jvm_->DetachCurrentThread();
     }
+  }
 
-    ScopedJNIEnv(const ScopedJNIEnv&) = delete;
-    ScopedJNIEnv& operator=(const ScopedJNIEnv&) = delete;
+  ScopedJNIEnv(const ScopedJNIEnv &) = delete;
+  ScopedJNIEnv &operator=(const ScopedJNIEnv &) = delete;
 
-    JNIEnv* operator->() const { return env_; }
-    JNIEnv* get() const { return env_; }
-    operator JNIEnv*() const { return env_; }
+  JNIEnv *operator->() const { return env_; }
+  JNIEnv *get() const { return env_; }
+  operator JNIEnv *() const { return env_; }
 
 private:
-    JavaVM* jvm_;
-    JNIEnv* env_;
-    bool didAttach_;
+  JavaVM *jvm_;
+  JNIEnv *env_;
+  bool didAttach_;
 };
 
 // Resolve a Java class from native-attached threads using the application
 // class loader captured during JNI_OnLoad. Raw FindClass only works reliably
 // for bootstrap classes on arbitrary native threads.
-jclass FindClassCached(JNIEnv* env, const char* name);
+jclass FindClassCached(JNIEnv *env, const char *name);
 
 // String conversion
 
 // Convert a CEF string (UTF-16) to a Java String.
 // Returns nullptr if cefStr is null.
-inline jstring CefStringToJString(JNIEnv* env, const cef_string_t* cefStr) {
-    if (!cefStr || !cefStr->str) return nullptr;
-    return env->NewString(reinterpret_cast<const jchar*>(cefStr->str),
-                          static_cast<jsize>(cefStr->length));
+inline jstring CefStringToJString(JNIEnv *env, const cef_string_t *cefStr) {
+  if (!cefStr || !cefStr->str) return nullptr;
+  return env->NewString(reinterpret_cast<const jchar *>(cefStr->str), static_cast<jsize>(cefStr->length));
 }
 
 // Overloads that accept either cef_string_t values or pointers.
-inline jstring CefStringToJStringAuto(JNIEnv* env, const cef_string_t& cefStr) {
-    return CefStringToJString(env, &cefStr);
-}
+inline jstring CefStringToJStringAuto(JNIEnv *env, const cef_string_t &cefStr) { return CefStringToJString(env, &cefStr); }
 
-inline jstring CefStringToJStringAuto(JNIEnv* env, cef_string_t& cefStr) {
-    return CefStringToJString(env, &cefStr);
-}
+inline jstring CefStringToJStringAuto(JNIEnv *env, cef_string_t &cefStr) { return CefStringToJString(env, &cefStr); }
 
-inline jstring CefStringToJStringAuto(JNIEnv* env, const cef_string_t* cefStr) {
-    return CefStringToJString(env, cefStr);
-}
+inline jstring CefStringToJStringAuto(JNIEnv *env, const cef_string_t *cefStr) { return CefStringToJString(env, cefStr); }
 
-inline jstring CefStringToJStringAuto(JNIEnv* env, cef_string_t* cefStr) {
-    return CefStringToJString(env, cefStr);
-}
+inline jstring CefStringToJStringAuto(JNIEnv *env, cef_string_t *cefStr) { return CefStringToJString(env, cefStr); }
 
 // Convert a Java String to a cef_string_t (caller-owned).
 // Writes into `out`. Safe to call with null jStr (clears out).
-inline void JStringToCefString(JNIEnv* env, jstring jStr, cef_string_t* out) {
-    if (!jStr) {
-        cef_string_clear(out);
-        return;
-    }
-    const jchar* chars = env->GetStringChars(jStr, nullptr);
-    jsize len = env->GetStringLength(jStr);
-    cef_string_utf16_set(reinterpret_cast<const cef4j_char_t*>(chars),
-                         static_cast<size_t>(len), out, /*copy=*/1);
-    env->ReleaseStringChars(jStr, chars);
+inline void JStringToCefString(JNIEnv *env, jstring jStr, cef_string_t *out) {
+  if (!jStr) {
+    cef_string_clear(out);
+    return;
+  }
+  const jchar *chars = env->GetStringChars(jStr, nullptr);
+  jsize len = env->GetStringLength(jStr);
+  cef_string_utf16_set(reinterpret_cast<const cef4j_char_t *>(chars), static_cast<size_t>(len), out, /*copy=*/1);
+  env->ReleaseStringChars(jStr, chars);
 }
 
 // Overload returning a cef_string_userfree_t for generated object stubs
 // that pass string args directly to CEF function pointers.
-inline cef_string_userfree_t JStringToCefString(JNIEnv* env, jstring jStr) {
-    cef_string_userfree_t s = cef_string_userfree_utf16_alloc();
-    JStringToCefString(env, jStr, s);
-    return s;
+inline cef_string_userfree_t JStringToCefString(JNIEnv *env, jstring jStr) {
+  cef_string_userfree_t s = cef_string_userfree_utf16_alloc();
+  JStringToCefString(env, jStr, s);
+  return s;
 }
 
 // Write a Java String into either a cef_string_t field or a cef_string_t* field.
-inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t* out) {
-    if (!out) return;
-    if (!jStr) {
-        cef_string_clear(out);
-        return;
-    }
-    const jchar* chars = env->GetStringChars(jStr, nullptr);
-    jsize len = env->GetStringLength(jStr);
-    cef_string_set(reinterpret_cast<const cef4j_char_t*>(chars), static_cast<size_t>(len), out, 1);
-    env->ReleaseStringChars(jStr, chars);
+inline void CefStringSetFromJString(JNIEnv *env, jstring jStr, cef_string_t *out) {
+  if (!out) return;
+  if (!jStr) {
+    cef_string_clear(out);
+    return;
+  }
+  const jchar *chars = env->GetStringChars(jStr, nullptr);
+  jsize len = env->GetStringLength(jStr);
+  cef_string_set(reinterpret_cast<const cef4j_char_t *>(chars), static_cast<size_t>(len), out, 1);
+  env->ReleaseStringChars(jStr, chars);
 }
 
-inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t** out) {
-    if (!out) return;
-    if (!jStr) {
-        if (*out) cef_string_clear(*out);
-        return;
-    }
-    if (!*out) {
-        *out = cef_string_userfree_utf16_alloc();
-        if (!*out) return;
-    }
-    const jchar* chars = env->GetStringChars(jStr, nullptr);
-    jsize len = env->GetStringLength(jStr);
-    cef_string_set(reinterpret_cast<const cef4j_char_t*>(chars), static_cast<size_t>(len), *out, 1);
-    env->ReleaseStringChars(jStr, chars);
+inline void CefStringSetFromJString(JNIEnv *env, jstring jStr, cef_string_t **out) {
+  if (!out) return;
+  if (!jStr) {
+    if (*out) cef_string_clear(*out);
+    return;
+  }
+  if (!*out) {
+    *out = cef_string_userfree_utf16_alloc();
+    if (!*out) return;
+  }
+  const jchar *chars = env->GetStringChars(jStr, nullptr);
+  jsize len = env->GetStringLength(jStr);
+  cef_string_set(reinterpret_cast<const cef4j_char_t *>(chars), static_cast<size_t>(len), *out, 1);
+  env->ReleaseStringChars(jStr, chars);
 }
 
 // Reference counting helpers
@@ -170,70 +160,67 @@ inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t** ou
 // CefStruct is the CEF C API struct type (e.g., cef_client_t).
 // base->size must equal sizeof(CefStruct) because CEF validates it
 // against the expected struct size at the DLL boundary.
-template<typename T, typename CefStruct>
-void InitRefCount(cef_base_ref_counted_t* base) {
-    base->size = sizeof(CefStruct);
-    base->add_ref = [](cef_base_ref_counted_t* self) {
-        auto* t = reinterpret_cast<T*>(self);
-        t->refCount.fetch_add(1, std::memory_order_relaxed);
-    };
-    base->release = [](cef_base_ref_counted_t* self) -> int {
-        auto* t = reinterpret_cast<T*>(self);
-        if (t->refCount.fetch_sub(1, std::memory_order_acq_rel) == 1) {
-            // Release the Java global ref before deleting
-            if (t->jvm && t->javaHandler) {
-                ScopedJNIEnv env(t->jvm);
-                env->DeleteGlobalRef(t->javaHandler);
-            }
-            delete t;
-            return 1;
-        }
-        return 0;
-    };
-    base->has_one_ref = [](cef_base_ref_counted_t* self) -> int {
-        auto* t = reinterpret_cast<T*>(self);
-        return t->refCount.load(std::memory_order_acquire) == 1 ? 1 : 0;
-    };
-    base->has_at_least_one_ref = [](cef_base_ref_counted_t* self) -> int {
-        auto* t = reinterpret_cast<T*>(self);
-        return t->refCount.load(std::memory_order_acquire) >= 1 ? 1 : 0;
-    };
+template <typename T, typename CefStruct> void InitRefCount(cef_base_ref_counted_t *base) {
+  base->size = sizeof(CefStruct);
+  base->add_ref = [](cef_base_ref_counted_t *self) {
+    auto *t = reinterpret_cast<T *>(self);
+    t->refCount.fetch_add(1, std::memory_order_relaxed);
+  };
+  base->release = [](cef_base_ref_counted_t *self) -> int {
+    auto *t = reinterpret_cast<T *>(self);
+    if (t->refCount.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+      // Release the Java global ref before deleting
+      if (t->jvm && t->javaHandler) {
+        ScopedJNIEnv env(t->jvm);
+        env->DeleteGlobalRef(t->javaHandler);
+      }
+      delete t;
+      return 1;
+    }
+    return 0;
+  };
+  base->has_one_ref = [](cef_base_ref_counted_t *self) -> int {
+    auto *t = reinterpret_cast<T *>(self);
+    return t->refCount.load(std::memory_order_acquire) == 1 ? 1 : 0;
+  };
+  base->has_at_least_one_ref = [](cef_base_ref_counted_t *self) -> int {
+    auto *t = reinterpret_cast<T *>(self);
+    return t->refCount.load(std::memory_order_acquire) >= 1 ? 1 : 0;
+  };
 }
 
 // JNI exception checking
 
 // Check for pending Java exception after a JNI call. Returns true if an
 // exception is pending (and clears it so native code can continue safely).
-inline bool CheckJNIException(JNIEnv* env) {
-    if (env->ExceptionCheck()) {
-        env->ExceptionDescribe();
-        env->ExceptionClear();
-        return true;
-    }
-    return false;
+inline bool CheckJNIException(JNIEnv *env) {
+  if (env->ExceptionCheck()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+    return true;
+  }
+  return false;
 }
 
 // Wide JNI integer helpers.
 // These centralize pointer/integer <-> jlong conversion across generated code.
-template<typename T>
-inline jlong to_jlong(T value) {
-    if constexpr (std::is_pointer_v<T>) {
-        return static_cast<jlong>(reinterpret_cast<intptr_t>(value));
-    } else if constexpr (std::is_enum_v<T>) {
-        using U = std::underlying_type_t<T>;
-        return static_cast<jlong>(static_cast<U>(value));
-    } else {
-        return static_cast<jlong>(value);
-    }
+template <typename T> inline jlong to_jlong(T value) {
+  if constexpr (std::is_pointer_v<T>) {
+    return static_cast<jlong>(reinterpret_cast<intptr_t>(value));
+  } else if constexpr (std::is_enum_v<T>) {
+    using U = std::underlying_type_t<T>;
+    return static_cast<jlong>(static_cast<U>(value));
+  } else {
+    return static_cast<jlong>(value);
+  }
 }
 
-template<typename T>
-inline T from_jlong(jlong value) {
-    if constexpr (std::is_pointer_v<T>) {
-        return reinterpret_cast<T>(static_cast<intptr_t>(value));
-    } else {
-        return static_cast<T>(value);
-    }
+template <typename T> inline T from_jlong(jlong value) {
+  if constexpr (std::is_pointer_v<T>) {
+    return reinterpret_cast<T>(static_cast<intptr_t>(value));
+  } else {
+    return static_cast<T>(value);
+  }
 }
 
 // String collection conversion - declarations only (implementations in jni_util.cpp)
@@ -243,33 +230,24 @@ inline T from_jlong(jlong value) {
 #include "include/internal/cef_string_multimap.h"
 
 // Native -> Java
-jobject CefStringListToJavaList(JNIEnv* env, cef_string_list_t list);
-jobject CefStringMapToJavaMap(JNIEnv* env, cef_string_map_t map);
-jobject CefStringMultimapToJavaMap(JNIEnv* env, cef_string_multimap_t mmap);
+jobject CefStringListToJavaList(JNIEnv *env, cef_string_list_t list);
+jobject CefStringMapToJavaMap(JNIEnv *env, cef_string_map_t map);
+jobject CefStringMultimapToJavaMap(JNIEnv *env, cef_string_multimap_t mmap);
 
 // Java -> Native
-cef_string_list_t JavaListToCefStringList(JNIEnv* env, jobject jList);
-cef_string_map_t JavaMapToCefStringMap(JNIEnv* env, jobject jMap);
-cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv* env, jobject jMap);
+cef_string_list_t JavaListToCefStringList(JNIEnv *env, jobject jList);
+cef_string_map_t JavaMapToCefStringMap(JNIEnv *env, jobject jMap);
+cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv *env, jobject jMap);
 
 // Java List<String> -> C argv-like arrays. Backing storage lives in `storage`.
-const char* const* JavaListToConstCStringArray(
-    JNIEnv* env,
-    jobject jList,
-    std::vector<std::string>& storage,
-    std::vector<const char*>& ptrs
-);
-char** JavaListToCStringArray(
-    JNIEnv* env,
-    jobject jList,
-    std::vector<std::string>& storage,
-    std::vector<char*>& ptrs
-);
+const char *const *JavaListToConstCStringArray(JNIEnv *env, jobject jList, std::vector<std::string> &storage,
+                                               std::vector<const char *> &ptrs);
+char **JavaListToCStringArray(JNIEnv *env, jobject jList, std::vector<std::string> &storage, std::vector<char *> &ptrs);
 
 // Writeback: copy CEF string collection back into existing Java collection, then free CEF collection
-void CefStringListWriteBack(JNIEnv* env, cef_string_list_t list, jobject jList);
-void CefStringMapWriteBack(JNIEnv* env, cef_string_map_t map, jobject jMap);
-void CefStringMultimapWriteBack(JNIEnv* env, cef_string_multimap_t mmap, jobject jMap);
+void CefStringListWriteBack(JNIEnv *env, cef_string_list_t list, jobject jList);
+void CefStringMapWriteBack(JNIEnv *env, cef_string_map_t map, jobject jMap);
+void CefStringMultimapWriteBack(JNIEnv *env, cef_string_multimap_t mmap, jobject jMap);
 
 // CefValue <-> Java Object conversion (recursive)
 
@@ -285,10 +263,10 @@ void CefStringMultimapWriteBack(JNIEnv* env, cef_string_multimap_t mmap, jobject
 //   binary       -> byte[]
 //   list         -> java.util.ArrayList<Object>
 //   dictionary   -> java.util.HashMap<String, Object>
-jobject CefValueToJObject(JNIEnv* env, cef_value_t* value);
+jobject CefValueToJObject(JNIEnv *env, cef_value_t *value);
 
 // Convert a cef_dictionary_value_t* to a java.util.HashMap<String, Object>.
-jobject CefDictValueToJMap(JNIEnv* env, cef_dictionary_value_t* dict);
+jobject CefDictValueToJMap(JNIEnv *env, cef_dictionary_value_t *dict);
 
 // Convert a cef_list_value_t* to a java.util.ArrayList<Object>.
-jobject CefListValueToJList(JNIEnv* env, cef_list_value_t* list);
+jobject CefListValueToJList(JNIEnv *env, cef_list_value_t *list);

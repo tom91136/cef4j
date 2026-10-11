@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 final class CdpRequestTrackerTest {
@@ -36,10 +36,10 @@ final class CdpRequestTrackerTest {
 
     @Test
     void typedCallCancellationPropagatesToTransportResult() {
-        AtomicReference<CompletableFuture<byte[]>> source = new AtomicReference<>();
+        AtomicReference<@Nullable CompletableFuture<byte[]>> source = new AtomicReference<>();
         CdpTransport transport = new CdpTransport() {
             @Override
-            public CompletableFuture<byte[]> execute(String method, @Nullable byte[] params) {
+            public CompletableFuture<byte[]> execute(String method, byte @Nullable [] params) {
                 CompletableFuture<byte[]> result = new CompletableFuture<>();
                 source.set(result);
                 return result;

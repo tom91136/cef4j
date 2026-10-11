@@ -2,7 +2,6 @@ package net.kurobako.cef4j.ipc.frame;
 
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nonnull;
 
 /**
  * Description of a delivered pixel frame. The sequence is monotonic within one transport instance and the timestamp is
@@ -15,17 +14,12 @@ public final class FrameMetadata {
     private final PixelFormat format;
     private final List<Rect> dirtyRects;
 
-    public FrameMetadata(
-            int sequenceId, long timestampNanos, @Nonnull PixelFormat format, @Nonnull List<Rect> dirtyRects) {
+    public FrameMetadata(int sequenceId, long timestampNanos, PixelFormat format, List<Rect> dirtyRects) {
         this(sequenceId, sequenceId, timestampNanos, format, dirtyRects);
     }
 
     public FrameMetadata(
-            int sequenceId,
-            long sourceSequence,
-            long timestampNanos,
-            @Nonnull PixelFormat format,
-            @Nonnull List<Rect> dirtyRects) {
+            int sequenceId, long sourceSequence, long timestampNanos, PixelFormat format, List<Rect> dirtyRects) {
         this.sequenceId = sequenceId;
         this.sourceSequence = sourceSequence;
         this.timestampNanos = timestampNanos;
@@ -46,12 +40,10 @@ public final class FrameMetadata {
         return timestampNanos;
     }
 
-    @Nonnull
     public PixelFormat format() {
         return format;
     }
 
-    @Nonnull
     public List<Rect> dirtyRects() {
         return dirtyRects;
     }

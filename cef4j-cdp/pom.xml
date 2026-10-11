@@ -13,13 +13,15 @@
     <description>Version-aligned, transport-neutral Chrome DevTools Protocol API</description>
 
     <properties>
+
+        <cef4j.module.name>net.kurobako.cef4j.cdp</cef4j.module.name>
         <java11.runtime.smoke.skip>false</java11.runtime.smoke.skip>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

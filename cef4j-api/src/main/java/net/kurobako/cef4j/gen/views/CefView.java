@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefInsets;
 import net.kurobako.cef4j.gen.CefLibraryObject;
@@ -12,6 +10,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A View is a rectangle within the views View hierarchy. It is the base class for all Views. All size and position
@@ -245,7 +244,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:177</a>
      */
-    void setBounds(@Nonnull CefRect bounds);
+    void setBounds(CefRect bounds);
 
     /**
      * Returns the bounds (size and position) of this View in parent coordinates, or DIP screen coordinates if there is
@@ -280,7 +279,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:198</a>
      */
-    void setSize(@Nonnull CefSize size);
+    void setSize(CefSize size);
 
     /**
      * Returns the size of this View in parent coordinates, or DIP screen coordinates if there is no parent.
@@ -303,7 +302,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:212</a>
      */
-    void setPosition(@Nonnull CefPoint position);
+    void setPosition(CefPoint position);
 
     /**
      * Returns the position of this View. Position is in parent coordinates, or DIP screen coordinates if there is no
@@ -327,7 +326,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:226</a>
      */
-    void setInsets(@Nonnull CefInsets insets);
+    void setInsets(CefInsets insets);
 
     /**
      * Returns the insets for this View in parent coordinates, or DIP screen coordinates if there is no parent.
@@ -587,7 +586,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:395</a>
      */
-    boolean convertPointToScreen(@Nonnull CefPoint.Mutable point);
+    boolean convertPointToScreen(CefPoint.Mutable point);
 
     /**
      * Convert {@code point} to this View's coordinate system from DIP screen coordinates. This View must belong to a
@@ -601,7 +600,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:405</a>
      */
-    boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point);
+    boolean convertPointFromScreen(CefPoint.Mutable point);
 
     /**
      * Convert {@code point} from this View's coordinate system to that of the Window. This View must belong to a Window
@@ -613,7 +612,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:415</a>
      */
-    boolean convertPointToWindow(@Nonnull CefPoint.Mutable point);
+    boolean convertPointToWindow(CefPoint.Mutable point);
 
     /**
      * Convert {@code point} to this View's coordinate system from that of the Window. This View must belong to a Window
@@ -625,7 +624,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:423</a>
      */
-    boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point);
+    boolean convertPointFromWindow(CefPoint.Mutable point);
 
     /**
      * Convert {@code point} from this View's coordinate system to that of {@code view}. {@code view} needs to be in the
@@ -640,7 +639,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:431</a>
      */
-    boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point);
+    boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point);
 
     /**
      * Convert {@code point} to this View's coordinate system from that {@code view}. {@code view} needs to be in the
@@ -655,7 +654,7 @@ public interface CefView extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:440</a>
      */
-    boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point);
+    boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point);
 
     final class NativePeer implements CefView, AutoCloseable {
         private final long nativePtr;
@@ -810,7 +809,7 @@ public interface CefView extends CefLibraryObject {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             setBounds0(nativePtr, bounds);
         }
@@ -828,7 +827,7 @@ public interface CefView extends CefLibraryObject {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             setSize0(nativePtr, size);
         }
@@ -840,7 +839,7 @@ public interface CefView extends CefLibraryObject {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             setPosition0(nativePtr, position);
         }
@@ -852,7 +851,7 @@ public interface CefView extends CefLibraryObject {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             setInsets0(nativePtr, insets);
         }
@@ -978,38 +977,38 @@ public interface CefView extends CefLibraryObject {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return convertPointFromView0(nativePtr, view, point);
@@ -1051,21 +1050,21 @@ public interface CefView extends CefLibraryObject {
 
         static native CefView getViewForId0(long self, int id);
 
-        static native void setBounds0(long self, @Nonnull CefRect bounds);
+        static native void setBounds0(long self, CefRect bounds);
 
         static native CefRect getBounds0(long self);
 
         static native CefRect getBoundsInScreen0(long self);
 
-        static native void setSize0(long self, @Nonnull CefSize size);
+        static native void setSize0(long self, CefSize size);
 
         static native CefSize getSize0(long self);
 
-        static native void setPosition0(long self, @Nonnull CefPoint position);
+        static native void setPosition0(long self, CefPoint position);
 
         static native CefPoint getPosition0(long self);
 
-        static native void setInsets0(long self, @Nonnull CefInsets insets);
+        static native void setInsets0(long self, CefInsets insets);
 
         static native CefInsets getInsets0(long self);
 
@@ -1107,20 +1106,20 @@ public interface CefView extends CefLibraryObject {
 
         static native int getThemeColor0(long self, int colorId);
 
-        static native boolean convertPointToScreen0(long self, @Nonnull CefPoint.Mutable point);
+        static native boolean convertPointToScreen0(long self, CefPoint.Mutable point);
 
-        static native boolean convertPointFromScreen0(long self, @Nonnull CefPoint.Mutable point);
+        static native boolean convertPointFromScreen0(long self, CefPoint.Mutable point);
 
-        static native boolean convertPointToWindow0(long self, @Nonnull CefPoint.Mutable point);
+        static native boolean convertPointToWindow0(long self, CefPoint.Mutable point);
 
-        static native boolean convertPointFromWindow0(long self, @Nonnull CefPoint.Mutable point);
+        static native boolean convertPointFromWindow0(long self, CefPoint.Mutable point);
 
-        static native boolean convertPointToView0(long self, @Nullable CefView view, @Nonnull CefPoint.Mutable point);
+        static native boolean convertPointToView0(long self, @Nullable CefView view, CefPoint.Mutable point);
 
-        static native boolean convertPointFromView0(long self, @Nullable CefView view, @Nonnull CefPoint.Mutable point);
+        static native boolean convertPointFromView0(long self, @Nullable CefView view, CefPoint.Mutable point);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

@@ -103,7 +103,7 @@ public final class CefJsDialogType implements CefEnum<CefJsDialogType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefJsDialogType)) return false;
         return this.value == ((CefJsDialogType) obj).value;

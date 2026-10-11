@@ -2,9 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Structure containing shared texture common metadata. For documentation on each field, please refer to
@@ -92,7 +92,7 @@ public final class CefAcceleratedPaintInfoCommon {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefAcceleratedPaintInfoCommon)) return false;
         CefAcceleratedPaintInfoCommon other = (CefAcceleratedPaintInfoCommon) obj;

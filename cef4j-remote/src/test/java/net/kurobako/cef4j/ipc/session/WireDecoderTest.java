@@ -18,6 +18,28 @@ class WireDecoderTest {
     }
 
     @Test
+    void acceptsEmptyFieldsAndCollectionsThatFitTheRemainingBytes() {
+        assertThat(WireDecoder.length(intBuffer(0), "payload")).isZero();
+        assertThat(WireDecoder.count(intBuffer(0), "items")).isZero();
+
+        ByteBuffer source = ByteBuffer.allocate(Integer.BYTES * 3).order(ByteOrder.LITTLE_ENDIAN);
+        source.putInt(2).putInt(7).putInt(8).flip();
+        assertThat(WireDecoder.count(source, "items")).isEqualTo(2);
+        assertThat(source.position()).isEqualTo(Integer.BYTES);
+    }
+
+    @Test
+    void rejectsTruncatedPrefixesAsInvalidArguments() {
+        ByteBuffer empty = ByteBuffer.allocate(0);
+        assertThatThrownBy(() -> WireDecoder.length(empty, "payload"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("truncated field payload");
+        assertThatThrownBy(() -> WireDecoder.count(empty, "items"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("truncated field items");
+    }
+
+    @Test
     void rejectsNegativeTruncatedAndOversizedLengthsBeforeAllocation() {
         assertThatThrownBy(() -> WireDecoder.length(intBuffer(-1), "payload"))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -30,6 +52,8 @@ class WireDecoderTest {
     @Test
     void rejectsInfeasibleAndOversizedCollectionCounts() {
         assertThatThrownBy(() -> WireDecoder.count(intBuffer(1), "items")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> WireDecoder.count(intBuffer(-1), "items"))
+                .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> WireDecoder.count(intBuffer(WireDecoder.MAX_COLLECTION_ITEMS + 1), "items"))
                 .isInstanceOf(IllegalArgumentException.class);
     }

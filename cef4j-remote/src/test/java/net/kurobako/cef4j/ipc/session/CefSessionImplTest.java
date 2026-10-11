@@ -21,13 +21,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,15 +104,15 @@ class CefSessionImplTest {
         AtomicInteger closes = new AtomicInteger();
         CefTransport transport = new CefTransport() {
             @Override
-            public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+            public void send(ByteBuffer frame) throws CefTransportException {
                 throw new CefTransportException("ready send failed");
             }
 
             @Override
-            public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {}
+            public void onReceive(Consumer<ByteBuffer> handler) {}
 
             @Override
-            public void onDisconnect(@Nonnull Runnable handler) {}
+            public void onDisconnect(Runnable handler) {}
 
             @Override
             public boolean isConnected() {
@@ -263,7 +262,7 @@ class CefSessionImplTest {
         }
 
         @Override
-        public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+        public void send(ByteBuffer frame) {
             sendCount++;
             readyRequest = ByteBuffer.allocate(frame.remaining()).order(ByteOrder.LITTLE_ENDIAN);
             readyRequest.put(frame).flip();
@@ -293,12 +292,12 @@ class CefSessionImplTest {
         }
 
         @Override
-        public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+        public void onReceive(Consumer<ByteBuffer> handler) {
             receiver = handler;
         }
 
         @Override
-        public void onDisconnect(@Nonnull Runnable handler) {}
+        public void onDisconnect(Runnable handler) {}
 
         @Override
         public boolean isConnected() {
@@ -459,7 +458,9 @@ class CefSessionImplTest {
         peer.sendEvent(MSG_EVENT, "boom".getBytes(StandardCharsets.UTF_8));
         assertThat(arrived.await(2, TimeUnit.SECONDS)).isTrue();
         assertThat(sink).hasSize(1);
-        assertThat(sink.peek().bytes).isEqualTo("boom".getBytes(StandardCharsets.UTF_8));
+        TestMessages.BytesView received = sink.peek();
+        assertThat(received).isNotNull();
+        assertThat(received.bytes).isEqualTo("boom".getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
@@ -472,7 +473,7 @@ class CefSessionImplTest {
         initial.unregister();
 
         CountDownLatch arrived = new CountDownLatch(1);
-        AtomicReference<TestMessages.BytesView> seen = new AtomicReference<>();
+        AtomicReference<TestMessages.@Nullable BytesView> seen = new AtomicReference<>();
         session.onLatest(MSG_EVENT, TestMessages.bytesDecoder(MSG_EVENT), value -> {
             seen.set(value);
             arrived.countDown();
@@ -641,7 +642,7 @@ class CefSessionImplTest {
         }
 
         @Override
-        public void encodeInto(@Nonnull ByteBuffer destination) {
+        public void encodeInto(ByteBuffer destination) {
             throw new IllegalStateException("deliberate encode failure");
         }
     }

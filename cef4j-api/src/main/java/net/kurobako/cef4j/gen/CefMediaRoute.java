@@ -4,7 +4,6 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -79,7 +78,7 @@ public interface CefMediaRoute extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:186</a>
      */
-    void sendRouteMessage(@Nonnull ByteBuffer message);
+    void sendRouteMessage(ByteBuffer message);
 
     /**
      * Terminate this route. Will result in an asynchronous call to
@@ -155,7 +154,7 @@ public interface CefMediaRoute extends CefLibraryObject {
         }
 
         @Override
-        public void sendRouteMessage(@Nonnull ByteBuffer message) {
+        public void sendRouteMessage(ByteBuffer message) {
             checkNotClosed();
             sendRouteMessage0(nativePtr, message);
         }
@@ -172,12 +171,12 @@ public interface CefMediaRoute extends CefLibraryObject {
 
         static native CefMediaSink getSink0(long self);
 
-        static native void sendRouteMessage0(long self, @Nonnull ByteBuffer message);
+        static native void sendRouteMessage0(long self, ByteBuffer message);
 
         static native void terminate0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -80,49 +79,56 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showGridExtensionLines() {
-            return Optional.ofNullable((Boolean) raw("showGridExtensionLines"));
+            Object value = raw("showGridExtensionLines");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Show Positive line number labels (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showPositiveLineNumbers() {
-            return Optional.ofNullable((Boolean) raw("showPositiveLineNumbers"));
+            Object value = raw("showPositiveLineNumbers");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Show Negative line number labels (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showNegativeLineNumbers() {
-            return Optional.ofNullable((Boolean) raw("showNegativeLineNumbers"));
+            Object value = raw("showNegativeLineNumbers");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Show area name labels (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showAreaNames() {
-            return Optional.ofNullable((Boolean) raw("showAreaNames"));
+            Object value = raw("showAreaNames");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Show line name labels (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showLineNames() {
-            return Optional.ofNullable((Boolean) raw("showLineNames"));
+            Object value = raw("showLineNames");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Show track size labels (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showTrackSizes() {
-            return Optional.ofNullable((Boolean) raw("showTrackSizes"));
+            Object value = raw("showTrackSizes");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The grid container border highlight color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> gridBorderColor() {
-            return Optional.ofNullable(raw("gridBorderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("gridBorderColor")))));
+            Object value = raw("gridBorderColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
@@ -131,28 +137,32 @@ public final class Overlay {
          */
         @Deprecated
         public Optional<DOM.RGBA> cellBorderColor() {
-            return Optional.ofNullable(raw("cellBorderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cellBorderColor")))));
+            Object value = raw("cellBorderColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The row line color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> rowLineColor() {
-            return Optional.ofNullable(raw("rowLineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowLineColor")))));
+            Object value = raw("rowLineColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The column line color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> columnLineColor() {
-            return Optional.ofNullable(raw("columnLineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnLineColor")))));
+            Object value = raw("columnLineColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether the grid border is dashed (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> gridBorderDash() {
-            return Optional.ofNullable((Boolean) raw("gridBorderDash"));
+            Object value = raw("gridBorderDash");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
@@ -161,63 +171,72 @@ public final class Overlay {
          */
         @Deprecated
         public Optional<Boolean> cellBorderDash() {
-            return Optional.ofNullable((Boolean) raw("cellBorderDash"));
+            Object value = raw("cellBorderDash");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether row lines are dashed (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> rowLineDash() {
-            return Optional.ofNullable((Boolean) raw("rowLineDash"));
+            Object value = raw("rowLineDash");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether column lines are dashed (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> columnLineDash() {
-            return Optional.ofNullable((Boolean) raw("columnLineDash"));
+            Object value = raw("columnLineDash");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The row gap highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> rowGapColor() {
-            return Optional.ofNullable(raw("rowGapColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowGapColor")))));
+            Object value = raw("rowGapColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The row gap hatching fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> rowHatchColor() {
-            return Optional.ofNullable(raw("rowHatchColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowHatchColor")))));
+            Object value = raw("rowHatchColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The column gap highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> columnGapColor() {
-            return Optional.ofNullable(raw("columnGapColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnGapColor")))));
+            Object value = raw("columnGapColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The column gap hatching fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> columnHatchColor() {
-            return Optional.ofNullable(raw("columnHatchColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnHatchColor")))));
+            Object value = raw("columnHatchColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The named grid areas border color (Default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> areaBorderColor() {
-            return Optional.ofNullable(raw("areaBorderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("areaBorderColor")))));
+            Object value = raw("areaBorderColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The grid container background color (Default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> gridBackgroundColor() {
-            return Optional.ofNullable(raw("gridBackgroundColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("gridBackgroundColor")))));
+            Object value = raw("gridBackgroundColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether the extension lines from grid cells to the rulers should be shown (default: false).
@@ -602,56 +621,64 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> containerBorder() {
-            return Optional.ofNullable(raw("containerBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerBorder")))));
+            Object value = raw("containerBorder");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the separator between lines
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> lineSeparator() {
-            return Optional.ofNullable(raw("lineSeparator") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("lineSeparator")))));
+            Object value = raw("lineSeparator");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the separator between items
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> itemSeparator() {
-            return Optional.ofNullable(raw("itemSeparator") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("itemSeparator")))));
+            Object value = raw("itemSeparator");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of content-distribution space on the main axis (justify-content).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.BoxStyle> mainDistributedSpace() {
-            return Optional.ofNullable(raw("mainDistributedSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("mainDistributedSpace")))));
+            Object value = raw("mainDistributedSpace");
+            return Optional.ofNullable(value == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of content-distribution space on the cross axis (align-content).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.BoxStyle> crossDistributedSpace() {
-            return Optional.ofNullable(raw("crossDistributedSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("crossDistributedSpace")))));
+            Object value = raw("crossDistributedSpace");
+            return Optional.ofNullable(value == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of empty space caused by row gaps (gap/row-gap).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.BoxStyle> rowGapSpace() {
-            return Optional.ofNullable(raw("rowGapSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowGapSpace")))));
+            Object value = raw("rowGapSpace");
+            return Optional.ofNullable(value == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of empty space caused by columns gaps (gap/column-gap).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.BoxStyle> columnGapSpace() {
-            return Optional.ofNullable(raw("columnGapSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnGapSpace")))));
+            Object value = raw("columnGapSpace");
+            return Optional.ofNullable(value == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of the self-alignment line (align-items).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> crossAlignment() {
-            return Optional.ofNullable(raw("crossAlignment") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("crossAlignment")))));
+            Object value = raw("crossAlignment");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the container border
@@ -812,21 +839,24 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.BoxStyle> baseSizeBox() {
-            return Optional.ofNullable(raw("baseSizeBox") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("baseSizeBox")))));
+            Object value = raw("baseSizeBox");
+            return Optional.ofNullable(value == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of the border around the box representing the item&#x27;s base size
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> baseSizeBorder() {
-            return Optional.ofNullable(raw("baseSizeBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("baseSizeBorder")))));
+            Object value = raw("baseSizeBorder");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of the arrow representing if the item grew or shrank
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> flexibilityArrow() {
-            return Optional.ofNullable(raw("flexibilityArrow") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("flexibilityArrow")))));
+            Object value = raw("flexibilityArrow");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Style of the box representing the item&#x27;s base size
@@ -900,8 +930,8 @@ public final class Overlay {
             DOTTED("dotted");
             public final String value;
             PatternValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static PatternValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static PatternValues of(String value) {
                 for (PatternValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -913,14 +943,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> color() {
-            return Optional.ofNullable(raw("color") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("color")))));
+            Object value = raw("color");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The line pattern (default: solid)
          * @return the protocol field value, empty when absent
          */
         public Optional<LineStyle.PatternValues> pattern() {
-            return Optional.ofNullable(raw("pattern") == null ? null : LineStyle.PatternValues.of((String) raw("pattern")));
+            Object value = raw("pattern");
+            return Optional.ofNullable(value == null ? null : LineStyle.PatternValues.of((String) value));
         }
         /**
          * The color of the line (default: transparent)
@@ -973,14 +1005,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> fillColor() {
-            return Optional.ofNullable(raw("fillColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("fillColor")))));
+            Object value = raw("fillColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The hatching color for the box (default: transparent)
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> hatchColor() {
-            return Optional.ofNullable(raw("hatchColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("hatchColor")))));
+            Object value = raw("hatchColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The background color for the box (default: transparent)
@@ -1028,8 +1062,8 @@ public final class Overlay {
         APCA("apca");
         public final String value;
         ContrastAlgorithm(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ContrastAlgorithm of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ContrastAlgorithm of(String value) {
             for (ContrastAlgorithm constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1050,133 +1084,152 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showInfo() {
-            return Optional.ofNullable((Boolean) raw("showInfo"));
+            Object value = raw("showInfo");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the node styles in the tooltip (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showStyles() {
-            return Optional.ofNullable((Boolean) raw("showStyles"));
+            Object value = raw("showStyles");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the rulers should be shown (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showRulers() {
-            return Optional.ofNullable((Boolean) raw("showRulers"));
+            Object value = raw("showRulers");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the a11y info should be shown (default: true).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showAccessibilityInfo() {
-            return Optional.ofNullable((Boolean) raw("showAccessibilityInfo"));
+            Object value = raw("showAccessibilityInfo");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether the extension lines from node to the rulers should be shown (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showExtensionLines() {
-            return Optional.ofNullable((Boolean) raw("showExtensionLines"));
+            Object value = raw("showExtensionLines");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The content box highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> contentColor() {
-            return Optional.ofNullable(raw("contentColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentColor")))));
+            Object value = raw("contentColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The padding highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> paddingColor() {
-            return Optional.ofNullable(raw("paddingColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("paddingColor")))));
+            Object value = raw("paddingColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The border highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> borderColor() {
-            return Optional.ofNullable(raw("borderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("borderColor")))));
+            Object value = raw("borderColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The margin highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> marginColor() {
-            return Optional.ofNullable(raw("marginColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("marginColor")))));
+            Object value = raw("marginColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The event target element highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> eventTargetColor() {
-            return Optional.ofNullable(raw("eventTargetColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("eventTargetColor")))));
+            Object value = raw("eventTargetColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The shape outside fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> shapeColor() {
-            return Optional.ofNullable(raw("shapeColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shapeColor")))));
+            Object value = raw("shapeColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The shape margin fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> shapeMarginColor() {
-            return Optional.ofNullable(raw("shapeMarginColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shapeMarginColor")))));
+            Object value = raw("shapeMarginColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The grid layout color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> cssGridColor() {
-            return Optional.ofNullable(raw("cssGridColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cssGridColor")))));
+            Object value = raw("cssGridColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The color format used to format color styles (default: hex).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.ColorFormat> colorFormat() {
-            return Optional.ofNullable(raw("colorFormat") == null ? null : Overlay.ColorFormat.of((String) raw("colorFormat")));
+            Object value = raw("colorFormat");
+            return Optional.ofNullable(value == null ? null : Overlay.ColorFormat.of((String) value));
         }
         /**
          * The grid layout highlight configuration (default: all transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.GridHighlightConfig> gridHighlightConfig() {
-            return Optional.ofNullable(raw("gridHighlightConfig") == null ? null : Overlay.GridHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("gridHighlightConfig")))));
+            Object value = raw("gridHighlightConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.GridHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The flex container highlight configuration (default: all transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.FlexContainerHighlightConfig> flexContainerHighlightConfig() {
-            return Optional.ofNullable(raw("flexContainerHighlightConfig") == null ? null : Overlay.FlexContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("flexContainerHighlightConfig")))));
+            Object value = raw("flexContainerHighlightConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.FlexContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The flex item highlight configuration (default: all transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.FlexItemHighlightConfig> flexItemHighlightConfig() {
-            return Optional.ofNullable(raw("flexItemHighlightConfig") == null ? null : Overlay.FlexItemHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("flexItemHighlightConfig")))));
+            Object value = raw("flexItemHighlightConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.FlexItemHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The contrast algorithm to use for the contrast ratio (default: aa).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.ContrastAlgorithm> contrastAlgorithm() {
-            return Optional.ofNullable(raw("contrastAlgorithm") == null ? null : Overlay.ContrastAlgorithm.of((String) raw("contrastAlgorithm")));
+            Object value = raw("contrastAlgorithm");
+            return Optional.ofNullable(value == null ? null : Overlay.ContrastAlgorithm.of((String) value));
         }
         /**
          * The container query container highlight configuration (default: all transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.ContainerQueryContainerHighlightConfig> containerQueryContainerHighlightConfig() {
-            return Optional.ofNullable(raw("containerQueryContainerHighlightConfig") == null ? null : Overlay.ContainerQueryContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerQueryContainerHighlightConfig")))));
+            Object value = raw("containerQueryContainerHighlightConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.ContainerQueryContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Whether the node info tooltip should be shown (default: false).
@@ -1531,8 +1584,8 @@ public final class Overlay {
         HEX("hex");
         public final String value;
         ColorFormat(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ColorFormat of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ColorFormat of(String value) {
             for (ColorFormat constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1635,28 +1688,32 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> snapportBorder() {
-            return Optional.ofNullable(raw("snapportBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("snapportBorder")))));
+            Object value = raw("snapportBorder");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the snap area border (default: transparent)
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> snapAreaBorder() {
-            return Optional.ofNullable(raw("snapAreaBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("snapAreaBorder")))));
+            Object value = raw("snapAreaBorder");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The margin highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> scrollMarginColor() {
-            return Optional.ofNullable(raw("scrollMarginColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("scrollMarginColor")))));
+            Object value = raw("scrollMarginColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The padding highlight fill color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> scrollPaddingColor() {
-            return Optional.ofNullable(raw("scrollPaddingColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("scrollPaddingColor")))));
+            Object value = raw("scrollPaddingColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the snapport border (default: transparent)
@@ -1793,14 +1850,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> contentColor() {
-            return Optional.ofNullable(raw("contentColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentColor")))));
+            Object value = raw("contentColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The content box highlight outline color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> outlineColor() {
-            return Optional.ofNullable(raw("outlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("outlineColor")))));
+            Object value = raw("outlineColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * A rectangle represent hinge
@@ -1960,14 +2019,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> containerBorder() {
-            return Optional.ofNullable(raw("containerBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerBorder")))));
+            Object value = raw("containerBorder");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the descendants&#x27; borders.
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.LineStyle> descendantBorder() {
-            return Optional.ofNullable(raw("descendantBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("descendantBorder")))));
+            Object value = raw("descendantBorder");
+            return Optional.ofNullable(value == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The style of the container border.
@@ -2060,21 +2121,24 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> resizerColor() {
-            return Optional.ofNullable(raw("resizerColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("resizerColor")))));
+            Object value = raw("resizerColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The fill color for resizer handles (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> resizerHandleColor() {
-            return Optional.ofNullable(raw("resizerHandleColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("resizerHandleColor")))));
+            Object value = raw("resizerHandleColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The fill color for the mask covering non-isolated elements (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> maskColor() {
-            return Optional.ofNullable(raw("maskColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("maskColor")))));
+            Object value = raw("maskColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The fill color of the resizers (default: transparent).
@@ -2141,8 +2205,8 @@ public final class Overlay {
         NONE("none");
         public final String value;
         InspectMode(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InspectMode of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InspectMode of(String value) {
             for (InspectMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -2162,14 +2226,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to highlight.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the node to highlight.
@@ -2237,28 +2303,32 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeDistance() {
-            return Optional.ofNullable((Boolean) raw("includeDistance"));
+            Object value = raw("includeDistance");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Whether to include style info.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeStyle() {
-            return Optional.ofNullable((Boolean) raw("includeStyle"));
+            Object value = raw("includeStyle");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * The color format to get config with (default: hex).
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.ColorFormat> colorFormat() {
-            return Optional.ofNullable(raw("colorFormat") == null ? null : Overlay.ColorFormat.of((String) raw("colorFormat")));
+            Object value = raw("colorFormat");
+            return Optional.ofNullable(value == null ? null : Overlay.ColorFormat.of((String) value));
         }
         /**
          * Whether to show accessibility info (default: true).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> showAccessibilityInfo() {
-            return Optional.ofNullable((Boolean) raw("showAccessibilityInfo"));
+            Object value = raw("showAccessibilityInfo");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Id of the node to get highlight object for.
@@ -2443,14 +2513,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> contentColor() {
-            return Optional.ofNullable(raw("contentColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentColor")))));
+            Object value = raw("contentColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The content box highlight outline color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> contentOutlineColor() {
-            return Optional.ofNullable(raw("contentOutlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentOutlineColor")))));
+            Object value = raw("contentOutlineColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Identifier of the frame to highlight.
@@ -2527,28 +2599,32 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to highlight.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node to be highlighted.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Selectors to highlight relevant nodes.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> selector() {
-            return Optional.ofNullable((String) raw("selector"));
+            Object value = raw("selector");
+            return Optional.ofNullable((String) value);
         }
         /**
          * A descriptor for the highlight appearance.
@@ -2661,14 +2737,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> color() {
-            return Optional.ofNullable(raw("color") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("color")))));
+            Object value = raw("color");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The highlight outline color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> outlineColor() {
-            return Optional.ofNullable(raw("outlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("outlineColor")))));
+            Object value = raw("outlineColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Quad to highlight
@@ -2772,14 +2850,16 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> color() {
-            return Optional.ofNullable(raw("color") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("color")))));
+            Object value = raw("color");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The highlight outline color (default: transparent).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> outlineColor() {
-            return Optional.ofNullable(raw("outlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("outlineColor")))));
+            Object value = raw("outlineColor");
+            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * X coordinate
@@ -2883,21 +2963,24 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
+            Object value = raw("nodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to highlight.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node to be highlighted.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return Optional.ofNullable(raw("objectId") == null ? null : new Runtime.RemoteObjectId((String) raw("objectId")));
+            Object value = raw("objectId");
+            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
         }
         /**
          * A descriptor for the appearance of the overlay drawing.
@@ -2992,7 +3075,8 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.HighlightConfig> highlightConfig() {
-            return Optional.ofNullable(raw("highlightConfig") == null ? null : Overlay.HighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("highlightConfig")))));
+            Object value = raw("highlightConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.HighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Set an inspection mode.
@@ -3071,7 +3155,8 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> message() {
-            return Optional.ofNullable((String) raw("message"));
+            Object value = raw("message");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The message to display, also triggers resume and step over controls.
@@ -3557,7 +3642,8 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.HingeConfig> hingeConfig() {
-            return Optional.ofNullable(raw("hingeConfig") == null ? null : Overlay.HingeConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("hingeConfig")))));
+            Object value = raw("hingeConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.HingeConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * hinge data, null means hideHinge
@@ -3627,7 +3713,8 @@ public final class Overlay {
          * @return the protocol field value, empty when absent
          */
         public Optional<Overlay.WindowControlsOverlayConfig> windowControlsOverlayConfig() {
-            return Optional.ofNullable(raw("windowControlsOverlayConfig") == null ? null : Overlay.WindowControlsOverlayConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("windowControlsOverlayConfig")))));
+            Object value = raw("windowControlsOverlayConfig");
+            return Optional.ofNullable(value == null ? null : Overlay.WindowControlsOverlayConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Window Controls Overlay data, null means hide Window Controls Overlay
@@ -3796,14 +3883,14 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Overlay.disable", null, result_ -> null);
+            return client.call("Overlay.disable", null);
         }
         /**
          * Enables domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Overlay.enable", null, result_ -> null);
+            return client.call("Overlay.enable", null);
         }
         /**
          * For testing.
@@ -3880,7 +3967,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> hideHighlight() {
-            return client.call("Overlay.hideHighlight", null, result_ -> null);
+            return client.call("Overlay.hideHighlight", null);
         }
         /**
          * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
@@ -3896,7 +3983,7 @@ public final class Overlay {
             params.put("frameId", CdpObject.json(frameId));
             contentColor.ifPresent(value_ -> params.put("contentColor", CdpObject.json(value_)));
             contentOutlineColor.ifPresent(value_ -> params.put("contentOutlineColor", CdpObject.json(value_)));
-            return client.call("Overlay.highlightFrame", params, result_ -> null);
+            return client.call("Overlay.highlightFrame", params);
         }
         /**
          * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
@@ -3916,7 +4003,7 @@ public final class Overlay {
          */
         @Deprecated
         public CompletionStage<Void> highlightFrame(HighlightFrameRequest request) {
-            return client.call("Overlay.highlightFrame", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.highlightFrame", request == null ? null : request.toMap());
         }
         /**
          * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
@@ -3934,7 +4021,7 @@ public final class Overlay {
             backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
             objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
             selector.ifPresent(value_ -> params.put("selector", CdpObject.json(value_)));
-            return client.call("Overlay.highlightNode", params, result_ -> null);
+            return client.call("Overlay.highlightNode", params);
         }
         /**
          * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
@@ -3950,7 +4037,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightNode(HighlightNodeRequest request) {
-            return client.call("Overlay.highlightNode", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.highlightNode", request == null ? null : request.toMap());
         }
         /**
          * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
@@ -3964,7 +4051,7 @@ public final class Overlay {
             params.put("quad", CdpObject.json(quad));
             color.ifPresent(value_ -> params.put("color", CdpObject.json(value_)));
             outlineColor.ifPresent(value_ -> params.put("outlineColor", CdpObject.json(value_)));
-            return client.call("Overlay.highlightQuad", params, result_ -> null);
+            return client.call("Overlay.highlightQuad", params);
         }
         /**
          * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
@@ -3980,7 +4067,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightQuad(HighlightQuadRequest request) {
-            return client.call("Overlay.highlightQuad", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.highlightQuad", request == null ? null : request.toMap());
         }
         /**
          * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
@@ -4000,7 +4087,7 @@ public final class Overlay {
             params.put("height", CdpObject.json(height));
             color.ifPresent(value_ -> params.put("color", CdpObject.json(value_)));
             outlineColor.ifPresent(value_ -> params.put("outlineColor", CdpObject.json(value_)));
-            return client.call("Overlay.highlightRect", params, result_ -> null);
+            return client.call("Overlay.highlightRect", params);
         }
         /**
          * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
@@ -4019,7 +4106,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightRect(HighlightRectRequest request) {
-            return client.call("Overlay.highlightRect", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.highlightRect", request == null ? null : request.toMap());
         }
         /**
          * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
@@ -4035,7 +4122,7 @@ public final class Overlay {
             nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
             backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
             objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            return client.call("Overlay.highlightSourceOrder", params, result_ -> null);
+            return client.call("Overlay.highlightSourceOrder", params);
         }
         /**
          * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
@@ -4051,7 +4138,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightSourceOrder(HighlightSourceOrderRequest request) {
-            return client.call("Overlay.highlightSourceOrder", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.highlightSourceOrder", request == null ? null : request.toMap());
         }
         /**
          * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
@@ -4063,7 +4150,7 @@ public final class Overlay {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("mode", CdpObject.json(mode));
             highlightConfig.ifPresent(value_ -> params.put("highlightConfig", CdpObject.json(value_)));
-            return client.call("Overlay.setInspectMode", params, result_ -> null);
+            return client.call("Overlay.setInspectMode", params);
         }
         /**
          * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
@@ -4079,7 +4166,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInspectMode(SetInspectModeRequest request) {
-            return client.call("Overlay.setInspectMode", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setInspectMode", request == null ? null : request.toMap());
         }
         /**
          * Highlights owner element of all frames detected to be ads.
@@ -4089,7 +4176,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowAdHighlights(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowAdHighlights", params, result_ -> null);
+            return client.call("Overlay.setShowAdHighlights", params);
         }
         /**
          * Highlights owner element of all frames detected to be ads.
@@ -4097,7 +4184,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowAdHighlights(SetShowAdHighlightsRequest request) {
-            return client.call("Overlay.setShowAdHighlights", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowAdHighlights", request == null ? null : request.toMap());
         }
         /**
          * Invokes Overlay.setPausedInDebuggerMessage.
@@ -4107,7 +4194,7 @@ public final class Overlay {
         public CompletionStage<Void> setPausedInDebuggerMessage(Optional<String> message) {
             Map<String, Object> params = new LinkedHashMap<>();
             message.ifPresent(value_ -> params.put("message", CdpObject.json(value_)));
-            return client.call("Overlay.setPausedInDebuggerMessage", params, result_ -> null);
+            return client.call("Overlay.setPausedInDebuggerMessage", params);
         }
         /**
          * Invokes Overlay.setPausedInDebuggerMessage with default parameters.
@@ -4122,7 +4209,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPausedInDebuggerMessage(SetPausedInDebuggerMessageRequest request) {
-            return client.call("Overlay.setPausedInDebuggerMessage", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setPausedInDebuggerMessage", request == null ? null : request.toMap());
         }
         /**
          * Requests that backend shows debug borders on layers
@@ -4132,7 +4219,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowDebugBorders(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowDebugBorders", params, result_ -> null);
+            return client.call("Overlay.setShowDebugBorders", params);
         }
         /**
          * Requests that backend shows debug borders on layers
@@ -4140,7 +4227,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowDebugBorders(SetShowDebugBordersRequest request) {
-            return client.call("Overlay.setShowDebugBorders", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowDebugBorders", request == null ? null : request.toMap());
         }
         /**
          * Requests that backend shows the FPS counter
@@ -4150,7 +4237,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowFPSCounter(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowFPSCounter", params, result_ -> null);
+            return client.call("Overlay.setShowFPSCounter", params);
         }
         /**
          * Requests that backend shows the FPS counter
@@ -4158,7 +4245,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowFPSCounter(SetShowFPSCounterRequest request) {
-            return client.call("Overlay.setShowFPSCounter", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowFPSCounter", request == null ? null : request.toMap());
         }
         /**
          * Highlight multiple elements with the CSS Grid overlay.
@@ -4168,7 +4255,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowGridOverlays(java.util.List<Overlay.GridNodeHighlightConfig> gridNodeHighlightConfigs) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("gridNodeHighlightConfigs", CdpObject.json(gridNodeHighlightConfigs));
-            return client.call("Overlay.setShowGridOverlays", params, result_ -> null);
+            return client.call("Overlay.setShowGridOverlays", params);
         }
         /**
          * Highlight multiple elements with the CSS Grid overlay.
@@ -4176,7 +4263,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowGridOverlays(SetShowGridOverlaysRequest request) {
-            return client.call("Overlay.setShowGridOverlays", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowGridOverlays", request == null ? null : request.toMap());
         }
         /**
          * Invokes Overlay.setShowFlexOverlays.
@@ -4186,7 +4273,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowFlexOverlays(java.util.List<Overlay.FlexNodeHighlightConfig> flexNodeHighlightConfigs) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("flexNodeHighlightConfigs", CdpObject.json(flexNodeHighlightConfigs));
-            return client.call("Overlay.setShowFlexOverlays", params, result_ -> null);
+            return client.call("Overlay.setShowFlexOverlays", params);
         }
         /**
          * Invokes Overlay.setShowFlexOverlays with a request object.
@@ -4194,7 +4281,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowFlexOverlays(SetShowFlexOverlaysRequest request) {
-            return client.call("Overlay.setShowFlexOverlays", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowFlexOverlays", request == null ? null : request.toMap());
         }
         /**
          * Invokes Overlay.setShowScrollSnapOverlays.
@@ -4204,7 +4291,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowScrollSnapOverlays(java.util.List<Overlay.ScrollSnapHighlightConfig> scrollSnapHighlightConfigs) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("scrollSnapHighlightConfigs", CdpObject.json(scrollSnapHighlightConfigs));
-            return client.call("Overlay.setShowScrollSnapOverlays", params, result_ -> null);
+            return client.call("Overlay.setShowScrollSnapOverlays", params);
         }
         /**
          * Invokes Overlay.setShowScrollSnapOverlays with a request object.
@@ -4212,7 +4299,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowScrollSnapOverlays(SetShowScrollSnapOverlaysRequest request) {
-            return client.call("Overlay.setShowScrollSnapOverlays", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowScrollSnapOverlays", request == null ? null : request.toMap());
         }
         /**
          * Invokes Overlay.setShowContainerQueryOverlays.
@@ -4222,7 +4309,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowContainerQueryOverlays(java.util.List<Overlay.ContainerQueryHighlightConfig> containerQueryHighlightConfigs) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("containerQueryHighlightConfigs", CdpObject.json(containerQueryHighlightConfigs));
-            return client.call("Overlay.setShowContainerQueryOverlays", params, result_ -> null);
+            return client.call("Overlay.setShowContainerQueryOverlays", params);
         }
         /**
          * Invokes Overlay.setShowContainerQueryOverlays with a request object.
@@ -4230,7 +4317,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowContainerQueryOverlays(SetShowContainerQueryOverlaysRequest request) {
-            return client.call("Overlay.setShowContainerQueryOverlays", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowContainerQueryOverlays", request == null ? null : request.toMap());
         }
         /**
          * Invokes Overlay.setShowInspectedElementAnchor.
@@ -4240,7 +4327,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowInspectedElementAnchor(Overlay.InspectedElementAnchorConfig inspectedElementAnchorConfig) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("inspectedElementAnchorConfig", CdpObject.json(inspectedElementAnchorConfig));
-            return client.call("Overlay.setShowInspectedElementAnchor", params, result_ -> null);
+            return client.call("Overlay.setShowInspectedElementAnchor", params);
         }
         /**
          * Invokes Overlay.setShowInspectedElementAnchor with a request object.
@@ -4248,7 +4335,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowInspectedElementAnchor(SetShowInspectedElementAnchorRequest request) {
-            return client.call("Overlay.setShowInspectedElementAnchor", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowInspectedElementAnchor", request == null ? null : request.toMap());
         }
         /**
          * Requests that backend shows paint rectangles
@@ -4258,7 +4345,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowPaintRects(boolean result) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("result", CdpObject.json(result));
-            return client.call("Overlay.setShowPaintRects", params, result_ -> null);
+            return client.call("Overlay.setShowPaintRects", params);
         }
         /**
          * Requests that backend shows paint rectangles
@@ -4266,7 +4353,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowPaintRects(SetShowPaintRectsRequest request) {
-            return client.call("Overlay.setShowPaintRects", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowPaintRects", request == null ? null : request.toMap());
         }
         /**
          * Requests that backend shows layout shift regions
@@ -4276,7 +4363,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowLayoutShiftRegions(boolean result) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("result", CdpObject.json(result));
-            return client.call("Overlay.setShowLayoutShiftRegions", params, result_ -> null);
+            return client.call("Overlay.setShowLayoutShiftRegions", params);
         }
         /**
          * Requests that backend shows layout shift regions
@@ -4284,7 +4371,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowLayoutShiftRegions(SetShowLayoutShiftRegionsRequest request) {
-            return client.call("Overlay.setShowLayoutShiftRegions", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowLayoutShiftRegions", request == null ? null : request.toMap());
         }
         /**
          * Requests that backend shows scroll bottleneck rects
@@ -4294,7 +4381,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowScrollBottleneckRects(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowScrollBottleneckRects", params, result_ -> null);
+            return client.call("Overlay.setShowScrollBottleneckRects", params);
         }
         /**
          * Requests that backend shows scroll bottleneck rects
@@ -4302,7 +4389,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowScrollBottleneckRects(SetShowScrollBottleneckRectsRequest request) {
-            return client.call("Overlay.setShowScrollBottleneckRects", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowScrollBottleneckRects", request == null ? null : request.toMap());
         }
         /**
          * Deprecated, no longer has any effect.
@@ -4314,7 +4401,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowHitTestBorders(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowHitTestBorders", params, result_ -> null);
+            return client.call("Overlay.setShowHitTestBorders", params);
         }
         /**
          * Deprecated, no longer has any effect.
@@ -4324,7 +4411,7 @@ public final class Overlay {
          */
         @Deprecated
         public CompletionStage<Void> setShowHitTestBorders(SetShowHitTestBordersRequest request) {
-            return client.call("Overlay.setShowHitTestBorders", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowHitTestBorders", request == null ? null : request.toMap());
         }
         /**
          * Deprecated, no longer has any effect.
@@ -4336,7 +4423,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowWebVitals(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowWebVitals", params, result_ -> null);
+            return client.call("Overlay.setShowWebVitals", params);
         }
         /**
          * Deprecated, no longer has any effect.
@@ -4346,7 +4433,7 @@ public final class Overlay {
          */
         @Deprecated
         public CompletionStage<Void> setShowWebVitals(SetShowWebVitalsRequest request) {
-            return client.call("Overlay.setShowWebVitals", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowWebVitals", request == null ? null : request.toMap());
         }
         /**
          * Paints viewport size upon main frame resize.
@@ -4356,7 +4443,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowViewportSizeOnResize(boolean show) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("show", CdpObject.json(show));
-            return client.call("Overlay.setShowViewportSizeOnResize", params, result_ -> null);
+            return client.call("Overlay.setShowViewportSizeOnResize", params);
         }
         /**
          * Paints viewport size upon main frame resize.
@@ -4364,7 +4451,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowViewportSizeOnResize(SetShowViewportSizeOnResizeRequest request) {
-            return client.call("Overlay.setShowViewportSizeOnResize", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowViewportSizeOnResize", request == null ? null : request.toMap());
         }
         /**
          * Add a dual screen device hinge
@@ -4374,7 +4461,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowHinge(Optional<Overlay.HingeConfig> hingeConfig) {
             Map<String, Object> params = new LinkedHashMap<>();
             hingeConfig.ifPresent(value_ -> params.put("hingeConfig", CdpObject.json(value_)));
-            return client.call("Overlay.setShowHinge", params, result_ -> null);
+            return client.call("Overlay.setShowHinge", params);
         }
         /**
          * Add a dual screen device hinge
@@ -4389,7 +4476,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowHinge(SetShowHingeRequest request) {
-            return client.call("Overlay.setShowHinge", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowHinge", request == null ? null : request.toMap());
         }
         /**
          * Show elements in isolation mode with overlays.
@@ -4399,7 +4486,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowIsolatedElements(java.util.List<Overlay.IsolatedElementHighlightConfig> isolatedElementHighlightConfigs) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("isolatedElementHighlightConfigs", CdpObject.json(isolatedElementHighlightConfigs));
-            return client.call("Overlay.setShowIsolatedElements", params, result_ -> null);
+            return client.call("Overlay.setShowIsolatedElements", params);
         }
         /**
          * Show elements in isolation mode with overlays.
@@ -4407,7 +4494,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowIsolatedElements(SetShowIsolatedElementsRequest request) {
-            return client.call("Overlay.setShowIsolatedElements", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowIsolatedElements", request == null ? null : request.toMap());
         }
         /**
          * Show Window Controls Overlay for PWA
@@ -4417,7 +4504,7 @@ public final class Overlay {
         public CompletionStage<Void> setShowWindowControlsOverlay(Optional<Overlay.WindowControlsOverlayConfig> windowControlsOverlayConfig) {
             Map<String, Object> params = new LinkedHashMap<>();
             windowControlsOverlayConfig.ifPresent(value_ -> params.put("windowControlsOverlayConfig", CdpObject.json(value_)));
-            return client.call("Overlay.setShowWindowControlsOverlay", params, result_ -> null);
+            return client.call("Overlay.setShowWindowControlsOverlay", params);
         }
         /**
          * Show Window Controls Overlay for PWA
@@ -4432,7 +4519,7 @@ public final class Overlay {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setShowWindowControlsOverlay(SetShowWindowControlsOverlayRequest request) {
-            return client.call("Overlay.setShowWindowControlsOverlay", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Overlay.setShowWindowControlsOverlay", request == null ? null : request.toMap());
         }
         /**
          * Fired when the node should be inspected. This happens after call to {@code setInspectMode} or when user manually inspects an element.

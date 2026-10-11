@@ -101,7 +101,7 @@ public final class CefMouseButtonType implements CefEnum<CefMouseButtonType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMouseButtonType)) return false;
         return this.value == ((CefMouseButtonType) obj).value;

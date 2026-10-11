@@ -6,10 +6,9 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class representing a server that supports HTTP and WebSocket requests. Server capacity is limited and is intended to
@@ -122,7 +121,7 @@ public interface CefServer extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:125</a>
      */
-    void sendHttp200Response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
+    void sendHttp200Response(int connectionId, @Nullable String contentType, ByteBuffer data);
 
     /**
      * Send an HTTP 404 "Not Found" response to the connection identified by {@code connection_id}. The connection will
@@ -197,7 +196,7 @@ public interface CefServer extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:177</a>
      */
-    void sendRawData(int connectionId, @Nonnull ByteBuffer data);
+    void sendRawData(int connectionId, ByteBuffer data);
 
     /**
      * Close the connection identified by {@code connection_id}. See SendHttpResponse documentation for intended usage.
@@ -230,7 +229,7 @@ public interface CefServer extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:197</a>
      */
-    void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data);
+    void sendWebSocketMessage(int connectionId, ByteBuffer data);
     /**
      * Create a new server that binds to {@code address} and {@code port}. {@code address} must be a valid IPv4 or IPv6
      * address (e.g. 127.0.0.1 or ::1) and {@code port} must be a port number outside of the reserved range (e.g.
@@ -334,7 +333,7 @@ public interface CefServer extends CefLibraryObject {
         }
 
         @Override
-        public void sendHttp200Response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data) {
+        public void sendHttp200Response(int connectionId, @Nullable String contentType, ByteBuffer data) {
             checkNotClosed();
             sendHttp200Response0(nativePtr, connectionId, contentType, data);
         }
@@ -363,7 +362,7 @@ public interface CefServer extends CefLibraryObject {
         }
 
         @Override
-        public void sendRawData(int connectionId, @Nonnull ByteBuffer data) {
+        public void sendRawData(int connectionId, ByteBuffer data) {
             checkNotClosed();
             sendRawData0(nativePtr, connectionId, data);
         }
@@ -375,7 +374,7 @@ public interface CefServer extends CefLibraryObject {
         }
 
         @Override
-        public void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data) {
+        public void sendWebSocketMessage(int connectionId, ByteBuffer data) {
             checkNotClosed();
             sendWebSocketMessage0(nativePtr, connectionId, data);
         }
@@ -393,7 +392,7 @@ public interface CefServer extends CefLibraryObject {
         static native boolean isValidConnection0(long self, int connectionId);
 
         static native void sendHttp200Response0(
-                long self, int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
+                long self, int connectionId, @Nullable String contentType, ByteBuffer data);
 
         static native void sendHttp404Response0(long self, int connectionId);
 
@@ -407,16 +406,16 @@ public interface CefServer extends CefLibraryObject {
                 long contentLength,
                 @Nullable Map<String, List<String>> extraHeaders);
 
-        static native void sendRawData0(long self, int connectionId, @Nonnull ByteBuffer data);
+        static native void sendRawData0(long self, int connectionId, ByteBuffer data);
 
         static native void closeConnection0(long self, int connectionId);
 
-        static native void sendWebSocketMessage0(long self, int connectionId, @Nonnull ByteBuffer data);
+        static native void sendWebSocketMessage0(long self, int connectionId, ByteBuffer data);
 
         static native void create0(@Nullable String address, int port, int backlog, @Nullable CefServerHandler handler);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

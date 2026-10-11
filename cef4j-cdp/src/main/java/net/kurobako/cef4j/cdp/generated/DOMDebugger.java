@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -32,8 +31,8 @@ public final class DOMDebugger {
         NODE_REMOVED("node-removed");
         public final String value;
         DOMBreakpointType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static DOMBreakpointType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static DOMBreakpointType of(String value) {
             for (DOMBreakpointType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -49,8 +48,8 @@ public final class DOMDebugger {
         TRUSTEDTYPE_POLICY_VIOLATION("trustedtype-policy-violation");
         public final String value;
         CSPViolationType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static CSPViolationType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static CSPViolationType of(String value) {
             for (CSPViolationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -120,21 +119,24 @@ public final class DOMDebugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> handler() {
-            return Optional.ofNullable(raw("handler") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("handler")))));
+            Object value = raw("handler");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Event original handler function value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> originalHandler() {
-            return Optional.ofNullable(raw("originalHandler") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("originalHandler")))));
+            Object value = raw("originalHandler");
+            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Node the listener is added to (if any).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
+            Object value = raw("backendNodeId");
+            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * {@code EventListener}&#x27;s type.
@@ -291,7 +293,8 @@ public final class DOMDebugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return Optional.ofNullable((Boolean) raw("pierce"));
+            Object value = raw("pierce");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Identifier of the object to return listeners for.
@@ -421,7 +424,8 @@ public final class DOMDebugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> targetName() {
-            return Optional.ofNullable((String) raw("targetName"));
+            Object value = raw("targetName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Event name.
@@ -645,7 +649,8 @@ public final class DOMDebugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> targetName() {
-            return Optional.ofNullable((String) raw("targetName"));
+            Object value = raw("targetName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * DOM Event name to stop on (any DOM event will do).
@@ -794,7 +799,7 @@ public final class DOMDebugger {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("type", CdpObject.json(type));
-            return client.call("DOMDebugger.removeDOMBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.removeDOMBreakpoint", params);
         }
         /**
          * Removes DOM breakpoint that was set using {@code setDOMBreakpoint}.
@@ -802,7 +807,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeDOMBreakpoint(RemoveDOMBreakpointRequest request) {
-            return client.call("DOMDebugger.removeDOMBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.removeDOMBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Removes breakpoint on particular DOM event.
@@ -814,7 +819,7 @@ public final class DOMDebugger {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventName", CdpObject.json(eventName));
             targetName.ifPresent(value_ -> params.put("targetName", CdpObject.json(value_)));
-            return client.call("DOMDebugger.removeEventListenerBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.removeEventListenerBreakpoint", params);
         }
         /**
          * Removes breakpoint on particular DOM event.
@@ -830,7 +835,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeEventListenerBreakpoint(RemoveEventListenerBreakpointRequest request) {
-            return client.call("DOMDebugger.removeEventListenerBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.removeEventListenerBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Removes breakpoint on particular native event.
@@ -843,7 +848,7 @@ public final class DOMDebugger {
         public CompletionStage<Void> removeInstrumentationBreakpoint(String eventName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventName", CdpObject.json(eventName));
-            return client.call("DOMDebugger.removeInstrumentationBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.removeInstrumentationBreakpoint", params);
         }
         /**
          * Removes breakpoint on particular native event.
@@ -854,7 +859,7 @@ public final class DOMDebugger {
          */
         @Deprecated
         public CompletionStage<Void> removeInstrumentationBreakpoint(RemoveInstrumentationBreakpointRequest request) {
-            return client.call("DOMDebugger.removeInstrumentationBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.removeInstrumentationBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Removes breakpoint from XMLHttpRequest.
@@ -864,7 +869,7 @@ public final class DOMDebugger {
         public CompletionStage<Void> removeXHRBreakpoint(String url) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("url", CdpObject.json(url));
-            return client.call("DOMDebugger.removeXHRBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.removeXHRBreakpoint", params);
         }
         /**
          * Removes breakpoint from XMLHttpRequest.
@@ -872,7 +877,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeXHRBreakpoint(RemoveXHRBreakpointRequest request) {
-            return client.call("DOMDebugger.removeXHRBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.removeXHRBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Sets breakpoint on particular CSP violations.
@@ -883,7 +888,7 @@ public final class DOMDebugger {
         public CompletionStage<Void> setBreakOnCSPViolation(java.util.List<DOMDebugger.CSPViolationType> violationTypes) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("violationTypes", CdpObject.json(violationTypes));
-            return client.call("DOMDebugger.setBreakOnCSPViolation", params, result_ -> null);
+            return client.call("DOMDebugger.setBreakOnCSPViolation", params);
         }
         /**
          * Sets breakpoint on particular CSP violations.
@@ -892,7 +897,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBreakOnCSPViolation(SetBreakOnCSPViolationRequest request) {
-            return client.call("DOMDebugger.setBreakOnCSPViolation", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.setBreakOnCSPViolation", request == null ? null : request.toMap());
         }
         /**
          * Sets breakpoint on particular operation with DOM.
@@ -904,7 +909,7 @@ public final class DOMDebugger {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("type", CdpObject.json(type));
-            return client.call("DOMDebugger.setDOMBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.setDOMBreakpoint", params);
         }
         /**
          * Sets breakpoint on particular operation with DOM.
@@ -912,7 +917,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDOMBreakpoint(SetDOMBreakpointRequest request) {
-            return client.call("DOMDebugger.setDOMBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.setDOMBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Sets breakpoint on particular DOM event.
@@ -924,7 +929,7 @@ public final class DOMDebugger {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventName", CdpObject.json(eventName));
             targetName.ifPresent(value_ -> params.put("targetName", CdpObject.json(value_)));
-            return client.call("DOMDebugger.setEventListenerBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.setEventListenerBreakpoint", params);
         }
         /**
          * Sets breakpoint on particular DOM event.
@@ -940,7 +945,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEventListenerBreakpoint(SetEventListenerBreakpointRequest request) {
-            return client.call("DOMDebugger.setEventListenerBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.setEventListenerBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Sets breakpoint on particular native event.
@@ -953,7 +958,7 @@ public final class DOMDebugger {
         public CompletionStage<Void> setInstrumentationBreakpoint(String eventName) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventName", CdpObject.json(eventName));
-            return client.call("DOMDebugger.setInstrumentationBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.setInstrumentationBreakpoint", params);
         }
         /**
          * Sets breakpoint on particular native event.
@@ -964,7 +969,7 @@ public final class DOMDebugger {
          */
         @Deprecated
         public CompletionStage<Void> setInstrumentationBreakpoint(SetInstrumentationBreakpointRequest request) {
-            return client.call("DOMDebugger.setInstrumentationBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.setInstrumentationBreakpoint", request == null ? null : request.toMap());
         }
         /**
          * Sets breakpoint on XMLHttpRequest.
@@ -974,7 +979,7 @@ public final class DOMDebugger {
         public CompletionStage<Void> setXHRBreakpoint(String url) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("url", CdpObject.json(url));
-            return client.call("DOMDebugger.setXHRBreakpoint", params, result_ -> null);
+            return client.call("DOMDebugger.setXHRBreakpoint", params);
         }
         /**
          * Sets breakpoint on XMLHttpRequest.
@@ -982,7 +987,7 @@ public final class DOMDebugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setXHRBreakpoint(SetXHRBreakpointRequest request) {
-            return client.call("DOMDebugger.setXHRBreakpoint", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMDebugger.setXHRBreakpoint", request == null ? null : request.toMap());
         }
     }
 }

@@ -10,9 +10,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -131,8 +131,8 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     @Test
     @Order(6)
     void interleavedEvals() throws Exception {
-        CompletableFuture<String> fA = engineA.evaluate("'hello'");
-        CompletableFuture<String> fB = engineB.evaluate("'world'");
+        CompletableFuture<@Nullable String> fA = engineA.evaluate("'hello'");
+        CompletableFuture<@Nullable String> fB = engineB.evaluate("'world'");
         pumpUntilAllDone(5_000, fA, fB);
         assertThat(fA.get()).isEqualTo("\"hello\"");
         assertThat(fB.get()).isEqualTo("\"world\"");
@@ -235,20 +235,16 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         };
     }
 
-    private static <T> T pumpAndGet(CompletableFuture<T> future, long timeoutMs) throws Exception {
+    private static <T extends @Nullable Object> T pumpAndGet(CompletableFuture<T> future, long timeoutMs)
+            throws Exception {
         TestDeadline deadline = TestDeadline.after(Duration.ofMillis(timeoutMs));
-        deadline.until(
-                future::isDone, () -> Cef.INSTANCE.doMessageLoopWork(), Duration.ofMillis(16), "script completion");
+        deadline.until(future::isDone, Cef.INSTANCE::doMessageLoopWork, Duration.ofMillis(16), "script completion");
         return deadline.await(future, "script result");
     }
 
     private static void pumpUntilAllDone(long timeoutMs, CompletableFuture<?>... futures) throws Exception {
         CompletableFuture<Void> all = CompletableFuture.allOf(futures);
         TestDeadline.after(Duration.ofMillis(timeoutMs))
-                .until(
-                        all::isDone,
-                        () -> Cef.INSTANCE.doMessageLoopWork(),
-                        Duration.ofMillis(16),
-                        "script completions");
+                .until(all::isDone, Cef.INSTANCE::doMessageLoopWork, Duration.ofMillis(16), "script completions");
     }
 }

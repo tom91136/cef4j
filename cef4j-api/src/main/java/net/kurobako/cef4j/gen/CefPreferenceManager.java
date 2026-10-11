@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Manage access to preferences. Many built-in preferences are registered by Chromium. Custom preferences can be
@@ -136,7 +135,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:96</a>
      */
-    static void getChromeVariationsAsSwitches(@Nonnull List<String> switches) {
+    static void getChromeVariationsAsSwitches(List<String> switches) {
         NativePeer.getChromeVariationsAsSwitches0(switches);
     }
 
@@ -155,7 +154,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:110</a>
      */
-    static void getChromeVariationsAsStrings(@Nonnull List<String> strings) {
+    static void getChromeVariationsAsStrings(List<String> strings) {
         NativePeer.getChromeVariationsAsStrings0(strings);
     }
 
@@ -267,14 +266,14 @@ public interface CefPreferenceManager extends CefLibraryObject {
         static native CefRegistration addPreferenceObserver0(
                 long self, @Nullable String name, @Nullable CefPreferenceObserver observer);
 
-        static native void getChromeVariationsAsSwitches0(@Nonnull List<String> switches);
+        static native void getChromeVariationsAsSwitches0(List<String> switches);
 
-        static native void getChromeVariationsAsStrings0(@Nonnull List<String> strings);
+        static native void getChromeVariationsAsStrings0(List<String> strings);
 
         static native CefPreferenceManager getGlobal0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

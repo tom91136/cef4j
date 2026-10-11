@@ -14,9 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** Versioned, transport-independent recording of logical {@code CefSession} operations. */
 public final class SessionTrace {
@@ -48,8 +47,7 @@ public final class SessionTrace {
         public final long operationId;
         public final int messageId;
 
-        @Nullable
-        private final byte[] payload;
+        private final byte @Nullable [] payload;
 
         @Nullable
         public final String detailType;
@@ -60,10 +58,10 @@ public final class SessionTrace {
         public Entry(
                 long sequence,
                 long elapsedNanos,
-                @Nonnull Kind kind,
+                Kind kind,
                 long operationId,
                 int messageId,
-                @Nullable byte[] payload,
+                byte @Nullable [] payload,
                 @Nullable String detailType,
                 @Nullable String detailMessage) {
             if (sequence < 1) throw new IllegalArgumentException("sequence must be positive");
@@ -78,8 +76,7 @@ public final class SessionTrace {
             this.detailMessage = detailMessage;
         }
 
-        @Nullable
-        public byte[] payload() {
+        public byte @Nullable [] payload() {
             return payload == null ? null : payload.clone();
         }
     }
@@ -89,7 +86,7 @@ public final class SessionTrace {
         private final Map<String, String> metadata;
         private final List<Entry> entries;
 
-        public Recording(@Nonnull Map<String, String> metadata, @Nonnull List<Entry> entries) {
+        public Recording(Map<String, String> metadata, List<Entry> entries) {
             this.metadata = Collections.unmodifiableMap(new LinkedHashMap<>(metadata));
             this.entries = Collections.unmodifiableList(new ArrayList<>(entries));
         }
@@ -126,17 +123,15 @@ public final class SessionTrace {
         return codec;
     }
 
-    public static SessionTraceWriter writer(@Nonnull Path file) throws IOException {
+    public static SessionTraceWriter writer(Path file) throws IOException {
         return writer(file, defaultMetadata(), defaultCodec());
     }
 
-    public static SessionTraceWriter writer(@Nonnull Path file, @Nonnull Map<String, String> metadata)
-            throws IOException {
+    public static SessionTraceWriter writer(Path file, Map<String, String> metadata) throws IOException {
         return writer(file, metadata, defaultCodec());
     }
 
-    public static SessionTraceWriter writer(
-            @Nonnull Path file, @Nonnull Map<String, String> metadata, @Nonnull SessionTraceCodec codec)
+    public static SessionTraceWriter writer(Path file, Map<String, String> metadata, SessionTraceCodec codec)
             throws IOException {
         Objects.requireNonNull(file, "file");
         Objects.requireNonNull(metadata, "metadata");
@@ -155,11 +150,11 @@ public final class SessionTrace {
         }
     }
 
-    public static Recording read(@Nonnull Path file) throws IOException {
+    public static Recording read(Path file) throws IOException {
         return read(file, defaultCodec());
     }
 
-    public static Recording read(@Nonnull Path file, @Nonnull SessionTraceCodec codec) throws IOException {
+    public static Recording read(Path file, SessionTraceCodec codec) throws IOException {
         Objects.requireNonNull(file, "file");
         Objects.requireNonNull(codec, "codec");
         try (InputStream input = Files.newInputStream(file)) {

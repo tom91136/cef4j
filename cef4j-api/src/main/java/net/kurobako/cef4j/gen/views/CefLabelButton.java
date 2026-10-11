@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefButtonState;
 import net.kurobako.cef4j.gen.CefHorizontalAlignment;
@@ -15,6 +13,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * LabelButton is a button with optional text and/or icon. Methods must be called on the browser process UI thread
@@ -85,7 +84,7 @@ public interface CefLabelButton extends CefButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:84</a>
      */
-    void setImage(@Nonnull CefButtonState buttonState, @Nullable CefImage image);
+    void setImage(CefButtonState buttonState, @Nullable CefImage image);
 
     /**
      * Returns the image shown for {@code button_state}. If no image exists for that state then the image for
@@ -99,7 +98,7 @@ public interface CefLabelButton extends CefButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:93</a>
      */
-    Optional<CefImage> getImage(@Nonnull CefButtonState buttonState);
+    Optional<CefImage> getImage(CefButtonState buttonState);
 
     /**
      * Sets the text color shown for the specified button {@code for_state} to {@code color}.
@@ -113,7 +112,7 @@ public interface CefLabelButton extends CefButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:100</a>
      */
-    void setTextColor(@Nonnull CefButtonState forState, int color);
+    void setTextColor(CefButtonState forState, int color);
 
     /**
      * Sets the text colors shown for the non-disabled states to {@code color}.
@@ -170,7 +169,7 @@ public interface CefLabelButton extends CefButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:128</a>
      */
-    void setHorizontalAlignment(@Nonnull CefHorizontalAlignment alignment);
+    void setHorizontalAlignment(CefHorizontalAlignment alignment);
 
     /**
      * Reset the minimum size of this LabelButton to {@code size}.
@@ -182,7 +181,7 @@ public interface CefLabelButton extends CefButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:135</a>
      */
-    void setMinimumSize(@Nonnull CefSize size);
+    void setMinimumSize(CefSize size);
 
     /**
      * Reset the maximum size of this LabelButton to {@code size}.
@@ -194,7 +193,7 @@ public interface CefLabelButton extends CefButton {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:141</a>
      */
-    void setMaximumSize(@Nonnull CefSize size);
+    void setMaximumSize(CefSize size);
     /**
      * Create a new LabelButton. A {@code delegate} must be provided to handle the button click. {@code text} will be
      * shown on the LabelButton and used as the default accessible name.
@@ -274,20 +273,20 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setImage(@Nonnull CefButtonState buttonState, @Nullable CefImage image) {
+        public void setImage(CefButtonState buttonState, @Nullable CefImage image) {
             checkNotClosed();
             CefLibraryObject.requireOpen(image, "CefImage");
             setImage0(nativePtr, buttonState, image);
         }
 
         @Override
-        public Optional<CefImage> getImage(@Nonnull CefButtonState buttonState) {
+        public Optional<CefImage> getImage(CefButtonState buttonState) {
             checkNotClosed();
             return Optional.ofNullable(getImage0(nativePtr, buttonState));
         }
 
         @Override
-        public void setTextColor(@Nonnull CefButtonState forState, int color) {
+        public void setTextColor(CefButtonState forState, int color) {
             checkNotClosed();
             setTextColor0(nativePtr, forState, color);
         }
@@ -305,19 +304,19 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setHorizontalAlignment(@Nonnull CefHorizontalAlignment alignment) {
+        public void setHorizontalAlignment(CefHorizontalAlignment alignment) {
             checkNotClosed();
             setHorizontalAlignment0(nativePtr, alignment);
         }
 
         @Override
-        public void setMinimumSize(@Nonnull CefSize size) {
+        public void setMinimumSize(CefSize size) {
             checkNotClosed();
             setMinimumSize0(nativePtr, size);
         }
 
         @Override
-        public void setMaximumSize(@Nonnull CefSize size) {
+        public void setMaximumSize(CefSize size) {
             checkNotClosed();
             setMaximumSize0(nativePtr, size);
         }
@@ -329,7 +328,7 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setState(@Nonnull CefButtonState state) {
+        public void setState(CefButtonState state) {
             checkNotClosed();
             CefButton.NativePeer.setState0(nativePtr, state);
         }
@@ -468,7 +467,7 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -486,7 +485,7 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -498,7 +497,7 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -510,7 +509,7 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -636,38 +635,38 @@ public interface CefLabelButton extends CefButton {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -679,26 +678,26 @@ public interface CefLabelButton extends CefButton {
 
         static native String getText0(long self);
 
-        static native void setImage0(long self, @Nonnull CefButtonState buttonState, @Nullable CefImage image);
+        static native void setImage0(long self, CefButtonState buttonState, @Nullable CefImage image);
 
-        static native CefImage getImage0(long self, @Nonnull CefButtonState buttonState);
+        static native CefImage getImage0(long self, CefButtonState buttonState);
 
-        static native void setTextColor0(long self, @Nonnull CefButtonState forState, int color);
+        static native void setTextColor0(long self, CefButtonState forState, int color);
 
         static native void setEnabledTextColors0(long self, int color);
 
         static native void setFontList0(long self, @Nullable String fontList);
 
-        static native void setHorizontalAlignment0(long self, @Nonnull CefHorizontalAlignment alignment);
+        static native void setHorizontalAlignment0(long self, CefHorizontalAlignment alignment);
 
-        static native void setMinimumSize0(long self, @Nonnull CefSize size);
+        static native void setMinimumSize0(long self, CefSize size);
 
-        static native void setMaximumSize0(long self, @Nonnull CefSize size);
+        static native void setMaximumSize0(long self, CefSize size);
 
         static native CefLabelButton create0(@Nullable CefButtonDelegate delegate, @Nullable String text);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

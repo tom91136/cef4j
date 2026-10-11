@@ -42,7 +42,7 @@
         <scala.version>3.10.0</scala.version>
         <cats.version>2.13.0</cats.version>
         <munit.version>1.3.6</munit.version>
-        <jsr305.version>3.0.2</jsr305.version>
+        <jspecify.version>1.0.1</jspecify.version>
         <slf4j.version>2.0.18</slf4j.version>
         <junit.jupiter.version>5.14.4</junit.jupiter.version>
         <assertj.version>3.27.7</assertj.version>
@@ -51,6 +51,8 @@
         <flatlaf.version>3.7.2</flatlaf.version>
         <palantir.java.format.version>2.97.0</palantir.java.format.version>
         <errorprone.version>2.42.0</errorprone.version><!-- XXX: 2.43.0+ is Java 21 bytecode; CI builds the annotation processors on JDK 17 -->
+        <!-- Annotation-only runtime dependency of Guava/Gson; independent of the Error Prone build pin. -->
+        <errorprone.annotations.version>2.50.0</errorprone.annotations.version>
         <nullaway.version>0.14.2</nullaway.version>
         <checker.qual.version>3.55.1</checker.qual.version>
         <autoservice.version>1.1.1</autoservice.version>
@@ -81,18 +83,36 @@
         <cef4j.cefIndependentTests.skip>false</cef4j.cefIndependentTests.skip>
 
         <exec.skip>false</exec.skip>
+        <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
+        <!-- Published modules set this; it becomes the jar's Automatic-Module-Name. -->
+        <cef4j.module.name/>
+        <!-- API compatibility against a released version: -Djapicmp.baseline=<version>; report-only unless
+             -Djapicmp.break=true. Unpublished modules set japicmp.skip. -->
+        <japicmp.baseline/>
+        <japicmp.skip>true</japicmp.skip>
+        <japicmp.break>false</japicmp.break>
+        <!-- Build-only modules whose classpath never reaches consumers opt out. -->
+        <dependency.hygiene.skip>false</dependency.hygiene.skip>
 
         <!-- Resolved by platform-detection profile below -->
         <cef.platform/>
         <cef.classifier/>
+        <!-- Pinned static clang-format for native sources; generated C++ is committed, so output must not vary by host. -->
+        <clang.format.version>20.1.0</clang.format.version>
+        <clang.format.dir>${maven.multiModuleProjectDirectory}/.cache/clang-format-${clang.format.version}</clang.format.dir>
+        <clang.format.exe>${clang.format.dir}/clang-format</clang.format.exe>
+        <clang.format.url>https://github.com/muttleyxd/clang-tools-static-binaries/releases/download/master-796e77c/${clang.format.asset}</clang.format.url>
+        <clang.format.asset/>
+        <clang.format.sha256/>
+        <clang.format.skip>true</clang.format.skip>
         <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2</cef.dist.url>
         <cmake.generator>Ninja</cmake.generator>
         <cmake.toolchain.file>${maven.multiModuleProjectDirectory}/cmake/toolchains/default.cmake</cmake.toolchain.file>
         <native.compiler.id/>
         <cef4j.generated.java.package>net.kurobako.cef4j.gen</cef4j.generated.java.package>
 
-        <!-- Extra JVM args for Surefire; empty by default. Override via -Dsurefire.argLine=... if needed. -->
-        <surefire.argLine/>
+        <!-- Extra JVM args for Surefire and Failsafe. The JDK 11 smoke execution overrides its argLine. -->
+        <surefire.argLine>--enable-native-access=ALL-UNNAMED</surefire.argLine>
         <!-- Third-party asserts (JavaFX, JeroMQ) are disabled in production and must not fail tests. -->
         <surefire.assertions>-ea:net.kurobako.cef4j...</surefire.assertions>
         <jacoco.argLine/>
@@ -149,9 +169,9 @@
                 <version>${commons.compress.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${jsr305.version}</version>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${jspecify.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -226,7 +246,7 @@
             <dependency>
                 <groupId>com.google.errorprone</groupId>
                 <artifactId>error_prone_annotations</artifactId>
-                <version>${errorprone.version}</version>
+                <version>${errorprone.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.errorprone</groupId>
@@ -388,6 +408,56 @@
     </dependencyManagement>
 
     <profiles>
+        <!-- Mutation testing for modules whose tests never load CEF: ./mvnw -Pmutation test-compile pitest:mutationCoverage -->
+        <profile>
+            <id>mutation</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>1.30.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>1.2.3</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <targetClasses>
+                                <param>net.kurobako.cef4j.*</param>
+                            </targetClasses>
+                            <excludedClasses>
+                                <param>net.kurobako.cef4j.gen.*</param>
+                                <param>net.kurobako.cef4j.cdp.generated.*</param>
+                                <param>net.kurobako.cef4j.ipc.protocol.gen.*</param>
+                            </excludedClasses>
+                            <threads>8</threads>
+                            <timestampedReports>false</timestampedReports>
+                            <outputFormats>
+                                <param>HTML</param>
+                                <param>CSV</param>
+                            </outputFormats>
+                            <jvmArgs>
+                                <value>-ea:net.kurobako.cef4j...</value>
+                            </jvmArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>api-compatibility</id>
+            <activation>
+                <property>
+                    <name>japicmp.baseline</name>
+                </property>
+            </activation>
+            <properties>
+                <japicmp.skip>false</japicmp.skip>
+            </properties>
+        </profile>
         <profile>
             <id>skip-cef-independent-tests</id>
             <activation>
@@ -419,6 +489,21 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.cyclonedx</groupId>
+                        <artifactId>cyclonedx-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sbom</id>
+                                <phase>package</phase>
+                                <goals><goal>makeBom</goal></goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <outputFormat>json</outputFormat>
+                            <includeTestScope>false</includeTestScope>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -475,6 +560,19 @@
             </build>
         </profile>
 
+        <!-- SpotBugs only analyses main Java classes; skip modules that have none. -->
+        <profile>
+            <id>no-java-sources</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/src/main/java</missing>
+                </file>
+            </activation>
+            <properties>
+                <spotbugs.skip>true</spotbugs.skip>
+            </properties>
+        </profile>
+
         <!-- Manual Error Prone/NullAway opt-out: -Derrorprone.skip=true. -->
         <profile>
             <id>disable-errorprone-opt-out</id>
@@ -495,6 +593,7 @@
                                     <arg>-Xlint:all</arg>
                                     <arg>-Xlint:-options</arg>
                                     <arg>-Xlint:-processing</arg>
+                                    <arg>-Werror</arg>
                                 </compilerArgs>
                                 <annotationProcessorPaths combine.self="override"/>
                             </configuration>
@@ -549,6 +648,9 @@
                 </os>
             </activation>
             <properties>
+                <clang.format.asset>clang-format-20_linux-amd64</clang.format.asset>
+                <clang.format.sha256>e900c1e520b6c9b9c99e43c0f45ccd12927838741cfc60c077a33dec69bb60cc</clang.format.sha256>
+                <clang.format.skip>false</clang.format.skip>
                 <cef.platform>linux64</cef.platform>
                 <cef.classifier>linux-x86_64</cef.classifier>
                 <cmake.toolchain.file>${maven.multiModuleProjectDirectory}/cmake/toolchains/linux-x86_64.cmake</cmake.toolchain.file>
@@ -579,6 +681,9 @@
                 </os>
             </activation>
             <properties>
+                <clang.format.asset>clang-format-20_macosx-amd64</clang.format.asset>
+                <clang.format.sha256>f2ddeacd376c764fef49e7abf5621a36d632ed3e73a7d92a9e87fbb164b7b227</clang.format.sha256>
+                <clang.format.skip>false</clang.format.skip>
                 <cef.platform>macosx64</cef.platform>
                 <cef.classifier>macosx-x86_64</cef.classifier>
                 <native.compiler.id>clang</native.compiler.id>
@@ -594,6 +699,9 @@
                 </os>
             </activation>
             <properties>
+                <clang.format.asset>clang-format-20_macos-arm-arm64</clang.format.asset>
+                <clang.format.sha256>fe6b8450a8cf83de3f517e3b9a9b1bb925613e5fb59145d6d24ccca5fe17d442</clang.format.sha256>
+                <clang.format.skip>false</clang.format.skip>
                 <cef.platform>macosarm64</cef.platform>
                 <cef.classifier>macosx-arm64</cef.classifier>
                 <native.compiler.id>clang</native.compiler.id>
@@ -609,6 +717,10 @@
                 </os>
             </activation>
             <properties>
+                <clang.format.asset>clang-format-20_windows-amd64.exe</clang.format.asset>
+                <clang.format.sha256>44011742f30b2ebfd9013aa2b07d802b1b474186fb7904a2f773296f27ff15f9</clang.format.sha256>
+                <clang.format.skip>false</clang.format.skip>
+                <clang.format.exe>${clang.format.dir}/clang-format.exe</clang.format.exe>
                 <cef.platform>windows64</cef.platform>
                 <cef.classifier>windows-x86_64</cef.classifier>
                 <native.compiler.id>msvc</native.compiler.id>
@@ -624,6 +736,10 @@
                 </os>
             </activation>
             <properties>
+                <clang.format.asset>clang-format-20_windows-amd64.exe</clang.format.asset>
+                <clang.format.sha256>44011742f30b2ebfd9013aa2b07d802b1b474186fb7904a2f773296f27ff15f9</clang.format.sha256>
+                <clang.format.skip>false</clang.format.skip>
+                <clang.format.exe>${clang.format.dir}/clang-format.exe</clang.format.exe>
                 <cef.platform>windowsarm64</cef.platform>
                 <cef.classifier>windows-arm64</cef.classifier>
                 <native.compiler.id>msvc</native.compiler.id>
@@ -640,7 +756,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration combine.self="merge">
+                    <configuration>
                         <!-- GitHub's macOS WindowServer session has no usable CGL context.
                              Exercise the same JavaFX scene graph and CEF pixel path through
                              Prism's software pipeline instead of aborting in libglass. -->
@@ -794,7 +910,63 @@
                             </rules>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>enforce-dependency-hygiene</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${dependency.hygiene.skip}</skip>
+                            <rules>
+                                <requireUpperBoundDeps/>
+                                <banDuplicateClasses>
+                                    <scopes>
+                                        <scope>compile</scope>
+                                        <scope>runtime</scope>
+                                    </scopes>
+                                    <findAllDuplicates>true</findAllDuplicates>
+                                    <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                                </banDuplicateClasses>
+                            </rules>
+                        </configuration>
+                    </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>1.12.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.github.siom79.japicmp</groupId>
+                <artifactId>japicmp-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>api-compatibility</id>
+                        <phase>verify</phase>
+                        <goals><goal>cmp</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>${japicmp.skip}</skip>
+                    <oldVersion>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${japicmp.baseline}</version>
+                            <type>jar</type>
+                        </dependency>
+                    </oldVersion>
+                    <parameter>
+                        <onlyModified>true</onlyModified>
+                        <skipPomModules>true</skipPomModules>
+                        <ignoreMissingClasses>true</ignoreMissingClasses>
+                        <breakBuildOnBinaryIncompatibleModifications>${japicmp.break}</breakBuildOnBinaryIncompatibleModifications>
+                        <breakBuildOnSourceIncompatibleModifications>${japicmp.break}</breakBuildOnSourceIncompatibleModifications>
+                    </parameter>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
@@ -917,11 +1089,13 @@
                             <arg>-Xlint:all</arg>
                             <arg>-Xlint:-options</arg>
                             <arg>-Xlint:-processing</arg>
+                            <arg>-Werror</arg>
                             <!-- NullAway also checks generated bindings. NullableBoundary documents the
                                  external contracts where null is required. -->
                             <arg>-XDcompilePolicy=simple</arg>
+                            <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
                             <arg>-XDshould-stop.ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false -Xep:NullableForbidden:ERROR -XepOpt:NullableForbidden:AllowedPackages= -Xep:TestSpinWaitForbidden:ERROR</arg>
+                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:HandleTestAssertionLibraries=true -Xep:NullableForbidden:ERROR -XepOpt:NullableForbidden:AllowedPackages= -Xep:TestSpinWaitForbidden:ERROR -Xep:NullableReferenceInitialiser:ERROR -Xep:VolatileNullCheckReread:ERROR -Xep:IgnoredFileOperationResult:ERROR -Xep:EqualsMissingNullable:ERROR -Xep:ReturnMissingNullable:ERROR -Xep:UnusedException:ERROR -Xep:DefaultLocale:ERROR</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
                             <path>
@@ -989,6 +1163,23 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.5.1</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Automatic-Module-Name>${cef4j.module.name}</Automatic-Module-Name>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.siom79.japicmp</groupId>
+                    <artifactId>japicmp-maven-plugin</artifactId>
+                    <version>0.26.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.cyclonedx</groupId>
+                    <artifactId>cyclonedx-maven-plugin</artifactId>
+                    <version>2.9.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

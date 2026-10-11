@@ -10,7 +10,6 @@ import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
 /** Installs an isolated service-provider file on the current thread for a test scope. */
 public final class ServiceLoaderFixture implements AutoCloseable {
@@ -18,8 +17,7 @@ public final class ServiceLoaderFixture implements AutoCloseable {
     private final ClassLoader previousLoader;
     private final URLClassLoader serviceLoader;
 
-    public ServiceLoaderFixture(@Nonnull Path root, @Nonnull Class<?> service, @Nonnull Class<?>... providers)
-            throws IOException {
+    public ServiceLoaderFixture(Path root, Class<?> service, Class<?>... providers) throws IOException {
         Objects.requireNonNull(root, "root");
         Objects.requireNonNull(service, "service");
         Objects.requireNonNull(providers, "providers");

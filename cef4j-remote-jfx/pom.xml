@@ -15,6 +15,8 @@
     <description>JavaFX client for frames delivered by the packaged CEF runtime server</description>
 
     <properties>
+
+        <cef4j.module.name>net.kurobako.cef4j.remote.jfx</cef4j.module.name>
         <!-- PixelBuffer requires JavaFX 13+; same baseline as cef4j-inprocess-jfx -->
         <javafx.test.version>13.0.2</javafx.test.version>
     </properties>
@@ -29,8 +31,8 @@
             <artifactId>cef4j-remote-frame</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>

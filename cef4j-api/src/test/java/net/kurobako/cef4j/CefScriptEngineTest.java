@@ -10,9 +10,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -105,7 +105,7 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(1)
     void evalSimpleArithmetic() throws Exception {
-        CompletableFuture<String> future = evaluator.evaluate("1 + 2");
+        CompletableFuture<@Nullable String> future = evaluator.evaluate("1 + 2");
         String result = pumpAndGet(future, 15_000);
         assertThat(result).isEqualTo("3");
     }
@@ -202,35 +202,35 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(20)
     void evalSyntaxErrorCompletesExceptionally() throws Exception {
-        CompletableFuture<String> future = evaluator.evaluate("function(");
+        CompletableFuture<@Nullable String> future = evaluator.evaluate("function(");
         assertPumpedExceptionally(future, 5_000, "SyntaxError");
     }
 
     @Test
     @Order(21)
     void evalThrownErrorCompletesExceptionally() throws Exception {
-        CompletableFuture<String> future = evaluator.evaluate("throw new Error('boom')");
+        CompletableFuture<@Nullable String> future = evaluator.evaluate("throw new Error('boom')");
         assertPumpedExceptionally(future, 5_000, "boom");
     }
 
     @Test
     @Order(22)
     void evalThrownStringCompletesExceptionally() throws Exception {
-        CompletableFuture<String> future = evaluator.evaluate("throw 'plain string error'");
+        CompletableFuture<@Nullable String> future = evaluator.evaluate("throw 'plain string error'");
         assertPumpedExceptionally(future, 5_000, "plain string error");
     }
 
     @Test
     @Order(23)
     void evalReferenceErrorCompletesExceptionally() throws Exception {
-        CompletableFuture<String> future = evaluator.evaluate("nonExistentVariable");
+        CompletableFuture<@Nullable String> future = evaluator.evaluate("nonExistentVariable");
         assertPumpedExceptionally(future, 5_000, "not defined");
     }
 
     @Test
     @Order(24)
     void evalTypeErrorCompletesExceptionally() throws Exception {
-        CompletableFuture<String> future = evaluator.evaluate("null.property");
+        CompletableFuture<@Nullable String> future = evaluator.evaluate("null.property");
         assertPumpedExceptionally(future, 5_000, "Cannot read");
     }
 
@@ -552,9 +552,9 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(80)
     void evalMultipleConcurrentRequests() throws Exception {
-        CompletableFuture<String> f1 = evaluator.evaluate("1 + 1");
-        CompletableFuture<String> f2 = evaluator.evaluate("2 + 2");
-        CompletableFuture<String> f3 = evaluator.evaluate("3 + 3");
+        CompletableFuture<@Nullable String> f1 = evaluator.evaluate("1 + 1");
+        CompletableFuture<@Nullable String> f2 = evaluator.evaluate("2 + 2");
+        CompletableFuture<@Nullable String> f3 = evaluator.evaluate("3 + 3");
 
         pumpUntilAllDone(5_000, f1, f2, f3);
 
@@ -566,9 +566,9 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(81)
     void evalInterleavedJsonAndHandleRequests() throws Exception {
-        CompletableFuture<String> jsonFuture = evaluator.evaluate("'json result'");
+        CompletableFuture<@Nullable String> jsonFuture = evaluator.evaluate("'json result'");
         CompletableFuture<Integer> handleFuture = evaluator.evaluateHandle("({type: 'handle'})");
-        CompletableFuture<String> jsonFuture2 = evaluator.evaluate("100 * 2");
+        CompletableFuture<@Nullable String> jsonFuture2 = evaluator.evaluate("100 * 2");
 
         pumpUntilAllDone(5_000, jsonFuture, handleFuture, jsonFuture2);
 
@@ -685,8 +685,8 @@ class CefScriptEngineTest extends CefTestBase {
         CefFrame frame = nonRespondingFrame();
         CefScriptEngine disposable = new CefScriptEngine(() -> frame);
 
-        CompletableFuture<String> pending1 = disposable.evaluate("1");
-        CompletableFuture<String> pending2 = disposable.evaluate("2");
+        CompletableFuture<@Nullable String> pending1 = disposable.evaluate("1");
+        CompletableFuture<@Nullable String> pending2 = disposable.evaluate("2");
 
         assertThat(pending1).isNotDone();
         assertThat(pending2).isNotDone();
@@ -702,7 +702,7 @@ class CefScriptEngineTest extends CefTestBase {
     void cancelPendingClearsOldContextWorkWithoutDisposingEngine() {
         CefFrame frame = nonRespondingFrame();
         try (CefScriptEngine reusable = new CefScriptEngine(() -> frame)) {
-            CompletableFuture<String> pending = reusable.evaluate("1 + 1");
+            CompletableFuture<@Nullable String> pending = reusable.evaluate("1 + 1");
             CompletableFuture<Integer> callback = reusable.createCallback(arguments -> {});
 
             assertThat(pending).isNotDone();
@@ -717,7 +717,7 @@ class CefScriptEngineTest extends CefTestBase {
             assertThat(reusable.pendingRequestCount()).isZero();
             assertThat(reusable.callbackCount()).isZero();
 
-            CompletableFuture<String> acceptedAfterCancellation = reusable.evaluate("6 * 7");
+            CompletableFuture<@Nullable String> acceptedAfterCancellation = reusable.evaluate("6 * 7");
             assertThat(acceptedAfterCancellation).isNotDone();
             assertThat(reusable.pendingRequestCount()).isOne();
 
@@ -733,7 +733,8 @@ class CefScriptEngineTest extends CefTestBase {
         CefFrame frame = nonRespondingFrame();
         CefScriptEngine disposable = new CefScriptEngine(() -> frame);
 
-        CompletableFuture<String> evaluation = disposable.evaluate("1 + 1").orTimeout(1, TimeUnit.MILLISECONDS);
+        CompletableFuture<@Nullable String> evaluation =
+                disposable.evaluate("1 + 1").orTimeout(1, TimeUnit.MILLISECONDS);
         CompletableFuture<Integer> callback =
                 disposable.createCallback(arguments -> {}).orTimeout(1, TimeUnit.MILLISECONDS);
         TestDeadline.after(java.time.Duration.ofSeconds(2))
@@ -801,10 +802,10 @@ class CefScriptEngineTest extends CefTestBase {
                 });
     }
 
-    private static <T> T pumpAndGet(CompletableFuture<T> future, long timeoutMs) throws Exception {
+    private static <T extends @Nullable Object> T pumpAndGet(CompletableFuture<T> future, long timeoutMs)
+            throws Exception {
         TestDeadline deadline = TestDeadline.after(Duration.ofMillis(timeoutMs));
-        deadline.until(
-                future::isDone, () -> Cef.INSTANCE.doMessageLoopWork(), Duration.ofMillis(16), "script completion");
+        deadline.until(future::isDone, Cef.INSTANCE::doMessageLoopWork, Duration.ofMillis(16), "script completion");
         return deadline.await(future, "script result");
     }
 
@@ -813,7 +814,7 @@ class CefScriptEngineTest extends CefTestBase {
         TestDeadline.after(Duration.ofMillis(timeoutMs))
                 .until(
                         future::isDone,
-                        () -> Cef.INSTANCE.doMessageLoopWork(),
+                        Cef.INSTANCE::doMessageLoopWork,
                         Duration.ofMillis(16),
                         "exceptional script completion");
         assertThat(future).isCompletedExceptionally();
@@ -829,19 +830,11 @@ class CefScriptEngineTest extends CefTestBase {
     private static void pumpUntilAllDone(long timeoutMs, CompletableFuture<?>... futures) throws Exception {
         CompletableFuture<Void> all = CompletableFuture.allOf(futures);
         TestDeadline.after(Duration.ofMillis(timeoutMs))
-                .until(
-                        all::isDone,
-                        () -> Cef.INSTANCE.doMessageLoopWork(),
-                        Duration.ofMillis(16),
-                        "script completions");
+                .until(all::isDone, Cef.INSTANCE::doMessageLoopWork, Duration.ofMillis(16), "script completions");
     }
 
     private static void pumpUntilDone(CompletableFuture<?> future, long timeoutMs) throws Exception {
         TestDeadline.after(Duration.ofMillis(timeoutMs))
-                .until(
-                        future::isDone,
-                        () -> Cef.INSTANCE.doMessageLoopWork(),
-                        Duration.ofMillis(16),
-                        "script completion");
+                .until(future::isDone, Cef.INSTANCE::doMessageLoopWork, Duration.ofMillis(16), "script completion");
     }
 }

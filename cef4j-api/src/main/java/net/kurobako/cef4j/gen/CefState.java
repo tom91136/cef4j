@@ -104,7 +104,7 @@ public final class CefState implements CefEnum<CefState> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefState)) return false;
         return this.value == ((CefState) obj).value;

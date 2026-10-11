@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class DOMStorage {
      */
     public static final class SerializedStorageKey implements CdpValue<String> {
         public final String value;
-        public SerializedStorageKey(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public SerializedStorageKey(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof SerializedStorageKey)) return false;
             return value.equals(((SerializedStorageKey) other).value);
@@ -53,14 +52,16 @@ public final class DOMStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return Optional.ofNullable((String) raw("securityOrigin"));
+            Object value = raw("securityOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Represents a key by which DOM Storage keys its CachedStorageAreas
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMStorage.SerializedStorageKey> storageKey() {
-            return Optional.ofNullable(raw("storageKey") == null ? null : new DOMStorage.SerializedStorageKey((String) raw("storageKey")));
+            Object value = raw("storageKey");
+            return Optional.ofNullable(value == null ? null : new DOMStorage.SerializedStorageKey((String) value));
         }
         /**
          * Whether the storage is local storage (not session storage).
@@ -516,7 +517,7 @@ public final class DOMStorage {
         public CompletionStage<Void> clear(DOMStorage.StorageId storageId) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageId", CdpObject.json(storageId));
-            return client.call("DOMStorage.clear", params, result_ -> null);
+            return client.call("DOMStorage.clear", params);
         }
         /**
          * Invokes DOMStorage.clear with a request object.
@@ -524,21 +525,21 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clear(ClearRequest request) {
-            return client.call("DOMStorage.clear", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMStorage.clear", request == null ? null : request.toMap());
         }
         /**
          * Disables storage tracking, prevents storage events from being sent to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("DOMStorage.disable", null, result_ -> null);
+            return client.call("DOMStorage.disable", null);
         }
         /**
          * Enables storage tracking, storage events will now be delivered to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("DOMStorage.enable", null, result_ -> null);
+            return client.call("DOMStorage.enable", null);
         }
         /**
          * Invokes DOMStorage.getDOMStorageItems.
@@ -568,7 +569,7 @@ public final class DOMStorage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageId", CdpObject.json(storageId));
             params.put("key", CdpObject.json(key));
-            return client.call("DOMStorage.removeDOMStorageItem", params, result_ -> null);
+            return client.call("DOMStorage.removeDOMStorageItem", params);
         }
         /**
          * Invokes DOMStorage.removeDOMStorageItem with a request object.
@@ -576,7 +577,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeDOMStorageItem(RemoveDOMStorageItemRequest request) {
-            return client.call("DOMStorage.removeDOMStorageItem", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMStorage.removeDOMStorageItem", request == null ? null : request.toMap());
         }
         /**
          * Invokes DOMStorage.setDOMStorageItem.
@@ -590,7 +591,7 @@ public final class DOMStorage {
             params.put("storageId", CdpObject.json(storageId));
             params.put("key", CdpObject.json(key));
             params.put("value", CdpObject.json(value));
-            return client.call("DOMStorage.setDOMStorageItem", params, result_ -> null);
+            return client.call("DOMStorage.setDOMStorageItem", params);
         }
         /**
          * Invokes DOMStorage.setDOMStorageItem with a request object.
@@ -598,7 +599,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDOMStorageItem(SetDOMStorageItemRequest request) {
-            return client.call("DOMStorage.setDOMStorageItem", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("DOMStorage.setDOMStorageItem", request == null ? null : request.toMap());
         }
         /**
          * Subscribes to DOMStorage.domStorageItemAdded.

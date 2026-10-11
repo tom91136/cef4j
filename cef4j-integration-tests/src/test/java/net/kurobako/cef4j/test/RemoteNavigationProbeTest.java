@@ -18,6 +18,7 @@ import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class RemoteNavigationProbeTest {
@@ -124,7 +125,7 @@ class RemoteNavigationProbeTest {
                 TestGate queueing = new TestGate()) {
             RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1));
             CompletableFuture<Void> queued = new CompletableFuture<>();
-            AtomicReference<CompletableFuture<Void>> loaded = new AtomicReference<>();
+            AtomicReference<@Nullable CompletableFuture<Void>> loaded = new AtomicReference<>();
             CompletableFuture<Void> invocation = CompletableFuture.runAsync(
                     () -> loaded.set(navigation.load("https://pending.test", Duration.ofSeconds(2), () -> {
                         queueing.enter();
@@ -147,7 +148,7 @@ class RemoteNavigationProbeTest {
     }
 
     @Test
-    void sessionDisconnectFailsPendingNavigationWithoutWaitingForTimeout() throws Exception {
+    void sessionDisconnectFailsPendingNavigationWithoutWaitingForTimeout() {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1))) {

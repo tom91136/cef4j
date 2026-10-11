@@ -16,6 +16,8 @@
     <description>Thin native runtime server exposing the Remote CEF API</description>
 
     <properties>
+
+        <japicmp.skip>true</japicmp.skip>
         <ipc.gen.cpp.dir>${project.basedir}/src/main/cpp/gen</ipc.gen.cpp.dir>
     </properties>
 
@@ -110,6 +112,44 @@
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <skip>${clang.format.skip}</skip>
+                    <cpp>
+                        <includes>
+                            <include>src/main/cpp/**/*.cpp</include>
+                            <include>src/main/cpp/**/*.h</include>
+                            <include>src/main/macos/**/*.mm</include>
+                            <include>src/test/cpp/**/*.cpp</include>
+                            <include>src/test/cpp/**/*.h</include>
+                        </includes>
+                        <replaceRegex>
+                            <name>unprefixed fixed-width integers</name>
+                            <searchRegex>\bstd::(u?int(?:_least|_fast)?(?:8|16|32|64)_t|u?intptr_t|u?intmax_t|size_t|ptrdiff_t)\b</searchRegex>
+                            <replacement>$1</replacement>
+                        </replaceRegex>
+                        <clangFormat>
+                            <version>${clang.format.version}</version>
+                            <pathToExe>${clang.format.exe}</pathToExe>
+                            <style>file:${maven.multiModuleProjectDirectory}/.clang-format</style>
+                        </clangFormat>
+                    </cpp>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <configuration>
+                            <filePatterns>.*[/\\]gen[/\\].*</filePatterns>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -87,7 +87,7 @@ public final class CefRuntimeStyle implements CefEnum<CefRuntimeStyle> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefRuntimeStyle)) return false;
         return this.value == ((CefRuntimeStyle) obj).value;

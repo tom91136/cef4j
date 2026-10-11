@@ -3,10 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class that supports the reading of XML data via the libxml streaming API. The methods of this class should only be
@@ -385,7 +384,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:55</a>
      */
     static Optional<CefXmlReader> create(
-            @Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI) {
+            @Nullable CefStreamReader stream, CefXmlEncodingType encodingType, @Nullable String uRI) {
         return Optional.ofNullable(NativePeer.create0(stream, encodingType, uRI));
     }
 
@@ -665,10 +664,10 @@ public interface CefXmlReader extends CefLibraryObject {
         static native boolean moveToCarryingElement0(long self);
 
         static native CefXmlReader create0(
-                @Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI);
+                @Nullable CefStreamReader stream, CefXmlEncodingType encodingType, @Nullable String uRI);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

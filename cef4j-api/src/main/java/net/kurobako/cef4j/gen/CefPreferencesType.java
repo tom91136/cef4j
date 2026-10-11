@@ -105,7 +105,7 @@ public final class CefPreferencesType implements CefEnum<CefPreferencesType> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefPreferencesType)) return false;
         return this.value == ((CefPreferencesType) obj).value;

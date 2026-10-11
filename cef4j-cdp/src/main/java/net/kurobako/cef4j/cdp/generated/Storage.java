@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -29,9 +28,9 @@ public final class Storage {
      */
     public static final class SerializedStorageKey implements CdpValue<String> {
         public final String value;
-        public SerializedStorageKey(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public SerializedStorageKey(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof SerializedStorageKey)) return false;
             return value.equals(((SerializedStorageKey) other).value);
@@ -58,8 +57,8 @@ public final class Storage {
         OTHER("other");
         public final String value;
         StorageType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StorageType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StorageType of(String value) {
             for (StorageType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -156,9 +155,9 @@ public final class Storage {
      */
     public static final class InterestGroupAuctionId implements CdpValue<String> {
         public final String value;
-        public InterestGroupAuctionId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
-        @Nonnull public String value() { return value; }
-        @Override public boolean equals(Object other) {
+        public InterestGroupAuctionId(String value) { this.value = java.util.Objects.requireNonNull(value); }
+        public String value() { return value; }
+        @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof InterestGroupAuctionId)) return false;
             return value.equals(((InterestGroupAuctionId) other).value);
@@ -183,8 +182,8 @@ public final class Storage {
         CLEAR("clear");
         public final String value;
         InterestGroupAccessType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InterestGroupAccessType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InterestGroupAccessType of(String value) {
             for (InterestGroupAccessType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -199,8 +198,8 @@ public final class Storage {
         CONFIGRESOLVED("configResolved");
         public final String value;
         InterestGroupAuctionEventType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InterestGroupAuctionEventType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InterestGroupAuctionEventType of(String value) {
             for (InterestGroupAuctionEventType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -218,8 +217,8 @@ public final class Storage {
         SELLERTRUSTEDSIGNALS("sellerTrustedSignals");
         public final String value;
         InterestGroupAuctionFetchType(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static InterestGroupAuctionFetchType of(@Nonnull String value) {
+        public String value() { return value; }
+        public static InterestGroupAuctionFetchType of(String value) {
             for (InterestGroupAuctionFetchType constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -236,8 +235,8 @@ public final class Storage {
         HEADER("header");
         public final String value;
         SharedStorageAccessScope(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SharedStorageAccessScope of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SharedStorageAccessScope of(String value) {
             for (SharedStorageAccessScope constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -265,8 +264,8 @@ public final class Storage {
         REMAININGBUDGET("remainingBudget");
         public final String value;
         SharedStorageAccessMethod(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static SharedStorageAccessMethod of(@Nonnull String value) {
+        public String value() { return value; }
+        public static SharedStorageAccessMethod of(String value) {
             for (SharedStorageAccessMethod constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -403,14 +402,16 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> aggregationCoordinatorOrigin() {
-            return Optional.ofNullable((String) raw("aggregationCoordinatorOrigin"));
+            Object value = raw("aggregationCoordinatorOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * The context ID provided.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> contextId() {
-            return Optional.ofNullable((String) raw("contextId"));
+            Object value = raw("contextId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Configures the maximum size allowed for filtering IDs.
@@ -589,84 +590,96 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> scriptSourceUrl() {
-            return Optional.ofNullable((String) raw("scriptSourceUrl"));
+            Object value = raw("scriptSourceUrl");
+            return Optional.ofNullable((String) value);
         }
         /**
          * String denoting &quot;context-origin&quot;, &quot;script-origin&quot;, or a custom origin to be used as the worklet&#x27;s data origin. Present only for SharedStorageAccessMethod: createWorklet.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> dataOrigin() {
-            return Optional.ofNullable((String) raw("dataOrigin"));
+            Object value = raw("dataOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Name of the registered operation to be run. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> operationName() {
-            return Optional.ofNullable((String) raw("operationName"));
+            Object value = raw("operationName");
+            return Optional.ofNullable((String) value);
         }
         /**
          * ID of the operation call. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> operationId() {
-            return Optional.ofNullable((String) raw("operationId"));
+            Object value = raw("operationId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Whether or not to keep the worket alive for future run or selectURL calls. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> keepAlive() {
-            return Optional.ofNullable((Boolean) raw("keepAlive"));
+            Object value = raw("keepAlive");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Configures the private aggregation options. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.SharedStoragePrivateAggregationConfig> privateAggregationConfig() {
-            return Optional.ofNullable(raw("privateAggregationConfig") == null ? null : Storage.SharedStoragePrivateAggregationConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("privateAggregationConfig")))));
+            Object value = raw("privateAggregationConfig");
+            return Optional.ofNullable(value == null ? null : Storage.SharedStoragePrivateAggregationConfig.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * The operation&#x27;s serialized data in bytes (converted to a string). Present only for SharedStorageAccessMethods: run and selectURL. TODO(crbug.com/401011862): Consider updating this parameter to binary.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> serializedData() {
-            return Optional.ofNullable((String) raw("serializedData"));
+            Object value = raw("serializedData");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Array of candidate URLs&#x27; specs, along with any associated metadata. Present only for SharedStorageAccessMethod: selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Storage.SharedStorageUrlWithMetadata>> urlsWithMetadata() {
-            return Optional.ofNullable(list(raw("urlsWithMetadata"), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageUrlWithMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            Object value = raw("urlsWithMetadata");
+            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageUrlWithMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Spec of the URN:UUID generated for a selectURL call. Present only for SharedStorageAccessMethod: selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urnUuid() {
-            return Optional.ofNullable((String) raw("urnUuid"));
+            Object value = raw("urnUuid");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Key for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set, append, delete, and get.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> key() {
-            return Optional.ofNullable((String) raw("key"));
+            Object value = raw("key");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Value for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set and append.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> value() {
-            return Optional.ofNullable((String) raw("value"));
+            Object value = raw("value");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessMethod: set.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignoreIfPresent() {
-            return Optional.ofNullable((Boolean) raw("ignoreIfPresent"));
+            Object value = raw("ignoreIfPresent");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * A number denoting the (0-based) order of the worklet&#x27;s creation relative to all other shared storage worklets created by documents using the current storage partition. Present only for SharedStorageAccessMethods: addModule, createWorklet.
@@ -681,21 +694,24 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> workletTargetId() {
-            return Optional.ofNullable(raw("workletTargetId") == null ? null : new Target.TargetID((String) raw("workletTargetId")));
+            Object value = raw("workletTargetId");
+            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
         }
         /**
          * Name of the lock to be acquired, if present. Optionally present only for SharedStorageAccessMethods: batchUpdate, set, append, delete, and clear.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> withLock() {
-            return Optional.ofNullable((String) raw("withLock"));
+            Object value = raw("withLock");
+            return Optional.ofNullable((String) value);
         }
         /**
          * If the method has been called as part of a batchUpdate, then this number identifies the batch to which it belongs. Optionally present only for SharedStorageAccessMethods: batchUpdate (required), set, append, delete, and clear.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> batchUpdateId() {
-            return Optional.ofNullable((String) raw("batchUpdateId"));
+            Object value = raw("batchUpdateId");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Number of modifier methods sent in batch. Present only for SharedStorageAccessMethod: batchUpdate.
@@ -1020,8 +1036,8 @@ public final class Storage {
         STRICT("strict");
         public final String value;
         StorageBucketsDurability(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static StorageBucketsDurability of(@Nonnull String value) {
+        public String value() { return value; }
+        public static StorageBucketsDurability of(String value) {
             for (StorageBucketsDurability constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -1048,7 +1064,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return Optional.ofNullable((String) raw("name"));
+            Object value = raw("name");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Sets the storageKey field.
@@ -1296,7 +1313,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
+            Object value = raw("frameId");
+            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
         }
         /**
          * Sets the frameId field.
@@ -1436,7 +1454,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Browser context to use when called on the browser endpoint.
@@ -1486,7 +1505,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Cookies to be set.
@@ -1531,7 +1551,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
+            Object value = raw("browserContextId");
+            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
         }
         /**
          * Browser context to use when called on the browser endpoint.
@@ -2203,7 +2224,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignoreIfPresent() {
-            return Optional.ofNullable((Boolean) raw("ignoreIfPresent"));
+            Object value = raw("ignoreIfPresent");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Sets the ownerOrigin field.
@@ -2969,7 +2991,8 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> componentSellerOrigin() {
-            return Optional.ofNullable((String) raw("componentSellerOrigin"));
+            Object value = raw("componentSellerOrigin");
+            return Optional.ofNullable((String) value);
         }
         /**
          * For bid or somethingBid event, if done locally and not on a server.
@@ -2984,14 +3007,16 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bidCurrency() {
-            return Optional.ofNullable((String) raw("bidCurrency"));
+            Object value = raw("bidCurrency");
+            return Optional.ofNullable((String) value);
         }
         /**
          * For non-global events --- links to interestGroupAuctionEvent
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.InterestGroupAuctionId> uniqueAuctionId() {
-            return Optional.ofNullable(raw("uniqueAuctionId") == null ? null : new Storage.InterestGroupAuctionId((String) raw("uniqueAuctionId")));
+            Object value = raw("uniqueAuctionId");
+            return Optional.ofNullable(value == null ? null : new Storage.InterestGroupAuctionId((String) value));
         }
         /**
          * Sets the accessTime field.
@@ -3137,14 +3162,16 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.InterestGroupAuctionId> parentAuctionId() {
-            return Optional.ofNullable(raw("parentAuctionId") == null ? null : new Storage.InterestGroupAuctionId((String) raw("parentAuctionId")));
+            Object value = raw("parentAuctionId");
+            return Optional.ofNullable(value == null ? null : new Storage.InterestGroupAuctionId((String) value));
         }
         /**
          * Set for started and configResolved
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> auctionConfig() {
-            return Optional.ofNullable(objectMap(raw("auctionConfig")));
+            Object value = raw("auctionConfig");
+            return Optional.ofNullable(objectMap(value));
         }
         /**
          * Sets the eventTime field.
@@ -3627,7 +3654,7 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             params.put("storageTypes", CdpObject.json(storageTypes));
-            return client.call("Storage.clearDataForOrigin", params, result_ -> null);
+            return client.call("Storage.clearDataForOrigin", params);
         }
         /**
          * Clears storage for origin.
@@ -3635,7 +3662,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDataForOrigin(ClearDataForOriginRequest request) {
-            return client.call("Storage.clearDataForOrigin", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.clearDataForOrigin", request == null ? null : request.toMap());
         }
         /**
          * Clears storage for storage key.
@@ -3647,7 +3674,7 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
             params.put("storageTypes", CdpObject.json(storageTypes));
-            return client.call("Storage.clearDataForStorageKey", params, result_ -> null);
+            return client.call("Storage.clearDataForStorageKey", params);
         }
         /**
          * Clears storage for storage key.
@@ -3655,7 +3682,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDataForStorageKey(ClearDataForStorageKeyRequest request) {
-            return client.call("Storage.clearDataForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.clearDataForStorageKey", request == null ? null : request.toMap());
         }
         /**
          * Returns all browser cookies.
@@ -3692,7 +3719,7 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("cookies", CdpObject.json(cookies));
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Storage.setCookies", params, result_ -> null);
+            return client.call("Storage.setCookies", params);
         }
         /**
          * Sets given cookies.
@@ -3708,7 +3735,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(SetCookiesRequest request) {
-            return client.call("Storage.setCookies", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setCookies", request == null ? null : request.toMap());
         }
         /**
          * Clears cookies.
@@ -3718,7 +3745,7 @@ public final class Storage {
         public CompletionStage<Void> clearCookies(Optional<Browser.BrowserContextID> browserContextId) {
             Map<String, Object> params = new LinkedHashMap<>();
             browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            return client.call("Storage.clearCookies", params, result_ -> null);
+            return client.call("Storage.clearCookies", params);
         }
         /**
          * Clears cookies.
@@ -3733,7 +3760,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearCookies(ClearCookiesRequest request) {
-            return client.call("Storage.clearCookies", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.clearCookies", request == null ? null : request.toMap());
         }
         /**
          * Returns usage and quota in bytes.
@@ -3764,7 +3791,7 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             quotaSize.ifPresent(value_ -> params.put("quotaSize", value_));
-            return client.call("Storage.overrideQuotaForOrigin", params, result_ -> null);
+            return client.call("Storage.overrideQuotaForOrigin", params);
         }
         /**
          * Override quota for the specified origin
@@ -3782,7 +3809,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideQuotaForOrigin(OverrideQuotaForOriginRequest request) {
-            return client.call("Storage.overrideQuotaForOrigin", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.overrideQuotaForOrigin", request == null ? null : request.toMap());
         }
         /**
          * Registers origin to be notified when an update occurs to its cache storage list.
@@ -3792,7 +3819,7 @@ public final class Storage {
         public CompletionStage<Void> trackCacheStorageForOrigin(String origin) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.trackCacheStorageForOrigin", params, result_ -> null);
+            return client.call("Storage.trackCacheStorageForOrigin", params);
         }
         /**
          * Registers origin to be notified when an update occurs to its cache storage list.
@@ -3800,7 +3827,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackCacheStorageForOrigin(TrackCacheStorageForOriginRequest request) {
-            return client.call("Storage.trackCacheStorageForOrigin", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.trackCacheStorageForOrigin", request == null ? null : request.toMap());
         }
         /**
          * Registers storage key to be notified when an update occurs to its cache storage list.
@@ -3810,7 +3837,7 @@ public final class Storage {
         public CompletionStage<Void> trackCacheStorageForStorageKey(String storageKey) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.trackCacheStorageForStorageKey", params, result_ -> null);
+            return client.call("Storage.trackCacheStorageForStorageKey", params);
         }
         /**
          * Registers storage key to be notified when an update occurs to its cache storage list.
@@ -3818,7 +3845,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackCacheStorageForStorageKey(TrackCacheStorageForStorageKeyRequest request) {
-            return client.call("Storage.trackCacheStorageForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.trackCacheStorageForStorageKey", request == null ? null : request.toMap());
         }
         /**
          * Registers origin to be notified when an update occurs to its IndexedDB.
@@ -3828,7 +3855,7 @@ public final class Storage {
         public CompletionStage<Void> trackIndexedDBForOrigin(String origin) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.trackIndexedDBForOrigin", params, result_ -> null);
+            return client.call("Storage.trackIndexedDBForOrigin", params);
         }
         /**
          * Registers origin to be notified when an update occurs to its IndexedDB.
@@ -3836,7 +3863,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackIndexedDBForOrigin(TrackIndexedDBForOriginRequest request) {
-            return client.call("Storage.trackIndexedDBForOrigin", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.trackIndexedDBForOrigin", request == null ? null : request.toMap());
         }
         /**
          * Registers storage key to be notified when an update occurs to its IndexedDB.
@@ -3846,7 +3873,7 @@ public final class Storage {
         public CompletionStage<Void> trackIndexedDBForStorageKey(String storageKey) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.trackIndexedDBForStorageKey", params, result_ -> null);
+            return client.call("Storage.trackIndexedDBForStorageKey", params);
         }
         /**
          * Registers storage key to be notified when an update occurs to its IndexedDB.
@@ -3854,7 +3881,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackIndexedDBForStorageKey(TrackIndexedDBForStorageKeyRequest request) {
-            return client.call("Storage.trackIndexedDBForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.trackIndexedDBForStorageKey", request == null ? null : request.toMap());
         }
         /**
          * Unregisters origin from receiving notifications for cache storage.
@@ -3864,7 +3891,7 @@ public final class Storage {
         public CompletionStage<Void> untrackCacheStorageForOrigin(String origin) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.untrackCacheStorageForOrigin", params, result_ -> null);
+            return client.call("Storage.untrackCacheStorageForOrigin", params);
         }
         /**
          * Unregisters origin from receiving notifications for cache storage.
@@ -3872,7 +3899,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackCacheStorageForOrigin(UntrackCacheStorageForOriginRequest request) {
-            return client.call("Storage.untrackCacheStorageForOrigin", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.untrackCacheStorageForOrigin", request == null ? null : request.toMap());
         }
         /**
          * Unregisters storage key from receiving notifications for cache storage.
@@ -3882,7 +3909,7 @@ public final class Storage {
         public CompletionStage<Void> untrackCacheStorageForStorageKey(String storageKey) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.untrackCacheStorageForStorageKey", params, result_ -> null);
+            return client.call("Storage.untrackCacheStorageForStorageKey", params);
         }
         /**
          * Unregisters storage key from receiving notifications for cache storage.
@@ -3890,7 +3917,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackCacheStorageForStorageKey(UntrackCacheStorageForStorageKeyRequest request) {
-            return client.call("Storage.untrackCacheStorageForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.untrackCacheStorageForStorageKey", request == null ? null : request.toMap());
         }
         /**
          * Unregisters origin from receiving notifications for IndexedDB.
@@ -3900,7 +3927,7 @@ public final class Storage {
         public CompletionStage<Void> untrackIndexedDBForOrigin(String origin) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.untrackIndexedDBForOrigin", params, result_ -> null);
+            return client.call("Storage.untrackIndexedDBForOrigin", params);
         }
         /**
          * Unregisters origin from receiving notifications for IndexedDB.
@@ -3908,7 +3935,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackIndexedDBForOrigin(UntrackIndexedDBForOriginRequest request) {
-            return client.call("Storage.untrackIndexedDBForOrigin", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.untrackIndexedDBForOrigin", request == null ? null : request.toMap());
         }
         /**
          * Unregisters storage key from receiving notifications for IndexedDB.
@@ -3918,7 +3945,7 @@ public final class Storage {
         public CompletionStage<Void> untrackIndexedDBForStorageKey(String storageKey) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.untrackIndexedDBForStorageKey", params, result_ -> null);
+            return client.call("Storage.untrackIndexedDBForStorageKey", params);
         }
         /**
          * Unregisters storage key from receiving notifications for IndexedDB.
@@ -3926,7 +3953,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackIndexedDBForStorageKey(UntrackIndexedDBForStorageKeyRequest request) {
-            return client.call("Storage.untrackIndexedDBForStorageKey", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.untrackIndexedDBForStorageKey", request == null ? null : request.toMap());
         }
         /**
          * Returns the number of stored Trust Tokens per issuer for the current browsing context.
@@ -3987,7 +4014,7 @@ public final class Storage {
         public CompletionStage<Void> setInterestGroupTracking(boolean enable) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setInterestGroupTracking", params, result_ -> null);
+            return client.call("Storage.setInterestGroupTracking", params);
         }
         /**
          * Enables/Disables issuing of interestGroupAccessed events.
@@ -3996,7 +4023,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterestGroupTracking(SetInterestGroupTrackingRequest request) {
-            return client.call("Storage.setInterestGroupTracking", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setInterestGroupTracking", request == null ? null : request.toMap());
         }
         /**
          * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
@@ -4007,7 +4034,7 @@ public final class Storage {
         public CompletionStage<Void> setInterestGroupAuctionTracking(boolean enable) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setInterestGroupAuctionTracking", params, result_ -> null);
+            return client.call("Storage.setInterestGroupAuctionTracking", params);
         }
         /**
          * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
@@ -4016,7 +4043,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterestGroupAuctionTracking(SetInterestGroupAuctionTrackingRequest request) {
-            return client.call("Storage.setInterestGroupAuctionTracking", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setInterestGroupAuctionTracking", request == null ? null : request.toMap());
         }
         /**
          * Gets metadata for an origin&#x27;s shared storage.
@@ -4073,7 +4100,7 @@ public final class Storage {
             params.put("key", CdpObject.json(key));
             params.put("value", CdpObject.json(value));
             ignoreIfPresent.ifPresent(value_ -> params.put("ignoreIfPresent", value_));
-            return client.call("Storage.setSharedStorageEntry", params, result_ -> null);
+            return client.call("Storage.setSharedStorageEntry", params);
         }
         /**
          * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
@@ -4093,7 +4120,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageEntry(SetSharedStorageEntryRequest request) {
-            return client.call("Storage.setSharedStorageEntry", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setSharedStorageEntry", request == null ? null : request.toMap());
         }
         /**
          * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
@@ -4106,7 +4133,7 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("ownerOrigin", CdpObject.json(ownerOrigin));
             params.put("key", CdpObject.json(key));
-            return client.call("Storage.deleteSharedStorageEntry", params, result_ -> null);
+            return client.call("Storage.deleteSharedStorageEntry", params);
         }
         /**
          * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
@@ -4115,7 +4142,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteSharedStorageEntry(DeleteSharedStorageEntryRequest request) {
-            return client.call("Storage.deleteSharedStorageEntry", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.deleteSharedStorageEntry", request == null ? null : request.toMap());
         }
         /**
          * Clears all entries for a given origin&#x27;s shared storage.
@@ -4126,7 +4153,7 @@ public final class Storage {
         public CompletionStage<Void> clearSharedStorageEntries(String ownerOrigin) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            return client.call("Storage.clearSharedStorageEntries", params, result_ -> null);
+            return client.call("Storage.clearSharedStorageEntries", params);
         }
         /**
          * Clears all entries for a given origin&#x27;s shared storage.
@@ -4135,7 +4162,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearSharedStorageEntries(ClearSharedStorageEntriesRequest request) {
-            return client.call("Storage.clearSharedStorageEntries", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.clearSharedStorageEntries", request == null ? null : request.toMap());
         }
         /**
          * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
@@ -4146,7 +4173,7 @@ public final class Storage {
         public CompletionStage<Void> resetSharedStorageBudget(String ownerOrigin) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            return client.call("Storage.resetSharedStorageBudget", params, result_ -> null);
+            return client.call("Storage.resetSharedStorageBudget", params);
         }
         /**
          * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
@@ -4155,7 +4182,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetSharedStorageBudget(ResetSharedStorageBudgetRequest request) {
-            return client.call("Storage.resetSharedStorageBudget", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.resetSharedStorageBudget", request == null ? null : request.toMap());
         }
         /**
          * Enables/disables issuing of sharedStorageAccessed events.
@@ -4166,7 +4193,7 @@ public final class Storage {
         public CompletionStage<Void> setSharedStorageTracking(boolean enable) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setSharedStorageTracking", params, result_ -> null);
+            return client.call("Storage.setSharedStorageTracking", params);
         }
         /**
          * Enables/disables issuing of sharedStorageAccessed events.
@@ -4175,7 +4202,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageTracking(SetSharedStorageTrackingRequest request) {
-            return client.call("Storage.setSharedStorageTracking", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setSharedStorageTracking", request == null ? null : request.toMap());
         }
         /**
          * Set tracking for a storage key&#x27;s buckets.
@@ -4188,7 +4215,7 @@ public final class Storage {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageKey", CdpObject.json(storageKey));
             params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setStorageBucketTracking", params, result_ -> null);
+            return client.call("Storage.setStorageBucketTracking", params);
         }
         /**
          * Set tracking for a storage key&#x27;s buckets.
@@ -4197,7 +4224,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setStorageBucketTracking(SetStorageBucketTrackingRequest request) {
-            return client.call("Storage.setStorageBucketTracking", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setStorageBucketTracking", request == null ? null : request.toMap());
         }
         /**
          * Deletes the Storage Bucket with the given storage key and bucket name.
@@ -4208,7 +4235,7 @@ public final class Storage {
         public CompletionStage<Void> deleteStorageBucket(Storage.StorageBucket bucket) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("bucket", CdpObject.json(bucket));
-            return client.call("Storage.deleteStorageBucket", params, result_ -> null);
+            return client.call("Storage.deleteStorageBucket", params);
         }
         /**
          * Deletes the Storage Bucket with the given storage key and bucket name.
@@ -4217,7 +4244,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteStorageBucket(DeleteStorageBucketRequest request) {
-            return client.call("Storage.deleteStorageBucket", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.deleteStorageBucket", request == null ? null : request.toMap());
         }
         /**
          * Deletes state for sites identified as potential bounce trackers, immediately.
@@ -4247,7 +4274,7 @@ public final class Storage {
             params.put("owner", CdpObject.json(owner));
             params.put("name", CdpObject.json(name));
             params.put("hashes", CdpObject.json(hashes));
-            return client.call("Storage.setProtectedAudienceKAnonymity", params, result_ -> null);
+            return client.call("Storage.setProtectedAudienceKAnonymity", params);
         }
         /**
          * Invokes Storage.setProtectedAudienceKAnonymity with a request object.
@@ -4255,7 +4282,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setProtectedAudienceKAnonymity(SetProtectedAudienceKAnonymityRequest request) {
-            return client.call("Storage.setProtectedAudienceKAnonymity", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Storage.setProtectedAudienceKAnonymity", request == null ? null : request.toMap());
         }
         /**
          * A cache&#x27;s contents have been modified.

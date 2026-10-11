@@ -10,8 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.CdpRequestTracker;
@@ -23,6 +21,7 @@ import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefTaskRunner;
 import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +46,11 @@ public final class InProcessDevToolsSession implements CdpTransport {
         this.codec = codec;
     }
 
-    @Nonnull
-    public static CompletableFuture<InProcessDevToolsSession> attach(@Nonnull CefBrowser browser) {
+    public static CompletableFuture<InProcessDevToolsSession> attach(CefBrowser browser) {
         return attach(browser, WebDriverJsonCodec.installed().cdpCodec());
     }
 
-    @Nonnull
-    public static CompletableFuture<InProcessDevToolsSession> attach(
-            @Nonnull CefBrowser browser, @Nonnull CdpCodec codec) {
+    public static CompletableFuture<InProcessDevToolsSession> attach(CefBrowser browser, CdpCodec codec) {
         Objects.requireNonNull(browser, "browser");
         Objects.requireNonNull(codec, "codec");
         Class<?> observerType;
@@ -84,9 +80,8 @@ public final class InProcessDevToolsSession implements CdpTransport {
     }
 
     @Override
-    @Nonnull
     @SuppressWarnings("FutureReturnValueIgnored")
-    public CompletableFuture<byte[]> execute(@Nonnull String method, @Nullable byte[] params) {
+    public CompletableFuture<byte[]> execute(String method, byte @Nullable [] params) {
         Objects.requireNonNull(method, "method");
         if (!method.matches("[A-Za-z0-9_.-]+")) throw new IllegalArgumentException("invalid CDP method name");
         if (!open.get()) return CompletableFuture.failedFuture(new IllegalStateException("DevTools session is closed"));
@@ -119,13 +114,12 @@ public final class InProcessDevToolsSession implements CdpTransport {
     }
 
     @Override
-    public void cancelPending(@Nonnull Throwable failure) {
+    public void cancelPending(Throwable failure) {
         requests.failAll(failure);
     }
 
     @Override
-    @Nonnull
-    public CdpSubscription subscribe(@Nonnull String method, @Nonnull Consumer<byte[]> handler) {
+    public CdpSubscription subscribe(String method, Consumer<byte[]> handler) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(handler, "handler");
         if (!open.get()) throw new IllegalStateException("DevTools session is closed");
@@ -136,7 +130,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
     }
 
     @SuppressWarnings("UnusedVariable")
-    private boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
+    private boolean onDevToolsMessage(@Nullable CefBrowser browser, ByteBuffer message) {
         return false;
     }
 

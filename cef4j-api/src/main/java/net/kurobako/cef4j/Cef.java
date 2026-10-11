@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
@@ -25,6 +23,7 @@ import net.kurobako.cef4j.gen.CefSettings.Mutable;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefWindowInfo;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,17 +79,15 @@ public enum Cef implements AutoCloseable {
         private final CefSettings.Mutable settings;
         private final List<String> args;
 
-        public LaunchArgs(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> args) {
+        public LaunchArgs(CefSettings.Mutable settings, List<String> args) {
             this.settings = Objects.requireNonNull(settings, "settings");
             this.args = new ArrayList<>(Objects.requireNonNull(args, "args"));
         }
 
-        @Nonnull
         public CefSettings.Mutable settings() {
             return settings;
         }
 
-        @Nonnull
         public List<String> args() {
             return args;
         }
@@ -151,7 +148,7 @@ public enum Cef implements AutoCloseable {
      *
      * @throws IllegalStateException if CEF is already initialised
      */
-    public void addAppHandler(@Nonnull CefApp handler) {
+    public void addAppHandler(CefApp handler) {
         Objects.requireNonNull(handler, "handler");
         if (state != State.UNINITIALISED) {
             throw new IllegalStateException(
@@ -162,7 +159,7 @@ public enum Cef implements AutoCloseable {
     }
 
     /** Unregister a previously-added {@link CefApp} handler. No-op if not registered. Safe to call at any time. */
-    public void removeAppHandler(@Nonnull CefApp handler) {
+    public void removeAppHandler(CefApp handler) {
         Objects.requireNonNull(handler, "handler");
         appHandlers.remove(handler);
     }
@@ -182,7 +179,7 @@ public enum Cef implements AutoCloseable {
      * @throws IllegalArgumentException if settings contain unsupported options (see {@link #initialiseUnsafe} to
      *     bypass)
      */
-    public void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+    public void initialise(CefSettings.Mutable settings, List<String> extraArgs) {
         validateSettings(settings);
         initialiseInternal(settings, extraArgs);
     }
@@ -192,7 +189,7 @@ public enum Cef implements AutoCloseable {
      * acknowledgement. Use this only if you know what you are doing — certain configurations (e.g.
      * {@code multiThreadedMessageLoop=1} on macOS) will crash or hang the process.
      */
-    public void initialiseUnsafe(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+    public void initialiseUnsafe(CefSettings.Mutable settings, List<String> extraArgs) {
         validateSandboxAvailability(settings);
         initialiseInternal(settings, extraArgs);
     }
@@ -215,7 +212,7 @@ public enum Cef implements AutoCloseable {
         }
     }
 
-    private void initialiseInternal(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+    private void initialiseInternal(CefSettings.Mutable settings, List<String> extraArgs) {
         synchronized (lifecycleLock) {
             Objects.requireNonNull(settings);
             Objects.requireNonNull(extraArgs);
@@ -236,7 +233,7 @@ public enum Cef implements AutoCloseable {
 
             if (settings.resourcesDirPath == null) {
                 Path baseDir = SystemBootstrap.extractionDir()
-                        .or(() -> SystemBootstrap.libcefDir())
+                        .or(SystemBootstrap::libcefDir)
                         .orElse(null);
                 if (baseDir != null) {
                     if (OS.isMacOS()) {
@@ -289,7 +286,7 @@ public enum Cef implements AutoCloseable {
                 final CefSettings finalSettings = settings.toImmutable();
                 final CefApp finalAppHandler = appHandler;
                 final List<String> finalArgv = List.copyOf(argv);
-                final AtomicReference<Throwable> initError = new AtomicReference<>();
+                final AtomicReference<@Nullable Throwable> initError = new AtomicReference<>();
                 final int[] result = new int[1];
                 SystemBootstrap.initAndRunOnMainThread(
                         () -> {
@@ -322,7 +319,7 @@ public enum Cef implements AutoCloseable {
                 macOsManaged = true;
             } else {
                 CountDownLatch initLatch = new CountDownLatch(1);
-                AtomicReference<Throwable> initError = new AtomicReference<>();
+                AtomicReference<@Nullable Throwable> initError = new AtomicReference<>();
                 CountDownLatch sdLatch = new CountDownLatch(1);
                 this.shutdownLatch = sdLatch;
 
@@ -378,8 +375,9 @@ public enum Cef implements AutoCloseable {
             }
 
             log.debug("CEF initialized");
-            if (activeSettings != null && activeSettings.cachePath != null) {
-                NativeStderr.setCrashLogPath(activeSettings.cachePath);
+            CefSettings active = activeSettings;
+            if (active != null && active.cachePath != null) {
+                NativeStderr.setCrashLogPath(active.cachePath);
             }
         }
     }
@@ -533,7 +531,8 @@ public enum Cef implements AutoCloseable {
                 }
             });
             if (!posted) throw new IllegalStateException("CEF UI queue rejected message-loop shutdown");
-            if (shutdownLatch != null) awaitUninterruptibly(shutdownLatch);
+            CountDownLatch latch = shutdownLatch;
+            if (latch != null) awaitUninterruptibly(latch);
         } else {
             int released = NativeCleaner.INSTANCE.releaseAll();
             log.debug("Released {} outstanding NativePeers before shutdown", released);

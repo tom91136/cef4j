@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -145,7 +144,7 @@ public final class Tethering {
         public CompletionStage<Void> bind(long port) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("port", CdpObject.json(port));
-            return client.call("Tethering.bind", params, result_ -> null);
+            return client.call("Tethering.bind", params);
         }
         /**
          * Request browser port binding.
@@ -153,7 +152,7 @@ public final class Tethering {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> bind(BindRequest request) {
-            return client.call("Tethering.bind", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Tethering.bind", request == null ? null : request.toMap());
         }
         /**
          * Request browser port unbinding.
@@ -163,7 +162,7 @@ public final class Tethering {
         public CompletionStage<Void> unbind(long port) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("port", CdpObject.json(port));
-            return client.call("Tethering.unbind", params, result_ -> null);
+            return client.call("Tethering.unbind", params);
         }
         /**
          * Request browser port unbinding.
@@ -171,7 +170,7 @@ public final class Tethering {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> unbind(UnbindRequest request) {
-            return client.call("Tethering.unbind", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("Tethering.unbind", request == null ? null : request.toMap());
         }
         /**
          * Informs that port was successfully bound and got a specified connection id.

@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 
 /**
  * On-disk recording format used by {@link RecordingTransport} / {@link ReplayTransport}.
@@ -75,7 +74,7 @@ public final class MessageLog {
     private MessageLog() {}
 
     /** Open a log for writing. Truncates if the file exists. */
-    public static Writer writer(@Nonnull Path file) throws IOException {
+    public static Writer writer(Path file) throws IOException {
         OutputStream raw = Files.newOutputStream(
                 file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         DataOutputStream out = new DataOutputStream(new BufferedOutputStream(raw));
@@ -86,7 +85,7 @@ public final class MessageLog {
     }
 
     /** Open a log for reading. */
-    public static Reader reader(@Nonnull Path file) throws IOException {
+    public static Reader reader(Path file) throws IOException {
         InputStream raw = Files.newInputStream(file, StandardOpenOption.READ);
         DataInputStream in = new DataInputStream(new BufferedInputStream(raw));
         byte[] magic = new byte[MAGIC.length];
@@ -111,8 +110,7 @@ public final class MessageLog {
             this.out = out;
         }
 
-        public void append(@Nonnull Direction direction, long timestampNanos, @Nonnull byte[] payload)
-                throws IOException {
+        public void append(Direction direction, long timestampNanos, byte[] payload) throws IOException {
             synchronized (lock) {
                 if (closed) throw new IOException("MessageLog.Writer closed");
                 out.writeByte(direction.code);

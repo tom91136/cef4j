@@ -40,8 +40,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Screen;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
@@ -70,6 +68,7 @@ import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /** JavaFX off-screen rendering view backed by a CEF browser. */
 @SuppressWarnings({"this-escape", "resource"})
@@ -183,8 +182,7 @@ public class CefWebView extends Region implements AutoCloseable {
      *     {@link Cef#addAppHandler(CefApp)} before initialisation
      * @throws IllegalStateException if CEF has been terminated
      */
-    public static void initialise(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, Optional<CefApp> appHandler) {
+    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs, Optional<CefApp> appHandler) {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
@@ -489,7 +487,7 @@ public class CefWebView extends Region implements AutoCloseable {
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
-            public boolean getRootScreenRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
+            public boolean getRootScreenRect(@Nullable CefBrowser b, CefRect.Mutable rect) {
                 Rectangle2D resolved = viewportSnapshot.rootBounds;
                 rect.x = (int) Math.round(resolved.getMinX());
                 rect.y = (int) Math.round(resolved.getMinY());
@@ -499,7 +497,7 @@ public class CefWebView extends Region implements AutoCloseable {
             }
 
             @Override
-            public void getViewRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
+            public void getViewRect(@Nullable CefBrowser b, CefRect.Mutable rect) {
                 ViewportSnapshot snapshot = viewportSnapshot;
                 rect.x = 0;
                 rect.y = 0;
@@ -508,7 +506,7 @@ public class CefWebView extends Region implements AutoCloseable {
             }
 
             @Override
-            public boolean getScreenInfo(@Nullable CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
+            public boolean getScreenInfo(@Nullable CefBrowser b, CefScreenInfo.Mutable screenInfo) {
                 ViewportSnapshot snapshot = viewportSnapshot;
                 screenInfo.deviceScaleFactor = (float) snapshot.scale;
                 screenInfo.depth = 32;
@@ -538,17 +536,17 @@ public class CefWebView extends Region implements AutoCloseable {
             }
 
             @Override
-            public void onPopupSize(@Nullable CefBrowser browser, @Nonnull CefRect rect) {
+            public void onPopupSize(@Nullable CefBrowser browser, CefRect rect) {
                 popupRect = new CefRect(rect.x, rect.y, rect.width, rect.height);
             }
 
             @Override
             public void onPaint(
                     @Nullable CefBrowser b,
-                    @Nonnull CefPaintElementType type,
+                    CefPaintElementType type,
                     long dirtyRectsCount,
-                    @Nonnull CefRect[] dirtyRects,
-                    @Nonnull ByteBuffer buffer,
+                    CefRect[] dirtyRects,
+                    ByteBuffer buffer,
                     int width,
                     int height) {
                 boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
@@ -915,19 +913,20 @@ public class CefWebView extends Region implements AutoCloseable {
             requestFocus();
             runWithBrowserHost(false, host -> host.setFocus(true));
         }
-        runWithBrowserHost(false, host -> {
-            host.sendMouseClickEvent(
-                    new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
-                    CefMouseButtonType.of(cefButton(e)),
-                    mouseUp,
-                    e.getClickCount());
-        });
+        runWithBrowserHost(
+                false,
+                host -> host.sendMouseClickEvent(
+                        new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
+                        CefMouseButtonType.of(cefButton(e)),
+                        mouseUp,
+                        e.getClickCount()));
     }
 
     private void handleMouseMoved(MouseEvent e) {
-        runWithBrowserHost(false, host -> {
-            host.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), false);
-        });
+        runWithBrowserHost(
+                false,
+                host -> host.sendMouseMoveEvent(
+                        new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), false));
     }
 
     private void hidePopupOverlay() {
@@ -936,9 +935,10 @@ public class CefWebView extends Region implements AutoCloseable {
 
     private void handleMouseExited(MouseEvent e) {
         if (popupSurface.containsScreenPoint(e.getScreenX(), e.getScreenY())) return;
-        runWithBrowserHost(false, host -> {
-            host.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), true);
-        });
+        runWithBrowserHost(
+                false,
+                host -> host.sendMouseMoveEvent(
+                        new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), true));
     }
 
     private void handleScroll(ScrollEvent e) {
@@ -977,9 +977,10 @@ public class CefWebView extends Region implements AutoCloseable {
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
         pressedKeyCode = keyCode;
-        runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(KEY_RAWKEYDOWN, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
-        });
+        runWithBrowserHost(
+                false,
+                host -> host.sendKeyEvent(
+                        new CefKeyEvent(KEY_RAWKEYDOWN, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0)));
     }
 
     private void handleKeyTyped(KeyEvent e) {
@@ -988,18 +989,18 @@ public class CefWebView extends Region implements AutoCloseable {
         char c = text.charAt(0);
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = pressedKeyCode != 0 ? pressedKeyCode : c;
-        runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, keyCode, keyCode, 0, c, c, 0));
-        });
+        runWithBrowserHost(
+                false, host -> host.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, keyCode, keyCode, 0, c, c, 0)));
     }
 
     private void handleKeyReleased(KeyEvent e) {
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
         if (pressedKeyCode == keyCode) pressedKeyCode = 0;
-        runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(KEY_KEYUP, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
-        });
+        runWithBrowserHost(
+                false,
+                host -> host.sendKeyEvent(
+                        new CefKeyEvent(KEY_KEYUP, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0)));
     }
 
     private void runWhenBrowserReady(boolean failIfUnavailable, Consumer<BrowserHandle> action) {
@@ -1084,11 +1085,12 @@ public class CefWebView extends Region implements AutoCloseable {
             }
             return;
         }
-        if (this.browser == null) {
+        BrowserHandle current = this.browser;
+        if (current == null) {
+            current = created;
             this.browser = created;
             browserCleanup.browser = created;
         }
-        BrowserHandle current = Objects.requireNonNull(this.browser);
         Consumer<BrowserHandle> action;
         while ((action = pendingBrowserActions.poll()) != null) {
             action.accept(current);
@@ -1110,12 +1112,11 @@ public class CefWebView extends Region implements AutoCloseable {
         });
     }
 
-    boolean handleBeforePopup(
-            @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> clientRef) {
+    boolean handleBeforePopup(CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> clientRef) {
         if (clientRef == null) return true;
         javafx.util.Callback<CefPopupFeatures, CefWebEngine> handler = engine.getCreatePopupHandler();
         if (handler == null) return true;
-        final AtomicReference<CefWebEngine> popupEngine = new AtomicReference<>();
+        final AtomicReference<@Nullable CefWebEngine> popupEngine = new AtomicReference<>();
         runOnFxAndWait(() -> {
             CefWebEngine created = handler.call(new CefPopupFeatures(false, false, false, true));
             if (created != null) {
@@ -1144,7 +1145,7 @@ public class CefWebView extends Region implements AutoCloseable {
             return;
         }
         CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<Throwable> failure = new AtomicReference<>();
+        AtomicReference<@Nullable Throwable> failure = new AtomicReference<>();
         try {
             Platform.runLater(() -> {
                 try {

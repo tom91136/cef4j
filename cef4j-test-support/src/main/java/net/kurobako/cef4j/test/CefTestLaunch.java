@@ -3,10 +3,8 @@ package net.kurobako.cef4j.test;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 public final class CefTestLaunch {
-    @Nonnull
     public static List<String> extraArgs() {
         List<String> args = new ArrayList<>();
         String ozone = System.getProperty("cef4j.test.ozonePlatform");

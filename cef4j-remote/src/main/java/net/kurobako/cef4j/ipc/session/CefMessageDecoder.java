@@ -1,7 +1,6 @@
 package net.kurobako.cef4j.ipc.session;
 
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
 
 /**
  * Decodes one complete message payload. The buffer excludes the envelope header; implementations must select any
@@ -9,6 +8,5 @@ import javax.annotation.Nonnull;
  */
 @FunctionalInterface
 public interface CefMessageDecoder<T extends CefMessageView> {
-    @Nonnull
-    T decode(@Nonnull ByteBuffer payload);
+    T decode(ByteBuffer payload);
 }

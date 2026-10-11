@@ -2,7 +2,6 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -36,7 +35,7 @@ public interface CefRunContextMenuCallback extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:54</a>
      */
-    void cont(int commandId, @Nonnull CefEventFlags eventFlags);
+    void cont(int commandId, CefEventFlags eventFlags);
 
     /**
      * Cancel context menu display.
@@ -94,7 +93,7 @@ public interface CefRunContextMenuCallback extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public void cont(int commandId, @Nonnull CefEventFlags eventFlags) {
+        public void cont(int commandId, CefEventFlags eventFlags) {
             checkNotClosed();
             cont0(nativePtr, commandId, eventFlags);
         }
@@ -105,12 +104,12 @@ public interface CefRunContextMenuCallback extends CefLibraryObject {
             cancel0(nativePtr);
         }
 
-        static native void cont0(long self, int commandId, @Nonnull CefEventFlags eventFlags);
+        static native void cont0(long self, int commandId, CefEventFlags eventFlags);
 
         static native void cancel0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

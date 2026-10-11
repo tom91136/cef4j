@@ -9,8 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.CdpRequestTracker;
@@ -27,6 +25,7 @@ import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class DevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(DevToolsSession.class);
-    private static final @Nullable java.lang.reflect.Method SEND_DEV_TOOLS_METHOD = findSendDevToolsMethod();
+    private static final java.lang.reflect.@Nullable Method SEND_DEV_TOOLS_METHOD = findSendDevToolsMethod();
 
-    private static @Nullable java.lang.reflect.Method findSendDevToolsMethod() {
+    private static java.lang.reflect.@Nullable Method findSendDevToolsMethod() {
         try {
             return BrowserHost.class.getMethod("sendDevToolsMessage", byte[].class);
         } catch (NoSuchMethodException unavailableInOlderCef) {
@@ -62,8 +61,7 @@ public final class DevToolsSession implements CdpTransport {
     private final CefSession.HandlerRegistration messageRegistration;
     private final CefSession.HandlerRegistration detachedRegistration;
 
-    @Nullable
-    private CefSession.HandlerRegistration closeRegistration;
+    private CefSession.@Nullable HandlerRegistration closeRegistration;
 
     @Nullable
     private CompletableFuture<Void> closeFuture;
@@ -84,12 +82,8 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     /** Registers the server-side observer after installing client event handlers, avoiding an attach race. */
-    @Nonnull
     public static CompletableFuture<DevToolsSession> attach(
-            @Nonnull CefSession session,
-            @Nonnull RemoteHandle browser,
-            @Nonnull BrowserHost host,
-            @Nonnull CdpCodec codec) {
+            CefSession session, RemoteHandle browser, BrowserHost host, CdpCodec codec) {
         Objects.requireNonNull(session, "session");
         Objects.requireNonNull(browser, "browser");
         Objects.requireNonNull(host, "host");
@@ -103,10 +97,9 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     /** Sends a CDP method and completes with its result object. */
-    @Nonnull
     @SuppressWarnings("FutureReturnValueIgnored")
     @NullableBoundary("null parameters omit the CDP request body")
-    public CompletableFuture<Map<String, Object>> send(@Nonnull String method, @Nullable Map<String, Object> params) {
+    public CompletableFuture<Map<String, Object>> send(String method, @Nullable Map<String, Object> params) {
         Objects.requireNonNull(method, "method");
         if (!open.get()) return CompletableFuture.failedFuture(new IllegalStateException("DevTools session is closed"));
 
@@ -151,9 +144,8 @@ public final class DevToolsSession implements CdpTransport {
 
     /** Raw codec-neutral entry point used by the typed {@code cef4j-cdp} facade. */
     @Override
-    @Nonnull
     @SuppressWarnings("FutureReturnValueIgnored")
-    public CompletableFuture<byte[]> execute(@Nonnull String method, @Nullable byte[] params) {
+    public CompletableFuture<byte[]> execute(String method, byte @Nullable [] params) {
         Map<String, Object> object = null;
         if (params != null) {
             Object decoded = codec.decode(params);
@@ -177,21 +169,19 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     @Override
-    public void cancelPending(@Nonnull Throwable failure) {
+    public void cancelPending(Throwable failure) {
         requests.failAll(failure);
     }
 
     /** Raw codec-neutral event entry point used by the typed {@code cef4j-cdp} facade. */
     @Override
-    @Nonnull
-    public CdpSubscription subscribe(@Nonnull String method, @Nonnull Consumer<byte[]> handler) {
+    public CdpSubscription subscribe(String method, Consumer<byte[]> handler) {
         Objects.requireNonNull(handler, "handler");
         return on(method, params -> handler.accept(codec.encode(params)))::unregister;
     }
 
     /** Subscribes to one CDP event method. Callbacks run on the IPC transport's receive thread. */
-    @Nonnull
-    public EventRegistration on(@Nonnull String method, @Nonnull Consumer<Map<String, Object>> handler) {
+    public EventRegistration on(String method, Consumer<Map<String, Object>> handler) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(handler, "handler");
         CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers =
@@ -206,7 +196,6 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     @Override
-    @Nonnull
     public CompletionStage<Void> closeAsync() {
         synchronized (closeLock) {
             if (closeFuture != null) return closeFuture.minimalCompletionStage();

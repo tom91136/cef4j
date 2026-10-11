@@ -104,7 +104,7 @@ public final class CefReturnValue implements CefEnum<CefReturnValue> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefReturnValue)) return false;
         return this.value == ((CefReturnValue) obj).value;

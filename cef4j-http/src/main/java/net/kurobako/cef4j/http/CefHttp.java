@@ -3,9 +3,8 @@ package net.kurobako.cef4j.http;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Opt-in routing of {@code http}/{@code https} {@link URL} connections through CEF's network stack.
@@ -28,8 +27,7 @@ public final class CefHttp {
      *
      * @throws IllegalArgumentException for any other protocol
      */
-    @Nonnull
-    public static URLStreamHandler handler(@Nonnull String protocol) {
+    public static URLStreamHandler handler(String protocol) {
         switch (protocol) {
             case "http":
                 return new CefStreamHandler(CefUrlRequestHttpEngine.INSTANCE, 80);
@@ -41,7 +39,6 @@ public final class CefHttp {
     }
 
     /** Factory that handles {@code http} and {@code https} and defers every other protocol to the JDK. */
-    @Nonnull
     public static URLStreamHandlerFactory factory() {
         return new Factory();
     }

@@ -140,7 +140,7 @@ public final class CefPermissionRequestTypes implements CefEnum<CefPermissionReq
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefPermissionRequestTypes)) return false;
         return this.value == ((CefPermissionRequestTypes) obj).value;

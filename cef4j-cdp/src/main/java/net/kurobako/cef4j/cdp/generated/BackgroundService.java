@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -36,8 +35,8 @@ public final class BackgroundService {
         PERIODICBACKGROUNDSYNC("periodicBackgroundSync");
         public final String value;
         ServiceName(String value) { this.value = value; }
-        @Nonnull public String value() { return value; }
-        public static ServiceName of(@Nonnull String value) {
+        public String value() { return value; }
+        public static ServiceName of(String value) {
             for (ServiceName constant : values()) {
                 if (constant.value.equals(value)) return constant;
             }
@@ -456,7 +455,7 @@ public final class BackgroundService {
         public CompletionStage<Void> startObserving(BackgroundService.ServiceName service) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
-            return client.call("BackgroundService.startObserving", params, result_ -> null);
+            return client.call("BackgroundService.startObserving", params);
         }
         /**
          * Enables event updates for the service.
@@ -464,7 +463,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startObserving(StartObservingRequest request) {
-            return client.call("BackgroundService.startObserving", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BackgroundService.startObserving", request == null ? null : request.toMap());
         }
         /**
          * Disables event updates for the service.
@@ -474,7 +473,7 @@ public final class BackgroundService {
         public CompletionStage<Void> stopObserving(BackgroundService.ServiceName service) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
-            return client.call("BackgroundService.stopObserving", params, result_ -> null);
+            return client.call("BackgroundService.stopObserving", params);
         }
         /**
          * Disables event updates for the service.
@@ -482,7 +481,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopObserving(StopObservingRequest request) {
-            return client.call("BackgroundService.stopObserving", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BackgroundService.stopObserving", request == null ? null : request.toMap());
         }
         /**
          * Set the recording state for the service.
@@ -494,7 +493,7 @@ public final class BackgroundService {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("shouldRecord", CdpObject.json(shouldRecord));
             params.put("service", CdpObject.json(service));
-            return client.call("BackgroundService.setRecording", params, result_ -> null);
+            return client.call("BackgroundService.setRecording", params);
         }
         /**
          * Set the recording state for the service.
@@ -502,7 +501,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setRecording(SetRecordingRequest request) {
-            return client.call("BackgroundService.setRecording", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BackgroundService.setRecording", request == null ? null : request.toMap());
         }
         /**
          * Clears all stored data for the service.
@@ -512,7 +511,7 @@ public final class BackgroundService {
         public CompletionStage<Void> clearEvents(BackgroundService.ServiceName service) {
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
-            return client.call("BackgroundService.clearEvents", params, result_ -> null);
+            return client.call("BackgroundService.clearEvents", params);
         }
         /**
          * Clears all stored data for the service.
@@ -520,7 +519,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearEvents(ClearEventsRequest request) {
-            return client.call("BackgroundService.clearEvents", request == null ? null : request.toMap(), result_ -> null);
+            return client.call("BackgroundService.clearEvents", request == null ? null : request.toMap());
         }
         /**
          * Called when the recording state for the service has been updated.

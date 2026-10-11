@@ -3,7 +3,6 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -69,7 +68,7 @@ public interface CefTaskManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:82</a>
      */
-    boolean getTaskInfo(long taskId, @Nonnull CefTaskInfo.Mutable info);
+    boolean getTaskInfo(long taskId, CefTaskInfo.Mutable info);
 
     /**
      * Attempts to terminate a task with {@code task_id}. Returns {@code false} if the {@code task_id} is invalid, the
@@ -164,7 +163,7 @@ public interface CefTaskManager extends CefLibraryObject {
         }
 
         @Override
-        public boolean getTaskInfo(long taskId, @Nonnull CefTaskInfo.Mutable info) {
+        public boolean getTaskInfo(long taskId, CefTaskInfo.Mutable info) {
             checkNotClosed();
             return getTaskInfo0(nativePtr, taskId, info);
         }
@@ -185,7 +184,7 @@ public interface CefTaskManager extends CefLibraryObject {
 
         static native long[] getTaskIdsList0(long self);
 
-        static native boolean getTaskInfo0(long self, long taskId, @Nonnull CefTaskInfo.Mutable info);
+        static native boolean getTaskInfo0(long self, long taskId, CefTaskInfo.Mutable info);
 
         static native boolean killTask0(long self, long taskId);
 
@@ -194,7 +193,7 @@ public interface CefTaskManager extends CefLibraryObject {
         static native CefTaskManager get0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

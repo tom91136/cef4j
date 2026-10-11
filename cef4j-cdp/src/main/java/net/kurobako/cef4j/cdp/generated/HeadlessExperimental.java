@@ -8,7 +8,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
@@ -42,8 +41,8 @@ public final class HeadlessExperimental {
             WEBP("webp");
             public final String value;
             FormatValues(String value) { this.value = value; }
-            @Nonnull public String value() { return value; }
-            public static FormatValues of(@Nonnull String value) {
+            public String value() { return value; }
+            public static FormatValues of(String value) {
                 for (FormatValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
                 }
@@ -55,7 +54,8 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public Optional<ScreenshotParams.FormatValues> format() {
-            return Optional.ofNullable(raw("format") == null ? null : ScreenshotParams.FormatValues.of((String) raw("format")));
+            Object value = raw("format");
+            return Optional.ofNullable(value == null ? null : ScreenshotParams.FormatValues.of((String) value));
         }
         /**
          * Compression quality from range [0..100] (jpeg and webp only).
@@ -70,7 +70,8 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> optimizeForSpeed() {
-            return Optional.ofNullable((Boolean) raw("optimizeForSpeed"));
+            Object value = raw("optimizeForSpeed");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * Image compression format (defaults to png).
@@ -158,14 +159,16 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> noDisplayUpdates() {
-            return Optional.ofNullable((Boolean) raw("noDisplayUpdates"));
+            Object value = raw("noDisplayUpdates");
+            return Optional.ofNullable((Boolean) value);
         }
         /**
          * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
          * @return the protocol field value, empty when absent
          */
         public Optional<HeadlessExperimental.ScreenshotParams> screenshot() {
-            return Optional.ofNullable(raw("screenshot") == null ? null : HeadlessExperimental.ScreenshotParams.fromMap(java.util.Objects.requireNonNull(objectMap(raw("screenshot")))));
+            Object value = raw("screenshot");
+            return Optional.ofNullable(value == null ? null : HeadlessExperimental.ScreenshotParams.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
         }
         /**
          * Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
@@ -261,7 +264,8 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> screenshotData() {
-            return Optional.ofNullable((String) raw("screenshotData"));
+            Object value = raw("screenshotData");
+            return Optional.ofNullable((String) value);
         }
         /**
          * Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the display. Reported for diagnostic uses, may be removed in the future.
@@ -332,7 +336,7 @@ public final class HeadlessExperimental {
          */
         @Deprecated
         public CompletionStage<Void> disable() {
-            return client.call("HeadlessExperimental.disable", null, result_ -> null);
+            return client.call("HeadlessExperimental.disable", null);
         }
         /**
          * Enables headless events for the target.
@@ -341,7 +345,7 @@ public final class HeadlessExperimental {
          */
         @Deprecated
         public CompletionStage<Void> enable() {
-            return client.call("HeadlessExperimental.enable", null, result_ -> null);
+            return client.call("HeadlessExperimental.enable", null);
         }
     }
 }

@@ -3,8 +3,6 @@
 package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefBoxLayoutSettings;
 import net.kurobako.cef4j.gen.CefDockingMode;
@@ -20,6 +18,7 @@ import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A Window is a top-level Window/widget in the Views hierarchy. By default it will have a non-client area with title
@@ -91,7 +90,7 @@ public interface CefWindow extends CefPanel {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:94</a>
      */
-    void centerWindow(@Nonnull CefSize size);
+    void centerWindow(CefSize size);
 
     /**
      * Close the Window.
@@ -375,7 +374,7 @@ public interface CefWindow extends CefPanel {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:243</a>
      */
     Optional<CefOverlayController> addOverlayView(
-            @Nullable CefView view, @Nonnull CefDockingMode dockingMode, boolean canActivate);
+            @Nullable CefView view, CefDockingMode dockingMode, boolean canActivate);
 
     /**
      * Show a menu with contents {@code menu_model}. {@code screen_point} specifies the menu position in screen
@@ -389,10 +388,7 @@ public interface CefWindow extends CefPanel {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:279</a>
      */
-    void showMenu(
-            @Nullable CefMenuModel menuModel,
-            @Nonnull CefPoint screenPoint,
-            @Nonnull CefMenuAnchorPosition anchorPosition);
+    void showMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint, CefMenuAnchorPosition anchorPosition);
 
     /**
      * Cancel the menu that is currently showing, if any.
@@ -442,7 +438,7 @@ public interface CefWindow extends CefPanel {
      * @param regions may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:309</a>
      */
-    void setDraggableRegions(long regionsCount, @Nullable CefDraggableRegion[] regions);
+    void setDraggableRegions(long regionsCount, CefDraggableRegion @Nullable [] regions);
 
     /**
      * Retrieve the platform window handle for this Window.
@@ -495,7 +491,7 @@ public interface CefWindow extends CefPanel {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:343</a>
      */
-    void sendMouseEvents(@Nonnull CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
+    void sendMouseEvents(CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
 
     /**
      * Set the keyboard accelerator for the specified {@code command_id}. {@code key_code} can be any virtual key or
@@ -679,7 +675,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void centerWindow(@Nonnull CefSize size) {
+        public void centerWindow(CefSize size) {
             checkNotClosed();
             centerWindow0(nativePtr, size);
         }
@@ -820,7 +816,7 @@ public interface CefWindow extends CefPanel {
 
         @Override
         public Optional<CefOverlayController> addOverlayView(
-                @Nullable CefView view, @Nonnull CefDockingMode dockingMode, boolean canActivate) {
+                @Nullable CefView view, CefDockingMode dockingMode, boolean canActivate) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return Optional.ofNullable(addOverlayView0(nativePtr, view, dockingMode, canActivate));
@@ -828,9 +824,7 @@ public interface CefWindow extends CefPanel {
 
         @Override
         public void showMenu(
-                @Nullable CefMenuModel menuModel,
-                @Nonnull CefPoint screenPoint,
-                @Nonnull CefMenuAnchorPosition anchorPosition) {
+                @Nullable CefMenuModel menuModel, CefPoint screenPoint, CefMenuAnchorPosition anchorPosition) {
             checkNotClosed();
             CefLibraryObject.requireOpen(menuModel, "CefMenuModel");
             showMenu0(nativePtr, menuModel, screenPoint, anchorPosition);
@@ -855,7 +849,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void setDraggableRegions(long regionsCount, @Nullable CefDraggableRegion[] regions) {
+        public void setDraggableRegions(long regionsCount, CefDraggableRegion @Nullable [] regions) {
             checkNotClosed();
             setDraggableRegions0(nativePtr, regionsCount, regions);
         }
@@ -879,7 +873,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void sendMouseEvents(@Nonnull CefMouseButtonType button, boolean mouseDown, boolean mouseUp) {
+        public void sendMouseEvents(CefMouseButtonType button, boolean mouseDown, boolean mouseUp) {
             checkNotClosed();
             sendMouseEvents0(nativePtr, button, mouseDown, mouseUp);
         }
@@ -939,7 +933,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public Optional<CefBoxLayout> setToBoxLayout(@Nonnull CefBoxLayoutSettings settings) {
+        public Optional<CefBoxLayout> setToBoxLayout(CefBoxLayoutSettings settings) {
             checkNotClosed();
             return Optional.ofNullable(CefPanel.NativePeer.setToBoxLayout0(nativePtr, settings));
         }
@@ -1112,7 +1106,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void setBounds(@Nonnull CefRect bounds) {
+        public void setBounds(CefRect bounds) {
             checkNotClosed();
             CefView.NativePeer.setBounds0(nativePtr, bounds);
         }
@@ -1130,7 +1124,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void setSize(@Nonnull CefSize size) {
+        public void setSize(CefSize size) {
             checkNotClosed();
             CefView.NativePeer.setSize0(nativePtr, size);
         }
@@ -1142,7 +1136,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void setPosition(@Nonnull CefPoint position) {
+        public void setPosition(CefPoint position) {
             checkNotClosed();
             CefView.NativePeer.setPosition0(nativePtr, position);
         }
@@ -1154,7 +1148,7 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public void setInsets(@Nonnull CefInsets insets) {
+        public void setInsets(CefInsets insets) {
             checkNotClosed();
             CefView.NativePeer.setInsets0(nativePtr, insets);
         }
@@ -1280,38 +1274,38 @@ public interface CefWindow extends CefPanel {
         }
 
         @Override
-        public boolean convertPointToScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromScreen(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromScreen0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointToWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromWindow(CefPoint.Mutable point) {
             checkNotClosed();
             return CefView.NativePeer.convertPointFromWindow0(nativePtr, point);
         }
 
         @Override
-        public boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointToView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointToView0(nativePtr, view, point);
         }
 
         @Override
-        public boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point) {
+        public boolean convertPointFromView(@Nullable CefView view, CefPoint.Mutable point) {
             checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
             return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
@@ -1323,7 +1317,7 @@ public interface CefWindow extends CefPanel {
 
         static native void hide0(long self);
 
-        static native void centerWindow0(long self, @Nonnull CefSize size);
+        static native void centerWindow0(long self, CefSize size);
 
         static native void cefClose0(long self);
 
@@ -1370,13 +1364,13 @@ public interface CefWindow extends CefPanel {
         static native CefImage getWindowAppIcon0(long self);
 
         static native CefOverlayController addOverlayView0(
-                long self, @Nullable CefView view, @Nonnull CefDockingMode dockingMode, boolean canActivate);
+                long self, @Nullable CefView view, CefDockingMode dockingMode, boolean canActivate);
 
         static native void showMenu0(
                 long self,
                 @Nullable CefMenuModel menuModel,
-                @Nonnull CefPoint screenPoint,
-                @Nonnull CefMenuAnchorPosition anchorPosition);
+                CefPoint screenPoint,
+                CefMenuAnchorPosition anchorPosition);
 
         static native void cancelMenu0(long self);
 
@@ -1384,7 +1378,7 @@ public interface CefWindow extends CefPanel {
 
         static native CefRect getClientAreaBoundsInScreen0(long self);
 
-        static native void setDraggableRegions0(long self, long regionsCount, @Nullable CefDraggableRegion[] regions);
+        static native void setDraggableRegions0(long self, long regionsCount, CefDraggableRegion @Nullable [] regions);
 
         static native long getWindowHandle0(long self);
 
@@ -1392,8 +1386,7 @@ public interface CefWindow extends CefPanel {
 
         static native void sendMouseMove0(long self, int screenX, int screenY);
 
-        static native void sendMouseEvents0(
-                long self, @Nonnull CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
+        static native void sendMouseEvents0(long self, CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
 
         static native void setAccelerator0(
                 long self,
@@ -1417,7 +1410,7 @@ public interface CefWindow extends CefPanel {
         static native CefWindow createTopLevel0(@Nullable CefWindowDelegate delegate);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

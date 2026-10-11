@@ -7,6 +7,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
@@ -25,6 +25,7 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
 import net.kurobako.cef4j.test.TestGate;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 class SharedFileFrameTransportTest {
@@ -78,7 +79,7 @@ class SharedFileFrameTransportTest {
         OsrPaintEvent latest = new OsrPaintEvent(new RemoteHandle(7), frame.toString(), 2L, 2, 1, 8, 0, 0, 0, 2, 1);
         Thread caller = Thread.currentThread();
         CompletableFuture<byte[]> observed = new CompletableFuture<>();
-        AtomicReference<Thread> callbackThread = new AtomicReference<>();
+        AtomicReference<@Nullable Thread> callbackThread = new AtomicReference<>();
         try (FrameTransport transport = SharedFileFrameTransport.bindAll(new LatestEventSession(latest))) {
             transport.onRawFrame(value -> {
                 byte[] pixels = new byte[value.pixels().remaining()];
@@ -171,7 +172,7 @@ class SharedFileFrameTransportTest {
                 });
                 CompletableFuture<Void> a = CompletableFuture.runAsync(() -> session.fire(event0), executor);
                 CompletableFuture<Void> b = CompletableFuture.runAsync(() -> session.fire(event1), executor);
-                TestDeadline deadline = TestDeadline.after(java.time.Duration.ofSeconds(5));
+                TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(5));
                 gate.awaitEntered(deadline, "first frame callback");
                 gate.release();
                 deadline.await(CompletableFuture.allOf(a, b), "serialized frame callbacks");
@@ -183,6 +184,50 @@ class SharedFileFrameTransportTest {
         }
     }
 
+    @Test
+    void rejectsPaintLargerThanMappedFileAndRecovers() throws Exception {
+        Path small = frameFile("0");
+        Path large = frameFile("1");
+        Files.write(small, sharedFrame(new byte[8]));
+        byte[] valid = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+        Files.write(large, sharedFrame(valid));
+        StoringSession session = new StoringSession();
+        CompletableFuture<byte[]> observed = new CompletableFuture<>();
+        try {
+            SharedFileFrameTransport transport = SharedFileFrameTransport.bindAll(session);
+            try (transport) {
+                transport.onRawFrame(value -> {
+                    byte[] pixels = new byte[value.pixels().remaining()];
+                    value.pixels().get(pixels);
+                    observed.complete(pixels);
+                });
+                session.fire(new OsrPaintEvent(new RemoteHandle(7), small.toString(), 2L, 2, 2, 16, 0, 0, 0, 2, 2));
+                TestDeadline deadline = TestDeadline.after(Duration.ofSeconds(5));
+                deadline.until(
+                        () -> transport.diagnosticSummary().contains("mappingRejects=1"),
+                        Duration.ofMillis(5),
+                        "oversized paint rejection");
+                assertThat(transport.diagnosticSummary()).contains("lastReject=invalid-dimensions", "callbacks=0");
+
+                session.fire(new OsrPaintEvent(new RemoteHandle(7), large.toString(), 2L, 2, 2, 16, 0, 0, 0, 2, 2));
+                assertThat(deadline.await(observed, "valid paint after rejection"))
+                        .containsExactly(valid);
+                assertThat(transport.diagnosticSummary()).contains("mapped=true");
+            }
+            assertThat(transport.diagnosticSummary()).contains("mapped=false");
+            assertThat(session.unregistered).isTrue();
+        } finally {
+            Files.deleteIfExists(small);
+            Files.deleteIfExists(large);
+        }
+    }
+
+    private static byte[] sharedFrame(byte[] pixels) {
+        ByteBuffer contents = ByteBuffer.allocate(Long.BYTES + pixels.length).order(ByteOrder.nativeOrder());
+        contents.putLong(2L).put(pixels);
+        return contents.array();
+    }
+
     private Path frameFile(String slot) {
         return Path.of(System.getProperty("java.io.tmpdir"))
                 .resolve("cef4j-paint-" + ProcessHandle.current().pid() + "-7-" + frameGeneration + "-" + slot
@@ -192,6 +237,8 @@ class SharedFileFrameTransportTest {
     private static final class StoringSession implements CefSession {
         @Nullable
         private Consumer<OsrPaintEvent> handler;
+
+        private boolean unregistered;
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
@@ -210,7 +257,7 @@ class SharedFileFrameTransportTest {
         public <E extends CefMessageView> HandlerRegistration onLatest(
                 int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
             this.handler = (Consumer<OsrPaintEvent>) handler;
-            return () -> {};
+            return () -> unregistered = true;
         }
 
         @Override

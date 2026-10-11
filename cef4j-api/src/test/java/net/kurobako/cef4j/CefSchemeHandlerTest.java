@@ -12,8 +12,8 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -92,8 +92,8 @@ class CefSchemeHandlerTest extends CefTestBase {
     void classpathSchemeLoadsHtmlResource() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
         AtomicInteger httpStatus = new AtomicInteger(-1);
-        AtomicReference<String> pageTitle = new AtomicReference<>();
-        AtomicReference<String> loadErrorText = new AtomicReference<>();
+        AtomicReference<@Nullable String> pageTitle = new AtomicReference<>();
+        AtomicReference<@Nullable String> loadErrorText = new AtomicReference<>();
 
         CefClient client = new CefClient() {
             @Override

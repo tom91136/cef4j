@@ -2,10 +2,9 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implement this interface to handle context menu events. The methods of this class will be called on the UI thread.
@@ -92,7 +91,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
             @Nullable CefFrame frame,
             @Nullable CefContextMenuParams params,
             int commandId,
-            @Nonnull CefEventFlags eventFlags) {
+            CefEventFlags eventFlags) {
         return false;
     }
 
@@ -130,9 +129,9 @@ public interface CefContextMenuHandler extends CefClientHandler {
     default boolean runQuickMenu(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefPoint location,
-            @Nonnull CefSize size,
-            @Nonnull CefQuickMenuEditStateFlags editStateFlags,
+            CefPoint location,
+            CefSize size,
+            CefQuickMenuEditStateFlags editStateFlags,
             @Nullable CefRunQuickMenuCallback callback) {
         return false;
     }
@@ -152,7 +151,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
      */
     default boolean onQuickMenuCommand(
-            @Nullable CefBrowser browser, @Nullable CefFrame frame, int commandId, @Nonnull CefEventFlags eventFlags) {
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, int commandId, CefEventFlags eventFlags) {
         return false;
     }
 
@@ -212,7 +211,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
                 @Nullable CefFrame frame,
                 @Nullable CefContextMenuParams params,
                 int commandId,
-                @Nonnull CefEventFlags eventFlags) {
+                CefEventFlags eventFlags) {
             for (CefContextMenuHandler d : delegates) {
                 if (d.onContextMenuCommand(browser, frame, params, commandId, eventFlags)) return true;
             }
@@ -229,9 +228,9 @@ public interface CefContextMenuHandler extends CefClientHandler {
         public boolean runQuickMenu(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
-                @Nonnull CefPoint location,
-                @Nonnull CefSize size,
-                @Nonnull CefQuickMenuEditStateFlags editStateFlags,
+                CefPoint location,
+                CefSize size,
+                CefQuickMenuEditStateFlags editStateFlags,
                 @Nullable CefRunQuickMenuCallback callback) {
             for (CefContextMenuHandler d : delegates) {
                 if (d.runQuickMenu(browser, frame, location, size, editStateFlags, callback)) return true;
@@ -242,10 +241,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
 
         @Override
         public boolean onQuickMenuCommand(
-                @Nullable CefBrowser browser,
-                @Nullable CefFrame frame,
-                int commandId,
-                @Nonnull CefEventFlags eventFlags) {
+                @Nullable CefBrowser browser, @Nullable CefFrame frame, int commandId, CefEventFlags eventFlags) {
             for (CefContextMenuHandler d : delegates) {
                 if (d.onQuickMenuCommand(browser, frame, commandId, eventFlags)) return true;
             }

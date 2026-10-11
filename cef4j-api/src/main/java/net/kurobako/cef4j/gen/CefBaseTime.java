@@ -30,7 +30,7 @@ public final class CefBaseTime {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefBaseTime)) return false;
         CefBaseTime other = (CefBaseTime) obj;

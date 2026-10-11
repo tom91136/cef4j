@@ -4,10 +4,9 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Class that wraps other data value types. Complex types (binary, dictionary and list) will be referenced but not owned
@@ -288,7 +287,7 @@ public interface CefValue extends CefLibraryObject {
      */
     boolean setList(@Nullable CefListValue value);
 
-    static Optional<CefValue> parseJson(@Nullable String jsonString, @Nonnull CefJsonParserOptions options) {
+    static Optional<CefValue> parseJson(@Nullable String jsonString, CefJsonParserOptions options) {
         return Optional.ofNullable(NativePeer.parseJson0(jsonString, options));
     }
 
@@ -304,12 +303,12 @@ public interface CefValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:145</a>
      */
-    static Optional<CefValue> parseJsonBuffer(@Nonnull ByteBuffer json, @Nonnull CefJsonParserOptions options) {
+    static Optional<CefValue> parseJsonBuffer(ByteBuffer json, CefJsonParserOptions options) {
         return Optional.ofNullable(NativePeer.parseJsonBuffer0(json, options));
     }
 
     static Optional<CefValue> parseJsonandReturnError(
-            @Nullable String jsonString, @Nonnull CefJsonParserOptions options, @Nullable String errorMsgOut) {
+            @Nullable String jsonString, CefJsonParserOptions options, @Nullable String errorMsgOut) {
         return Optional.ofNullable(NativePeer.parseJsonandReturnError0(jsonString, options, errorMsgOut));
     }
 
@@ -550,17 +549,17 @@ public interface CefValue extends CefLibraryObject {
 
         static native boolean setList0(long self, @Nullable CefListValue value);
 
-        static native CefValue parseJson0(@Nullable String jsonString, @Nonnull CefJsonParserOptions options);
+        static native CefValue parseJson0(@Nullable String jsonString, CefJsonParserOptions options);
 
-        static native CefValue parseJsonBuffer0(@Nonnull ByteBuffer json, @Nonnull CefJsonParserOptions options);
+        static native CefValue parseJsonBuffer0(ByteBuffer json, CefJsonParserOptions options);
 
         static native CefValue parseJsonandReturnError0(
-                @Nullable String jsonString, @Nonnull CefJsonParserOptions options, @Nullable String errorMsgOut);
+                @Nullable String jsonString, CefJsonParserOptions options, @Nullable String errorMsgOut);
 
         static native CefValue create0();
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

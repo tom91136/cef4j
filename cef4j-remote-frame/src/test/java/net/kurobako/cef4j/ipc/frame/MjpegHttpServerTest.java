@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.ipc.frame;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -24,8 +26,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.test.TestDeadline;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -68,7 +70,7 @@ class MjpegHttpServerTest {
                 oldSource.emit(1, new byte[] {0, 0, 0, (byte) 255});
                 assertThat(oldEncodeEntered.await(2, TimeUnit.SECONDS)).isTrue();
 
-                AtomicReference<Throwable> swapFailure = new AtomicReference<>();
+                AtomicReference<@Nullable Throwable> swapFailure = new AtomicReference<>();
                 Thread swap = new Thread(
                         () -> {
                             try {
@@ -148,9 +150,27 @@ class MjpegHttpServerTest {
             server.attach(frames);
             URI uri = server.endpoint();
             assertThat(statusCode(uri, null)).isEqualTo(401);
+            assertThat(statusCode(uri, "wrong-token")).isEqualTo(401);
             frames.emit(new byte[] {0, 0, 0, (byte) 255});
             assertThat(statusCode(uri, "secret-token")).isEqualTo(200);
         }
+    }
+
+    @Test
+    void attachClosesReplacedSourceAndCloseReleasesCurrent() throws Exception {
+        TestFrameSource first = new TestFrameSource();
+        TestFrameSource second = new TestFrameSource();
+        URI uri;
+        try (MjpegHttpServer server = MjpegHttpServer.start(MjpegHttpServer.Configuration.loopback(0))) {
+            uri = server.endpoint();
+            server.attach(first);
+            server.attach(second);
+            assertThat(first.closed).isTrue();
+            assertThat(second.closed).isFalse();
+        }
+        assertThat(second.closed).isTrue();
+        assertThatThrownBy(() -> new Socket(uri.getHost(), uri.getPort()).close())
+                .isInstanceOf(ConnectException.class);
     }
 
     @Test
@@ -244,6 +264,8 @@ class MjpegHttpServerTest {
         @Nullable
         private RawFrameConsumer sink;
 
+        private volatile boolean closed;
+
         @Override
         public void onFrame(@Nullable FrameConsumer consumer) {}
 
@@ -253,7 +275,9 @@ class MjpegHttpServerTest {
         }
 
         @Override
-        public void close() {}
+        public void close() {
+            closed = true;
+        }
 
         void emit(byte[] pixels) {
             emit(1, pixels);

@@ -2,7 +2,6 @@ package net.kurobako.cef4j.ipc.frame;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import javax.annotation.Nonnull;
 
 /** Transport-neutral encoded-frame envelope. */
 public final class EncodedFrame {
@@ -17,13 +16,13 @@ public final class EncodedFrame {
     private final ByteBuffer payload;
 
     public EncodedFrame(
-            @Nonnull CodecDescriptor codec,
+            CodecDescriptor codec,
             long sequence,
             long baseSequence,
             boolean keyFrame,
             int width,
             int height,
-            @Nonnull ByteBuffer payload) {
+            ByteBuffer payload) {
         if (sequence < 0 || width <= 0 || height <= 0) throw new IllegalArgumentException("invalid frame envelope");
         long pixels = (long) width * height;
         if (pixels > Integer.MAX_VALUE / 4L) {
@@ -42,7 +41,6 @@ public final class EncodedFrame {
         this.payload = Objects.requireNonNull(payload, "payload").asReadOnlyBuffer();
     }
 
-    @Nonnull
     public CodecDescriptor codec() {
         return codec;
     }
@@ -67,7 +65,6 @@ public final class EncodedFrame {
         return height;
     }
 
-    @Nonnull
     public ByteBuffer payload() {
         return payload.asReadOnlyBuffer();
     }

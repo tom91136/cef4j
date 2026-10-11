@@ -7,8 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * In-memory paired {@link CefTransport}. Used by tests to exercise transport semantics without binding sockets, and by
@@ -69,7 +68,7 @@ public final class LoopbackTransport implements CefTransport {
     }
 
     @Override
-    public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+    public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(name + ": send on closed transport");
         LoopbackTransport p = peer;
         if (p == null || peerClosed || p.closed) {
@@ -81,13 +80,13 @@ public final class LoopbackTransport implements CefTransport {
     }
 
     @Override
-    public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+    public void onReceive(Consumer<ByteBuffer> handler) {
         this.receiveHandler = handler;
         handlerReady.countDown();
     }
 
     @Override
-    public void onDisconnect(@Nonnull Runnable handler) {
+    public void onDisconnect(Runnable handler) {
         this.disconnectHandler = handler;
         if (peerClosed) notifyDisconnect();
     }

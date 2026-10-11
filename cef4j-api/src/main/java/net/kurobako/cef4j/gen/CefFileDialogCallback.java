@@ -3,9 +3,9 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for asynchronous continuation of file dialog requests.
@@ -110,7 +110,7 @@ public interface CefFileDialogCallback extends CefLibraryObject {
         static native void cancel0(long self);
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof NativePeer)) return false;
             return this.nativePtr == ((NativePeer) obj).nativePtr;

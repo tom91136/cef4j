@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
-import javax.annotation.Nonnull;
 
 /** Versioned bootstrap description published by a cef4j runtime server after it has bound its endpoint. */
 public final class RuntimeServerHandshake {
@@ -40,8 +39,7 @@ public final class RuntimeServerHandshake {
         this.capabilities = Collections.unmodifiableSet(new LinkedHashSet<>(capabilities));
     }
 
-    @Nonnull
-    public static RuntimeServerHandshake parse(@Nonnull String line) {
+    public static RuntimeServerHandshake parse(String line) {
         Objects.requireNonNull(line, "line");
         if (!line.startsWith(PREFIX)) throw new IllegalArgumentException("not a cef4j runtime server handshake");
         Map<String, String> fields = new LinkedHashMap<>();
@@ -103,7 +101,6 @@ public final class RuntimeServerHandshake {
         return protocolVersion;
     }
 
-    @Nonnull
     public String api() {
         return api;
     }
@@ -113,27 +110,23 @@ public final class RuntimeServerHandshake {
         return cefApiVersion;
     }
 
-    @Nonnull
     public String transport() {
         return transport;
     }
 
-    @Nonnull
     public String frameTransport() {
         return frameTransport;
     }
 
-    @Nonnull
     public String endpoint() {
         return endpoint;
     }
 
-    @Nonnull
     public Set<String> capabilities() {
         return capabilities;
     }
 
-    public boolean hasCapability(@Nonnull String capability) {
+    public boolean hasCapability(String capability) {
         return capabilities.contains(Objects.requireNonNull(capability, "capability"));
     }
 

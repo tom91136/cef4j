@@ -24,9 +24,9 @@ import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Callback;
-import javax.annotation.Nullable;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 
 /**
@@ -51,27 +51,29 @@ public final class CefWebEngine {
     private final ReadOnlyBooleanWrapper loading = new ReadOnlyBooleanWrapper(this, "loading", false);
     private final ReadOnlyBooleanWrapper canGoBack = new ReadOnlyBooleanWrapper(this, "canGoBack", false);
     private final ReadOnlyBooleanWrapper canGoForward = new ReadOnlyBooleanWrapper(this, "canGoForward", false);
-    private final ReadOnlyObjectWrapper<Document> document = new ReadOnlyObjectWrapper<>(this, "document");
+    private final ReadOnlyObjectWrapper<@Nullable Document> document = new ReadOnlyObjectWrapper<>(this, "document");
     private final SimpleBooleanProperty javaScriptEnabled = new SimpleBooleanProperty(this, "javaScriptEnabled", true);
     private final SimpleStringProperty userStyleSheetLocation =
             new SimpleStringProperty(this, "userStyleSheetLocation");
     private final SimpleStringProperty userAgent = new SimpleStringProperty(this, "userAgent");
-    private final SimpleObjectProperty<File> userDataDirectory = new SimpleObjectProperty<>(this, "userDataDirectory");
-    private final ObjectProperty<EventHandler<CefWebEvent<String>>> onAlert =
+    private final SimpleObjectProperty<@Nullable File> userDataDirectory =
+            new SimpleObjectProperty<>(this, "userDataDirectory");
+    private final ObjectProperty<@Nullable EventHandler<CefWebEvent<String>>> onAlert =
             new SimpleObjectProperty<>(this, "onAlert");
-    private final ObjectProperty<EventHandler<CefWebEvent<String>>> onStatusChanged =
+    private final ObjectProperty<@Nullable EventHandler<CefWebEvent<String>>> onStatusChanged =
             new SimpleObjectProperty<>(this, "onStatusChanged");
-    private final ObjectProperty<EventHandler<CefWebEvent<Rectangle2D>>> onResized =
+    private final ObjectProperty<@Nullable EventHandler<CefWebEvent<Rectangle2D>>> onResized =
             new SimpleObjectProperty<>(this, "onResized");
-    private final ObjectProperty<EventHandler<CefWebEvent<Boolean>>> onVisibilityChanged =
+    private final ObjectProperty<@Nullable EventHandler<CefWebEvent<Boolean>>> onVisibilityChanged =
             new SimpleObjectProperty<>(this, "onVisibilityChanged");
-    private final ObjectProperty<Callback<CefPopupFeatures, CefWebEngine>> createPopupHandler =
+    private final ObjectProperty<@Nullable Callback<CefPopupFeatures, CefWebEngine>> createPopupHandler =
             new SimpleObjectProperty<>(this, "createPopupHandler");
-    private final ObjectProperty<Callback<String, Boolean>> confirmHandler =
+    private final ObjectProperty<@Nullable Callback<String, Boolean>> confirmHandler =
             new SimpleObjectProperty<>(this, "confirmHandler");
-    private final ObjectProperty<Callback<CefPromptData, String>> promptHandler =
+    private final ObjectProperty<@Nullable Callback<CefPromptData, String>> promptHandler =
             new SimpleObjectProperty<>(this, "promptHandler");
-    private final ObjectProperty<EventHandler<CefWebErrorEvent>> onError = new SimpleObjectProperty<>(this, "onError");
+    private final ObjectProperty<@Nullable EventHandler<CefWebErrorEvent>> onError =
+            new SimpleObjectProperty<>(this, "onError");
     private volatile boolean suppressNavigationHistory;
 
     CefWebEngine(CefWebView view) {
@@ -138,9 +140,10 @@ public final class CefWebEngine {
      * Evaluate a JavaScript expression asynchronously and return the JSON-serialized result.
      *
      * @param expression the JS expression to evaluate
-     * @return future completing with the JSON string result
+     * @return future completing with the JSON string result, or {@code null} for a void result
      */
-    public CompletableFuture<String> evaluateScriptAsync(String expression) {
+    @NullableBoundary("void script results complete with null")
+    public CompletableFuture<@Nullable String> evaluateScriptAsync(String expression) {
         return view.getScriptEngine().evaluate(expression);
     }
 
@@ -201,11 +204,11 @@ public final class CefWebEngine {
         return javaScriptEnabled;
     }
 
-    public ReadOnlyObjectProperty<Document> documentProperty() {
+    public ReadOnlyObjectProperty<@Nullable Document> documentProperty() {
         return document.getReadOnlyProperty();
     }
 
-    public Document getDocument() {
+    public @Nullable Document getDocument() {
         return document.get();
     }
 
@@ -249,7 +252,7 @@ public final class CefWebEngine {
         return userAgent;
     }
 
-    public File getUserDataDirectory() {
+    public @Nullable File getUserDataDirectory() {
         return userDataDirectory.get();
     }
 
@@ -257,7 +260,7 @@ public final class CefWebEngine {
         userDataDirectory.set(value);
     }
 
-    public ObjectProperty<File> userDataDirectoryProperty() {
+    public ObjectProperty<@Nullable File> userDataDirectoryProperty() {
         return userDataDirectory;
     }
 
@@ -270,7 +273,7 @@ public final class CefWebEngine {
         onAlert.set(handler);
     }
 
-    public ObjectProperty<EventHandler<CefWebEvent<String>>> onAlertProperty() {
+    public ObjectProperty<@Nullable EventHandler<CefWebEvent<String>>> onAlertProperty() {
         return onAlert;
     }
 
@@ -283,7 +286,7 @@ public final class CefWebEngine {
         onStatusChanged.set(handler);
     }
 
-    public ObjectProperty<EventHandler<CefWebEvent<String>>> onStatusChangedProperty() {
+    public ObjectProperty<@Nullable EventHandler<CefWebEvent<String>>> onStatusChangedProperty() {
         return onStatusChanged;
     }
 
@@ -296,7 +299,7 @@ public final class CefWebEngine {
         onResized.set(handler);
     }
 
-    public ObjectProperty<EventHandler<CefWebEvent<Rectangle2D>>> onResizedProperty() {
+    public ObjectProperty<@Nullable EventHandler<CefWebEvent<Rectangle2D>>> onResizedProperty() {
         return onResized;
     }
 
@@ -309,7 +312,7 @@ public final class CefWebEngine {
         onVisibilityChanged.set(handler);
     }
 
-    public ObjectProperty<EventHandler<CefWebEvent<Boolean>>> onVisibilityChangedProperty() {
+    public ObjectProperty<@Nullable EventHandler<CefWebEvent<Boolean>>> onVisibilityChangedProperty() {
         return onVisibilityChanged;
     }
 
@@ -322,7 +325,7 @@ public final class CefWebEngine {
         createPopupHandler.set(handler);
     }
 
-    public ObjectProperty<Callback<CefPopupFeatures, CefWebEngine>> createPopupHandlerProperty() {
+    public ObjectProperty<@Nullable Callback<CefPopupFeatures, CefWebEngine>> createPopupHandlerProperty() {
         return createPopupHandler;
     }
 
@@ -335,7 +338,7 @@ public final class CefWebEngine {
         confirmHandler.set(handler);
     }
 
-    public ObjectProperty<Callback<String, Boolean>> confirmHandlerProperty() {
+    public ObjectProperty<@Nullable Callback<String, Boolean>> confirmHandlerProperty() {
         return confirmHandler;
     }
 
@@ -348,7 +351,7 @@ public final class CefWebEngine {
         promptHandler.set(handler);
     }
 
-    public ObjectProperty<Callback<CefPromptData, String>> promptHandlerProperty() {
+    public ObjectProperty<@Nullable Callback<CefPromptData, String>> promptHandlerProperty() {
         return promptHandler;
     }
 
@@ -361,7 +364,7 @@ public final class CefWebEngine {
         onError.set(handler);
     }
 
-    public ObjectProperty<EventHandler<CefWebErrorEvent>> onErrorProperty() {
+    public ObjectProperty<@Nullable EventHandler<CefWebErrorEvent>> onErrorProperty() {
         return onError;
     }
 

@@ -9,30 +9,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.function.BooleanSupplier;
-import javax.annotation.Nonnull;
 
 /** Discovers transport modules through {@link ServiceLoader}. */
 public final class CefTransports {
     private CefTransports() {}
 
-    @Nonnull
-    public static CefTransport connect(@Nonnull String name, @Nonnull String endpoint) throws CefTransportException {
+    public static CefTransport connect(String name, String endpoint) throws CefTransportException {
         return provider(name).connect(endpoint);
     }
 
-    @Nonnull
-    public static CefTransport connect(
-            @Nonnull String name, @Nonnull String endpoint, @Nonnull BooleanSupplier reconnectContinuity)
+    public static CefTransport connect(String name, String endpoint, BooleanSupplier reconnectContinuity)
             throws CefTransportException {
         return provider(name).connect(endpoint, reconnectContinuity);
     }
 
-    @Nonnull
     public static CefTransport connect(
-            @Nonnull String name,
-            @Nonnull String endpoint,
-            @Nonnull BooleanSupplier reconnectContinuity,
-            @Nonnull Duration reconnectTimeout)
+            String name, String endpoint, BooleanSupplier reconnectContinuity, Duration reconnectTimeout)
             throws CefTransportException {
         return provider(name).connect(endpoint, reconnectContinuity, reconnectTimeout);
     }
@@ -44,7 +36,6 @@ public final class CefTransports {
                 "No cef4j transport provider named '" + name + "' is present; available: " + available());
     }
 
-    @Nonnull
     public static List<String> available() {
         List<String> names = new ArrayList<>(providers().keySet());
         Collections.sort(names);

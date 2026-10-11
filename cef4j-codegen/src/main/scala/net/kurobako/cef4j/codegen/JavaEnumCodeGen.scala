@@ -202,7 +202,7 @@ object JavaEnumCodeGen {
            |    }
            |
            |    @Override
-           |    public boolean equals(Object obj) {
+           |    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
            |        if (this == obj) return true;
            |        if (!(obj instanceof $javaName)) return false;
            |        return this.value == (($javaName) obj).value;

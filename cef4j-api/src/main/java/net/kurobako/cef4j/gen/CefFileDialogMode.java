@@ -110,7 +110,7 @@ public final class CefFileDialogMode implements CefEnum<CefFileDialogMode> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefFileDialogMode)) return false;
         return this.value == ((CefFileDialogMode) obj).value;

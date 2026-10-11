@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(cef4j)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT DEFINED CEF_ROOT OR CEF_ROOT STREQUAL "")
     message(FATAL_ERROR "CEF_ROOT must be set to the CEF binary distribution directory")

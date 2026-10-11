@@ -118,7 +118,7 @@ public final class CefContextMenuMediaType implements CefEnum<CefContextMenuMedi
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefContextMenuMediaType)) return false;
         return this.value == ((CefContextMenuMediaType) obj).value;

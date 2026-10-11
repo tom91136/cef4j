@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -46,10 +44,10 @@ import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 import net.kurobako.cef4j.test.backend.CefTestCompatibility;
+import org.jspecify.annotations.Nullable;
 
 final class NativeSwingBrowserBackend implements BrowserBackend {
     @Override
-    @Nonnull
     public String name() {
         return "native-swing";
     }
@@ -62,14 +60,12 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
     }
 
     @Override
-    @Nonnull
     public Set<Capability> capabilities() {
         return Collections.singleton(Capability.VIEWPORT_RESIZE);
     }
 
     @Override
-    @Nonnull
-    public BrowserSession openSession(@Nonnull SessionConfig config) {
+    public BrowserSession openSession(SessionConfig config) {
         try {
             Path tmp = Files.createTempDirectory("cef4j-native-swing-contract");
             TestTempDirs.cleanupAtExit(tmp);
@@ -91,8 +87,8 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
     private static final class Session implements BrowserSession {
         private final BlockingQueue<PaintInfo> paints = new ArrayBlockingQueue<>(1);
-        private final AtomicReference<CefBrowser> browser = new AtomicReference<>();
-        private final AtomicReference<PendingLoad> pendingLoad = new AtomicReference<>();
+        private final AtomicReference<@Nullable CefBrowser> browser = new AtomicReference<>();
+        private final AtomicReference<@Nullable PendingLoad> pendingLoad = new AtomicReference<>();
         private final AtomicLong paintGeneration = new AtomicLong();
         private final java.util.concurrent.atomic.AtomicBoolean releaseRequested =
                 new java.util.concurrent.atomic.AtomicBoolean();
@@ -109,8 +105,8 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             width = config.width();
             height = config.height();
             CountDownLatch ready = new CountDownLatch(1);
-            AtomicReference<ObservedPanel> panelRef = new AtomicReference<>();
-            AtomicReference<JFrame> frameRef = new AtomicReference<>();
+            AtomicReference<@Nullable ObservedPanel> panelRef = new AtomicReference<>();
+            AtomicReference<@Nullable JFrame> frameRef = new AtomicReference<>();
             onEdt(() -> {
                 ObservedPanel nextPanel = new ObservedPanel(paints, paintGeneration, this::completePendingLoad);
                 JFrame nextFrame = null;
@@ -162,7 +158,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                                 public void onLoadStart(
                                         @Nullable CefBrowser ignored,
                                         @Nullable CefFrame loadedFrame,
-                                        @Nonnull CefTransitionType transitionType) {
+                                        CefTransitionType transitionType) {
                                     if (loadedFrame != null && loadedFrame.isMain()) {
                                         scripts.cancelPending("page navigation replaced the renderer context");
                                     }
@@ -197,7 +193,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                                 public void onLoadError(
                                         @Nullable CefBrowser ignored,
                                         @Nullable CefFrame loadedFrame,
-                                        @Nonnull CefErrorCode errorCode,
+                                        CefErrorCode errorCode,
                                         @Nullable String errorText,
                                         @Nullable String failedUrl) {
                                     PendingLoad current = pendingLoad.get();
@@ -216,7 +212,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                         @SuppressWarnings({"MissingOverride", "UnusedMethod", "EffectivelyPrivate"})
                         public boolean onProcessMessageReceived(
                                 @Nullable CefBrowser sourceBrowser,
-                                @Nonnull CefProcessId sourceProcess,
+                                CefProcessId sourceProcess,
                                 @Nullable CefProcessMessage message) {
                             return scripts.handleMessage(sourceBrowser, null, sourceProcess, message);
                         }
@@ -225,7 +221,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                         public boolean onProcessMessageReceived(
                                 @Nullable CefBrowser sourceBrowser,
                                 @Nullable CefFrame sourceFrame,
-                                @Nonnull CefProcessId sourceProcess,
+                                CefProcessId sourceProcess,
                                 @Nullable CefProcessMessage message) {
                             return scripts.handleMessage(sourceBrowser, sourceFrame, sourceProcess, message);
                         }
@@ -268,9 +264,8 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
         @SuppressWarnings("FutureReturnValueIgnored")
-        public CompletableFuture<Void> loadUrl(@Nonnull String url) {
+        public CompletableFuture<Void> loadUrl(String url) {
             CefFrame mainFrame = Optional.ofNullable(browser.get())
                     .flatMap(CefBrowser::getMainFrame)
                     .orElse(null);
@@ -303,14 +298,12 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
-        public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
-            return scripts.evaluate(script);
+        public CompletableFuture<String> evaluateJavascript(String script) {
+            return scripts.evaluate(script).thenApply(Objects::requireNonNull);
         }
 
         @Override
-        @Nonnull
-        public PaintInfo awaitNextPaint(@Nonnull Duration timeout) throws InterruptedException, TimeoutException {
+        public PaintInfo awaitNextPaint(Duration timeout) throws InterruptedException, TimeoutException {
             long deadline = System.nanoTime() + timeout.toNanos();
             PaintInfo last = null;
             while (System.nanoTime() < deadline) {
@@ -334,7 +327,6 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         }
 
         @Override
-        @Nonnull
         public CompletableFuture<Void> resizeViewport(int width, int height) {
             CompletableFuture<Void> result = new CompletableFuture<>();
             try {

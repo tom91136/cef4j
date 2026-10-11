@@ -33,8 +33,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,15 +72,12 @@ public final class WebDriverServer implements AutoCloseable {
     private volatile boolean creatingSession;
 
     /** Starts a loopback-only endpoint on an ephemeral port. */
-    @Nonnull
-    public static WebDriverServer start(@Nonnull AutomationBackendFactory backendFactory) throws IOException {
+    public static WebDriverServer start(AutomationBackendFactory backendFactory) throws IOException {
         return start(backendFactory, WebDriverJsonCodec.installed());
     }
 
     /** Starts a loopback-only endpoint with an explicitly selected JSON codec. */
-    @Nonnull
-    public static WebDriverServer start(
-            @Nonnull AutomationBackendFactory backendFactory, @Nonnull WebDriverJsonCodec jsonCodec)
+    public static WebDriverServer start(AutomationBackendFactory backendFactory, WebDriverJsonCodec jsonCodec)
             throws IOException {
         return start(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
@@ -91,22 +87,18 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     /** Starts an endpoint at the explicitly supplied address. Callers own the security implications of non-loopback. */
-    @Nonnull
     public static WebDriverServer start(
-            @Nonnull InetSocketAddress bindAddress,
-            @Nonnull AutomationBackendFactory backendFactory,
-            @Nonnull Duration commandTimeout)
+            InetSocketAddress bindAddress, AutomationBackendFactory backendFactory, Duration commandTimeout)
             throws IOException {
         return start(bindAddress, backendFactory, commandTimeout, WebDriverJsonCodec.installed());
     }
 
     /** Starts an endpoint with an explicitly selected JSON codec. */
-    @Nonnull
     public static WebDriverServer start(
-            @Nonnull InetSocketAddress bindAddress,
-            @Nonnull AutomationBackendFactory backendFactory,
-            @Nonnull Duration commandTimeout,
-            @Nonnull WebDriverJsonCodec jsonCodec)
+            InetSocketAddress bindAddress,
+            AutomationBackendFactory backendFactory,
+            Duration commandTimeout,
+            WebDriverJsonCodec jsonCodec)
             throws IOException {
         Objects.requireNonNull(bindAddress, "bindAddress");
         Objects.requireNonNull(backendFactory, "backendFactory");
@@ -125,13 +117,12 @@ public final class WebDriverServer implements AutoCloseable {
         }
     }
 
-    @Nonnull
     public static WebDriverServer start(
-            @Nonnull InetSocketAddress bindAddress,
-            @Nonnull AutomationBackendFactory backendFactory,
-            @Nonnull Duration commandTimeout,
-            @Nonnull WebDriverJsonCodec jsonCodec,
-            @Nonnull Executor executor)
+            InetSocketAddress bindAddress,
+            AutomationBackendFactory backendFactory,
+            Duration commandTimeout,
+            WebDriverJsonCodec jsonCodec,
+            Executor executor)
             throws IOException {
         return start(bindAddress, backendFactory, commandTimeout, jsonCodec, executor, null);
     }
@@ -179,7 +170,6 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     /** Base URI consumed by Selenium's RemoteWebDriver. */
-    @Nonnull
     public URI endpoint() {
         InetSocketAddress address = server.getAddress();
         String host = address.getAddress().getHostAddress();
@@ -549,7 +539,7 @@ public final class WebDriverServer implements AutoCloseable {
             WebDriverError fallback,
             Duration timeout,
             boolean cancelOnTimeout,
-            @Nullable java.util.function.Consumer<Throwable> pendingCancellation) {
+            java.util.function.@Nullable Consumer<Throwable> pendingCancellation) {
         Objects.requireNonNull(future, "backend returned null future");
         try {
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
@@ -931,13 +921,14 @@ public final class WebDriverServer implements AutoCloseable {
 
         private Duration timeout(String name) {
             synchronized (commandLock) {
-                return Duration.ofMillis(timeouts.get(name).longValue());
+                return Duration.ofMillis(
+                        Objects.requireNonNull(timeouts.get(name), name).longValue());
             }
         }
 
         private long timeoutMillis(String name) {
             synchronized (commandLock) {
-                return timeouts.get(name).longValue();
+                return Objects.requireNonNull(timeouts.get(name), name).longValue();
             }
         }
 
