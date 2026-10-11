@@ -119,6 +119,7 @@ public enum Cef implements AutoCloseable {
     }
 
     private static final Logger log = LoggerFactory.getLogger(Cef.class);
+    private static final String DISABLE_FEATURES = "--disable-features=";
 
     private volatile State state = State.UNINITIALISED;
     private volatile @Nullable Thread initThread = null;
@@ -388,9 +389,16 @@ public enum Cef implements AutoCloseable {
             public void onBeforeCommandLineProcessing(
                     @Nullable String processType, @Nullable CefCommandLine commandLine) {
                 if (OS.isWindows() && commandLine != null && (processType == null || processType.isEmpty())) {
-                    for (String arg : extraArgs) {
-                        if (arg != null && !arg.isEmpty()) {
-                            commandLine.appendSwitch(arg.startsWith("--") ? arg.substring(2) : arg);
+                    List<String> argv = processArguments(extraArgs);
+                    for (String arg : argv.subList(1, argv.size())) {
+                        if (arg.isEmpty()) continue;
+                        String name = arg.startsWith("--") ? arg.substring(2) : arg;
+                        int separator = name.indexOf('=');
+                        if (separator < 0) {
+                            commandLine.appendSwitch(name);
+                        } else {
+                            commandLine.appendSwitchWithValue(
+                                    name.substring(0, separator), name.substring(separator + 1));
                         }
                     }
                 }
@@ -413,6 +421,7 @@ public enum Cef implements AutoCloseable {
 
     static List<String> processArguments(List<String> extraArgs) {
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
+        java.util.LinkedHashSet<String> disabledFeatures = new java.util.LinkedHashSet<>();
         argv.add("cef4j");
         int cefApi = SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE);
         if (OS.isLinux() && cefApi == 75) {
@@ -420,7 +429,13 @@ public enum Cef implements AutoCloseable {
             // can dereference a destroyed PrefService while an AWT embedding is starting. Keep both workarounds
             // version-scoped; adjacent supported CEF releases do not need them.
             addArgIfMissing(argv, "--disable-gpu");
-            addArgIfMissing(argv, "--disable-features=NetworkService");
+            disabledFeatures.add("NetworkService");
+        }
+        // XXX: CefShutdown resets DiscardableSharedMemoryManager before the IO thread stops (chromiumembedded/cef#2798)
+        // and before Chromium 134 a renderer binding it then dereferences null; the spare renderer kept warm for
+        // site-per-process is the one still connecting at shutdown. Remove when the minimum CEF is 134.
+        if (cefApi < 134) {
+            disabledFeatures.add("SpareRendererForSitePerProcess");
         }
         // Chromium 151+ can otherwise block startup on its first-run terms dialog when using a fresh cache.
         if (cefApi >= 151) {
@@ -432,7 +447,19 @@ public enum Cef implements AutoCloseable {
         if (cefApi < 142) {
             addArgIfMissing(argv, "--disable-back-forward-cache");
         }
-        argv.addAll(extraArgs);
+        for (String arg : extraArgs) {
+            if (arg.startsWith(DISABLE_FEATURES)) {
+                for (String feature : arg.substring(DISABLE_FEATURES.length()).split(",", -1)) {
+                    if (!feature.isEmpty()) disabledFeatures.add(feature);
+                }
+            } else {
+                argv.add(arg);
+            }
+        }
+        // Chromium keeps only the last value of a repeated switch
+        if (!disabledFeatures.isEmpty()) {
+            argv.add(DISABLE_FEATURES + String.join(",", disabledFeatures));
+        }
         if (!OS.isWindows()) {
             // XXX: CEF 109.1.18 and 116.0.27 lack disable_signal_handlers; keep HotSpot's fatal handlers protected
             // until those compatibility lanes are dropped.

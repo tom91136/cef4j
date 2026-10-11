@@ -1843,6 +1843,25 @@ struct App : cef_app_t {
       // same-site navigation can lose CEF's browser-info handshake, leaving the new document with no V8
       // context; remove when the minimum CEF is 142.
       if (runtimeMajor < 142) appendSwitch("disable-back-forward-cache");
+      // XXX: CefShutdown resets DiscardableSharedMemoryManager before the IO thread stops (chromiumembedded/cef#2798)
+      // and before Chromium 134 a renderer binding it then dereferences null; the spare renderer kept warm for
+      // site-per-process is the one still connecting at shutdown. Remove when the minimum CEF is 134.
+      if (runtimeMajor < 134) {
+        ScopedCefString name("disable-features");
+        std::string features;
+        if (cef_string_userfree_t existing = commandLine->get_switch_value(commandLine, name.get())) {
+          cef_string_utf8_t utf8{};
+          cef_string_utf16_to_utf8(existing->str, existing->length, &utf8);
+          features.assign(utf8.str, utf8.length);
+          cef_string_utf8_clear(&utf8);
+          cef_string_userfree_free(existing);
+        }
+        // Chromium keeps only the last value of a repeated switch
+        if (!features.empty()) features += ',';
+        features += "SpareRendererForSitePerProcess";
+        ScopedCefString value(features.c_str());
+        commandLine->append_switch_with_value(commandLine, name.get(), value.get());
+      }
 #if defined(__APPLE__)
       if (runtimeMajor <= 109) appendSwitch("disable-gpu");
 #endif

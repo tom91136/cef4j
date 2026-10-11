@@ -41,6 +41,26 @@ class CefProcessArgumentsTest {
     }
 
     @Test
+    void disabledFeaturesAreMergedIntoOneSwitch() {
+        List<String> arguments = Cef.processArguments(
+                List.of("--disable-features=Foo,Bar", "--user-switch", "--disable-features=Baz,Foo"));
+
+        assertThat(arguments).contains("--user-switch");
+        assertThat(disabledFeatures(arguments)).doesNotHaveDuplicates().contains("Foo", "Bar", "Baz");
+    }
+
+    @Test
+    void spareRendererIsDisabledOnlyBeforeCef134() {
+        List<String> arguments = Cef.processArguments(List.of("--disable-features=Foo"));
+
+        if (SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE) < 134) {
+            assertThat(disabledFeatures(arguments)).contains("Foo", "SpareRendererForSitePerProcess");
+        } else {
+            assertThat(disabledFeatures(arguments)).doesNotContain("SpareRendererForSitePerProcess");
+        }
+    }
+
+    @Test
     void sandboxFlagsAreNeverInjected() {
         assertThat(Cef.processArguments(List.of()))
                 .doesNotContain(
@@ -60,5 +80,17 @@ class CefProcessArgumentsTest {
 
         settings.noSandbox = 1;
         assertThatNoException().isThrownBy(() -> Cef.validateSettings(settings));
+    }
+
+    private static List<String> disabledFeatures(List<String> arguments) {
+        String prefix = "--disable-features=";
+        assertThat(arguments)
+                .filteredOn(argument -> argument.startsWith(prefix))
+                .hasSize(1);
+        String merged = arguments.stream()
+                .filter(argument -> argument.startsWith(prefix))
+                .findFirst()
+                .orElseThrow();
+        return List.of(merged.substring(prefix.length()).split(","));
     }
 }
