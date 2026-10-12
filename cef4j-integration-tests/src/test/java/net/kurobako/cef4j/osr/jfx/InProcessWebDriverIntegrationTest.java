@@ -1,8 +1,9 @@
 package net.kurobako.cef4j.osr.jfx;
 
+import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.CEF_STARTUP_TIMEOUT;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.assumeDisplayServer;
-import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.closeAllWindows;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.onFxThread;
+import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.shutdownCefWebView;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.waitUntil;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +25,6 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
@@ -68,17 +68,18 @@ class InProcessWebDriverIntegrationTest {
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
-        onFxThread(() -> {
-            CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
-            Platform.setImplicitExit(false);
-        });
+        onFxThread(
+                () -> {
+                    CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
+                    Platform.setImplicitExit(false);
+                },
+                CEF_STARTUP_TIMEOUT);
     }
 
     @AfterAll
     static void terminateCef() throws Exception {
         try {
-            closeAllWindows();
-            if (Cef.INSTANCE.state() == Cef.State.INITIALISED) onFxThread(CefWebView::terminate);
+            shutdownCefWebView();
         } finally {
             BROWSER_CREATOR.close();
         }
