@@ -128,7 +128,10 @@ object JavaInterfaceCodeGen {
     } else ""
 
     val ffHasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-    val ffHasOptional = freeFunctions.exists(ff => JavaCodeGen.isOptionalReturn(FnPtr("_", ff.ret, ff.params)))
+    val ffHasOptional = freeFunctions.exists { ff =>
+      JavaCodeGen.isOptionalReturn(FnPtr("_", ff.ret, ff.params)) ||
+      (ff.ret == CType.Bool && OutCollection.forFreeFunction(ff).isDefined)
+    }
 
     val fnTypes       = fns.flatMap(fn => fn.ret :: fn.params.map(_.typ))
     val ffTypes       = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))
@@ -256,7 +259,10 @@ ${allLines.mkString("\n")}
     val (staticMethods, _) = renderStaticMethods(freeFunctions, docs, isClass = true)
 
     val hasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-    val hasOptional = freeFunctions.exists(ff => JavaMethods.usesOptionalReturn(ff.ret))
+    val hasOptional = freeFunctions.exists { ff =>
+      JavaMethods.usesOptionalReturn(ff.ret) ||
+      (ff.ret == CType.Bool && OutCollection.forFreeFunction(ff).isDefined)
+    }
 
     val ffTypes     = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))
     val typeImports = renderTypeImports(ffTypes)
@@ -354,9 +360,10 @@ ${allLines.mkString("\n")}
   )(using Naming.Context, DocComments.Context): String = {
     val methodName = Naming.javaMethodName(fn)
     val retType    = methodReturnType(fn, isObject, handlerNames)
-    val shape      = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, Some(retType))
+    val outColl    = OutCollection.forMethod(fn).map(_._2)
+    val shape      = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, Some(retType), outColl)
     val proto      = if (cefStructName.nonEmpty) DocComments.cPrototypeForMethod(cefStructName, fn) else ""
-    val javadoc    = DocComments.forMethod(fn, docs, sourceHeader, proto, cefStructName)
+    val javadoc    = DocComments.forMethod(fn, docs, sourceHeader, proto, cefStructName, collectionsAsReturns = true)
 
     if (isObject) {
       s"$javadoc    ${shape.retType} $methodName(${shape.paramsDecl});"
@@ -369,12 +376,14 @@ ${allLines.mkString("\n")}
   }
 
   private def methodReturnType(fn: FnPtr, isObject: Boolean, handlerNames: Set[String])(using Naming.Context): String =
-    if (isObject && JavaCodeGen.isOptionalReturn(fn)) {
-      s"Optional<${Naming.javaType(fn.ret)}>"
-    } else if (!isObject && isHandlerPtrReturn(fn.ret, handlerNames)) {
-      s"Optional<${handlerPtrJavaType(fn.ret)}>"
-    } else {
-      Naming.javaType(fn.ret)
+    OutCollection.forMethod(fn) match {
+      case Some((_, coll)) if fn.ret == CType.Bool              => s"Optional<${coll.javaType}>"
+      case Some((_, coll))                                      => coll.javaType
+      case None if isObject && JavaCodeGen.isOptionalReturn(fn) =>
+        s"Optional<${Naming.javaType(fn.ret)}>"
+      case None if !isObject && isHandlerPtrReturn(fn.ret, handlerNames) =>
+        s"Optional<${handlerPtrJavaType(fn.ret)}>"
+      case None => Naming.javaType(fn.ret)
     }
 
   /** Handler defaults (and Delegating fallbacks) emit {@code return null;} for reference-typed, non-Optional returns.
@@ -417,7 +426,8 @@ ${allLines.mkString("\n")}
   )(using Naming.Context, DocComments.Context): (String, String) = {
     val methodName = ff.javaMethodName
     val nativeName = Naming.nativeMethodName(ff.javaMethodName)
-    val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
+    val outColl    = OutCollection.forFreeFunction(ff).map(_._2)
+    val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs, outCollection = outColl)
     val callTarget = if (isClass) nativeName else s"NativePeer.$nativeName"
     val body       = JavaMethods.renderCallBody(s"$callTarget(${shape.argsExpr})", shape)
 
@@ -436,7 +446,8 @@ ${allLines.mkString("\n")}
 
   private def renderNativeDecl(ff: CefDecl.FreeFunction, prefix: String)(using Naming.Context): String = {
     val nativeName = Naming.nativeMethodName(ff.javaMethodName)
-    val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
+    val outColl    = OutCollection.forFreeFunction(ff).map(_._2)
+    val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs, outCollection = outColl)
     s"$prefix${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
   }
 

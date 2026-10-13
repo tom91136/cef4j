@@ -2,7 +2,6 @@ package net.kurobako.cef4j.http;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -123,8 +122,7 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
                     return;
                 }
                 CefResponse r = resp.get();
-                Map<String, List<String>> headers = new HashMap<>();
-                r.getHeaderMap(headers);
+                Map<String, List<String>> headers = r.getHeaderMap();
                 sink.onResponse(r.getStatus(), r.getStatusText().orElse(""), headers);
             }
         };

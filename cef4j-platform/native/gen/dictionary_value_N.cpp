@@ -92,17 +92,18 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), hasKey0)(JNIEnv *env,
   return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), getKeys0)(JNIEnv *env, jobject obj, jlong self, jobject keys) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getKeys0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_dictionary_value_t *>(self);
-  if (!s) return JNI_FALSE;
-  if (!keys) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "keys must not be null");
-    return JNI_FALSE;
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  auto _r = s->get_keys(s, _out);
+  if (!_r) {
+    cef_string_list_free(_out);
+    return nullptr;
   }
-  auto _keys_csl = JavaListToCefStringList(env, keys);
-  auto _r = s->get_keys(s, _keys_csl);
-  CefStringListWriteBack(env, _keys_csl, keys);
-  return static_cast<jboolean>(_r);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), remove0)(JNIEnv *env, jobject obj, jlong self, jstring key) {

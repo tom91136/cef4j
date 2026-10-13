@@ -227,10 +227,11 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * int (CEF_CALLBACK* get_dictionary_suggestions)(struct _cef_context_menu_params_t* self, cef_string_list_t suggestions);
      * </pre>
      *
+     * @return the list, or {@link Optional#empty()} when the C API reports none
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
      */
-    boolean getDictionarySuggestions(List<String> suggestions);
+    Optional<List<String>> getDictionarySuggestions();
 
     /**
      * Returns {@code true} if the context menu was invoked on an editable node.
@@ -418,9 +419,9 @@ public interface CefContextMenuParams extends CefLibraryObject {
         }
 
         @Override
-        public boolean getDictionarySuggestions(List<String> suggestions) {
+        public Optional<List<String>> getDictionarySuggestions() {
             checkNotClosed();
-            return getDictionarySuggestions0(nativePtr, suggestions);
+            return Optional.ofNullable(getDictionarySuggestions0(nativePtr));
         }
 
         @Override
@@ -477,7 +478,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
 
         static native String getMisspelledWord0(long self);
 
-        static native boolean getDictionarySuggestions0(long self, List<String> suggestions);
+        static native List<String> getDictionarySuggestions0(long self);
 
         static native boolean isEditable0(long self);
 

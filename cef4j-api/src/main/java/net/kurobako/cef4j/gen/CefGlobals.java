@@ -533,8 +533,8 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:90</a>
      */
-    public static void getExtensionsForMimeType(@Nullable String mimeType, List<String> extensions) {
-        getExtensionsForMimeType0(mimeType, extensions);
+    public static List<String> getExtensionsForMimeType(@Nullable String mimeType) {
+        return getExtensionsForMimeType0(mimeType);
     }
 
     /**
@@ -870,7 +870,7 @@ public final class CefGlobals {
 
     private static native String getMimeType0(@Nullable String extension);
 
-    private static native void getExtensionsForMimeType0(@Nullable String mimeType, List<String> extensions);
+    private static native List<String> getExtensionsForMimeType0(@Nullable String mimeType);
 
     private static native String base64Encode0(ByteBuffer data);
 

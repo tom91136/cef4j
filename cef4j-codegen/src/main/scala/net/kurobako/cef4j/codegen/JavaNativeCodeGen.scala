@@ -110,7 +110,8 @@ ${if (extraNativeDecls.nonEmpty) "\n" + extraNativeDecls.mkString("\n") else ""}
       callExpr: String => String
   )(using Naming.Context): String = {
     val methodName     = Naming.javaMethodName(fn)
-    val shape          = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs)
+    val outColl        = OutCollection.forMethod(fn).map(_._2)
+    val shape          = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, outCollection = outColl)
     val allArgs        = prependNativePtr(shape.argsExpr)
     val body           = JavaMethods.renderCallBody(callExpr(allArgs), shape)
     val argChecks      = renderRequireOpenChecks(fn, handlerNames)
@@ -125,7 +126,8 @@ $argChecksBlock          $body
 
   private def renderNativeDecl(fn: FnPtr)(using Naming.Context): String = {
     val nativeName   = Naming.nativeMethodName(fn)
-    val shape        = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs)
+    val outColl      = OutCollection.forMethod(fn).map(_._2)
+    val shape        = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, outCollection = outColl)
     val nativeParams = ("long self" :: Option.when(shape.nativeParamsDecl.nonEmpty)(shape.nativeParamsDecl).toList)
       .mkString(", ")
     s"        static native ${shape.nativeRetType} $nativeName($nativeParams);"

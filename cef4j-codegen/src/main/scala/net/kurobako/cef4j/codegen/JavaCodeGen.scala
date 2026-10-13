@@ -61,9 +61,9 @@ $body
   }
 
   def isOptionalReturn(fn: FnPtr): Boolean = fn.ret match {
-    case CType.JString      => true
-    case CType.ObjectPtr(_) => true
-    case _                  => false
+    case CType.JString | CType.ObjectPtr(_) => true
+    case CType.Bool                         => OutCollection.forMethod(fn).isDefined
+    case _                                  => false
   }
 
   def isReferenceType(ct: CType): Boolean = ct match {

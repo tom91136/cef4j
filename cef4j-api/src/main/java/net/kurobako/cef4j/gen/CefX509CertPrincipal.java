@@ -96,10 +96,11 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * void (CEF_CALLBACK* get_organization_names)(struct _cef_x509_cert_principal_t* self, cef_string_list_t names);
      * </pre>
      *
+     * @return the list, populated by the C API
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
      */
-    void getOrganizationNames(List<String> names);
+    List<String> getOrganizationNames();
 
     /**
      * Retrieve the list of organization unit names.
@@ -110,10 +111,11 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * void (CEF_CALLBACK* get_organization_unit_names)(struct _cef_x509_cert_principal_t* self, cef_string_list_t names);
      * </pre>
      *
+     * @return the list, populated by the C API
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
      */
-    void getOrganizationUnitNames(List<String> names);
+    List<String> getOrganizationUnitNames();
 
     final class NativePeer implements CefX509CertPrincipal, AutoCloseable {
         private final long nativePtr;
@@ -189,15 +191,15 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
         }
 
         @Override
-        public void getOrganizationNames(List<String> names) {
+        public List<String> getOrganizationNames() {
             checkNotClosed();
-            getOrganizationNames0(nativePtr, names);
+            return getOrganizationNames0(nativePtr);
         }
 
         @Override
-        public void getOrganizationUnitNames(List<String> names) {
+        public List<String> getOrganizationUnitNames() {
             checkNotClosed();
-            getOrganizationUnitNames0(nativePtr, names);
+            return getOrganizationUnitNames0(nativePtr);
         }
 
         static native String getDisplayName0(long self);
@@ -210,9 +212,9 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
 
         static native String getCountryName0(long self);
 
-        static native void getOrganizationNames0(long self, List<String> names);
+        static native List<String> getOrganizationNames0(long self);
 
-        static native void getOrganizationUnitNames0(long self, List<String> names);
+        static native List<String> getOrganizationUnitNames0(long self);
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {

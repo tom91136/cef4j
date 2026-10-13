@@ -252,9 +252,10 @@ public interface CefBrowser extends CefLibraryObject {
      * <pre>void (CEF_CALLBACK* get_frame_identifiers)(struct _cef_browser_t* self, cef_string_list_t identifiers);
      * </pre>
      *
+     * @return the list, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:189</a>
      */
-    void getFrameIdentifiers(List<String> identifiers);
+    List<String> getFrameIdentifiers();
 
     /**
      * Returns the names of all existing frames.
@@ -263,9 +264,10 @@ public interface CefBrowser extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_frame_names)(struct _cef_browser_t* self, cef_string_list_t names);</pre>
      *
+     * @return the list, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:195</a>
      */
-    void getFrameNames(List<String> names);
+    List<String> getFrameNames();
 
     final class NativePeer implements CefBrowser, AutoCloseable {
         private final long nativePtr;
@@ -426,15 +428,15 @@ public interface CefBrowser extends CefLibraryObject {
         }
 
         @Override
-        public void getFrameIdentifiers(List<String> identifiers) {
+        public List<String> getFrameIdentifiers() {
             checkNotClosed();
-            getFrameIdentifiers0(nativePtr, identifiers);
+            return getFrameIdentifiers0(nativePtr);
         }
 
         @Override
-        public void getFrameNames(List<String> names) {
+        public List<String> getFrameNames() {
             checkNotClosed();
-            getFrameNames0(nativePtr, names);
+            return getFrameNames0(nativePtr);
         }
 
         static native boolean isValid0(long self);
@@ -475,9 +477,9 @@ public interface CefBrowser extends CefLibraryObject {
 
         static native long getFrameCount0(long self);
 
-        static native void getFrameIdentifiers0(long self, List<String> identifiers);
+        static native List<String> getFrameIdentifiers0(long self);
 
-        static native void getFrameNames0(long self, List<String> names);
+        static native List<String> getFrameNames0(long self);
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {

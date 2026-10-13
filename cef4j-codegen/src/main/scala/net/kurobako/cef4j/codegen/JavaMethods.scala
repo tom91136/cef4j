@@ -39,16 +39,19 @@ object JavaMethods {
       ret: CType,
       visibleParams: List[Param],
       metaAttrs: List[(String, String)],
-      retTypeOverride: Option[String] = None
+      retTypeOverride: Option[String] = None,
+      outCollection: Option[OutCollection] = None
   )(using Naming.Context): MethodShape = {
     val optionals     = optionalParams(metaAttrs)
-    val rawRetType    = Naming.javaType(ret)
-    val usesOptional  = usesOptionalReturn(ret)
+    val outParam      = outCollection.flatMap(_ => visibleParams.find(p => OutCollection.of(p.typ).isDefined))
+    val params        = outParam.fold(visibleParams)(p => visibleParams.filterNot(_ eq p))
+    val rawRetType    = outCollection.fold(Naming.javaType(ret))(_.javaType)
+    val usesOptional  = outCollection.fold(usesOptionalReturn(ret))(_ => ret == CType.Bool)
     val usesList      = usesArraysAsList(ret)
     val effectiveRet  = retTypeOverride.getOrElse(if (usesOptional) s"Optional<$rawRetType>" else rawRetType)
-    val paramsDecl    = visibleParams.map(p => renderParam(p, optionals)).mkString(", ")
-    val argsExpr      = visibleParams.map(p => Naming.toCamelCase(p.name)).mkString(", ")
-    val nativeRetType = Naming.jniNativeReturnType(ret)
+    val paramsDecl    = params.map(p => renderParam(p, optionals)).mkString(", ")
+    val argsExpr      = params.map(p => Naming.toCamelCase(p.name)).mkString(", ")
+    val nativeRetType = if (outCollection.isDefined) rawRetType else Naming.jniNativeReturnType(ret)
 
     // Native stubs preserve facade nullness for NullAway.
     MethodShape(

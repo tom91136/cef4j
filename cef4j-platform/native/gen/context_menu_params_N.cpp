@@ -147,18 +147,18 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefContextMenuParams), getMisspelledWord0)(
   return jstr;
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefContextMenuParams), getDictionarySuggestions0)(JNIEnv *env, jobject obj, jlong self,
-                                                                                        jobject suggestions) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefContextMenuParams), getDictionarySuggestions0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_context_menu_params_t *>(self);
-  if (!s) return JNI_FALSE;
-  if (!suggestions) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "suggestions must not be null");
-    return JNI_FALSE;
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  auto _r = s->get_dictionary_suggestions(s, _out);
+  if (!_r) {
+    cef_string_list_free(_out);
+    return nullptr;
   }
-  auto _suggestions_csl = JavaListToCefStringList(env, suggestions);
-  auto _r = s->get_dictionary_suggestions(s, _suggestions_csl);
-  CefStringListWriteBack(env, _suggestions_csl, suggestions);
-  return static_cast<jboolean>(_r);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefContextMenuParams), isEditable0)(JNIEnv *env, jobject obj, jlong self) {

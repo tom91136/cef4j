@@ -181,9 +181,10 @@ public interface CefDragData extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* get_file_names)(struct _cef_drag_data_t* self, cef_string_list_t names);</pre>
      *
+     * @return the list, or {@link Optional#empty()} when the C API reports none
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
      */
-    boolean getFileNames(List<String> names);
+    Optional<List<String>> getFileNames();
 
     /**
      * Retrieve the list of file paths that are being dragged into the browser window.
@@ -192,9 +193,10 @@ public interface CefDragData extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* get_file_paths)(struct _cef_drag_data_t* self, cef_string_list_t paths);</pre>
      *
+     * @return the list, or {@link Optional#empty()} when the C API reports none
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
      */
-    boolean getFilePaths(List<String> paths);
+    Optional<List<String>> getFilePaths();
 
     /**
      * Set the link URL that is being dragged.
@@ -475,15 +477,15 @@ public interface CefDragData extends CefLibraryObject {
         }
 
         @Override
-        public boolean getFileNames(List<String> names) {
+        public Optional<List<String>> getFileNames() {
             checkNotClosed();
-            return getFileNames0(nativePtr, names);
+            return Optional.ofNullable(getFileNames0(nativePtr));
         }
 
         @Override
-        public boolean getFilePaths(List<String> paths) {
+        public Optional<List<String>> getFilePaths() {
             checkNotClosed();
-            return getFilePaths0(nativePtr, paths);
+            return Optional.ofNullable(getFilePaths0(nativePtr));
         }
 
         @Override
@@ -584,9 +586,9 @@ public interface CefDragData extends CefLibraryObject {
 
         static native long getFileContents0(long self, @Nullable CefStreamWriter writer);
 
-        static native boolean getFileNames0(long self, List<String> names);
+        static native List<String> getFileNames0(long self);
 
-        static native boolean getFilePaths0(long self, List<String> paths);
+        static native List<String> getFilePaths0(long self);
 
         static native void setLinkUrl0(long self, @Nullable String url);
 

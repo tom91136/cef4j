@@ -164,26 +164,22 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBrowser), getFrameCount0)(JNIEnv *env, job
   return static_cast<jlong>(s->get_frame_count(s));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowser), getFrameIdentifiers0)(JNIEnv *env, jobject obj, jlong self, jobject identifiers) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowser), getFrameIdentifiers0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_browser_t *>(self);
-  if (!s) return;
-  if (!identifiers) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "identifiers must not be null");
-    return;
-  }
-  auto _identifiers_csl = JavaListToCefStringList(env, identifiers);
-  s->get_frame_identifiers(s, _identifiers_csl);
-  CefStringListWriteBack(env, _identifiers_csl, identifiers);
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  s->get_frame_identifiers(s, _out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowser), getFrameNames0)(JNIEnv *env, jobject obj, jlong self, jobject names) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowser), getFrameNames0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_browser_t *>(self);
-  if (!s) return;
-  if (!names) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "names must not be null");
-    return;
-  }
-  auto _names_csl = JavaListToCefStringList(env, names);
-  s->get_frame_names(s, _names_csl);
-  CefStringListWriteBack(env, _names_csl, names);
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  s->get_frame_names(s, _out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }

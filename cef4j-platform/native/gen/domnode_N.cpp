@@ -215,16 +215,14 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getElementAttribute0)(JNIEnv *
   return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDomNode), getElementAttributes0)(JNIEnv *env, jobject obj, jlong self, jobject attrMap) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getElementAttributes0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_domnode_t *>(self);
-  if (!s) return;
-  if (!attrMap) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "attrMap must not be null");
-    return;
-  }
-  auto _attrMap_csm = JavaMapToCefStringMap(env, attrMap);
-  s->get_element_attributes(s, _attrMap_csm);
-  CefStringMapWriteBack(env, _attrMap_csm, attrMap);
+  if (!s) return nullptr;
+  cef_string_map_t _out = cef_string_map_alloc();
+  s->get_element_attributes(s, _out);
+  jobject _result = CefStringMapToJavaMap(env, _out);
+  cef_string_map_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), setElementAttribute0)(JNIEnv *env, jobject obj, jlong self, jstring attrName,

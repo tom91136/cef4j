@@ -513,7 +513,8 @@ object DocComments {
       docs: Map[String, String],
       capiSource: String = "",
       cPrototype: String = "",
-      cefStructName: String = ""
+      cefStructName: String = "",
+      collectionsAsReturns: Boolean = false
   )(using naming: Naming.Context, dc: Context): String = {
     val comment = resolveMethodDoc(fn, docs, cefStructName)
 
@@ -561,7 +562,15 @@ object DocComments {
 
         val returnDoc = fn.metaAttrs.collectFirst { case ("default_retval", v) => v } match {
           case Some(retVal) => List(s"     * @return the result, or {@code $retVal} for default handling")
-          case None         => Nil
+          case None         =>
+            if (collectionsAsReturns) {
+              OutCollection.forMethod(fn) match {
+                case Some((_, coll)) if fn.ret == CType.Bool =>
+                  List(s"     * @return the ${coll.docNoun}, or {@link Optional#empty()} when the C API reports none")
+                case Some((_, coll)) => List(s"     * @return the ${coll.docNoun}, populated by the C API")
+                case None            => Nil
+              }
+            } else Nil
         }
 
         val seeDoc = sourceRefTags.map(tag => s"     * @see $tag")

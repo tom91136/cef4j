@@ -214,16 +214,14 @@ CEF4J_JNI_EXPORT(jstring, CefGlobals, getMimeType0)(JNIEnv *env, jclass clz, jst
   return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CefGlobals, getExtensionsForMimeType0)(JNIEnv *env, jclass clz, jstring mime_type, jobject extensions) {
-  if (!extensions) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "extensions must not be null");
-    return;
-  }
+CEF4J_JNI_EXPORT(jobject, CefGlobals, getExtensionsForMimeType0)(JNIEnv *env, jclass clz, jstring mime_type) {
   auto _mime_type_str = JStringToCefString(env, mime_type);
-  auto _extensions_csl = JavaListToCefStringList(env, extensions);
-  cef_get_extensions_for_mime_type(_mime_type_str, _extensions_csl);
+  cef_string_list_t _out = cef_string_list_alloc();
+  cef_get_extensions_for_mime_type(_mime_type_str, _out);
   if (_mime_type_str) cef_string_userfree_free(_mime_type_str);
-  CefStringListWriteBack(env, _extensions_csl, extensions);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(jstring, CefGlobals, base64Encode0)(JNIEnv *env, jclass clz, jobject data) {

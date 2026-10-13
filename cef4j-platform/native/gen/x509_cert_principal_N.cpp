@@ -61,26 +61,22 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefX509CertPrincipal), getCountryName0)(JNI
   return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefX509CertPrincipal), getOrganizationNames0)(JNIEnv *env, jobject obj, jlong self, jobject names) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509CertPrincipal), getOrganizationNames0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_x509_cert_principal_t *>(self);
-  if (!s) return;
-  if (!names) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "names must not be null");
-    return;
-  }
-  auto _names_csl = JavaListToCefStringList(env, names);
-  s->get_organization_names(s, _names_csl);
-  CefStringListWriteBack(env, _names_csl, names);
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  s->get_organization_names(s, _out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefX509CertPrincipal), getOrganizationUnitNames0)(JNIEnv *env, jobject obj, jlong self, jobject names) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509CertPrincipal), getOrganizationUnitNames0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_x509_cert_principal_t *>(self);
-  if (!s) return;
-  if (!names) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "names must not be null");
-    return;
-  }
-  auto _names_csl = JavaListToCefStringList(env, names);
-  s->get_organization_unit_names(s, _names_csl);
-  CefStringListWriteBack(env, _names_csl, names);
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  s->get_organization_unit_names(s, _out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }

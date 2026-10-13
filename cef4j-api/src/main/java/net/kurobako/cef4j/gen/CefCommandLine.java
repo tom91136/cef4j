@@ -110,9 +110,10 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_argv)(struct _cef_command_line_t* self, cef_string_list_t argv);</pre>
      *
+     * @return the list, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:118</a>
      */
-    void getArgv(List<String> argv);
+    List<String> getArgv();
 
     /**
      * Constructs and returns the represented command line string. Use this method cautiously because quoting behavior
@@ -191,9 +192,10 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_switches)(struct _cef_command_line_t* self, cef_string_map_t switches);</pre>
      *
+     * @return the map, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:164</a>
      */
-    void getSwitches(Map<String, String> switches);
+    Map<String, String> getSwitches();
 
     /**
      * Add a switch to the end of the command line.
@@ -238,9 +240,10 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_arguments)(struct _cef_command_line_t* self, cef_string_list_t arguments);</pre>
      *
+     * @return the list, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:200</a>
      */
-    void getArguments(List<String> arguments);
+    List<String> getArguments();
 
     /**
      * Add an argument to the end of the command line.
@@ -382,9 +385,9 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void getArgv(List<String> argv) {
+        public List<String> getArgv() {
             checkNotClosed();
-            getArgv0(nativePtr, argv);
+            return getArgv0(nativePtr);
         }
 
         @Override
@@ -424,9 +427,9 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void getSwitches(Map<String, String> switches) {
+        public Map<String, String> getSwitches() {
             checkNotClosed();
-            getSwitches0(nativePtr, switches);
+            return getSwitches0(nativePtr);
         }
 
         @Override
@@ -448,9 +451,9 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void getArguments(List<String> arguments) {
+        public List<String> getArguments() {
             checkNotClosed();
-            getArguments0(nativePtr, arguments);
+            return getArguments0(nativePtr);
         }
 
         @Override
@@ -483,7 +486,7 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native void reset0(long self);
 
-        static native void getArgv0(long self, List<String> argv);
+        static native List<String> getArgv0(long self);
 
         static native String getCommandLineString0(long self);
 
@@ -497,7 +500,7 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native String getSwitchValue0(long self, @Nullable String name);
 
-        static native void getSwitches0(long self, Map<String, String> switches);
+        static native Map<String, String> getSwitches0(long self);
 
         static native void appendSwitch0(long self, @Nullable String name);
 
@@ -505,7 +508,7 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native boolean hasArguments0(long self);
 
-        static native void getArguments0(long self, List<String> arguments);
+        static native List<String> getArguments0(long self);
 
         static native void appendArgument0(long self, @Nullable String argument);
 

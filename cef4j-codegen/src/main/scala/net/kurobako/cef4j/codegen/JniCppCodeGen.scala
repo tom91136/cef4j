@@ -256,104 +256,114 @@ $headerIncludes
   }
 
   private def renderObjectFunction(structName: String, fn: FnPtr): String = {
-    val retJni    = Naming.jniType(fn.ret)
+    val outColl   = OutCollection.forMethod(fn)
+    val outParam  = outColl.map(_._1)
+    val params    = outParam.fold(fn.params)(p => fn.params.filterNot(_ eq p))
+    val visible   = outParam.fold(fn.visibleParams)(p => fn.visibleParams.filterNot(_ eq p))
+    val guardRet  = if (outColl.isDefined) CType.OpaquePtr else fn.ret
+    val retJni    = if (outColl.isDefined) "jobject" else Naming.jniType(fn.ret)
     val exportSig = Naming.jniExportPeer(structName, fn, retJni)
     val jniParams =
-      ("JNIEnv* env" :: "jobject obj" :: "jlong self" :: fn.visibleParams.map {
+      ("JNIEnv* env" :: "jobject obj" :: "jlong self" :: visible.map {
         p =>
           s"${Naming.jniType(p.typ)} ${p.name}"
       }).mkString(", ")
 
     val castSelf  = s"    auto* s = reinterpret_cast<$structName*>(self);"
-    val nullGuard = s"    if (!s) return${defaultReturn(fn.ret)};"
+    val nullGuard = s"    if (!s) return${if (outColl.isDefined) " nullptr" else defaultReturn(fn.ret)};"
 
     val optionalParams = collectOptionalParams(fn.metaAttrs)
-    val npeChecks      = renderStrictNullChecks(fn.params, optionalParams, fn.ret) ++
-      renderNarrowPrimitiveChecks(fn.params, fn.ret) ++ renderObjectArrayChecks(fn.params, fn.ret)
+    val npeChecks      = renderStrictNullChecks(params, optionalParams, guardRet) ++
+      renderNarrowPrimitiveChecks(params, guardRet) ++ renderObjectArrayChecks(params, guardRet)
 
     val argConversions = fn.params.map { p =>
       val isOpt = optionalParams.contains(p.name)
-      p.typ match {
-        case CType.ByValueArray(cefName) =>
-          val countVar = fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count").map(_.name).getOrElse("0")
-          val arrVar   = s"_${p.name}_arr"
-          val sizeVar  = s"_${p.name}_sz"
-          val pre      = List(
-            s"    size_t $sizeVar = static_cast<size_t>($countVar);",
-            s"    $cefName* $arrVar = $sizeVar > 0 ? new $cefName[$sizeVar]() : nullptr;",
-            s"""    { auto _bvac = FindClassCached(env, "${jniName(cefName)}");""",
-            s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
-            s"        auto _elem = env->GetObjectArrayElement(${p.name}, static_cast<jsize>(_i));",
-            s"        if (_elem) {"
-          ) ++ bv.bvReadFromJavaLines(cefName, s"$arrVar[_i]", "_elem", "_bvac").map(l => s"            $l") ++ List(
-            "        }",
-            s"    } }"
-          )
-          (pre, arrVar, List(s"    delete[] $arrVar;"))
-        case CType.OutObjectPtr(cefName) =>
-          val tmp = s"_${p.name}_ptr"
-          val pre = List(
-            s"    $cefName* $tmp = nullptr;",
-            s"    if (${p.name}) {",
-            s"""        auto _get = env->GetMethodID(env->GetObjectClass(${p.name}), "get", "()Ljava/lang/Object;");""",
-            s"        auto _cur = env->CallObjectMethod(${p.name}, _get);",
-            s"""        if (_cur) $tmp = reinterpret_cast<$cefName*>(env->GetLongField(_cur, env->GetFieldID(env->GetObjectClass(_cur), "nativePtr", "J")));""",
-            s"    }"
-          )
-          val addRefLine =
-            if (scopedNames.contains(cefName)) Nil
-            else List(s"        ${addRefExpr(tmp)}")
-          val post = List(
-            s"    if (${p.name} && $tmp) {",
-            s"""        auto _peerCls = FindClassCached(env, "${jniName(cefName)}$$NativePeer");""",
-            s"""        auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");"""
-          ) ++ addRefLine ++ List(
-            s"        auto _newPeer = env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>($tmp));",
-            s"""        auto _set = env->GetMethodID(env->GetObjectClass(${p.name}), "set", "(Ljava/lang/Object;)V");""",
-            s"        env->CallVoidMethod(${p.name}, _set, _newPeer);",
-            s"    }"
-          )
-          (pre, s"&$tmp", post)
-        case CType.OutPrimitivePtr(inner) =>
-          val (cPrim, jniPrim, jniInfix) = outPrimInfo(inner)
-          val tmp                        = s"_${p.name}_val"
-          val pre                        = List(
-            s"    $cPrim $tmp = 0;",
-            s"    if (${p.name}) { $jniPrim _jv; env->Get${jniInfix}ArrayRegion(${p.name}, 0, 1, &_jv); $tmp = static_cast<$cPrim>(_jv); }"
-          )
-          val post = List(
-            s"    if (${p.name}) { $jniPrim _jv = static_cast<$jniPrim>($tmp); env->Set${jniInfix}ArrayRegion(${p.name}, 0, 1, &_jv); }"
-          )
-          (pre, s"&$tmp", post)
-        case CType.ObjectPtrArray(cefName) =>
-          val countVar = fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count")
-            .map { cp =>
-              cp.typ match {
-                case CType.OutPrimitivePtr(_) => s"_${cp.name}_val" // pre-extracted local
-                case _                        => cp.name            // direct param
+      if (outParam.exists(_ eq p)) {
+        val coll = outColl.get._2
+        (List(s"    ${coll.cType} _out = ${coll.cAllocFn}();"), "_out", Nil)
+      } else
+        p.typ match {
+          case CType.ByValueArray(cefName) =>
+            val countVar =
+              fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count").map(_.name).getOrElse("0")
+            val arrVar  = s"_${p.name}_arr"
+            val sizeVar = s"_${p.name}_sz"
+            val pre     = List(
+              s"    size_t $sizeVar = static_cast<size_t>($countVar);",
+              s"    $cefName* $arrVar = $sizeVar > 0 ? new $cefName[$sizeVar]() : nullptr;",
+              s"""    { auto _bvac = FindClassCached(env, "${jniName(cefName)}");""",
+              s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
+              s"        auto _elem = env->GetObjectArrayElement(${p.name}, static_cast<jsize>(_i));",
+              s"        if (_elem) {"
+            ) ++ bv.bvReadFromJavaLines(cefName, s"$arrVar[_i]", "_elem", "_bvac").map(l => s"            $l") ++ List(
+              "        }",
+              s"    } }"
+            )
+            (pre, arrVar, List(s"    delete[] $arrVar;"))
+          case CType.OutObjectPtr(cefName) =>
+            val tmp = s"_${p.name}_ptr"
+            val pre = List(
+              s"    $cefName* $tmp = nullptr;",
+              s"    if (${p.name}) {",
+              s"""        auto _get = env->GetMethodID(env->GetObjectClass(${p.name}), "get", "()Ljava/lang/Object;");""",
+              s"        auto _cur = env->CallObjectMethod(${p.name}, _get);",
+              s"""        if (_cur) $tmp = reinterpret_cast<$cefName*>(env->GetLongField(_cur, env->GetFieldID(env->GetObjectClass(_cur), "nativePtr", "J")));""",
+              s"    }"
+            )
+            val addRefLine =
+              if (scopedNames.contains(cefName)) Nil
+              else List(s"        ${addRefExpr(tmp)}")
+            val post = List(
+              s"    if (${p.name} && $tmp) {",
+              s"""        auto _peerCls = FindClassCached(env, "${jniName(cefName)}$$NativePeer");""",
+              s"""        auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");"""
+            ) ++ addRefLine ++ List(
+              s"        auto _newPeer = env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>($tmp));",
+              s"""        auto _set = env->GetMethodID(env->GetObjectClass(${p.name}), "set", "(Ljava/lang/Object;)V");""",
+              s"        env->CallVoidMethod(${p.name}, _set, _newPeer);",
+              s"    }"
+            )
+            (pre, s"&$tmp", post)
+          case CType.OutPrimitivePtr(inner) =>
+            val (cPrim, jniPrim, jniInfix) = outPrimInfo(inner)
+            val tmp                        = s"_${p.name}_val"
+            val pre                        = List(
+              s"    $cPrim $tmp = 0;",
+              s"    if (${p.name}) { $jniPrim _jv; env->Get${jniInfix}ArrayRegion(${p.name}, 0, 1, &_jv); $tmp = static_cast<$cPrim>(_jv); }"
+            )
+            val post = List(
+              s"    if (${p.name}) { $jniPrim _jv = static_cast<$jniPrim>($tmp); env->Set${jniInfix}ArrayRegion(${p.name}, 0, 1, &_jv); }"
+            )
+            (pre, s"&$tmp", post)
+          case CType.ObjectPtrArray(cefName) =>
+            val countVar = fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count")
+              .map { cp =>
+                cp.typ match {
+                  case CType.OutPrimitivePtr(_) => s"_${cp.name}_val" // pre-extracted local
+                  case _                        => cp.name            // direct param
+                }
               }
-            }
-            .getOrElse("0")
-          val arrVar  = s"_${p.name}_arr"
-          val sizeVar = s"_${p.name}_sz"
-          val javaFqn = jniName(cefName)
-          val pre     = List(
-            s"    size_t $sizeVar = static_cast<size_t>($countVar);",
-            s"    $cefName** $arrVar = $sizeVar > 0 ? new $cefName*[$sizeVar]() : nullptr;"
-          )
-          val post = List(
-            s"""    auto _${p.name}_cls = FindClassCached(env, "$javaFqn$$NativePeer");""",
-            s"""    auto _${p.name}_ctor = env->GetMethodID(_${p.name}_cls, "<init>", "(J)V");""",
-            s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
-            s"        auto _elem = $arrVar[_i] ? env->NewObject(_${p.name}_cls, _${p.name}_ctor, reinterpret_cast<jlong>($arrVar[_i])) : nullptr;",
-            s"        env->SetObjectArrayElement(${p.name}, static_cast<jsize>(_i), _elem);",
-            s"    }",
-            s"    delete[] $arrVar;"
-          )
-          (pre, arrVar, post)
-        case _ =>
-          convertParamShared(p, isOpt, fn.name.startsWith("get_"), fn.ret)
-      }
+              .getOrElse("0")
+            val arrVar  = s"_${p.name}_arr"
+            val sizeVar = s"_${p.name}_sz"
+            val javaFqn = jniName(cefName)
+            val pre     = List(
+              s"    size_t $sizeVar = static_cast<size_t>($countVar);",
+              s"    $cefName** $arrVar = $sizeVar > 0 ? new $cefName*[$sizeVar]() : nullptr;"
+            )
+            val post = List(
+              s"""    auto _${p.name}_cls = FindClassCached(env, "$javaFqn$$NativePeer");""",
+              s"""    auto _${p.name}_ctor = env->GetMethodID(_${p.name}_cls, "<init>", "(J)V");""",
+              s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
+              s"        auto _elem = $arrVar[_i] ? env->NewObject(_${p.name}_cls, _${p.name}_ctor, reinterpret_cast<jlong>($arrVar[_i])) : nullptr;",
+              s"        env->SetObjectArrayElement(${p.name}, static_cast<jsize>(_i), _elem);",
+              s"    }",
+              s"    delete[] $arrVar;"
+            )
+            (pre, arrVar, post)
+          case _ =>
+            convertParamShared(p, isOpt, fn.name.startsWith("get_"), guardRet)
+        }
     }
     val blocks = renderCallBlocks(argConversions, npeChecks)
 
@@ -378,6 +388,23 @@ $headerIncludes
 
     val preamble = s"$castSelf\n$nullGuard\n"
     val body     = fn.ret match {
+      case _ if outColl.isDefined =>
+        val coll    = outColl.get._2
+        val convert =
+          s"""    jobject _result = ${coll.toJavaFn}(env, _out);
+    ${coll.cFreeFn}(_out);
+    return _result;"""
+        fn.ret match {
+          case CType.Bool =>
+            s"""${preamble}${blocks.npeBlock}$countFuncSetup
+${blocks.preBlock}    auto _r = $fnCall;${blocks.postBlock}
+    if (!_r) { ${coll.cFreeFn}(_out); return nullptr; }
+$convert"""
+          case _ =>
+            s"""${preamble}${blocks.npeBlock}$countFuncSetup
+${blocks.preBlock}    $fnCall;${blocks.postBlock}
+$convert"""
+        }
       case CType.Void =>
         s"""${preamble}${blocks.npeBlock}$countFuncSetup
 ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
@@ -555,23 +582,33 @@ $convertAndReturn"""
       isDirectClass: Boolean = false,
       ownerStructName: String = ""
   ): String = {
-    val retJni    = Naming.jniType(ff.ret)
+    val outColl   = OutCollection.forFreeFunction(ff)
+    val outParam  = outColl.map(_._1)
+    val params    = outParam.fold(ff.params)(p => ff.params.filterNot(_ eq p))
+    val visible   = outParam.fold(ff.visibleParams)(p => ff.visibleParams.filterNot(_ eq p))
+    val guardRet  = if (outColl.isDefined) CType.OpaquePtr else ff.ret
+    val retJni    = if (outColl.isDefined) "jobject" else Naming.jniType(ff.ret)
     val clsPrefix = if (ownerStructName.nonEmpty) Naming.jniClassPrefix(ownerStructName) else javaClassName
     val exportSig = if (isDirectClass) Naming.jniExportStatic(javaClassName, ff.javaMethodName, retJni)
     else Naming.jniExportPeerStatic(clsPrefix, ff.javaMethodName, retJni)
     val jniParams =
-      ("JNIEnv* env" :: "jclass clz" :: ff.visibleParams.map { p =>
+      ("JNIEnv* env" :: "jclass clz" :: visible.map { p =>
         s"${Naming.jniType(p.typ)} ${p.name}"
       }).mkString(", ")
 
     val optionalParams = collectOptionalParams(ff.metaAttrs)
-    val npeChecks      = renderStrictNullChecks(ff.params, optionalParams, ff.ret) ++
-      renderNarrowPrimitiveChecks(ff.params, ff.ret)
+    val npeChecks      = renderStrictNullChecks(params, optionalParams, guardRet) ++
+      renderNarrowPrimitiveChecks(params, guardRet)
 
     val argConversions = ff.params.map { p =>
       val isOpt = optionalParams.contains(p.name)
-      val isOut = ff.cName.contains("_get_") || ff.cName.startsWith("cef_get_")
-      convertParamShared(p, isOpt, isOut, ff.ret)
+      if (outParam.exists(_ eq p)) {
+        val coll = outColl.get._2
+        (List(s"    ${coll.cType} _out = ${coll.cAllocFn}();"), "_out", Nil)
+      } else {
+        val isOut = ff.cName.contains("_get_") || ff.cName.startsWith("cef_get_")
+        convertParamShared(p, isOpt, isOut, guardRet)
+      }
     }
     val blocks = renderCallBlocks(argConversions, npeChecks)
 
@@ -579,13 +616,30 @@ $convertAndReturn"""
     val nativeFunction = if (ff.cName == "cef_initialize") "Cef4jInitialize" else ff.cName
     val fnCall         = s"$nativeFunction(${blocks.callArgs})"
 
-    val body = ff.ret match {
-      case CType.Void =>
-        s"""${blocks.npeBlock}${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
-      case cfa @ CType.CountFuncArray(_, _, _, _) =>
-        renderCountFuncArrayFreeFunctionBody(ff, cfa, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
-      case _ =>
-        renderReturnDispatch(ff.ret, retJni, fnCall, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
+    val body = outColl match {
+      case Some((_, coll)) =>
+        val convert =
+          s"""    jobject _result = ${coll.toJavaFn}(env, _out);
+    ${coll.cFreeFn}(_out);
+    return _result;"""
+        ff.ret match {
+          case CType.Bool =>
+            s"""${blocks.npeBlock}${blocks.preBlock}    auto _r = $fnCall;${blocks.postBlock}
+    if (!_r) { ${coll.cFreeFn}(_out); return nullptr; }
+$convert"""
+          case _ =>
+            s"""${blocks.npeBlock}${blocks.preBlock}    $fnCall;${blocks.postBlock}
+$convert"""
+        }
+      case None =>
+        ff.ret match {
+          case CType.Void =>
+            s"""${blocks.npeBlock}${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
+          case cfa @ CType.CountFuncArray(_, _, _, _) =>
+            renderCountFuncArrayFreeFunctionBody(ff, cfa, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
+          case _ =>
+            renderReturnDispatch(ff.ret, retJni, fnCall, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
+        }
     }
 
     renderGeneratedFunction(exportSig, jniParams, body)

@@ -126,16 +126,14 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setHeaderByName0)(JNIEnv *env, j
   if (_value_str) cef_string_userfree_free(_value_str);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), getHeaderMap0)(JNIEnv *env, jobject obj, jlong self, jobject headerMap) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResponse), getHeaderMap0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_response_t *>(self);
-  if (!s) return;
-  if (!headerMap) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "headerMap must not be null");
-    return;
-  }
-  auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
-  s->get_header_map(s, _headerMap_csmm);
-  CefStringMultimapWriteBack(env, _headerMap_csmm, headerMap);
+  if (!s) return nullptr;
+  cef_string_multimap_t _out = cef_string_multimap_alloc();
+  s->get_header_map(s, _out);
+  jobject _result = CefStringMultimapToJavaMap(env, _out);
+  cef_string_multimap_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setHeaderMap0)(JNIEnv *env, jobject obj, jlong self, jobject headerMap) {

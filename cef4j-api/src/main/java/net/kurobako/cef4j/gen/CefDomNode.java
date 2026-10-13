@@ -281,9 +281,10 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_element_attributes)(struct _cef_domnode_t* self, cef_string_map_t attrMap);</pre>
      *
+     * @return the map, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:307</a>
      */
-    void getElementAttributes(Map<String, String> attrMap);
+    Map<String, String> getElementAttributes();
 
     /**
      * Set the value for the element attribute named {@code attrName}. Returns {@code true} on success.
@@ -497,9 +498,9 @@ public interface CefDomNode extends CefLibraryObject {
         }
 
         @Override
-        public void getElementAttributes(Map<String, String> attrMap) {
+        public Map<String, String> getElementAttributes() {
             checkNotClosed();
-            getElementAttributes0(nativePtr, attrMap);
+            return getElementAttributes0(nativePtr);
         }
 
         @Override
@@ -564,7 +565,7 @@ public interface CefDomNode extends CefLibraryObject {
 
         static native String getElementAttribute0(long self, @Nullable String attrName);
 
-        static native void getElementAttributes0(long self, Map<String, String> attrMap);
+        static native Map<String, String> getElementAttributes0(long self);
 
         static native boolean setElementAttribute0(long self, @Nullable String attrName, @Nullable String value);
 

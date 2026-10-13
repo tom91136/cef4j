@@ -62,16 +62,14 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), reset0)(JNIEnv *env, jobject 
   s->reset(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), getArgv0)(JNIEnv *env, jobject obj, jlong self, jobject argv) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), getArgv0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_command_line_t *>(self);
-  if (!s) return;
-  if (!argv) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "argv must not be null");
-    return;
-  }
-  auto _argv_csl = JavaListToCefStringList(env, argv);
-  s->get_argv(s, _argv_csl);
-  CefStringListWriteBack(env, _argv_csl, argv);
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  s->get_argv(s, _out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefCommandLine), getCommandLineString0)(JNIEnv *env, jobject obj, jlong self) {
@@ -130,16 +128,14 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefCommandLine), getSwitchValue0)(JNIEnv *e
   return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), getSwitches0)(JNIEnv *env, jobject obj, jlong self, jobject switches) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), getSwitches0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_command_line_t *>(self);
-  if (!s) return;
-  if (!switches) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "switches must not be null");
-    return;
-  }
-  auto _switches_csm = JavaMapToCefStringMap(env, switches);
-  s->get_switches(s, _switches_csm);
-  CefStringMapWriteBack(env, _switches_csm, switches);
+  if (!s) return nullptr;
+  cef_string_map_t _out = cef_string_map_alloc();
+  s->get_switches(s, _out);
+  jobject _result = CefStringMapToJavaMap(env, _out);
+  cef_string_map_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), appendSwitch0)(JNIEnv *env, jobject obj, jlong self, jstring name) {
@@ -168,16 +164,14 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCommandLine), hasArguments0)(JNIEnv *en
   return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), getArguments0)(JNIEnv *env, jobject obj, jlong self, jobject arguments) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), getArguments0)(JNIEnv *env, jobject obj, jlong self) {
   auto *s = reinterpret_cast<cef_command_line_t *>(self);
-  if (!s) return;
-  if (!arguments) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "arguments must not be null");
-    return;
-  }
-  auto _arguments_csl = JavaListToCefStringList(env, arguments);
-  s->get_arguments(s, _arguments_csl);
-  CefStringListWriteBack(env, _arguments_csl, arguments);
+  if (!s) return nullptr;
+  cef_string_list_t _out = cef_string_list_alloc();
+  s->get_arguments(s, _out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), appendArgument0)(JNIEnv *env, jobject obj, jlong self, jstring argument) {

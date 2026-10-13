@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -481,8 +480,7 @@ class CefInteropTest extends CefTestBase {
 
         assertThat(dict.isSame(dict)).isTrue();
 
-        List<String> keys = new ArrayList<>();
-        assertThat(dict.getKeys(keys)).isTrue();
+        List<String> keys = dict.getKeys().orElseThrow();
         assertThat(keys).containsExactlyInAnyOrder("key1", "key2", "key3", "key4", "key5");
     }
 
@@ -569,8 +567,7 @@ class CefInteropTest extends CefTestBase {
         headers.put("Accept", List.of("text/html", "application/json"));
         req.setHeaderMap(headers);
 
-        Map<String, List<String>> retrieved = new HashMap<>();
-        req.getHeaderMap(retrieved);
+        Map<String, List<String>> retrieved = req.getHeaderMap();
         assertThat(retrieved).containsKey("Content-Type");
     }
 
@@ -590,8 +587,7 @@ class CefInteropTest extends CefTestBase {
         assertThat(cmd.getSwitchValue("log-level")).hasValue("3");
 
         cmd.appendArgument("extra-arg");
-        List<String> args = new ArrayList<>();
-        cmd.getArguments(args);
+        List<String> args = cmd.getArguments();
         assertThat(args).contains("extra-arg");
 
         assertThat(cmd.getCommandLineString()).isPresent();
@@ -604,8 +600,7 @@ class CefInteropTest extends CefTestBase {
         assertThat(CefGlobals.getMimeType("json")).hasValue("application/json");
         assertThat(CefGlobals.getMimeType("png")).hasValue("image/png");
 
-        List<String> extensions = new ArrayList<>();
-        CefGlobals.getExtensionsForMimeType("text/html", extensions);
+        List<String> extensions = CefGlobals.getExtensionsForMimeType("text/html");
         assertThat(extensions).contains("html");
 
         assertThat(CefGlobals.uriencode("hello world", 0)).hasValue("hello%20world");
@@ -881,8 +876,7 @@ class CefInteropTest extends CefTestBase {
         headers.put("X-Custom", List.of("one", "two", "three"));
         req.setHeaderMap(headers);
 
-        Map<String, List<String>> retrieved = new HashMap<>();
-        req.getHeaderMap(retrieved);
+        Map<String, List<String>> retrieved = req.getHeaderMap();
 
         assertThat(retrieved.get("Accept")).containsExactlyInAnyOrder("text/html", "application/json");
         assertThat(retrieved.get("X-Custom")).containsExactlyInAnyOrder("one", "two", "three");

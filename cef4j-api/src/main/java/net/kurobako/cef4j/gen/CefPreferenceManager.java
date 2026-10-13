@@ -135,8 +135,8 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:96</a>
      */
-    static void getChromeVariationsAsSwitches(List<String> switches) {
-        NativePeer.getChromeVariationsAsSwitches0(switches);
+    static List<String> getChromeVariationsAsSwitches() {
+        return NativePeer.getChromeVariationsAsSwitches0();
     }
 
     /**
@@ -154,8 +154,8 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:110</a>
      */
-    static void getChromeVariationsAsStrings(List<String> strings) {
-        NativePeer.getChromeVariationsAsStrings0(strings);
+    static List<String> getChromeVariationsAsStrings() {
+        return NativePeer.getChromeVariationsAsStrings0();
     }
 
     /**
@@ -266,9 +266,9 @@ public interface CefPreferenceManager extends CefLibraryObject {
         static native CefRegistration addPreferenceObserver0(
                 long self, @Nullable String name, @Nullable CefPreferenceObserver observer);
 
-        static native void getChromeVariationsAsSwitches0(List<String> switches);
+        static native List<String> getChromeVariationsAsSwitches0();
 
-        static native void getChromeVariationsAsStrings0(List<String> strings);
+        static native List<String> getChromeVariationsAsStrings0();
 
         static native CefPreferenceManager getGlobal0();
 

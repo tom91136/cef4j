@@ -88,24 +88,20 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPreferenceManager), addPreferenceObserve
   return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPreferenceManager), getChromeVariationsAsSwitches0)(JNIEnv *env, jclass clz, jobject switches) {
-  if (!switches) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "switches must not be null");
-    return;
-  }
-  auto _switches_csl = JavaListToCefStringList(env, switches);
-  cef_preference_manager_get_chrome_variations_as_switches(_switches_csl);
-  CefStringListWriteBack(env, _switches_csl, switches);
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPreferenceManager), getChromeVariationsAsSwitches0)(JNIEnv *env, jclass clz) {
+  cef_string_list_t _out = cef_string_list_alloc();
+  cef_preference_manager_get_chrome_variations_as_switches(_out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPreferenceManager), getChromeVariationsAsStrings0)(JNIEnv *env, jclass clz, jobject strings) {
-  if (!strings) {
-    env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "strings must not be null");
-    return;
-  }
-  auto _strings_csl = JavaListToCefStringList(env, strings);
-  cef_preference_manager_get_chrome_variations_as_strings(_strings_csl);
-  CefStringListWriteBack(env, _strings_csl, strings);
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPreferenceManager), getChromeVariationsAsStrings0)(JNIEnv *env, jclass clz) {
+  cef_string_list_t _out = cef_string_list_alloc();
+  cef_preference_manager_get_chrome_variations_as_strings(_out);
+  jobject _result = CefStringListToJavaList(env, _out);
+  cef_string_list_free(_out);
+  return _result;
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPreferenceManager), getGlobal0)(JNIEnv *env, jclass clz) {

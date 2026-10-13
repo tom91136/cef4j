@@ -148,9 +148,10 @@ public interface CefRequest extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_header_map)(struct _cef_request_t* self, cef_string_multimap_t headerMap);</pre>
      *
+     * @return the header map, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:131</a>
      */
-    void getHeaderMap(Map<String, List<String>> headerMap);
+    Map<String, List<String>> getHeaderMap();
 
     /**
      * Set the header values. If a Referer value exists in the header map it will be removed and ignored.
@@ -413,9 +414,9 @@ public interface CefRequest extends CefLibraryObject {
         }
 
         @Override
-        public void getHeaderMap(Map<String, List<String>> headerMap) {
+        public Map<String, List<String>> getHeaderMap() {
             checkNotClosed();
-            getHeaderMap0(nativePtr, headerMap);
+            return getHeaderMap0(nativePtr);
         }
 
         @Override
@@ -509,7 +510,7 @@ public interface CefRequest extends CefLibraryObject {
 
         static native void setPostData0(long self, @Nullable CefPostData postData);
 
-        static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
+        static native Map<String, List<String>> getHeaderMap0(long self);
 
         static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
 

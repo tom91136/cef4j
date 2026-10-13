@@ -140,9 +140,10 @@ public interface CefDictionaryValue extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* get_keys)(struct _cef_dictionary_value_t* self, cef_string_list_t keys);</pre>
      *
+     * @return the list, or {@link Optional#empty()} when the C API reports none
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:382</a>
      */
-    boolean getKeys(List<String> keys);
+    Optional<List<String>> getKeys();
 
     /**
      * Removes the value at the specified key. Returns {@code true} is the value was removed successfully.
@@ -503,9 +504,9 @@ public interface CefDictionaryValue extends CefLibraryObject {
         }
 
         @Override
-        public boolean getKeys(List<String> keys) {
+        public Optional<List<String>> getKeys() {
             checkNotClosed();
-            return getKeys0(nativePtr, keys);
+            return Optional.ofNullable(getKeys0(nativePtr));
         }
 
         @Override
@@ -644,7 +645,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
 
         static native boolean hasKey0(long self, @Nullable String key);
 
-        static native boolean getKeys0(long self, List<String> keys);
+        static native List<String> getKeys0(long self);
 
         static native boolean remove0(long self, @Nullable String key);
 

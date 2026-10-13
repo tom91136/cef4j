@@ -187,9 +187,10 @@ public interface CefResponse extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* get_header_map)(struct _cef_response_t* self, cef_string_multimap_t headerMap);</pre>
      *
+     * @return the header map, populated by the C API
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:143</a>
      */
-    void getHeaderMap(Map<String, List<String>> headerMap);
+    Map<String, List<String>> getHeaderMap();
 
     /**
      * Set all response header fields.
@@ -359,9 +360,9 @@ public interface CefResponse extends CefLibraryObject {
         }
 
         @Override
-        public void getHeaderMap(Map<String, List<String>> headerMap) {
+        public Map<String, List<String>> getHeaderMap() {
             checkNotClosed();
-            getHeaderMap0(nativePtr, headerMap);
+            return getHeaderMap0(nativePtr);
         }
 
         @Override
@@ -409,7 +410,7 @@ public interface CefResponse extends CefLibraryObject {
         static native void setHeaderByName0(
                 long self, @Nullable String name, @Nullable String value, boolean overwrite);
 
-        static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
+        static native Map<String, List<String>> getHeaderMap0(long self);
 
         static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
 

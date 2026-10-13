@@ -469,9 +469,10 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* get_keys)(struct _cef_v8_value_t* self, cef_string_list_t keys);</pre>
      *
+     * @return the list, or {@link Optional#empty()} when the C API reports none
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:882</a>
      */
-    boolean getKeys(List<String> keys);
+    Optional<List<String>> getKeys();
 
     /**
      * Sets the user data for this object and returns {@code true} on success. Returns {@code false} if this method is
@@ -1140,9 +1141,9 @@ public interface CefV8Value extends CefLibraryObject {
         }
 
         @Override
-        public boolean getKeys(List<String> keys) {
+        public Optional<List<String>> getKeys() {
             checkNotClosed();
-            return getKeys0(nativePtr, keys);
+            return Optional.ofNullable(getKeys0(nativePtr));
         }
 
         @Override
@@ -1318,7 +1319,7 @@ public interface CefV8Value extends CefLibraryObject {
 
         static native int setValueByaccessor0(long self, @Nullable String key, CefV8PropertyAttribute attribute);
 
-        static native boolean getKeys0(long self, List<String> keys);
+        static native List<String> getKeys0(long self);
 
         static native boolean setUserData0(long self, @Nullable NativePointer userData);
 
