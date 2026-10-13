@@ -49,6 +49,8 @@ extern "C" void *cef4jInitializeMacApplication();
 extern "C" void cef4jReleaseMacApplication(void *autoreleasePool);
 extern "C" void cef4jRunMacMessageLoop();
 extern "C" void cef4jQuitMacMessageLoop();
+extern "C" void cef4j_appkit_observer_fix_install(void);
+extern "C" void cef4j_appkit_observer_fix_purge(void);
 #endif
 
 #include "CefCompat.h"
@@ -2398,6 +2400,7 @@ int main(int argc, char *argv[]) {
     }
   }
   if (!isSubprocess) {
+    cef4j_appkit_observer_fix_install();
     std::fprintf(stderr, "[cef4j-runtime-server] macOS application bootstrap: begin\n");
     macApplication.autoreleasePool = cef4jInitializeMacApplication();
     if (!macApplication.autoreleasePool) return 1;
@@ -2601,6 +2604,9 @@ int main(int argc, char *argv[]) {
   g_ipc = nullptr;
   genhandlers::g_ipc = nullptr;
   cef_shutdown();
+#ifdef __APPLE__
+  cef4j_appkit_observer_fix_purge();
+#endif
   std::fprintf(stderr, "[cef4j-runtime-server] shutdown: cef_shutdown complete\n");
   return 0;
 }

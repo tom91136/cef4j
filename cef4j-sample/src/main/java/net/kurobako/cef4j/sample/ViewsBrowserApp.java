@@ -614,6 +614,5 @@ public final class ViewsBrowserApp {
         log.info("Shutting down CEF");
         Cef.INSTANCE.terminate();
         log.info("Exiting");
-        SampleShutdown.afterCefTermination();
     }
 }

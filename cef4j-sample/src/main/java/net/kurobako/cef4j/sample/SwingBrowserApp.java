@@ -69,7 +69,6 @@ public final class SwingBrowserApp {
         shutdownLatch.await();
         CefBrowserPanel.terminate();
         log.info("Exiting");
-        SampleShutdown.afterCefTermination();
     }
 
     private static void createUI() {

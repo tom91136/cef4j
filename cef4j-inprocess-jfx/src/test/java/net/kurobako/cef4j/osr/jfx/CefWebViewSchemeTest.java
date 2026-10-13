@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
@@ -43,9 +42,7 @@ class CefWebViewSchemeTest {
 
     private static final CompletableFuture<String> resourceOpened = new CompletableFuture<>();
 
-    // XXX: CEF 150 keeps macOS cache files mapped until process exit; restore eager TempDir cleanup when the minimum
-    // CEF major is above 150 and the macOS scheme-test fork deletes its cache after normal cef_shutdown.
-    @TempDir(cleanup = CleanupMode.NEVER)
+    @TempDir
     @SuppressWarnings("NullAway.Init")
     static Path cacheRoot;
 

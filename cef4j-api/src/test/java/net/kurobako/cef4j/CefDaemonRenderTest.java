@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
@@ -32,7 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(60)
 class CefDaemonRenderTest {
 
-    @TempDir(cleanup = CleanupMode.NEVER)
+    @TempDir
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 

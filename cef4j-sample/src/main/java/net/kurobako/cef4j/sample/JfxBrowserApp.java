@@ -43,7 +43,6 @@ public final class JfxBrowserApp {
         });
         Application.launch(JfxApp.class, args);
         CefWebView.terminate();
-        SampleShutdown.afterCefTermination();
     }
 
     public static class JfxApp extends Application {

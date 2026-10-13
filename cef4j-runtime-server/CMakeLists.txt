@@ -68,7 +68,10 @@ if(APPLE)
     enable_language(OBJCXX)
     list(APPEND CEF4J_RUNTIME_SERVER_SOURCES
         src/main/macos/MacApplication.mm
+        "${CMAKE_CURRENT_SOURCE_DIR}/../cef4j-platform/native/runtime/appkit_observer_fix_mac.mm"
         "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/../cef4j-platform/native/runtime/appkit_observer_fix_mac.mm"
+        PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
     set_source_files_properties("${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc" PROPERTIES
         COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED"
         COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-field-initializers>")

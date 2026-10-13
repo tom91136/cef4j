@@ -76,14 +76,6 @@ extern "C" void cef4jRunMacMessageLoop() {
       CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, true);
     }
   }
-
-  // XXX: CEF 150 posts AppKit teardown after the final browser callback; remove when shutdown is synchronous.
-  for (int i = 0; i < 10; ++i) {
-    @autoreleasepool {
-      cef_do_message_loop_work();
-      CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, true);
-    }
-  }
 }
 
 extern "C" void cef4jQuitMacMessageLoop() {

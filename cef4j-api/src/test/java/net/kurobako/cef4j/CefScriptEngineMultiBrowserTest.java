@@ -79,7 +79,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         assertThat(pumpUntil(closedA, 10_000)).as("browser A closed").isTrue();
         if (browserB != null && closedB.getCount() != 0) closeBrowser(browserB);
         assertThat(closedB.await(10, TimeUnit.SECONDS)).as("browser B closed").isTrue();
-        if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

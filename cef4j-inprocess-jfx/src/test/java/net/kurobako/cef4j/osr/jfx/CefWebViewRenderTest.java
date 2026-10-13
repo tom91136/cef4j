@@ -109,7 +109,6 @@ class CefWebViewRenderTest {
     @AfterAll
     static void shutdownSanity() throws Exception {
         closeAllWindows();
-        drainJavaFx();
         if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             onFxThread(CefWebView::terminate);
         }

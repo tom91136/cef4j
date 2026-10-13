@@ -25,17 +25,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
 @Timeout(60)
 class CefHttpIntegrationTest {
 
-    // XXX: CEF 150 can recreate SingletonSocket until its isolated JVM exits; restore eager TempDir cleanup when every
-    // supported CEF/platform pair releases the cache before JUnit teardown and the real-CEF fork test verifies
-    // deletion.
-    @TempDir(cleanup = CleanupMode.NEVER)
+    @TempDir
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 

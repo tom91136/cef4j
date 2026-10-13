@@ -22,7 +22,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
@@ -36,7 +35,7 @@ class CefAppDelegatingTest {
     private static final CountDownLatch contextInitialised = new CountDownLatch(2);
 
     @BeforeAll
-    static void setup(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
+    static void setup(@TempDir Path tempDir) throws Exception {
         SystemBootstrap.load();
 
         bphA = spy(new CefBrowserProcessHandler() {

@@ -81,14 +81,6 @@ final class CefWebViewTestSupport {
         }
     }
 
-    static void drainJavaFx() throws Exception {
-        // XXX: Browser close can enqueue JavaFX pulse work after its future completes; remove this marker when release
-        // completion is specified to run after all related JavaFX work and the teardown race test remains stable.
-        Thread applicationThread = javaFxApplicationThread();
-        if (applicationThread == null || !applicationThread.isAlive()) return;
-        onFxThread(() -> {});
-    }
-
     static void shutdownJavaFx() throws Exception {
         Platform.exit();
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
@@ -109,7 +101,6 @@ final class CefWebViewTestSupport {
         Thread applicationThread = javaFxApplicationThread();
         if (applicationThread == null || !applicationThread.isAlive()) return;
         closeAllWindows();
-        drainJavaFx();
         onFxThread(CefWebView::terminate);
         shutdownJavaFx();
     }

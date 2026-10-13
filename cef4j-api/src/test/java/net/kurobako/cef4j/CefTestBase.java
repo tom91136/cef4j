@@ -26,16 +26,13 @@ import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
 abstract class CefTestBase {
     private static final IdentityHashMap<CefBrowser, CountDownLatch> browserClosed = new IdentityHashMap<>();
 
-    // XXX: CEF 109-150 keeps cache files open until process exit on macOS; restore JUnit cleanup when macOS shutdown
-    // closes every cache handle before @AfterAll.
-    @TempDir(cleanup = CleanupMode.NEVER)
+    @TempDir
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 

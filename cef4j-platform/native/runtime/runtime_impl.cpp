@@ -56,6 +56,8 @@ int Cef4jInitialize(const cef_main_args_t *args, const cef_settings_t *settings,
 extern "C" void cef4j_fix_main_bundle_id(void);
 extern "C" void cef4j_stop_nsapp(void);
 extern "C" void cef4j_activate_app(void);
+extern "C" void cef4j_appkit_observer_fix_install(void);
+extern "C" void cef4j_appkit_observer_fix_purge(void);
 #endif
 
 CEF4J_JNI_EXPORT_RT(void, NativeMemory, putBytes)(JNIEnv *env, jclass /*clz*/, jlong address, jobjectArray src, jint offset, jint length) {
@@ -79,6 +81,7 @@ CEF4J_JNI_EXPORT_RT(jint, SystemBootstrap, runtimeCefMajor0)(JNIEnv * /*env*/, j
 CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv *env, jclass /*clz*/, jstring frameworkBinaryPath) {
 #ifdef __APPLE__
   cef4j_fix_main_bundle_id();
+  cef4j_appkit_observer_fix_install();
   const char *path = env->GetStringUTFChars(frameworkBinaryPath, nullptr);
   if (!path) return JNI_FALSE;
   int ok = cef_load_library(path);
@@ -192,6 +195,7 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv *env,
     // XXX: CEF 109-150 leaves macOS CFRunLoop observers installed until cef_shutdown; keep shutdown before JVM
     // teardown until the minimum supported CEF exceeds 150.
     cef_shutdown();
+    cef4j_appkit_observer_fix_purge();
     g_cef_library_loaded = false;
     cef_unload_library();
     dispatch_semaphore_signal(loopDone);
@@ -213,6 +217,12 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv *env,
   (void)env;
   (void)initializer;
   (void)cleanupRunnable;
+#endif
+}
+
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, purgeAppKitObservers0)(JNIEnv * /*env*/, jclass /*clz*/) {
+#ifdef __APPLE__
+  cef4j_appkit_observer_fix_purge();
 #endif
 }
 

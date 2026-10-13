@@ -564,6 +564,7 @@ public enum Cef implements AutoCloseable {
             int released = NativeCleaner.INSTANCE.releaseAll();
             log.debug("Released {} outstanding NativePeers before shutdown", released);
             CefGlobals.shutdown();
+            if (OS.isMacOS()) SystemBootstrap.purgeAppKitObservers();
         }
 
         synchronized (lifecycleLock) {

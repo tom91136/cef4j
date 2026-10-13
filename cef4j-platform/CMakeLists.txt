@@ -55,7 +55,9 @@ if(APPLE)
     # instead of linking against the framework directly.
     set(CEF_DYLIB_LOADER "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
     set(BUNDLE_FIX_MM "${CMAKE_SOURCE_DIR}/native/runtime/bundle_fix_mac.mm")
-    add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES} ${CEF_DYLIB_LOADER} ${BUNDLE_FIX_MM})
+    set(APPKIT_OBSERVER_FIX_MM "${CMAKE_SOURCE_DIR}/native/runtime/appkit_observer_fix_mac.mm")
+    add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES} ${CEF_DYLIB_LOADER} ${BUNDLE_FIX_MM} ${APPKIT_OBSERVER_FIX_MM})
+    set_source_files_properties(${APPKIT_OBSERVER_FIX_MM} PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
     set_source_files_properties(${CEF_DYLIB_LOADER} PROPERTIES
         COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED"
         COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-field-initializers>")

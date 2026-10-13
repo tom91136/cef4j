@@ -39,7 +39,7 @@ class CefInteropTest extends CefTestBase {
 
     @AfterAll
     static void shutdownCef() {
-        if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

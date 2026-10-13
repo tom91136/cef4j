@@ -560,6 +560,8 @@ public final class SystemBootstrap {
 
     static native void quitAndWaitMainThreadMessageLoop0();
 
+    private static native void purgeAppKitObservers0();
+
     private static native void scheduleLinuxMessageLoopWork0(long delayMs);
 
     private static native void cancelLinuxMessageLoopWork0();
@@ -598,6 +600,12 @@ public final class SystemBootstrap {
     public static void quitAndWaitMainThreadMessageLoop() {
         if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
         quitAndWaitMainThreadMessageLoop0();
+    }
+
+    /** macOS only. Removes the AppKit observers CEF registered, which outlive {@code cef_shutdown}. */
+    static void purgeAppKitObservers() {
+        if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
+        purgeAppKitObservers0();
     }
 
     private static void makeExecutable(Path file) throws IOException {

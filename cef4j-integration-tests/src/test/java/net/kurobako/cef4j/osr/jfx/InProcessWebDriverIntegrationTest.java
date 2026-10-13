@@ -2,8 +2,8 @@ package net.kurobako.cef4j.osr.jfx;
 
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.CEF_STARTUP_TIMEOUT;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.assumeDisplayServer;
+import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.closeAllWindows;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.onFxThread;
-import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.shutdownCefWebView;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.waitUntil;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +25,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
@@ -42,7 +43,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ImmutableCapabilities;
@@ -54,7 +54,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 class InProcessWebDriverIntegrationTest {
     private static final TestExecutor BROWSER_CREATOR = TestExecutor.single("in-process-browser-creator");
 
-    @TempDir(cleanup = CleanupMode.NEVER)
+    @TempDir
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
@@ -79,7 +79,8 @@ class InProcessWebDriverIntegrationTest {
     @AfterAll
     static void terminateCef() throws Exception {
         try {
-            shutdownCefWebView();
+            closeAllWindows();
+            if (Cef.INSTANCE.state() == Cef.State.INITIALISED) onFxThread(CefWebView::terminate);
         } finally {
             BROWSER_CREATOR.close();
         }

@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
@@ -41,7 +40,7 @@ class CefScriptEngineMultiThreadedTest {
     private static final CompletableFuture<Void> closedB = new CompletableFuture<>();
 
     @BeforeAll
-    static void initCef(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
+    static void initCef(@TempDir Path tempDir) throws Exception {
         Assumptions.assumeFalse(OS.isMacOS(), "multiThreadedMessageLoop is not supported on macOS");
         SystemBootstrap.load();
 
@@ -110,11 +109,7 @@ class CefScriptEngineMultiThreadedTest {
         if (engineB != null) engineB.dispose();
         closeBrowser(browserA, closedA);
         closeBrowser(browserB, closedB);
-        // XXX: CEF 116.0.27 on Windows crashes in cef_shutdown after both onBeforeClose callbacks; remove when the
-        // CEF 116 compatibility lane is dropped.
-        if (!OS.isWindows() && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
-            Cef.INSTANCE.terminate();
-        }
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     private static void closeBrowser(CefBrowser browser, CompletableFuture<Void> closed) throws Exception {

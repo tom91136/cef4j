@@ -23,6 +23,8 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv *env,
 
 CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv *env, jclass clz, jstring frameworkBinaryPath);
 
+CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, purgeAppKitObservers0)(JNIEnv *env, jclass clz);
+
 CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, quitAndWaitMainThreadMessageLoop0)(JNIEnv *env, jclass clz);
 
 CEF4J_JNI_EXPORT_RT(jint, SystemBootstrap, runtimeCefMajor0)(JNIEnv *env, jclass clz);
