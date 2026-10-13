@@ -17,6 +17,7 @@ import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
@@ -31,7 +33,8 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(60)
 class CefDaemonRenderTest {
 
-    @TempDir
+    // XXX: CEF keeps cache files locked after cef_shutdown on Windows; TestTempDirs deletes them at JVM exit instead
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
@@ -51,6 +54,11 @@ class CefDaemonRenderTest {
         settings.multiThreadedMessageLoop = 0;
 
         Cef.INSTANCE.initialise(settings, CefTestLaunch.extraArgs());
+    }
+
+    @AfterAll
+    static void terminateCef() {
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

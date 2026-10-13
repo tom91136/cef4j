@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
@@ -40,7 +41,7 @@ class CefScriptEngineMultiThreadedTest {
     private static final CompletableFuture<Void> closedB = new CompletableFuture<>();
 
     @BeforeAll
-    static void initCef(@TempDir Path tempDir) throws Exception {
+    static void initCef(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
         Assumptions.assumeFalse(OS.isMacOS(), "multiThreadedMessageLoop is not supported on macOS");
         SystemBootstrap.load();
 

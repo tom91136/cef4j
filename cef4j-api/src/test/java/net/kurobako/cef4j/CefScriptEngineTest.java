@@ -99,7 +99,6 @@ class CefScriptEngineTest extends CefTestBase {
             browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }
         assertThat(pumpUntil(browserClosed, 10_000)).as("browser closed").isTrue();
-        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

@@ -25,13 +25,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
 @Timeout(60)
 class CefHttpIntegrationTest {
 
-    @TempDir
+    // XXX: CEF keeps cache files locked after cef_shutdown on Windows; TestTempDirs deletes them at JVM exit instead
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
@@ -74,6 +76,7 @@ class CefHttpIntegrationTest {
     @AfterAll
     static void teardown() {
         if (server != null) server.stop(0);
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     private static void respond(HttpExchange ex, int status, String body) throws IOException {

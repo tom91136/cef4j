@@ -25,16 +25,24 @@ import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestTempDirs;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(DisplayLock.class)
 abstract class CefTestBase {
     private static final IdentityHashMap<CefBrowser, CountDownLatch> browserClosed = new IdentityHashMap<>();
 
-    @TempDir
+    // XXX: CEF keeps cache files locked after cef_shutdown on Windows; TestTempDirs deletes them at JVM exit instead
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
+
+    @AfterAll
+    static void terminateCef() {
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
+    }
 
     static void initCef(List<String> additionalArgs) throws Exception {
         SystemBootstrap.load();

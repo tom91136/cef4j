@@ -43,6 +43,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ImmutableCapabilities;
@@ -54,7 +55,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 class InProcessWebDriverIntegrationTest {
     private static final TestExecutor BROWSER_CREATOR = TestExecutor.single("in-process-browser-creator");
 
-    @TempDir
+    // XXX: CEF keeps cache files locked after cef_shutdown on Windows; TestTempDirs deletes them at JVM exit instead
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 

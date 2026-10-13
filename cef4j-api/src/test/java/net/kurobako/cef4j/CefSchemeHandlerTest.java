@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.gen.*;
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -83,9 +82,6 @@ class CefSchemeHandlerTest extends CefTestBase {
         CefTestBase.initCef(List.of());
         CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
     }
-
-    @AfterAll
-    static void shutdownCef() {}
 
     @Test
     @Order(1)

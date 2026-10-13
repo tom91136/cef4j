@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -35,11 +34,6 @@ class CefInteropTest extends CefTestBase {
     @BeforeAll
     static void initCef() throws Exception {
         initCef(List.of("--disable-popup-blocking"));
-    }
-
-    @AfterAll
-    static void shutdownCef() {
-        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test
